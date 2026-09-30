@@ -7,9 +7,8 @@ import styles from './feedback-status.module.css';
 type RequestState = 'idle' | 'loading' | 'error' | 'success';
 
 /**
- * A deterministic host-owned request: first attempt fails, retry succeeds.
- * One timer is cancelled on restart/unmount; existing content and filter remain
- * mounted throughout. No transport or request policy enters the primitives.
+ * 宿主拥有的确定请求流程：首次失败，重试成功。重新开始或卸载取消计时器，
+ * 现有内容与筛选持续挂载；请求传输和恢复策略不进入基础组件。
  */
 function FeedbackStatusSurface() {
   const [open, setOpen] = useState(true);
@@ -27,7 +26,7 @@ function FeedbackStatusSurface() {
     clearTimeout(timer.current);
     const currentAttempt = ++attempt.current;
     setState('loading');
-    // 900ms leaves a visible loading interval after the primitive's 300ms delay.
+    // 900ms 保证默认300ms延迟后仍有可见加载区间。
     timer.current = setTimeout(() => {
       setState(currentAttempt === 1 ? 'error' : 'success');
     }, 900);
@@ -39,7 +38,7 @@ function FeedbackStatusSurface() {
         <Button
           ref={restoreRef}
           onClick={() => {
-            // Remount even when motion off omitted the native afterClose.
+            // 动效关闭可能不触发原生 afterClose；重新挂载保证能恢复显示。
             setAlertKey((value) => value + 1);
             setOpen(true);
             setViewed(false);
@@ -57,7 +56,7 @@ function FeedbackStatusSurface() {
             description="本批次包含 28 位客户，可以开始同步。"
             closable
             onClose={() => {
-              // Necessary focus restoration cannot depend on transitionend.
+              // 必要焦点恢复不能依赖 transitionend 动画事件。
               setViewed(false);
               restoreRef.current?.focus();
             }}

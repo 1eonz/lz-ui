@@ -34,21 +34,23 @@ circle/dashboard 用于紧凑概览，steps 表达已完成批次。成功分段
 
 `ProgressProps` 保留 AntD 公共类型，以下为常用项；其余字段遵循 AntD >=5.24 的公开 API。
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| percent | number | 0 | 总比例；有限 clamp 到0–100，非有限归0，小数不舍入 |
-| type | 'line' \| 'circle' \| 'dashboard' | line | 展示形态 |
-| status | 'normal' \| 'active' \| 'exception' \| 'success' | normal；100时自动success | 状态；active仅视觉动效 |
-| format | (percent?: number, successPercent?: number) =&gt; ReactNode | 百分比或原生状态图标 | 接收规范数值，返回内容保留 |
-| success | { percent?: number; strokeColor?: string; progress?: number } | — | 成功分段，使用同样数值规范；progress为废弃兼容字段 |
-| successPercent | number | — | 废弃，改用success.percent；仍按有限0–100规范 |
-| showInfo | boolean | true | 是否显示格式化文本/状态图标，不影响aria值 |
-| size | AntD ProgressProps['size'] | default | preset、数值或公开尺寸配置；circle/dashboard用数值或preset |
-| steps | number \| { count: number; gap: number } | — | 分步展示，适用形态遵循AntD |
-| strokeColor | AntD ProgressProps['strokeColor'] | 主题primary | 单色、分段色或公开渐变配置 |
-| trailColor | string | 主题remaining | 未完成轨道颜色 |
-| aria-label / aria-labelledby | string | — | 由宿主命名任务 |
-| className / rootClassName / style | string / string / CSSProperties | — | 原生根节点样式 |
+成功分段表示已完成总量的子集：所有成功字段先按0–100规范，再限制不超过规范后的总 percent。例如 percent=80、success.percent=120 时，视觉/format/ARIA 分别为总80、成功80、总80；多个成功字段同时存在时保留 AntD 原有优先级。
+
+| 属性                              | 类型                                                          | 默认值                   | 说明                                                       |
+| --------------------------------- | ------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------- |
+| percent                           | number                                                        | 0                        | 总比例；有限 clamp 到0–100，非有限归0，小数不舍入          |
+| type                              | 'line' \| 'circle' \| 'dashboard'                             | line                     | 展示形态                                                   |
+| status                            | 'normal' \| 'active' \| 'exception' \| 'success'              | normal；100时自动success | 状态；active仅视觉动效                                     |
+| format                            | (percent?: number, successPercent?: number) =&gt; ReactNode   | 百分比或原生状态图标     | 接收规范数值，返回内容保留                                 |
+| success                           | { percent?: number; strokeColor?: string; progress?: number } | —                        | 成功分段，使用同样数值规范；progress为废弃兼容字段         |
+| successPercent                    | number                                                        | —                        | 废弃，改用success.percent；仍按有限0–100规范               |
+| showInfo                          | boolean                                                       | true                     | 是否显示格式化文本/状态图标，不影响aria值                  |
+| size                              | AntD ProgressProps['size']                                    | default                  | preset、数值或公开尺寸配置；circle/dashboard用数值或preset |
+| steps                             | number \| { count: number; gap: number }                      | —                        | 分步展示，适用形态遵循AntD                                 |
+| strokeColor                       | AntD ProgressProps['strokeColor']                             | 主题primary              | 单色、分段色或公开渐变配置                                 |
+| trailColor                        | string                                                        | 主题remaining            | 未完成轨道颜色                                             |
+| aria-label / aria-labelledby      | string                                                        | —                        | 由宿主命名任务                                             |
+| className / rootClassName / style | string / string / CSSProperties                               | —                        | 原生根节点样式                                             |
 
 ### Ref 与受控更新
 

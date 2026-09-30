@@ -1,22 +1,16 @@
 import type { SpinProps as AntSpinProps } from 'antd';
 
 /**
- * Public AntD 5 Spin props supported by lx-ui.
+ * lx-ui 支持的 AntD 5 Spin 公开属性。
  *
- * `fullscreen` and `percent` are intentionally excluded from the public
- * contract: lx-ui Spin is an inline/region loading primitive and does not
- * implement full-screen overlays or pseudo-progress semantics. Request,
- * retry, disabled and focus policies remain owned by the host application.
+ * fullscreen 和 percent 明确排除：本组件仅负责行内/区域加载，不实现
+ * 全屏遮罩和伪进度。请求、重试、禁用和焦点策略由宿主业务页面拥有。
  *
- * Delay defaults to 300ms; pass zero for immediate paint. Default size maps to
- * the authored 16/24/36px single arc. Explicit indicator replaces that arc and
- * owns its geometry; size continues to reach AntD's native container. Because
- * a public indicator is always supplied locally, ConfigProvider spin.indicator
- * and AntD's preexisting global default do not override lx-ui's default. Pass
- * that indicator explicitly to opt in; lx-ui never calls setDefaultIndicator.
- * Nested children stay mounted and their native root is busy immediately;
- * standalone busy follows AntD's delayed visual state. Reduced motion stops
- * animations/transitions inside the local root, including custom indicators
- * and nested content; host animations should live outside this loading region.
+ * delay 默认300ms，传0立即显示。默认单弧尺寸为16/24/36px；显式 indicator
+ * 替换图形并负责自身几何，size 仍传至原生容器。局部公开 indicator 始终
+ * 优先于 ConfigProvider spin.indicator 和既有 AntD 全局默认；要采用宿主
+ * 图形需显式传入，组件从不调用 setDefaultIndicator。nested 持续挂载且根
+ * 立即 busy；standalone busy 遵循原生延迟视觉状态。reduced motion 停止
+ * 局部根的动画/过渡，包括自定义图形和 children，宿主运动内容应置于区域外。
  */
 export type SpinProps = Omit<AntSpinProps, 'fullscreen' | 'percent'>;

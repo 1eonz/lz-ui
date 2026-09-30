@@ -239,27 +239,43 @@ describe('DynamicForm', () => {
   });
 
   it('uses the latest async select options when requests finish out of order', async () => {
-    const pending: Record<string, (options: DynamicFieldOption[]) => void> = {};
-    const loadOptions = vi.fn(
-      (query: string) =>
-        new Promise<DynamicFieldOption[]>((resolve) => {
-          pending[query] = resolve;
-        }),
-    );
-    render(
-      <DynamicForm
-        schema={[{ key: 'city', name: 'city', type: 'select', label: '城市', loadOptions }]}
-      />,
-    );
-    fireEvent.mouseDown(screen.getByRole('combobox'));
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'sh' } });
-    await waitFor(() => expect(loadOptions).toHaveBeenCalledTimes(1));
-    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'sha' } });
-    await waitFor(() => expect(loadOptions).toHaveBeenCalledTimes(2));
-    pending.sha?.([{ label: '上海', value: 'shanghai' }]);
-    pending.sh?.([{ label: '旧结果', value: 'old' }]);
-    await waitFor(() => expect(screen.getByText('上海')).toBeInTheDocument());
-    expect(screen.queryByText('旧结果')).not.toBeInTheDocument();
+    // 显式推进业务200ms防抖，避免全量并发测试的实际时钟负载影响请求启动。
+    // 仅接管超时计时器，保留组件库其它调度；finally恢复，避免污染后续测试。
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    try {
+      const pending: Record<string, (options: DynamicFieldOption[]) => void> = {};
+      const loadOptions = vi.fn(
+        (query: string) =>
+          new Promise<DynamicFieldOption[]>((resolve) => {
+            pending[query] = resolve;
+          }),
+      );
+      render(
+        <DynamicForm
+          schema={[{ key: 'city', name: 'city', type: 'select', label: '城市', loadOptions }]}
+        />,
+      );
+      fireEvent.mouseDown(screen.getByRole('combobox'));
+      fireEvent.change(screen.getByRole('combobox'), { target: { value: 'sh' } });
+      expect(loadOptions).not.toHaveBeenCalled();
+      await act(async () => vi.advanceTimersByTimeAsync(199));
+      expect(loadOptions).not.toHaveBeenCalled();
+      await act(async () => vi.advanceTimersByTimeAsync(1));
+      expect(loadOptions).toHaveBeenCalledTimes(1);
+      expect(pending.sh).toBeTypeOf('function');
+      fireEvent.change(screen.getByRole('combobox'), { target: { value: 'sha' } });
+      await act(async () => vi.advanceTimersByTimeAsync(200));
+      expect(loadOptions).toHaveBeenCalledTimes(2);
+      expect(pending.sha).toBeTypeOf('function');
+      await act(async () => {
+        pending.sha([{ label: '上海', value: 'shanghai' }]);
+        pending.sh([{ label: '旧结果', value: 'old' }]);
+      });
+      expect(screen.getByText('上海')).toBeInTheDocument();
+      expect(screen.queryByText('旧结果')).not.toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('clears stale search choices on failure and retries the failed query', async () => {

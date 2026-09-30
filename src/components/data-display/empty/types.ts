@@ -2,12 +2,12 @@ import type { EmptyProps as AntEmptyProps } from 'antd';
 import type { ReactNode } from 'react';
 
 /**
- * Empty state props. Ant Design's public image and description slots are preserved;
- * `action` provides an explicit footer slot for the common recovery/create action.
+ * 空状态属性，保留 Ant Design 公开 image 和 description 插槽；
+ * action 为常见恢复/创建操作提供显式底部插槽。
  */
 export interface EmptyProps extends AntEmptyProps {
-  /** Primary recovery or create action rendered below the description. */
+  /** description 下方渲染的主要恢复或创建操作。 */
   action?: ReactNode;
-  /** Compact presentation for embedded table/list regions. */
+  /** 嵌入表格/列表区域的紧凑展示。 */
   variant?: 'default' | 'small';
 }

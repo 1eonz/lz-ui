@@ -36,6 +36,7 @@
 
 1. 先核对 `UI/` 设计证据和相关设计/架构文档，再改代码。`UI/` 和旧项目均为只读参考。
 2. 只对本次修改的代码与文档执行 Prettier 写入；禁止对全仓执行 `npm run format`。运行 `npm run format:check` 验证。
-3. 运行 `npm run check:scaffold`、`npm run typecheck`、`npm run lint`、`npm test`、`npm run build:lib` 和 `npm run build:docs`。
+3. 运行 `npm run check:scaffold`、`npm run typecheck`、`npm run typecheck:docs`、`npm run lint`、`npm test`、`npm run build:lib` 和 `npm run build:docs`。文档示例不进入库产物，但必须按公开源码 API 单独检查类型。
 4. UI 交付必须按 `frontend-ui-ux` 与 Impeccable 检查真实浏览器中的焦点、暗色、密度、窄屏和动效降级，主代理复审通过后才能公开导出。
 5. 变更公共 API、主题 token、依赖和构建出口时，必须更新变更记录和迁移说明。
+6. 用户已授权每批验收后自动提交并推送：先格式化本批文件，再执行 Impeccable、独立 code review、返工复审和工程门禁，检查差异后提交到当前分支并普通 push。不得强制推送、混入无关改动或提交未关闭的代码问题；浏览器工具受限时必须记录未验收范围，不能把提交称为完整视觉交付。

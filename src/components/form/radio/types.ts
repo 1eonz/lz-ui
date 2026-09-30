@@ -1,9 +1,9 @@
 import type { RadioGroupProps as AntRadioGroupProps, RadioProps as AntRadioProps } from 'antd';
 import type { RadioRef as AntRadioRef } from 'antd/es/radio/interface';
 
-/** Props for one radio option; AntD owns the public event contract. */
+/** 单个单选项属性；公开事件契约由 AntD 提供。 */
 export type RadioProps = AntRadioProps;
-/** Props for a mutually exclusive radio set, including options/value/onChange. */
+/** 互斥单选组属性，包含 options/value/onChange。 */
 export type RadioGroupProps = AntRadioGroupProps;
-/** Public focus handle for a single radio. */
+/** 单个单选项的公开聚焦实例。 */
 export type RadioRef = AntRadioRef;

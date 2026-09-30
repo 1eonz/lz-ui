@@ -3,8 +3,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Stop line sweeps, SVG circles/dashboard and steps without assuming a host
-   * prefixCls. The local root also contains any caller-provided format content. */
+  /* 不依赖宿主 prefixCls，停止线形扫光、圆形/仪表盘 SVG 和分步过渡；
+   * 局部根包含宿主 format 内容，因此其动效也遵循系统降级偏好。 */
   .root,
   .root *,
   .root::before,

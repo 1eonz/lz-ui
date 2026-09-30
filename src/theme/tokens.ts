@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 import type { ThemeConfig } from 'antd';
 import type { LxAppearance, LxColorPreset, LxDensity, LxPalettePreset } from './types';
 
-/** Approved seed colors. Palette secondary values tint ambient surfaces, never body text. */
+/** 已确认的种子颜色。配色组的辅色只用于环境表面，不直接用于正文。 */
 export const brandSeeds: Record<LxColorPreset, string> = {
   blue: '#1677ff',
   orange: '#f97316',
@@ -22,10 +22,9 @@ export const paletteSeeds: Record<LxPalettePreset, readonly [string, string]> = 
 };
 
 type LxCssProperties = CSSProperties & Record<`--lx-${string}`, string>;
-const fontFamily =
-  '-apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif';
-// Keep fixed-format measurements here: CSS and public AntD tokens must use the
-// same numbers. Component props still own explicit/custom sizes and rich content.
+const fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif';
+// 固定规格集中于此，CSS 与 AntD 公开 token 共用数值。组件属性仍可指定
+// 显式或自定义尺寸；多行内容不应为了满足基准尺寸而被裁切。
 const headings = [
   [38, 46, 800],
   [30, 38, 700],
@@ -55,6 +54,8 @@ const sizes = {
   descriptionPaddingInline: 12,
   statisticTitle: 12,
   statisticContent: 28,
+  statisticValueLineHeight: 36,
+  statisticValueWeight: 700,
   resultTitle: 16,
   resultSubtitle: 12,
   resultIcon: 32,
@@ -69,6 +70,12 @@ const sizes = {
   dividerTitleOffset: 24,
   panelBlur: 16,
   radiusPill: 999,
+  tagFont: 12,
+  tagLineHeight: 16,
+  tagRadius: 6,
+  tagPaddingInline: 10,
+  tagCheckableRadius: 9999,
+  tagCheckableHeight: 26,
 } as const;
 const motion = { duration: '180ms', spin: '800ms', alertExit: '160ms' };
 const px = (value: number) => `${value}px`;
@@ -95,12 +102,13 @@ const contrast = (a: string, b: string) => {
 };
 
 /**
- * Seeds are design inputs, not legibility guarantees. Adjust toward the mode's
- * foreground until all known opaque backgrounds reach 4.5:1. Transparent glass
- * over host imagery is outside this contract; its fallback is checked instead.
+ * 种子颜色是设计输入，不能直接保证可读性。沿当前模式的前景方向调整，
+ * 使所有已知实色背景达到 4.5:1。透明 glass 叠在宿主图片上不属于此保证，
+ * 仅检查它的实色回退；宿主需要针对实际背景再次验证。
  */
 function readableAccent(seed: string, backgrounds: readonly string[], dark: boolean): string {
-  const readable = (color: string) => backgrounds.every((background) => contrast(color, background) >= 4.5);
+  const readable = (color: string) =>
+    backgrounds.every((background) => contrast(color, background) >= 4.5);
   if (readable(seed)) return seed;
   const target = dark ? '#ffffff' : '#000000';
   let low = 0;
@@ -128,7 +136,7 @@ export interface LxResolvedTokens {
   radius: number;
 }
 
-/** Semantic source shared by CSS variables and Ant Design's public ConfigProvider tokens. */
+/** CSS 变量与 Ant Design 公开 ConfigProvider token 共享的语义来源。 */
 export function resolveLxTokens(options: {
   colorPreset: LxColorPreset;
   palettePreset?: LxPalettePreset | null;
@@ -152,17 +160,16 @@ export function resolveLxTokens(options: {
   const opaqueSurfaces = [canvas, surface, elevated, panelSurface];
   const primary = readableAccent(seed, opaqueSurfaces, dark);
   const primaryBg = mix(primary, surface, 0.9);
-  const primaryText = readableAccent(seed, [...opaqueSurfaces, primaryBg], dark);
   const primaryHover = mix(primary, dark ? '#ffffff' : '#000000', 0.1);
   const primaryActive = mix(primary, dark ? '#ffffff' : '#000000', 0.2);
   const hoverBg = mix(primary, surface, 0.95);
   const selectedHoverBg = mix(primary, surface, 0.85);
+  const primaryText = readableAccent(seed, [...opaqueSurfaces, primaryBg, selectedHoverBg], dark);
   const successBg = mix('#16a34a', surface, dark ? 0.95 : 0.94);
   const warningBg = mix('#b26b00', surface, dark ? 0.95 : 0.94);
   const errorBg = mix('#dc2626', surface, dark ? 0.95 : 0.94);
   const infoBg = mix('#2563eb', surface, dark ? 0.95 : 0.94);
-  // Resolve each semantic foreground against its actual tinted background;
-  // resolving against the surface alone can lose contrast in dark mode.
+  // 状态色同时检查实际浅色背景与普通表面，仅对普通表面检查会在暗色下丢失对比度。
   const success = readableAccent('#16a34a', [...opaqueSurfaces, successBg], dark);
   const warning = readableAccent('#b26b00', [...opaqueSurfaces, warningBg], dark);
   const error = readableAccent('#dc2626', [...opaqueSurfaces, errorBg], dark);
@@ -175,12 +182,14 @@ export function resolveLxTokens(options: {
   const paginationFont = compact ? 14 : 16;
   const paginationGap = compact ? 6 : 8;
   const radius = options.appearance === 'business' ? 4 : options.appearance === 'soft' ? 6 : 8;
-  const panelRadius = options.appearance === 'business' ? 4 : options.appearance === 'soft' ? 8 : 12;
-  const panelShadow = options.appearance === 'business'
-    ? 'none'
-    : dark
-      ? '0 8px 24px -4px rgba(0, 0, 0, 0.4)'
-      : '0 8px 24px -4px rgba(15, 30, 60, 0.08)';
+  const panelRadius =
+    options.appearance === 'business' ? 4 : options.appearance === 'soft' ? 8 : 12;
+  const panelShadow =
+    options.appearance === 'business'
+      ? 'none'
+      : dark
+        ? '0 8px 24px -4px rgba(0, 0, 0, 0.4)'
+        : '0 8px 24px -4px rgba(15, 30, 60, 0.08)';
   const tertiaryText = dark ? '#a8b7c0' : '#555e6d';
   const disabledText = dark ? '#96a6b0' : '#616b78';
   const css: LxCssProperties = {
@@ -204,9 +213,7 @@ export function resolveLxTokens(options: {
     '--lx-color-border-secondary': subtleBorder,
     '--lx-color-split': subtleBorder,
     '--lx-color-success': success,
-    // Status backgrounds stay close to the surface so the semantic foreground
-    // remains readable in both modes. The foreground is already adjusted by
-    // readableAccent; keeping the tint subtle preserves >= 4.5:1 contrast.
+    // 状态背景保持轻微着色；前景已按其对应背景与各实色表面调整到至少 4.5:1。
     '--lx-color-success-bg': successBg,
     '--lx-color-warning': warning,
     '--lx-color-warning-bg': warningBg,
@@ -242,6 +249,9 @@ export function resolveLxTokens(options: {
     '--lx-descriptions-padding-inline': px(sizes.descriptionPaddingInline),
     '--lx-statistic-title-font-size': px(sizes.statisticTitle),
     '--lx-statistic-content-font-size': px(sizes.statisticContent),
+    '--lx-statistic-value-font-size': px(sizes.statisticContent),
+    '--lx-statistic-value-line-height': px(sizes.statisticValueLineHeight),
+    '--lx-statistic-value-weight': String(sizes.statisticValueWeight),
     '--lx-result-title-font-size': px(sizes.resultTitle),
     '--lx-result-subtitle-font-size': px(sizes.resultSubtitle),
     '--lx-result-icon-font-size': px(sizes.resultIcon),
@@ -250,6 +260,12 @@ export function resolveLxTokens(options: {
     '--lx-card-padding-small': px(sizes.cardPaddingSmall),
     '--lx-card-title-font-size': px(sizes.cardTitle),
     '--lx-card-title-font-size-small': px(sizes.cardTitleSmall),
+    '--lx-tag-font-size': px(sizes.tagFont),
+    '--lx-tag-line-height': px(sizes.tagLineHeight),
+    '--lx-tag-radius': px(sizes.tagRadius),
+    '--lx-tag-padding-inline': px(sizes.tagPaddingInline),
+    '--lx-tag-checkable-radius': px(sizes.tagCheckableRadius),
+    '--lx-tag-checkable-height': px(sizes.tagCheckableHeight),
     '--lx-spin-size-small': px(sizes.spinSmall),
     '--lx-spin-size-default': px(sizes.spinDefault),
     '--lx-spin-size-large': px(sizes.spinLarge),
@@ -259,7 +275,9 @@ export function resolveLxTokens(options: {
     '--lx-radius-control': px(radius),
     '--lx-radius-panel': px(panelRadius),
     '--lx-radius-pill': px(sizes.radiusPill),
-    '--lx-panel-surface': panelSurface,
+    '--lx-panel-radius': px(panelRadius),
+    '--lx-panel-surface-base': panelSurface,
+    '--lx-panel-shadow': panelShadow,
     '--lx-panel-backdrop-blur': px(sizes.panelBlur),
     '--lx-panel-glass-opacity': '85%',
     '--lx-space-xs': '4px',
@@ -284,8 +302,8 @@ export function resolveLxTokens(options: {
     css[`--lx-font-weight-heading-${index + 1}`] = String(weight);
   });
 
-  // These are public AntD v5 aliases/component tokens, checked through its root
-  // export. CSS variables alone cannot configure AntD; no invented --ant-* vars.
+  // 使用 AntD v5 根出口声明的公开 alias 与组件 token，由类型检查保护兼容性。
+  // CSS 变量无法自动配置 AntD，因此两者从同一份语义结果映射，不引入 --ant-*。
   const token: LxResolvedTokens['token'] = {
     colorPrimary: primary,
     colorPrimaryHover: primaryHover,
@@ -481,9 +499,9 @@ export function resolveLxTokens(options: {
     Tag: {
       defaultBg: hoverBg,
       defaultColor: textSecondary,
-      fontSizeSM: caption.size,
-      lineHeightSM: caption.lineHeight / caption.size,
-      borderRadiusSM: radius,
+      fontSizeSM: sizes.tagFont,
+      lineHeightSM: sizes.tagLineHeight / sizes.tagFont,
+      borderRadiusSM: sizes.tagRadius,
     },
     Descriptions: {
       labelBg: hoverBg,
@@ -493,10 +511,6 @@ export function resolveLxTokens(options: {
       extraColor: textSecondary,
       itemPaddingBottom: sizes.descriptionPaddingBlock,
       itemPaddingEnd: sizes.descriptionPaddingInline,
-      padding: sizes.descriptionPaddingBlock,
-      paddingLG: sizes.descriptionPaddingInline,
-      paddingSM: sizes.descriptionPaddingBlock,
-      paddingXS: sizes.descriptionPaddingInline,
     },
     Statistic: {
       titleFontSize: sizes.statisticTitle,

@@ -25,4 +25,14 @@ describe('Descriptions', () => {
     );
     expect(container.querySelector('.ant-descriptions')).toHaveClass('custom-descriptions');
   });
+  it('preserves host semantic label and content overrides', () => {
+    render(
+      <Descriptions
+        items={[{ key: 'x', label: '标签', children: '数值' }]}
+        styles={{ label: { padding: 3, fontWeight: 400 }, content: { padding: 5 } }}
+      />,
+    );
+    expect(screen.getByText('标签')).toHaveStyle({ padding: '3px', fontWeight: 400 });
+    expect(screen.getByText('数值')).toHaveStyle({ padding: '5px' });
+  });
 });

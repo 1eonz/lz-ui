@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { ButtonRef } from 'lx-ui';
 import { Avatar, Button, Result, Skeleton } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import styles from './data-display-demo.module.css';
 
 export default function SkeletonDemo() {
+  const readyRef = useRef<ButtonRef>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   return (
     <DataDisplayDemoFrame>
       <div className={styles.row}>
         <Button onClick={() => setState('loading')}>显示加载</Button>
-        <Button onClick={() => setState('ready')}>完成加载</Button>
+        <Button ref={readyRef} onClick={() => setState('ready')}>
+          完成加载
+        </Button>
         <Button onClick={() => setState('error')}>模拟失败</Button>
       </div>
       <div className={styles.reserved}>
@@ -17,7 +21,16 @@ export default function SkeletonDemo() {
           <Result
             status="error"
             title="采购单明细加载失败"
-            extra={<Button onClick={() => setState('ready')}>重试</Button>}
+            extra={
+              <Button
+                onClick={() => {
+                  readyRef.current?.focus();
+                  setState('ready');
+                }}
+              >
+                重试
+              </Button>
+            }
           />
         ) : (
           <Skeleton

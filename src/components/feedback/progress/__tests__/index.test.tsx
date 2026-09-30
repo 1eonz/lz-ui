@@ -51,7 +51,7 @@ describe('Progress', () => {
   );
   it.each([
     [-10, 0],
-    [120, 100],
+    [120, 80],
     [NaN, 0],
     [Infinity, 0],
   ])('normalizes all success APIs %s to %s', (segment, expected) => {
@@ -65,6 +65,19 @@ describe('Progress', () => {
     rerender(<Progress percent={80} success={{ progress: segment }} format={format} />);
     expect(screen.getByText(`80 / ${expected}`)).toBeInTheDocument();
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '80');
+  });
+  it.each([0, -10, 12.5, 62.5])('caps all success APIs at normalized total %s', (percent) => {
+    const expected = Math.max(0, percent);
+    const format = (total?: number, success?: number) => `${total}/${success}`;
+    const { rerender } = render(
+      <Progress percent={percent} success={{ percent: 120 }} format={format} />,
+    );
+    expect(screen.getByText(`${expected}/${expected}`)).toBeInTheDocument();
+    rerender(<Progress percent={percent} success={{ progress: 120 }} format={format} />);
+    expect(screen.getByText(`${expected}/${expected}`)).toBeInTheDocument();
+    rerender(<Progress percent={percent} successPercent={120} format={format} />);
+    expect(screen.getByText(`${expected}/${expected}`)).toBeInTheDocument();
+    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', String(expected));
   });
   it('preserves fractional totals with steps and no visible info', () => {
     render(<Progress percent={62.5} steps={8} showInfo={false} />);

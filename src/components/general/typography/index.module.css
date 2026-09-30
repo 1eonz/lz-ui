@@ -1,5 +1,8 @@
 .root {
   color: var(--lx-color-text);
+  font-family: var(--lx-font-family);
+  font-size: var(--lx-font-size-body);
+  line-height: var(--lx-line-height-body);
   overflow-wrap: anywhere;
 }
 .default {
@@ -23,28 +26,36 @@
 }
 .paragraph {
   margin-block: 0 var(--lx-space-lg);
-  line-height: 1.6;
+  line-height: var(--lx-line-height-body);
 }
 .heading {
   margin-block: 0 var(--lx-space-md);
-  font-weight: 600;
-  line-height: 1.35;
 }
-/* Heading scale is a public theme token so host design systems can tune hierarchy without replacing component styles. */
+/* 各级标题共用命名 token，宿主可调整层级；这些规格只作用于显式 Title。 */
 .heading1 {
   font-size: var(--lx-font-size-heading-1);
+  line-height: var(--lx-line-height-heading-1);
+  font-weight: var(--lx-font-weight-heading-1);
 }
 .heading2 {
   font-size: var(--lx-font-size-heading-2);
+  line-height: var(--lx-line-height-heading-2);
+  font-weight: var(--lx-font-weight-heading-2);
 }
 .heading3 {
   font-size: var(--lx-font-size-heading-3);
+  line-height: var(--lx-line-height-heading-3);
+  font-weight: var(--lx-font-weight-heading-3);
 }
 .heading4 {
   font-size: var(--lx-font-size-heading-4);
+  line-height: var(--lx-line-height-heading-4);
+  font-weight: var(--lx-font-weight-heading-4);
 }
 .heading5 {
   font-size: var(--lx-font-size-heading-5);
+  line-height: var(--lx-line-height-heading-5);
+  font-weight: var(--lx-font-weight-heading-5);
 }
 .link {
   color: var(--lx-color-primary-text);
@@ -86,7 +97,7 @@
   background: var(--lx-color-warning-bg);
 }
 .singleLine {
-  /* Keep clipping on the text-only child so sibling actions and live feedback remain visible and focusable. */
+  /* 仅裁切文字子节点，让复制操作和实时反馈始终可见且可聚焦。 */
   display: inline-block;
   max-inline-size: 100%;
   overflow: hidden;
@@ -95,7 +106,7 @@
   vertical-align: bottom;
 }
 .multiLine {
-  /* Line clamp is progressive enhancement; content remains in the DOM for selection and assistive technology. */
+  /* 多行截断作为渐进增强，完整内容仍保留在 DOM 中供选择和辅助技术读取。 */
   display: -webkit-box;
   overflow: hidden;
   -webkit-box-orient: vertical;

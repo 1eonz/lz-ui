@@ -17,7 +17,7 @@
   flex: none;
 }
 .splitGroup {
-  /* Atomic inline-flex group prevents wrap from leaving a separator orphaned. */
+  /* 不可拆分的 inline-flex 组避免换行时出现孤立分隔符。 */
   display: inline-flex;
   flex: none;
   align-items: center;

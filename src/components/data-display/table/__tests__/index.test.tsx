@@ -113,4 +113,23 @@ describe('Table', () => {
 
     expect(screen.getByRole('table')).toBeInTheDocument();
   });
+  it('preserves host row events, styles and header attributes while adding density classes', () => {
+    const onClick = vi.fn();
+    render(
+      <Table<Customer>
+        rowKey="id"
+        dataSource={data}
+        columns={columns}
+        pagination={false}
+        onRow={() => ({ className: 'host-row', style: { height: 72 }, onClick })}
+        onHeaderRow={() => ({ className: 'host-header', title: '业务表头' })}
+      />,
+    );
+    const row = screen.getByText('Alice').closest('tr');
+    expect(row).toHaveClass('host-row');
+    expect(row).toHaveStyle({ height: '72px' });
+    fireEvent.click(screen.getByText('Alice'));
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(screen.getByTitle('业务表头')).toHaveClass('host-header');
+  });
 });

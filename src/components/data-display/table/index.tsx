@@ -1,5 +1,5 @@
 import { Table as AntTable } from 'antd';
-import { forwardRef, type ForwardedRef, type RefAttributes } from 'react';
+import { forwardRef, useCallback, type ForwardedRef, type RefAttributes } from 'react';
 import type { LxTableProps, LxTableRef } from './types';
 import styles from './index.module.css';
 
@@ -10,29 +10,53 @@ type TableComponent = (<T extends object>(
 };
 
 /**
- * Ant Design 5 table adapter for local and controlled data grids.
- *
- * Every public AntD prop is forwarded unchanged. Pagination, filtering,
- * sorting, selection, fixed columns, scrolling, and virtualisation therefore
- * retain their native controlled contracts. The component does not issue
- * requests, generate row keys, synchronise URLs, or add a layout wrapper.
- * `ref` points to AntD's public TableRef instance and `className` is applied
- * to the AntD root so horizontal scrolling and table display remain native.
+ * 保留 AntD 泛型列与受控协议的表格适配层。
+ * 分页、筛选、排序、选择、固定列和虚拟化不另建状态机；请求、rowKey
+ * 与 URL 由宿主提供。ref 属于 AntD 公开实例，不增加布局包装层。
+ * 通过公开 onRow/onHeaderRow 合并局部行类名，消费独立表格密度 token，
+ * 不改写 columns 或依赖 AntD 私有 DOM。普通单行默认 48/36px，长内容
+ * 可以增高；显式 middle/small 和虚拟行保留 AntD/宿主的尺寸责任。
+ * 宿主的行属性、事件与内联样式最后合并，允许按行扩展和覆盖。
  */
 function TableRender<T extends object>(props: LxTableProps<T>, ref: ForwardedRef<LxTableRef>) {
-  const { className, ...tableProps } = props;
+  const { className, onRow, onHeaderRow, size, virtual, ...tableProps } = props;
+  const rowProps = useCallback<NonNullable<LxTableProps<T>['onRow']>>(
+    (record, index) => {
+      const host = onRow?.(record, index);
+      return {
+        ...host,
+        className: [!virtual && (!size || size === 'large') && styles.bodyRow, host?.className]
+          .filter(Boolean)
+          .join(' '),
+      };
+    },
+    [onRow, size, virtual],
+  );
+  const headerProps = useCallback<NonNullable<LxTableProps<T>['onHeaderRow']>>(
+    (columns, index) => {
+      const host = onHeaderRow?.(columns, index);
+      return {
+        ...host,
+        className: [styles.headerRow, host?.className].filter(Boolean).join(' '),
+      };
+    },
+    [onHeaderRow],
+  );
   return (
     <AntTable<T>
       {...tableProps}
+      size={size}
+      virtual={virtual}
+      onRow={rowProps}
+      onHeaderRow={headerProps}
       ref={ref}
       className={[styles.root, className].filter(Boolean).join(' ')}
     />
   );
 }
 
-// React's forwardRef cannot preserve a generic render function. This is the
-// single documented boundary cast that restores row inference for columns,
-// renderers, dataSource and rowSelection while keeping the public ref type.
+// forwardRef 无法保留泛型渲染函数；仅在此边界恢复行类型推导，
+// 保持 columns/render/dataSource/rowSelection 与公开 ref 类型一致。
 export const Table = forwardRef(TableRender) as unknown as TableComponent;
 Table.displayName = 'LxTable';
 

@@ -8,7 +8,7 @@
   box-sizing: border-box;
   inline-size: var(--indicator-size);
   block-size: var(--indicator-size);
-  /* Three transparent sides leave one clear arc; no icon/CDN/global default. */
+  /* 三边透明保留单弧；不用外部图标、CDN 或全局默认图形。 */
   border: 2px solid transparent;
   border-block-start-color: currentColor;
   border-radius: 50%;
@@ -23,6 +23,17 @@
   --indicator-size: var(--lx-spin-size-large, 36px);
 }
 
+.region .root .arc {
+  /* 原生 nested 布局在50%位置使用负margin居中；尺寸与本地图形同源，
+   * 即使宿主未使用 lx Provider，也不会受 AntD 默认dot尺寸影响。 */
+  margin: calc(var(--indicator-size) / -2) !important;
+}
+
+.region .root .arc.withTip {
+  /* 带说明时向上留出文字区；使用间距token，不复用AntD私有10px偏移。 */
+  margin-block-start: calc(var(--indicator-size) / -2 - var(--lx-space-md, 12px)) !important;
+}
+
 @keyframes rotate {
   to {
     transform: rotate(360deg);
@@ -30,8 +41,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Custom indicators and native container transitions are included; this
-   * remains local and does not depend on ConfigProvider's prefixCls. */
+  /* 自定义图形和原生内容过渡均纳入局部降级，避免依赖宿主 prefixCls。 */
   .root,
   .root *,
   .root::before,

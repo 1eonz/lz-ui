@@ -1,3 +1,3 @@
 import type { StatisticProps as AntStatisticProps } from 'antd';
-/** Statistic props. Formatter is a pure display function; data fetching stays with the host. */
+/** 指标参数；formatter 是纯展示函数，数据请求与业务状态由宿主负责。 */
 export type StatisticProps = AntStatisticProps;

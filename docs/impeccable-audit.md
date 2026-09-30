@@ -1,5 +1,21 @@
 # Impeccable 审查记录：DynamicForm 与 Dumi 文档页
 
+## 2026-10-01：Input 文档与本批设计一致性返工
+
+方法为双独立代理：A `/root/input_docs_impeccable_a` 做设计与阅读体验评审，B `/root/feedback_2a_sol61_review` 做检测器、技术审计及代码复审。均为 GPT-6.1-SOL xhigh；实施返工使用 medium。Impeccable 4.1.3 的 context 在本会话只运行一次，后续按 audit/critique/polish 执行。
+
+Input 新增六个独立可运行示例：基础受控、尺寸、校验与禁用、前后缀、多行、实例方法。文档补使用方式、Props、事件、TextArea 参数、ref 方法和边界；源码默认收起但完整可查看。Dumi 构建确认生成六个 demo 路由。共享演示容器显式导入基础样式，避免直接打开页面缺少字体、玻璃回退和降级规则；Input 不再用统一最小高度覆盖继承尺寸。
+
+A 的修复前 Nielsen 评分为 27/40；B 的最新源码技术评分为无障碍 3、性能 3、主题 3、响应式 3、完整性 4，合计 16/20。已关闭输入法回车误查询、空查询状态失真、隐含必填和默认展开全部源码问题。评分是源码证据摘要，未据此宣称视觉或 WCAG 验收通过。
+
+Input 目标及本批扩大静态范围的 detector 原始输出均为 `[]`；只代表确定性规则无命中。完整 A/B 记录保存在 `.impeccable/critique/2026-09-30T17-28-38Z__src-components-form-input-index-md.md`，首次目标评分无历史趋势。浏览器工具被当前会话安全策略拒绝访问 localhost；未绕过，未注入覆盖层。桌面、930px、320–390px、明暗、密度、缩放、键盘和 reduced motion 仍待真实浏览器验证，此快照保持开放。
+
+本批同时完成 A0 公开主题 token 映射、13 个 Data Display 组件的基础与交互文档、Feedback 三组件的九个专属示例，以及中文注释翻译。独立复审覆盖 Input、A0、Tag/Card/AvatarGroup/Descriptions/Statistic/Table/Pagination、展示 demo、Feedback 和 DynamicForm 计时测试；返工后结论限定为静态 GO。未完整补齐的 General 和其余 Form 详细文档不计入本轮完成项。
+
+工程复测：37 个测试文件、261 项测试通过；类型、54 个文档源码的严格类型检查、lint、格式与 scaffold 通过；库和文档构建通过。最后的 Tag 禁用关闭返工增加一个公开行为测试，定向 7/7 通过并获独立复审。最终产物为 502 个文件、压缩 133702 字节、解包 643962 字节，不含文档示例和测试；该体积不是单组件最终应用包体。React 19、最低版消费 smoke、UMD、真实浏览器矩阵保持未验收。
+
+Questions skipped: 用户已明确授权修复 P1/P2、继续实施和每批提交推送，本轮不重复询问方向与范围。
+
 ## 2026-09-29：1B Data Interaction 最终复审
 
 Pagination、Table、Tree 已分别完成 GPT-6-ASTRA 中度推理最终只读复审，结论均为 **GO**，未发现 P0/P1/P2。Pagination 记录 SSR-safe marker ref、StrictMode/多实例生命周期和 `identifierPrefix` 限制；Table 记录公开根入口类型、泛型行推断、稳定 `rowKey`、受控分页/筛选/排序/选择、fixed/scroll/virtual 前提；Tree 记录 `TreeDataNode` 自定义泛型、受控 keys、异步 `loadData` 宿主边界和 virtual/height 限制。三者均保持 AntD 根节点、无布局 wrapper、CSS Modules scoped token，不承诺业务请求、URL、权限、缓存或自动 key。

@@ -62,8 +62,8 @@ function writePath(
   value: unknown,
 ): void {
   if (path.length === 0) return;
-  // Schema can be loaded from JSON. Never let a field path write through the
-  // object prototype when omitHidden constructs its submit payload.
+  // schema 可能来自 JSON；omitHidden 构造提交数据时，字段路径不得穿透
+  // 对象原型写入，避免不可信路径污染原型。
   if (
     path.some(
       (segment) => segment === '__proto__' || segment === 'constructor' || segment === 'prototype',
@@ -100,9 +100,8 @@ function rulesFor(
     if (rule.message !== undefined) result.message = rule.message;
     if (rule.validator) {
       result.validator = async (_rule: RuleObject, value: unknown) => {
-        // Different rules on one field must not cancel each other. The index
-        // identifies a rule within this schema version; newer runs of that
-        // rule still cancel stale requests before they can report an error.
+        // 同字段的不同规则不得相互取消；索引标识当前 schema 版本中的
+        // 规则，同一规则的新运行仍会取消旧请求，避免过期结果报告错误。
         const validationKey = `${field.key}:${ruleIndex}`;
         controllers.current[validationKey]?.abort();
         const controller = new AbortController();
@@ -156,9 +155,8 @@ interface SchemaFieldProps {
 }
 
 /**
- * Parent value changes still evaluate visibility and dynamic flags, but a
- * stable schema leaves unrelated field subtrees untouched. Custom fields get
- * the full value snapshot because their renderer may depend on any field.
+ * 父层值变化仍会计算可见性和动态标志，但稳定 schema 不会扰动无关
+ * 字段子树。自定义字段接收完整值快照，因为其渲染器可能依赖任意字段。
  */
 const SchemaField = memo(function SchemaField({
   field,
@@ -239,12 +237,10 @@ const SchemaField = memo(function SchemaField({
 });
 
 /**
- * Schema-driven form that composes lx-ui field primitives over AntD's form
- * store. It owns field visibility, validation and option request lifecycle;
- * the host still owns persistence, permissions and submission requests.
- * Hidden values remain in the store by default, so use `omitHidden` when the
- * server must not receive them. This separation keeps the schema reusable
- * without binding the library to an ERP or CRM transport contract.
+ * 在 AntD 表单存储上组合 lx-ui 基础字段的 schema 驱动表单。
+ * 组件负责字段可见性、校验和选项请求生命周期；宿主仍负责持久化、
+ * 权限和提交请求。隐藏值默认保留在存储中，服务器不应收到这些值时
+ * 使用 omitHidden。职责分离使 schema 可复用，不绑定 ERP/CRM 传输契约。
  */
 export const DynamicForm = forwardRef<DynamicFormRef, DynamicFormProps>(function DynamicForm(
   {
@@ -297,8 +293,8 @@ export const DynamicForm = forwardRef<DynamicFormRef, DynamicFormProps>(function
       submit: () => form.submit(),
       reset: () => {
         form.resetFields();
-        // AntD does not emit onValuesChange for a programmatic reset. Refresh
-        // our visibility snapshot from its store so conditional fields match.
+        // AntD 程序化重置不会触发 onValuesChange；从存储刷新可见性快照，
+        // 保证条件字段与重置后的值一致。
         setCurrentValues(form.getFieldsValue(true));
       },
     }),
@@ -316,8 +312,8 @@ export const DynamicForm = forwardRef<DynamicFormRef, DynamicFormProps>(function
         [field.key]: { items: [], loading: true, query },
       }));
       try {
-        // Read at request time, after debounce, so dependent filters use the
-        // latest form store rather than a closure from an older render.
+        // 在防抖后的实际请求时读取存储，使依赖筛选使用最新表单值，
+        // 避免读取旧渲染闭包中的过期快照。
         const items = await field.loadOptions(query, form.getFieldsValue(true), controller.signal);
         if (!controller.signal.aborted && requestIds.current[field.key] === requestId) {
           setOptions((previous) => ({
@@ -339,14 +335,13 @@ export const DynamicForm = forwardRef<DynamicFormRef, DynamicFormProps>(function
 
   const scheduleOptions = useCallback(
     (field: Extract<FieldSchema, { type: 'select' }>, query: string) => {
-      // Abort and advance the generation immediately; an old response cannot
-      // populate the dropdown during the debounce window. One timer per field
-      // combines rapid keystrokes without coupling independent select fields.
+      // 立即取消并推进请求代次，旧响应无法在防抖窗口填入下拉选项。
+      // 每字段独立计时器合并快速输入，避免耦合不同选择字段。
       optionControllers.current[field.key]?.abort();
       clearTimeout(searchTimers.current[field.key]);
       requestIds.current[field.key] = (requestIds.current[field.key] ?? 0) + 1;
-      // Clear immediately, including during debounce. A previous query's
-      // options must never look like valid choices for the current query.
+      // 包括防抖期间都立即清空选项，防止旧查询结果看起来仍是当前查询
+      // 可以选择的有效值。
       setOptions((previous) => ({
         ...previous,
         [field.key]: { items: [], loading: true, query },
@@ -360,10 +355,9 @@ export const DynamicForm = forwardRef<DynamicFormRef, DynamicFormProps>(function
   );
 
   const values = value ?? currentValues;
-  // AntD propagates Form.disabled to its built-in controls through context,
-  // but custom renderers only receive the explicit RendererContext below.
-  // Merge the form-level flag here so every renderer observes one consistent
-  // disabled contract while preserving field-specific predicates.
+  // AntD 通过上下文把 Form.disabled 传给内置控件，自定义渲染器却只能
+  // 收到下方显式 RendererContext；这里合并表单级标志，保证各渲染器
+  // 遵循一致禁用契约，同时保留字段专属判断函数。
   const formDisabled = formProps.disabled === true;
 
   if (schema.length === 0)

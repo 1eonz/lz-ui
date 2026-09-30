@@ -1,5 +1,5 @@
 .root {
-  min-block-size: var(--lx-control-height);
+  /* 高度由公开 Input 尺寸 token 派生；单一最小高度会覆盖继承的 small 尺寸。 */
   border-radius: var(--lx-radius-control);
   transition-duration: var(--lx-motion-duration);
 }

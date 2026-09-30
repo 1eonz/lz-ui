@@ -18,7 +18,7 @@
   cursor: pointer;
 }
 
-/* Remove browser disclosure markers so the custom arrow is the only affordance. */
+/* 移除浏览器默认展开标记，只保留自定义箭头作为展开提示。 */
 .demoOptions summary::-webkit-details-marker {
   display: none;
 }

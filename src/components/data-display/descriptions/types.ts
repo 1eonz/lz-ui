@@ -1,3 +1,3 @@
 import type { DescriptionsProps as AntDescriptionsProps } from 'antd';
-/** Description list props. Long values should be allowed to wrap in the host width. */
+/** 描述列表参数；长值在宿主提供的宽度内换行，列数与布局由宿主决定。 */
 export type DescriptionsProps = AntDescriptionsProps;

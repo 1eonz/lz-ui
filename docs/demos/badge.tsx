@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { ButtonRef } from 'lx-ui';
 import { Avatar, Badge, Button } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import styles from './data-display-demo.module.css';
 
 export default function BadgeDemo() {
+  const restoreRef = useRef<ButtonRef>(null);
   const [count, setCount] = useState(12);
   return (
     <DataDisplayDemoFrame>
@@ -18,12 +20,20 @@ export default function BadgeDemo() {
             待
           </Avatar>
         </Badge>
-        <Button disabled={count === 0} onClick={() => setCount((value) => Math.max(0, value - 1))}>
+        <Button
+          disabled={count === 0}
+          onClick={() => {
+            if (count === 1) restoreRef.current?.focus();
+            setCount((value) => Math.max(0, value - 1));
+          }}
+        >
           读一条
         </Button>
         <Button onClick={() => setCount((value) => value + 100)}>新增 100 条</Button>
         <Button onClick={() => setCount(0)}>全部已读</Button>
-        <Button onClick={() => setCount(12)}>恢复消息</Button>
+        <Button ref={restoreRef} onClick={() => setCount(12)}>
+          恢复消息
+        </Button>
       </div>
       <div className={styles.row}>
         <Badge status="processing" text="同步中" />

@@ -1,13 +1,13 @@
 import type { AriaAttributes, ComponentType, CSSProperties, HTMLAttributes } from 'react';
 
-/** The minimal source contract accepts SVGs and AntD's span-based icon components. */
+/** 最小图标来源协议兼容 SVG 与 AntD 基于 span 的图标组件。 */
 export type IconComponent = ComponentType<{
   className?: string;
   style?: CSSProperties;
   'aria-hidden'?: AriaAttributes['aria-hidden'];
 }>;
 
-/** The icon source is injected so importing Icon never pulls in a complete icon registry. */
+/** 图标来源由宿主注入，导入 Icon 不会引入完整图标集合。 */
 export interface IconProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'color'> {
   component: IconComponent;
   label?: string;

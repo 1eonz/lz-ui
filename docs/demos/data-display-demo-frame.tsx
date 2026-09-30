@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react';
-import { LxConfigProvider, RadioGroup, Switch, useLxTheme } from 'lx-ui';
-import type { LxAppearance } from 'lx-ui';
+import '../../src/style.css';
+import { LxConfigProvider, RadioGroup, Select, Switch, useLxTheme } from 'lx-ui';
+import type { LxAppearance, LxColorPreset, LxPalettePreset } from 'lx-ui';
 import styles from './data-display-demo.module.css';
 
 /**
- * Demo-only theme scope. Persistence is disabled so a specimen cannot overwrite
- * the documentation site's theme. Runtime updates deliberately use setTheme:
- * the provider's theme prop is an initial value, not a controlled selection.
+ * 主题仅作用于当前示例，禁用持久化以免覆盖文档站设置。
+ * Provider 的 theme 是初值；运行时切换使用 setTheme 保持示例状态。
  */
 export function DataDisplayDemoFrame({ children }: { children: ReactNode }) {
   return (
@@ -20,33 +20,74 @@ function DemoSurface({ children }: { children: ReactNode }) {
   const { theme, resolvedMode, setTheme } = useLxTheme();
   return (
     <div className={styles.surface}>
-      <div className={styles.toolbar}>
-        <Switch
-          aria-label="暗色模式"
-          checked={resolvedMode === 'dark'}
-          checkedChildren="暗色"
-          unCheckedChildren="浅色"
-          onChange={(dark) => setTheme({ mode: dark ? 'dark' : 'light' })}
-        />
-        <Switch
-          aria-label="紧凑密度"
-          checked={theme.density === 'compact'}
-          checkedChildren="紧凑"
-          unCheckedChildren="舒适"
-          onChange={(compact) => setTheme({ density: compact ? 'compact' : 'comfortable' })}
-        />
-        <RadioGroup
-          aria-label="外观"
-          optionType="button"
-          value={theme.appearance}
-          options={[
-            { label: '商务', value: 'business' },
-            { label: '轻盈', value: 'soft' },
-            { label: '玻璃', value: 'glass' },
-          ]}
-          onChange={(event) => setTheme({ appearance: event.target.value as LxAppearance })}
-        />
-      </div>
+      <details className={styles.themeSettings}>
+        <summary>主题设置</summary>
+        <div className={styles.toolbar}>
+          <Switch
+            aria-label="暗色模式"
+            checked={resolvedMode === 'dark'}
+            checkedChildren="暗色"
+            unCheckedChildren="浅色"
+            onChange={(dark) => setTheme({ mode: dark ? 'dark' : 'light' })}
+          />
+          <Switch
+            aria-label="紧凑密度"
+            checked={theme.density === 'compact'}
+            checkedChildren="紧凑"
+            unCheckedChildren="舒适"
+            onChange={(compact) => setTheme({ density: compact ? 'compact' : 'comfortable' })}
+          />
+          <RadioGroup
+            aria-label="外观"
+            optionType="button"
+            value={theme.appearance}
+            options={[
+              { label: '商务', value: 'business' },
+              { label: '轻盈', value: 'soft' },
+              { label: '玻璃', value: 'glass' },
+            ]}
+            onChange={(event) => setTheme({ appearance: event.target.value as LxAppearance })}
+          />
+          <label className={styles.field}>
+            品牌色
+            <Select
+              aria-label="品牌色"
+              value={theme.colorPreset}
+              options={[
+                { label: '海洋蓝', value: 'blue' },
+                { label: '活力橙', value: 'orange' },
+                { label: '翡翠绿', value: 'green' },
+                { label: '智慧紫', value: 'purple' },
+                { label: '清透青', value: 'cyan' },
+                { label: '品牌玫红', value: 'rose' },
+              ]}
+              onChange={(value: string) =>
+                setTheme({ colorPreset: value as LxColorPreset, palettePreset: null })
+              }
+            />
+          </label>
+          <label className={styles.field}>
+            东方配色
+            <Select
+              aria-label="东方配色"
+              value={theme.palettePreset ?? 'brand'}
+              options={[
+                { label: '使用品牌色', value: 'brand' },
+                { label: '青瓷桂影', value: 'celadon-laurel' },
+                { label: '暮桃微光', value: 'twilight-peach' },
+                { label: '石榴杏仁', value: 'garnet-almond' },
+                { label: '松针琥珀', value: 'pine-amber' },
+                { label: '雾色燕麦', value: 'misty-oatmeal' },
+                { label: '豆沙墨色', value: 'bean-sand-ink' },
+                { label: '奶酪远青', value: 'cheese-distant-cyan' },
+              ]}
+              onChange={(value: string) =>
+                setTheme({ palettePreset: value === 'brand' ? null : (value as LxPalettePreset) })
+              }
+            />
+          </label>
+        </div>
+      </details>
       <div className={styles.stack}>{children}</div>
     </div>
   );

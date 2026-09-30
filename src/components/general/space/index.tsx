@@ -10,7 +10,7 @@ const sizeTokens: Record<Exclude<SpaceSize, number>, string> = {
 const resolveSize = (size: SpaceSize) =>
   typeof size === 'number' ? `${Math.max(0, size)}px` : sizeTokens[size];
 
-/** Native flex gap avoids per-child margins and remains stable when children change. */
+/** 原生 flex gap 避免逐个子节点设置外边距，子节点变化时仍保持稳定。 */
 export const Space = forwardRef<HTMLDivElement, SpaceProps>(function Space(
   {
     children,
@@ -58,8 +58,7 @@ export const Space = forwardRef<HTMLDivElement, SpaceProps>(function Space(
           <Fragment key={isValidElement(child) ? (child.key ?? index) : index}>{child}</Fragment>
         );
         if (index === 0 || split === undefined) return renderedChild;
-        // With wrapping, keep each separator attached to the item it divides
-        // so a line break cannot leave a dangling separator at the row end.
+        // 换行时让分隔符与其分隔的项目保持一组，避免行末留下孤立分隔符。
         return wrap ? (
           <span
             className={styles.splitGroup}

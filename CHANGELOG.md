@@ -2,6 +2,12 @@
 
 ## 当前设计一致性返工
 
+- Input 新增六个独立可运行示例及中文参数、事件、实例方法文档；展示与反馈组件拆分专属场景。文档源码新增独立严格类型检查，避免示例使用不存在的 API。
+- 共享演示容器显式加载基础样式；Input/按钮尺寸使用公开主题映射，保留宿主尺寸继承。项目自有代码注释统一中文，补充设计取舍及边界说明。
+
+- 新增完全受控的 `CheckableTag`，ref 指向原生 button，支持原生键盘/禁用及 `aria-pressed`；Tag 默认关闭按钮可通过键盘操作，间距交由容器。
+- Card 移除多余包装层，ref、className 和 style 统一归属 AntD 真实根节点；AvatarGroup 的 style 改为归属 lx-ui 容器，与 className/ref 一致。依赖旧包装 DOM 或内部 style 归属的宿主需调整。
+- Pagination 修复隐藏/恢复及非受控页大小变化时的 ref 同步，避免 ref 指向已脱离文档的节点。
 - Ant Design peer 下限从 `>=5` 收敛到 `>=5.24`，与当前公开 ref/API 契约及开发依赖基线一致。早期 5.x 宿主需升级，验证状态见 `docs/compatibility.md`。
 - 子代理实施与独立复审统一使用 GPT-6.1-SOL medium / xhigh；组件实际演示、设计映射和浏览器验证分别记录，静态 GO 不代表完整视觉验收。
 

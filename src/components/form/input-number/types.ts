@@ -1,7 +1,7 @@
 import type { InputNumberProps as AntInputNumberProps } from 'antd';
 import type { InputNumberRef as AntInputNumberRef } from 'rc-input-number';
 
-/** Numeric entry props, including min/max, formatter and controlled values. */
+/** 数值输入属性，包含 min/max、formatter 和受控值。 */
 export type InputNumberProps = AntInputNumberProps;
-/** AntD's public numeric input focus/blur handle. */
+/** AntD 数值输入公开 focus/blur 实例。 */
 export type InputNumberRef = AntInputNumberRef;

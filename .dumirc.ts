@@ -12,7 +12,7 @@ export default defineConfig({
   title: 'lx-ui',
   outputPath: 'docs-dist',
   hash: true,
-  // Keep third-party Dumi shell adjustments outside the published library CSS.
+  // 第三方 Dumi 文档壳调整不进入发布的组件库 CSS。
   styles: [{ content: readFileSync(resolve(process.cwd(), 'docs/docs-shell.css'), 'utf8') }],
   // Dumi 开发服务器要求绝对根路径；静态部署再切换成相对路径。
   publicPath: isProduction ? './' : '/',
@@ -36,7 +36,7 @@ export default defineConfig({
   },
   resolve: {
     docDirs: ['docs', 'src'],
-    // Most snippets explain API shape; explicit <code src> demos above them run live.
+    // 多数代码块解释 API 形态；上方显式 <code src> 示例才在页面实际运行。
     codeBlockMode: 'passive',
   },
 });

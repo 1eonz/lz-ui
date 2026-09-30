@@ -17,8 +17,8 @@
 }
 
 .customIndicator {
-  /* A caller-authored public indicator owns geometry. Spin's local motion
-   * policy stops this animation when the system requests reduced motion. */
+  /* 宿主自定义公开 indicator 负责几何尺寸；系统要求 reduced motion 时，
+   * Spin 的局部动效策略会停止这里的旋转。 */
   inline-size: var(--lx-spin-size-default);
   block-size: var(--lx-spin-size-default);
   border: 2px dashed currentColor;
@@ -27,5 +27,7 @@
 }
 
 @keyframes rotate {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }

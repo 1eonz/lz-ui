@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { Key } from 'react';
 import { Button, Empty, Result, Table, Tag } from 'lx-ui';
-import type { LxTableColumns, LxTableProps } from 'lx-ui';
+import type { ButtonRef, LxTableColumns, LxTableProps } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import styles from './data-display-demo.module.css';
 
@@ -23,6 +23,8 @@ const orders: PurchaseOrder[] = Array.from({ length: 24 }, (_, index) => ({
 }));
 
 export default function TableDemo() {
+  const readyRef = useRef<ButtonRef>(null);
+  const detailRefs = useRef(new Map<string, ButtonRef>());
   const [state, setState] = useState<'ready' | 'loading' | 'error' | 'empty'>('ready');
   const [selected, setSelected] = useState<Key[]>([]);
   const [expanded, setExpanded] = useState<Key[]>([]);
@@ -58,6 +60,10 @@ export default function TableDemo() {
       width: 100,
       render: (_, order) => (
         <Button
+          ref={(node) => {
+            if (node) detailRefs.current.set(order.id, node);
+            else detailRefs.current.delete(order.id);
+          }}
           type="link"
           size="small"
           aria-label={`查看 ${order.id} 详情`}
@@ -81,7 +87,9 @@ export default function TableDemo() {
     <DataDisplayDemoFrame>
       <div className={styles.row}>
         <Button onClick={() => setState('loading')}>显示加载</Button>
-        <Button onClick={() => setState('ready')}>显示订单</Button>
+        <Button ref={readyRef} onClick={() => setState('ready')}>
+          显示订单
+        </Button>
         <Button onClick={() => setState('error')}>模拟失败</Button>
         <Button
           onClick={() => {
@@ -93,7 +101,13 @@ export default function TableDemo() {
         >
           清空订单
         </Button>
-        <Button disabled={selected.length === 0} onClick={() => setSelected([])}>
+        <Button
+          disabled={selected.length === 0}
+          onClick={() => {
+            readyRef.current?.focus();
+            setSelected([]);
+          }}
+        >
           取消选择
         </Button>
       </div>
@@ -102,7 +116,16 @@ export default function TableDemo() {
           status="error"
           title="采购订单加载失败"
           subTitle="本地失败状态演示，重试后恢复采购订单。"
-          extra={<Button onClick={() => setState('ready')}>重试</Button>}
+          extra={
+            <Button
+              onClick={() => {
+                readyRef.current?.focus();
+                setState('ready');
+              }}
+            >
+              重试
+            </Button>
+          }
         />
       ) : (
         <div className={styles.scroll}>
@@ -140,7 +163,16 @@ export default function TableDemo() {
                 <Empty
                   variant="small"
                   description="暂无采购订单"
-                  action={<Button onClick={() => setState('ready')}>恢复订单</Button>}
+                  action={
+                    <Button
+                      onClick={() => {
+                        readyRef.current?.focus();
+                        setState('ready');
+                      }}
+                    >
+                      恢复订单
+                    </Button>
+                  }
                 />
               ),
             }}
@@ -154,7 +186,15 @@ export default function TableDemo() {
           <p>
             {detail.vendor} · ¥ {detail.amount.toLocaleString('zh-CN')}
           </p>
-          <Button onClick={() => setDetail(null)}>收起详情</Button>
+          <Button
+            onClick={() => {
+              // 翻页可能已卸载原行；不存在时回到稳定的工具栏按钮。
+              (detailRefs.current.get(detail.id) ?? readyRef.current)?.focus();
+              setDetail(null);
+            }}
+          >
+            收起详情
+          </Button>
         </div>
       )}
       <p role="status" className={styles.muted}>

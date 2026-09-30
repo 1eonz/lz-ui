@@ -72,8 +72,7 @@ function CustomerEntry() {
   );
 
   async function handleFinish(values: DynamicFormValues) {
-    // A ref lock closes the synchronous gap before React has rendered the
-    // submitting state, which also protects imperative/programmatic submits.
+    // ref 锁填补 React 渲染提交状态前的同步窗口，同时保护命令式/程序化提交。
     if (submitLockRef.current) return;
     submitLockRef.current = true;
     const generation = ++submitGenerationRef.current;

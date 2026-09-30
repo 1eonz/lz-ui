@@ -74,13 +74,11 @@ function useTypography(props: StyledProps) {
     copySource.current.enabled !== copyEnabled ||
     copySource.current.onCopy !== copyCallback;
   if (sourceChanged) {
-    // Invalidate synchronously during render so a completion cannot win the
-    // interval before the effect that clears stale user feedback runs.
+    // 在渲染阶段同步失效，避免旧异步结果在清理过期反馈的 effect 前返回并覆盖新内容。
     requestId.current += 1;
     copySource.current = { text, enabled: copyEnabled, onCopy: copyCallback };
   }
-  // A new source invalidates both visible feedback and any clipboard completion
-  // already in flight; clipboard writes themselves cannot be cancelled.
+  // 来源变更同时清空可见反馈并使在途结果失效；Clipboard 写入本身无法取消。
   useEffect(() => {
     setCopyStatus('idle');
     setCopyAnnouncement(0);
@@ -91,7 +89,7 @@ function useTypography(props: StyledProps) {
     },
     [],
   );
-  // Rich children require explicit text: DOM textContent can include hidden or unrelated UI.
+  // 富文本子节点需要显式 text，DOM textContent 可能包含隐藏或无关界面内容。
   const copyButton =
     copyOptions && text ? (
       <button
@@ -113,8 +111,7 @@ function useTypography(props: StyledProps) {
           if (currentRequest !== requestId.current) return;
           setCopyStatus('copied');
           setCopyAnnouncement((count) => count + 1);
-          // Consumer callback failures must not turn a successful clipboard write
-          // into a reported clipboard failure or an unhandled event rejection.
+          // 宿主回调异常独立报告，不能把已成功的 Clipboard 写入误报为失败或未处理拒绝。
           try {
             copyOptions.onCopy?.(text);
           } catch (error) {
@@ -140,7 +137,7 @@ function useTypography(props: StyledProps) {
   };
 }
 
-/** Inline text is the default; headings and links keep their native semantics below. */
+/** 默认使用行内文字；下面的标题和链接仍保留对应原生语义。 */
 export const Text = forwardRef<HTMLSpanElement, TextProps>(function Text(props, ref) {
   const {
     children,
@@ -347,7 +344,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(props
   );
 });
 
-/** Namespace mirrors the familiar AntD access pattern while keeping named exports tree-shakeable. */
+/** 命名空间沿用 AntD 熟悉的访问形式，同时保留可 tree-shake 的命名导出。 */
 export const Typography = { Text, Title, Paragraph, Link } as const;
 export type {
   CopyableOptions,

@@ -3,8 +3,7 @@ import { Avatar, AvatarGroup, Button } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import styles from './data-display-demo.module.css';
 
-// The invalid data URI deliberately exercises AntD's public image error API.
-// The normal state is an initials avatar, so this demo needs no network asset.
+// 无效数据地址用于验证 AntD 公开的图片失败回退；默认姓名头像不依赖网络资源。
 export default function AvatarDemo() {
   const [broken, setBroken] = useState(false);
   const [expanded, setExpanded] = useState(false);

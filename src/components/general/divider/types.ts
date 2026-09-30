@@ -1,14 +1,14 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 
-/** Semantic rule between sections. Labelled horizontal rules expose an accessible name. */
+/** 区域之间的语义分隔线；带标题的水平分隔线具有可访问名称。 */
 export interface DividerProps extends HTMLAttributes<HTMLElement> {
   children?: ReactNode;
-  /** Horizontal rule by default; vertical uses a span separator. */
+  /** 默认为水平分隔线；垂直分隔线使用 span separator。 */
   type?: 'horizontal' | 'vertical';
-  /** Border style; token colors remain theme-owned. */
+  /** 边框样式；token 颜色仍由主题管理。 */
   variant?: 'solid' | 'dashed' | 'dotted';
-  /** Position of visible horizontal label. */
+  /** 水平分隔线可见标题的位置。 */
   orientation?: 'left' | 'center' | 'right';
-  /** Reduces label emphasis while preserving the separator role. */
+  /** 减弱标题强调，但保留 separator 角色。 */
   plain?: boolean;
 }

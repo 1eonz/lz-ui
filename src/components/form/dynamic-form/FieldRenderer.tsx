@@ -34,9 +34,9 @@ export function FieldRenderer({
   onChange?: (...args: unknown[]) => void;
   id?: string;
 }) {
-  // FormItem injects value/onChange/id into its direct child. Forward them to the
-  // designed primitive; the casts stay in this adapter because the schema is a
-  // union but AntD injects one untyped control contract at runtime.
+  // FormItem 向直接子节点注入 value/onChange/id，需转发至设计好的基础
+  // 控件。类型转换集中在适配层：schema 是联合类型，而 AntD 在运行时
+  // 注入统一但未细分类型的控件契约。
   if (field.type === 'custom')
     return (
       field.render?.({ ...context, controlProps }) ??
@@ -129,9 +129,8 @@ export function FieldRenderer({
         />
       );
     case 'upload':
-      // Upload defaults to local file selection. The host must opt into an
-      // action/customRequest; this prevents an accidental request to the
-      // current page when a schema only asks for a file-list value.
+      // Upload 默认只选择本地文件；宿主须显式提供 action/customRequest，
+      // 避免仅声明文件列表值的 schema 意外向当前页面发起上传请求。
       return (
         <Upload
           {...field.inputProps}

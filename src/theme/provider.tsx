@@ -1,4 +1,5 @@
 import { ConfigProvider, theme as antdTheme } from 'antd';
+import type { ThemeConfig } from 'antd';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { LxConfigProviderProps, LxThemeContextValue, LxThemeSelection } from './types';
 import { brandSeeds, paletteSeeds, resolveLxTokens } from './tokens';
@@ -11,7 +12,7 @@ const defaults: LxThemeContextValue['theme'] = {
 };
 const ThemeContext = createContext<LxThemeContextValue | null>(null);
 
-/** Ignore stale/corrupt storage values instead of allowing them to index an undefined seed. */
+/** 忽略过期或损坏的存储值，避免无效预设访问不存在的种子颜色。 */
 function readStoredTheme(key: string): LxThemeSelection | null {
   try {
     const raw = window.localStorage.getItem(key);
@@ -34,15 +35,15 @@ function readStoredTheme(key: string): LxThemeSelection | null {
       return null;
     return candidate as LxThemeSelection;
   } catch {
-    // Storage may be disabled by privacy settings; the provider remains fully functional.
+    // 隐私设置可能禁用存储；此时主题仍可在内存中正常切换。
     return null;
   }
 }
 
 /**
- * Provides nested, runtime-switchable CSS tokens and AntD v5 tokens. The first client render
- * matches SSR exactly; saved preferences restore after mount, which may cause one repaint.
- * An app requiring zero repaint can supply the saved selection from its server as `theme`.
+ * 提供可嵌套、可运行时切换的 CSS 与 AntD v5 token。客户端首次渲染与 SSR 一致；
+ * 存储偏好在挂载后恢复，可能引起一次重绘。要求无重绘的宿主可由服务端读取偏好，
+ * 通过初始 `theme` 传入。后续变更使用 `setTheme`，此属性并非受控状态。
  */
 export function LxConfigProvider({ children, theme, className, style }: LxConfigProviderProps) {
   const [selection, setSelection] = useState<LxThemeContextValue['theme']>(() => ({
@@ -68,7 +69,7 @@ export function LxConfigProvider({ children, theme, className, style }: LxConfig
     try {
       window.localStorage.setItem(storageKey, JSON.stringify(selection));
     } catch {
-      // Storage failure never prevents an in-memory theme change.
+      // 写入失败不会阻止内存中的主题变更。
     }
   }, [persist, restored, selection, storageKey]);
 
@@ -111,35 +112,41 @@ export function LxConfigProvider({ children, theme, className, style }: LxConfig
     () => ({ theme: selection, resolvedMode, setTheme }),
     [selection, resolvedMode, setTheme],
   );
+  const antdConfig = useMemo<ThemeConfig>(() => {
+    const token = {
+      ...tokens.token,
+      motion: !reducedMotion,
+      ...(reducedMotion
+        ? { motionDurationFast: '0ms', motionDurationMid: '0ms', motionDurationSlow: '0ms' }
+        : {}),
+    };
+    const baseAlgorithm =
+      resolvedMode === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm;
+    return {
+      // 官方暗色算法会再次转换 colorPrimary 等 seed。先保留官方派生结构，
+      // 再恢复已验证的语义值，确保 CSS 与 AntD 实际消费的颜色和尺寸一致。
+      // 这使用公开 algorithm 扩展点，宿主无需依赖 AntD 内部主题实现。
+      algorithm: (seed, map) => ({ ...baseAlgorithm(seed, map), ...token }),
+      token,
+      components: {
+        ...tokens.components,
+        ...(reducedMotion
+          ? {
+              Tree: {
+                ...tokens.components.Tree,
+                motionDurationMid: '0ms',
+                motionDurationSlow: '0ms',
+              },
+              Alert: { ...tokens.components.Alert, motionDurationSlow: '0ms' },
+            }
+          : {}),
+      },
+    };
+  }, [tokens, resolvedMode, reducedMotion]);
 
   return (
     <ThemeContext.Provider value={contextValue}>
-      <ConfigProvider
-        theme={{
-          algorithm: resolvedMode === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
-          token: {
-            colorPrimary: tokens.primary,
-            colorTextLightSolid: tokens.onPrimary,
-            colorText: tokens.text,
-            colorTextSecondary: tokens.textSecondary,
-            colorBgBase: tokens.css['--lx-color-bg-base'],
-            colorBgContainer: tokens.surface,
-            colorBgElevated: tokens.elevated,
-            colorBorder: tokens.border,
-            colorBorderSecondary: tokens.css['--lx-color-border-secondary'],
-            colorSuccess: tokens.css['--lx-color-success'],
-            colorWarning: tokens.css['--lx-color-warning'],
-            colorError: tokens.css['--lx-color-error'],
-            colorInfo: tokens.css['--lx-color-info'],
-            // AntD input-like controls draw this outline on their own border radius.
-            // Share lx-ui's contrast-checked focus color instead of stacking a wrapper ring.
-            controlOutline: tokens.css['--lx-focus-ring'],
-            controlHeight: tokens.controlHeight,
-            borderRadius: tokens.radius,
-            motion: !reducedMotion,
-          },
-        }}
-      >
+      <ConfigProvider theme={antdConfig}>
         <div
           className={className}
           style={{ ...tokens.css, ...style }}
@@ -155,7 +162,7 @@ export function LxConfigProvider({ children, theme, className, style }: LxConfig
   );
 }
 
-/** Read and update the nearest provider. A missing provider is a usage error. */
+/** 读取并更新最近的 Provider；缺少 Provider 属于调用方式错误。 */
 export function useLxTheme(): LxThemeContextValue {
   const value = useContext(ThemeContext);
   if (!value) throw new Error('useLxTheme must be used within LxConfigProvider');

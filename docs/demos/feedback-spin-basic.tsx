@@ -12,11 +12,22 @@ export default function SpinBasicDemo() {
         <Spin delay={0} />
         <Spin size="large" delay={0} />
       </div>
-      <Button onClick={() => setSpinning((value) => !value)}>{spinning ? '停止加载' : '开始加载'}</Button>
+      <Button onClick={() => setSpinning((value) => !value)}>
+        {spinning ? '停止加载' : '开始加载'}
+      </Button>
       <div className={styles.row}>
-        <span>立即：<Spin spinning={spinning} delay={0} /></span>
-        <span>默认 300ms：<Spin spinning={spinning} /></span>
-        <span>600ms：<Spin spinning={spinning} delay={600} /></span>
+        <span>
+          立即：
+          <Spin spinning={spinning} delay={0} />
+        </span>
+        <span>
+          默认 300ms：
+          <Spin spinning={spinning} />
+        </span>
+        <span>
+          600ms：
+          <Spin spinning={spinning} delay={600} />
+        </span>
       </div>
     </DataDisplayDemoFrame>
   );

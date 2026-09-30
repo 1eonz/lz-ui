@@ -1,0 +1,26 @@
+.fields {
+  display: grid;
+  gap: var(--lx-space-xl);
+}
+.field {
+  display: grid;
+  gap: var(--lx-space-sm);
+  min-inline-size: 0;
+}
+.field > label {
+  color: var(--lx-color-text);
+  font-weight: 600;
+}
+.field > p {
+  margin: 0;
+  color: var(--lx-color-text-secondary);
+  overflow-wrap: anywhere;
+}
+.field > p.error {
+  color: var(--lx-color-error);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lx-space-sm);
+}

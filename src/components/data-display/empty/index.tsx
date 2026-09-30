@@ -4,15 +4,15 @@ import styles from './index.module.css';
 import type { EmptyProps } from './types';
 
 /**
- * Neutral, recoverable empty state for data regions. The host owns the action and
- * data lifecycle; this component only provides consistent layout and token styling.
+ * 数据区域的中性、可恢复空状态。宿主负责操作和数据生命周期，
+ * 组件只提供一致布局和 token 样式。
  */
 export const Empty = forwardRef<HTMLDivElement, EmptyProps>(function Empty(
   { action, children, className, rootClassName, variant = 'default', ...props },
   ref,
 ) {
-  // AntD Empty has no ref contract. The wrapper provides a stable public root
-  // without coupling consumers to AntD's internal markup.
+  // AntD Empty 没有 ref 契约；包装层提供稳定公开根节点，避免宿主
+  // 依赖 AntD 内部结构。
   const semanticStyles = {
     description: { color: 'var(--lx-color-text-secondary)' },
     footer: { marginBlockStart: 'var(--lx-space-md)' },

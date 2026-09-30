@@ -3,8 +3,8 @@ import type { CustomRenderer, FormRendererRegistry } from './types';
 const globalRenderers = new Map<string, CustomRenderer>();
 
 /**
- * The default registry is intentionally tiny and explicit. A local registry can be passed to
- * DynamicForm when an application needs isolation between independently deployed forms.
+ * 默认注册表保持精简和显式；应用需要隔离独立部署的表单时，
+ * 可向 DynamicForm 传入局部注册表。
  */
 export const defaultRendererRegistry: FormRendererRegistry = {
   register(name, renderer) {

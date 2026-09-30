@@ -41,6 +41,8 @@ Dumi 演示复用独立主题 frame，提供 light/dark、密度和外观操作�
 
 ## 5. 2A 不做
 
+第二轮复审修复：成功分段所有API均限制不超过规范后的总percent；总80/成功120输出80/80，覆盖总0、负值、12.5与62.5。Spin nested单弧margin与本身size变量同源，带tip时额外使用间距token向上留出文字区，standalone不应用负margin。全部本批注释已转中文。逐组件文档各有基础、变体和真实交互三个独立场景，Dumi defaultShowCode 展开源代码；保留综合路径，不替代单组件页。最新focused测试32/32通过，视觉门禁限制不变。
+
 - 全屏遮罩、portal、z-index、焦点陷阱、Message/Notification 全局 API。
 - 自动请求、自动重试、自动聚焦 body/邻居或自动 `inert`。
 - 不确定进度条的新增 API、动画库和全套图标。

@@ -191,6 +191,7 @@ Review 至少回答：为何存在这个抽象；业务项目如何扩展；受�
 npm run check:scaffold
 npm run format:check
 npm run typecheck
+npm run typecheck:docs
 npm run lint
 npm test
 npm run build:lib
@@ -198,3 +199,11 @@ npm run build:docs
 ```
 
 完整发布前还要执行 `npm run build`、`npm pack --dry-run` 和 `npm run release:guard`，并确认没有修改 `D:\lxy\crm\lxComponent`。
+
+## 11. 自动格式化、提交与推送（2026-09-30）
+
+用户授权每批完成后自动提交及推送。顺序固定为：本批文件 Prettier 写入、Impeccable 实际审查、独立 code review、修改、独立复审、工程门禁、审阅 git diff、Conventional Commit、普通 push 到当前分支的远程跟踪分支。提交说明使用中文，准确说明范围和兼容影响。
+
+只 stage 当前批次已经检查的文件。既有未提交工作需先理解并纳入对应验收，不能使用全仓格式化或 `git add .` 混入无关文件。`UI/` 和旧项目保持只读。并发代理仍在写入的文件不进入提交；格式化在实现停止后执行，避免与写入互相覆盖。
+
+有代码、类型、测试或独立 review 未关闭的问题时继续修复，不提前提交。浏览器策略限制必须单独记入审查与交付记录，提交只保存已核验的工程范围，不表示完整视觉通过。推送失败保留本地提交并报告实际原因；不 force push、不修改远程权限、不将发布包或 npm publish 等同于 git push。

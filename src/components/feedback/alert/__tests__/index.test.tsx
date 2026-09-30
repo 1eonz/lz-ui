@@ -3,8 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Alert } from '..';
 
-// jsdom omits these browser constructors, causing AntD to skip its lifecycle.
-// Standard transitionend events below exercise AntD's real close implementation.
+// jsdom 缺少浏览器动画事件构造器，会使 AntD 跳过原生动效生命周期。
+// 下方标准 transitionend 事件验证真实关闭实现，不模拟组件回调。
 vi.hoisted(() => {
   Object.defineProperties(window, {
     AnimationEvent: { configurable: true, value: Event },

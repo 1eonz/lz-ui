@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { InputRef } from 'lx-ui';
 import { Button, Empty, Input, List } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import styles from './data-display-demo.module.css';
 
 export default function EmptyDemo() {
+  const inputRef = useRef<InputRef>(null);
   const [orders, setOrders] = useState<string[]>([]);
   const [query, setQuery] = useState('');
   const filtered = orders.filter((order) => order.includes(query));
@@ -11,6 +13,7 @@ export default function EmptyDemo() {
     <DataDisplayDemoFrame>
       <div className={styles.row}>
         <Input
+          ref={inputRef}
           aria-label="采购单筛选"
           placeholder="采购单编号"
           value={query}
@@ -19,6 +22,7 @@ export default function EmptyDemo() {
         <Button
           disabled={orders.length === 0}
           onClick={() => {
+            inputRef.current?.focus();
             setOrders([]);
             setQuery('');
           }}
@@ -30,7 +34,13 @@ export default function EmptyDemo() {
         <Empty
           description="暂无关联采购单"
           action={
-            <Button type="primary" onClick={() => setOrders(['PO-2024-1881'])}>
+            <Button
+              type="primary"
+              onClick={() => {
+                inputRef.current?.focus();
+                setOrders(['PO-2024-1881']);
+              }}
+            >
               新建采购单
             </Button>
           }
@@ -44,7 +54,16 @@ export default function EmptyDemo() {
               <Empty
                 variant="small"
                 description="没有匹配的采购单"
-                action={<Button onClick={() => setQuery('')}>清除筛选</Button>}
+                action={
+                  <Button
+                    onClick={() => {
+                      inputRef.current?.focus();
+                      setQuery('');
+                    }}
+                  >
+                    清除筛选
+                  </Button>
+                }
               />
             ),
           }}

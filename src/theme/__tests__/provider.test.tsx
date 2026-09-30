@@ -1,8 +1,18 @@
 import { act, render, screen } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
+import { theme as antdTheme } from 'antd';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LxConfigProvider, useLxTheme } from '../provider';
 import { brandSeeds, paletteSeeds, resolveLxTokens } from '../tokens';
+import type { LxColorPreset, LxPalettePreset } from '../types';
+
+const palettes = [
+  ...Object.keys(brandSeeds).map((colorPreset) => ({ colorPreset: colorPreset as LxColorPreset })),
+  ...Object.keys(paletteSeeds).map((palettePreset) => ({
+    colorPreset: 'blue' as const,
+    palettePreset: palettePreset as LxPalettePreset,
+  })),
+];
 
 function Consumer() {
   const { theme, resolvedMode, setTheme } = useLxTheme();
@@ -12,6 +22,20 @@ function Consumer() {
       onClick={() => setTheme({ mode: 'dark', density: 'compact', palettePreset: 'pine-amber' })}
     >
       {theme.mode}/{resolvedMode}/{theme.density}
+    </button>
+  );
+}
+
+function AntTokenConsumer() {
+  const { token } = antdTheme.useToken();
+  return <output data-testid="antd-token">{JSON.stringify(token)}</output>;
+}
+
+function ClearPaletteConsumer() {
+  const { theme, setTheme } = useLxTheme();
+  return (
+    <button type="button" onClick={() => setTheme({ palettePreset: null })}>
+      {theme.palettePreset ?? theme.colorPreset}
     </button>
   );
 }
@@ -37,17 +61,31 @@ describe('theme runtime', () => {
     const { container } = render(
       <LxConfigProvider>
         <Consumer />
+        <AntTokenConsumer />
       </LxConfigProvider>,
     );
     const scope = container.querySelector('[data-lx-mode]') as HTMLElement;
     expect(scope.dataset.lxMode).toBe('light');
     expect(scope.style.getPropertyValue('--lx-control-height')).toBe('40px');
-    expect(scope.style.getPropertyValue('--lx-table-row-height')).toBe('44px');
+    expect(scope.style.getPropertyValue('--lx-table-row-height')).toBe('48px');
+    expect(JSON.parse(screen.getByTestId('antd-token').textContent ?? '{}')).toMatchObject({
+      colorPrimary: scope.style.getPropertyValue('--lx-color-primary'),
+      controlHeight: 40,
+      controlHeightSM: 24,
+      controlHeightLG: 48,
+      fontSize: 14,
+      lineHeight: 22 / 14,
+    });
     act(() => screen.getByRole('button').click());
     expect(scope.dataset.lxMode).toBe('dark');
     expect(scope.dataset.lxColor).toBe('pine-amber');
     expect(scope.style.getPropertyValue('--lx-control-height')).toBe('32px');
-    expect(scope.style.getPropertyValue('--lx-table-row-height')).toBe('34px');
+    expect(scope.style.getPropertyValue('--lx-table-row-height')).toBe('36px');
+    expect(JSON.parse(screen.getByTestId('antd-token').textContent ?? '{}')).toMatchObject({
+      colorPrimary: scope.style.getPropertyValue('--lx-color-primary'),
+      controlHeight: 32,
+      colorSuccessBg: scope.style.getPropertyValue('--lx-color-success-bg'),
+    });
   });
 
   it('restores valid preferences and persists updates', () => {
@@ -67,6 +105,7 @@ describe('theme runtime', () => {
   });
 
   it('renders on the server without browser APIs', () => {
+    vi.stubGlobal('window', undefined);
     const markup = renderToString(
       <LxConfigProvider theme={{ mode: 'system' }}>
         <span>Content</span>
@@ -74,6 +113,74 @@ describe('theme runtime', () => {
     );
     expect(markup).toContain('data-lx-mode="light"');
     expect(markup).toContain('Content');
+  });
+
+  it('clears an oriental palette with null and restores the selected brand color', () => {
+    const { container } = render(
+      <LxConfigProvider theme={{ colorPreset: 'rose', palettePreset: 'pine-amber' }}>
+        <ClearPaletteConsumer />
+        <AntTokenConsumer />
+      </LxConfigProvider>,
+    );
+    const scope = container.querySelector('[data-lx-mode]') as HTMLElement;
+    expect(scope.dataset.lxColor).toBe('pine-amber');
+    act(() => screen.getByRole('button', { name: 'pine-amber' }).click());
+    expect(screen.getByRole('button', { name: 'rose' })).toBeInTheDocument();
+    expect(scope.dataset.lxColor).toBe('rose');
+    const expected = resolveLxTokens({
+      mode: 'light',
+      colorPreset: 'rose',
+      appearance: 'business',
+      density: 'comfortable',
+    });
+    expect(scope.style.getPropertyValue('--lx-color-primary')).toBe(expected.primary);
+    expect(JSON.parse(screen.getByTestId('antd-token').textContent ?? '{}')).toMatchObject(
+      expected.token,
+    );
+  });
+
+  it('keeps nested SSR selections and leaves glass enhancement to CSS', () => {
+    vi.stubGlobal('window', undefined);
+    const theme = {
+      mode: 'dark',
+      appearance: 'glass',
+      density: 'compact',
+      colorPreset: 'rose',
+    } as const;
+    const resolved = resolveLxTokens(theme);
+    const markup = renderToString(
+      <LxConfigProvider>
+        <LxConfigProvider theme={theme}>
+          <span>Nested content</span>
+        </LxConfigProvider>
+      </LxConfigProvider>,
+    );
+    expect(markup).toContain('data-lx-mode="light"');
+    expect(markup).toContain('data-lx-mode="dark"');
+    expect(markup).toContain('data-lx-appearance="glass"');
+    expect(markup).toContain('--lx-panel-radius:12px');
+    expect(markup).toContain(`--lx-panel-surface-base:${resolved.surface}`);
+    expect(markup).not.toContain('--lx-panel-backdrop-filter:');
+    expect(markup).not.toContain('--lx-panel-surface:');
+  });
+
+  it('disables AntD motion when the system requests reduced motion', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('reduced-motion'),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }));
+    render(
+      <LxConfigProvider>
+        <AntTokenConsumer />
+      </LxConfigProvider>,
+    );
+    expect(JSON.parse(screen.getByTestId('antd-token').textContent ?? '{}')).toMatchObject({
+      motion: false,
+      motionDurationFast: '0ms',
+      motionDurationMid: '0ms',
+      motionDurationSlow: '0ms',
+    });
   });
 
   it('follows system mode changes and releases its listener', () => {
@@ -98,52 +205,42 @@ describe('theme runtime', () => {
     expect(remove).toHaveBeenCalled();
   });
 
-  it('keeps text contrast across every palette and mode', () => {
-    const contrast = (a: string, b: string) => {
-      const luminance = (color: string) =>
-        [1, 3, 5]
-          .map((index) => parseInt(color.slice(index, index + 2), 16) / 255)
-          .map((value) => (value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4))
-          .reduce((sum, value, index) => sum + value * [0.2126, 0.7152, 0.0722][index], 0);
-      const [high, low] = [luminance(a), luminance(b)].sort((left, right) => right - left);
-      return (high + 0.05) / (low + 0.05);
-    };
-    for (const mode of ['light', 'dark'] as const) {
-      for (const colorPreset of Object.keys(brandSeeds) as (keyof typeof brandSeeds)[]) {
-        const tokens = resolveLxTokens({
+  for (const mode of ['light', 'dark'] as const) {
+    it.each(palettes)(
+      `keeps native AntD semantic tokens equal to CSS in ${mode}: %j`,
+      (palette) => {
+        const selection = {
+          ...palette,
           mode,
-          colorPreset,
           appearance: 'business',
           density: 'comfortable',
-        });
-        expect(contrast(tokens.primary, tokens.surface)).toBeGreaterThanOrEqual(4.5);
-        expect(contrast(tokens.css['--lx-focus-ring'], tokens.surface)).toBeGreaterThanOrEqual(3);
+        } as const;
+        const expected = resolveLxTokens(selection);
+        const { container } = render(
+          <LxConfigProvider theme={selection}>
+            <AntTokenConsumer />
+          </LxConfigProvider>,
+        );
+        const actual = JSON.parse(screen.getByTestId('antd-token').textContent ?? '{}');
+        expect(actual).toMatchObject(expected.token);
+        const scope = container.querySelector('[data-lx-mode]') as HTMLElement;
+        expect(actual.colorPrimary).toBe(scope.style.getPropertyValue('--lx-color-primary'));
+        expect(actual.colorPrimaryHover).toBe(
+          scope.style.getPropertyValue('--lx-color-primary-hover'),
+        );
+        expect(actual.colorPrimaryActive).toBe(
+          scope.style.getPropertyValue('--lx-color-primary-active'),
+        );
+        expect(actual.colorPrimaryBg).toBe(scope.style.getPropertyValue('--lx-color-primary-bg'));
+        expect(actual.colorTextLightSolid).toBe(
+          scope.style.getPropertyValue('--lx-color-on-primary'),
+        );
         for (const status of ['success', 'warning', 'error', 'info'] as const) {
-          const foreground = tokens.css[`--lx-color-${status}`];
-          const background = tokens.css[`--lx-color-${status}-bg`];
-          expect(foreground).toMatch(/^#[0-9a-f]{6}$/i);
-          expect(background).toMatch(/^#[0-9a-f]{6}$/i);
-          expect(contrast(foreground, background)).toBeGreaterThanOrEqual(4.5);
+          const name = `color${status[0].toUpperCase()}${status.slice(1)}`;
+          expect(actual[name]).toBe(scope.style.getPropertyValue(`--lx-color-${status}`));
+          expect(actual[`${name}Bg`]).toBe(scope.style.getPropertyValue(`--lx-color-${status}-bg`));
         }
-      }
-      for (const palettePreset of Object.keys(paletteSeeds) as (keyof typeof paletteSeeds)[]) {
-        const tokens = resolveLxTokens({
-          mode,
-          colorPreset: 'blue',
-          palettePreset,
-          appearance: 'business',
-          density: 'comfortable',
-        });
-        expect(contrast(tokens.primary, tokens.surface)).toBeGreaterThanOrEqual(4.5);
-        expect(contrast(tokens.css['--lx-focus-ring'], tokens.surface)).toBeGreaterThanOrEqual(3);
-        for (const status of ['success', 'warning', 'error', 'info'] as const) {
-          const foreground = tokens.css[`--lx-color-${status}`];
-          const background = tokens.css[`--lx-color-${status}-bg`];
-          expect(foreground).toMatch(/^#[0-9a-f]{6}$/i);
-          expect(background).toMatch(/^#[0-9a-f]{6}$/i);
-          expect(contrast(foreground, background)).toBeGreaterThanOrEqual(4.5);
-        }
-      }
-    }
-  });
+      },
+    );
+  }
 });

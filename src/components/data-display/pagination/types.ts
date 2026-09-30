@@ -1,7 +1,7 @@
 import type { PaginationProps as AntPaginationProps } from 'antd';
 
-/** Ant Design 5 pagination props, kept intact so controlled and uncontrolled modes behave natively. */
+/** 沿用 AntD 分页参数，保留受控和非受控模式，不额外推算业务总数。 */
 export type PaginationProps = AntPaginationProps;
 
-/** The public AntD pagination root is an unordered list element. */
+/** 实际分页 ul；隐藏和卸载时为 null，多 React 根需设置不同 identifierPrefix。 */
 export type PaginationRef = HTMLUListElement;

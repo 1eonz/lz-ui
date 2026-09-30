@@ -16,27 +16,23 @@ function assignRef<T>(ref: React.ForwardedRef<T>, value: T | null) {
   else if (ref) ref.current = value;
 }
 
-/** Keep SSR renders warning-free while retaining layout timing in the browser. */
+/** 服务端使用普通 effect，避免 SSR 警告；浏览器在绘制前同步实际根节点。 */
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
 /**
- * Ant Design 5 pagination adapter for list and table navigation.
- *
- * The adapter deliberately forwards every public AntD prop. It does not infer
- * `total`, clamp an out-of-range page, issue requests, or synchronize URLs;
- * those policies belong to the host application. `ref` resolves to AntD's
- * rendered `<ul>` root, while `className` remains on that same root. AntD 5
- * does not expose an official Pagination ref API, so this adapter resolves the
- * public `<ul>` through a generated marker class after commit. Multiple
- * independent React roots must use distinct `identifierPrefix` values so
- * React's generated marker ids cannot collide.
+ * 列表与表格分页的 AntD 适配层，保留公开参数与事件契约。
+ * 不推算 total、不修正超界页码、不请求数据或同步 URL，这些策略由宿主负责。
+ * AntD 没有公开 Pagination ref，适配层在提交后通过独立标记定位实际 ul，
+ * className 也落在该节点。代价是每次适配层提交进行一次类名查找，
+ * 不采用观察器或私有 DOM 层级；非受控分页事件触发轻量提交以同步隐藏后的 ref。
+ * 多个独立 React 根必须使用不同 identifierPrefix，防止跨根标记碰撞。
  */
 export const Pagination = forwardRef<PaginationRef, PaginationProps>(function Pagination(
   { className, onChange, ...props },
   ref,
 ) {
-  // Encode each UTF-16 unit so identifierPrefix may include spaces/punctuation
-  // without creating extra class tokens or requiring CSS selector escaping.
+  // 对 Unicode 码点编码，允许 identifierPrefix 含空格和标点，
+  // 不会形成额外 class token，也无需对 CSS 选择器进行转义。
   const id = useId();
   const markerClass = `lx-pagination-${Array.from(id, (part) =>
     part.codePointAt(0)?.toString(16),
@@ -44,10 +40,9 @@ export const Pagination = forwardRef<PaginationRef, PaginationProps>(function Pa
   const [, refreshAttachment] = useReducer((revision: number) => revision + 1, 0);
   const handleChange = useCallback<NonNullable<PaginationProps['onChange']>>(
     (page, pageSize) => {
-      // In uncontrolled mode, AntD's internal page-size change can remove its
-      // own root without rendering this adapter. A lightweight host commit
-      // synchronizes the ref; AntD retains ownership of current/pageSize.
-      // Dispatch first so a throwing host handler cannot skip synchronization.
+      // 非受控页大小变化可能只更新 AntD 内部并移除 ul，不重新渲染适配层。
+      // 轻量提交负责同步 ref，页码/页大小仍由 AntD 持有；先 dispatch，
+      // 避免宿主回调抛错后遗漏同步，且不增加回调次数或改变参数。
       refreshAttachment();
       onChange?.(page, pageSize);
     },
@@ -59,9 +54,8 @@ export const Pagination = forwardRef<PaginationRef, PaginationProps>(function Pa
   }>({ ref: null, node: null });
 
   useIsomorphicLayoutEffect(() => {
-    // AntD can remove/recreate its root when hideOnSinglePage changes. Inspect
-    // after each host commit, but notify refs only when their identity or node
-    // changes; notifying an unchanged callback on every render can cause loops.
+    // hideOnSinglePage 可移除并重建根节点。每次提交检查，仅在 ref 或节点
+    // 改变时通知，避免稳定 callback ref 每次触发引起宿主更新循环。
     const candidate = document.getElementsByClassName(markerClass).item(0);
     const node = candidate instanceof HTMLUListElement ? candidate : null;
     const previous = attachment.current;

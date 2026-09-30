@@ -1,3 +1,3 @@
 import type { BadgeProps as AntBadgeProps } from 'antd';
-/** Badge props. Status text remains available so color is never the only signal. */
+/** Badge 属性；保留状态文本，确保颜色不是唯一状态信号。 */
 export type BadgeProps = AntBadgeProps;

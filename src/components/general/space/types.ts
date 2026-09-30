@@ -1,19 +1,19 @@
 import type { CSSProperties, HTMLAttributes, ReactNode } from 'react';
 
-/** Named spacing token or an explicit non-negative pixel value. */
+/** 命名间距 token 或显式非负像素值。 */
 export type SpaceSize = 'small' | 'middle' | 'large' | number;
-/** Flex gap layout primitive; child margins and business layout remain caller-owned. */
+/** flex gap 基础布局；子节点外边距和业务布局由调用者负责。 */
 export interface SpaceProps extends HTMLAttributes<HTMLDivElement> {
-  /** One gap or [horizontal, vertical] gaps. Defaults to small. */
+  /** 单一间距或[水平,垂直]间距；默认 small。 */
   size?: SpaceSize | readonly [SpaceSize, SpaceSize];
-  /** Stacks children vertically while retaining the configured gap. */
+  /** 垂直排列子节点，同时保留配置间距。 */
   direction?: 'horizontal' | 'vertical';
-  /** Cross-axis flex alignment. */
+  /** flex 交叉轴对齐方式。 */
   align?: CSSProperties['alignItems'];
-  /** Enables wrapping; split separators stay with the following child. */
+  /** 允许换行；split 分隔符与后一个子节点保持一组。 */
   wrap?: boolean;
-  /** Visual, aria-hidden separator inserted between children. */
+  /** 子节点间插入的视觉分隔符，使用 aria-hidden。 */
   split?: ReactNode;
-  /** Makes the root fill its container width. */
+  /** 使根节点占满容器宽度。 */
   block?: boolean;
 }

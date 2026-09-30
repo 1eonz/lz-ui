@@ -34,20 +34,20 @@ description 补充恢复步骤；banner 未传 type 时默认为 warning。长�
 
 `AlertProps` 保留 AntD 公共类型，以下为常用项；其余字段遵循 AntD >=5.24 的公开 API。
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| message | ReactNode | — | 主提示文本 |
-| description | ReactNode | — | 详细说明和恢复步骤 |
-| type | 'info' \| 'success' \| 'warning' \| 'error' | info；banner 时 warning | 语义类型 |
-| showIcon | boolean | false；banner 时 true | 显示语义图标 |
-| banner | boolean | false | 顶部提示样式 |
-| closable | boolean \| 公开关闭配置对象 | false | 允许关闭，可配置关闭图标和 aria 属性 |
-| action | ReactNode | — | 宿主提供真实操作控件 |
-| role | string | alert（AntD 默认） | 静态 note、普通更新 status、紧急新错误 alert，由宿主选择 |
-| className / rootClassName | string | — | 归原生 Alert 根节点 |
-| style | CSSProperties | — | 根样式覆盖 |
-| onClose | MouseEventHandler&lt;HTMLButtonElement&gt; | — | 用户发起关闭时触发，接收点击事件 |
-| afterClose | () =&gt; void | — | 原生退出动画结束通知，motion off 时不保证触发 |
+| 属性                      | 类型                                        | 默认值                  | 说明                                                     |
+| ------------------------- | ------------------------------------------- | ----------------------- | -------------------------------------------------------- |
+| message                   | ReactNode                                   | —                       | 主提示文本                                               |
+| description               | ReactNode                                   | —                       | 详细说明和恢复步骤                                       |
+| type                      | 'info' \| 'success' \| 'warning' \| 'error' | info；banner 时 warning | 语义类型                                                 |
+| showIcon                  | boolean                                     | false；banner 时 true   | 显示语义图标                                             |
+| banner                    | boolean                                     | false                   | 顶部提示样式                                             |
+| closable                  | boolean \| 公开关闭配置对象                 | false                   | 允许关闭，可配置关闭图标和 aria 属性                     |
+| action                    | ReactNode                                   | —                       | 宿主提供真实操作控件                                     |
+| role                      | string                                      | alert（AntD 默认）      | 静态 note、普通更新 status、紧急新错误 alert，由宿主选择 |
+| className / rootClassName | string                                      | —                       | 归原生 Alert 根节点                                      |
+| style                     | CSSProperties                               | —                       | 根样式覆盖                                               |
+| onClose                   | MouseEventHandler&lt;HTMLButtonElement&gt;  | —                       | 用户发起关闭时触发，接收点击事件                         |
+| afterClose                | () =&gt; void                               | —                       | 原生退出动画结束通知，motion off 时不保证触发            |
 
 ### Ref 与事件
 

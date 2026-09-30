@@ -1,15 +1,15 @@
 import type { CSSProperties, ReactNode } from 'react';
 
-/** Requested color scheme; system follows the operating system while mounted. */
+/** 请求的明暗模式；system 在挂载后跟随操作系统设置。 */
 export type LxThemeMode = 'light' | 'dark' | 'system';
 
-/** Visual treatment. Glass is progressive enhancement. */
+/** 视觉外观；glass 采用渐进增强并保留实色回退。 */
 export type LxAppearance = 'business' | 'soft' | 'glass';
 
-/** Control density; table row height remains an independent token. */
+/** 控件密度；表格行高仍使用独立 token。 */
 export type LxDensity = 'comfortable' | 'compact';
 
-/** Stable brand presets used when no oriental palette is selected. */
+/** 未选择东方配色时使用的稳定品牌预设。 */
 export type LxColorPreset = 'blue' | 'orange' | 'green' | 'purple' | 'cyan' | 'rose';
 
 /**
@@ -25,8 +25,8 @@ export type LxPalettePreset =
   | 'cheese-distant-cyan';
 
 /**
- * Initial theme and persistence policy. `theme` is an initial value, not a controlled prop;
- * call `setTheme` for runtime updates. SSR and hydration use this value until mounted.
+ * 初始主题与持久化策略。`theme` 不是受控属性，运行时更新使用 `setTheme`。
+ * 挂载前 SSR 与 hydration 使用同一初始值，挂载后才应用存储或系统偏好。
  */
 export interface LxThemeOptions {
   mode?: LxThemeMode;
@@ -38,13 +38,13 @@ export interface LxThemeOptions {
   storageKey?: string;
 }
 
-/** Values that can change at runtime; persistence policy remains with the provider. */
-export type LxThemeSelection = Omit<LxThemeOptions, 'persist' | 'storageKey'> & {
-  /** Null clears a palette to reveal the selected brand preset. */
+/** 可在运行时修改的选择；持久化策略始终由 Provider 持有。 */
+export type LxThemeSelection = Omit<LxThemeOptions, 'persist' | 'storageKey' | 'palettePreset'> & {
+  /** null 清除配色组，重新使用当前品牌预设。 */
   palettePreset?: LxPalettePreset | null;
 };
 
-/** Resolved state and updater returned by `useLxTheme`. */
+/** `useLxTheme` 返回的已解析状态与更新函数。 */
 export interface LxThemeContextValue {
   theme: Required<Omit<LxThemeSelection, 'palettePreset'>> &
     Pick<LxThemeSelection, 'palettePreset'>;
@@ -54,15 +54,15 @@ export interface LxThemeContextValue {
   ) => void;
 }
 
-/** Scope CSS tokens and Ant Design's public theme API to the provider subtree. */
+/** 将 CSS token 与 Ant Design 公开主题 API 限定在 Provider 子树。 */
 export interface LxConfigProviderProps {
   children: ReactNode;
   theme?: LxThemeOptions;
   className?: string;
   /**
-   * Scoped overrides, applied after computed tokens so a product can tune a
-   * specific subtree. The custom-property index keeps `--lx-*` overrides
-   * type-safe without allowing arbitrary non-CSS values.
+   * 作用域覆盖值在解析后的 token 之后应用，供宿主调整特定子树。
+   * 自定义属性索引允许类型安全的 `--lx-*` 覆盖，普通 CSS 属性仍受类型检查。
+   * 这些值只改变 CSS 消费者，不会同步修改 AntD 的公开 token。
    */
   style?: CSSProperties & Record<`--lx-${string}`, string | number>;
 }

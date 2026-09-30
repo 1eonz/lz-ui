@@ -1,5 +1,5 @@
 .root {
-  /* These variables are intentionally non-layout tokens: AntD owns item sizing and spacing. */
+  /* 焦点颜色来自语义 token；默认页码尺寸由公开主题映射提供。 */
   --lx-pagination-focus-color: var(--lx-color-primary);
 }
 

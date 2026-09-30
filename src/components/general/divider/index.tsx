@@ -2,7 +2,7 @@ import { forwardRef, useId } from 'react';
 import styles from './index.module.css';
 import type { DividerProps } from './types';
 
-/** Empty horizontal dividers use native hr; labelled dividers expose separator semantics. */
+/** 无标题的水平分隔线使用原生 hr；带标题的分隔线保留 separator 语义。 */
 export const Divider = forwardRef<HTMLElement, DividerProps>(function Divider(
   {
     children,

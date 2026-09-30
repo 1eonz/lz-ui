@@ -1,9 +1,21 @@
-.root {
-  /* Non-layout token: AntD remains responsible for row, cell and scroll sizing. */
-  --lx-table-focus-color: var(--lx-color-primary);
+.root .bodyRow {
+  height: var(--lx-table-row-height);
 }
 
-.root :global(.ant-table-cell):focus-within {
-  outline: 2px solid var(--lx-table-focus-color);
-  outline-offset: -2px;
+/* 行类名来自公开 onRow/onHeaderRow，选择原生单元格而非 AntD 私有层级。
+ * 重复局部类名提高明确的覆盖优先级，避免 !important；宿主内联 onCell
+ * 样式仍优先。扣除一条边框，使 12/18 的单行内容与 48/36px 行高对齐。 */
+.root .bodyRow.bodyRow > td {
+  padding-block: calc((var(--lx-table-row-height) - var(--lx-table-line-height) - 1px) / 2);
+  line-height: var(--lx-table-line-height);
+}
+
+.root .headerRow {
+  height: var(--lx-table-header-height);
+}
+
+.root .headerRow.headerRow > th,
+.root .headerRow.headerRow > td {
+  padding-block: calc((var(--lx-table-header-height) - var(--lx-table-line-height) - 1px) / 2);
+  line-height: var(--lx-table-line-height);
 }

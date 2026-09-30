@@ -4,8 +4,8 @@ import styles from './index.module.css';
 import type { DatePickerProps, DatePickerRef, DateRangePickerProps } from './types';
 
 /**
- * Single-date AntD picker. Keep Dayjs values at this boundary; callers can
- * format dates for their API after validation to avoid timezone ambiguity.
+ * AntD 单日期选择器；此边界保留 Dayjs 值，调用者可在校验后按其 API
+ * 格式化日期，避免时区语义不明确。
  */
 export const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(function DatePicker(
   { className, ...props },
@@ -20,7 +20,7 @@ export const DatePicker = forwardRef<DatePickerRef, DatePickerProps>(function Da
   );
 });
 
-/** Range counterpart with the same token sizing and AntD keyboard behavior. */
+/** 范围日期版本，保持相同 token 尺寸和 AntD 键盘行为。 */
 export const DateRangePicker = forwardRef<DatePickerRef, DateRangePickerProps>(
   function DateRangePicker({ className, ...props }, ref) {
     return (

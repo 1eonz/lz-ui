@@ -1,27 +1,29 @@
 .root {
   vertical-align: middle;
   margin-inline-end: 0;
-  padding: var(--lx-space-xs) 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  line-height: 16px;
+  padding: var(--lx-space-xs) var(--lx-tag-padding-inline, 10px);
+  border-radius: var(--lx-tag-radius, 6px);
+  font-size: var(--lx-tag-font-size, 12px);
+  line-height: var(--lx-tag-line-height, 16px);
 }
 
 .checkable {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-block-size: var(--lx-space-xl);
+  min-block-size: var(--lx-tag-checkable-height, 26px);
   padding: var(--lx-space-xs) var(--lx-space-md);
   border: 1px solid transparent;
-  border-radius: 9999px;
+  border-radius: var(--lx-tag-checkable-radius, 9999px);
   color: var(--lx-color-text-secondary);
   background: var(--lx-color-ambient, var(--lx-color-bg-container));
   font: inherit;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: var(--lx-tag-font-size, 12px);
+  line-height: var(--lx-tag-line-height, 16px);
   cursor: pointer;
-  transition: background-color var(--lx-motion-duration), color var(--lx-motion-duration);
+  transition:
+    background-color var(--lx-motion-duration),
+    color var(--lx-motion-duration);
 }
 
 .checkable:hover:not(:disabled) {
@@ -44,6 +46,48 @@
   background: var(--lx-color-bg-container);
   border-color: var(--lx-color-border-secondary);
   cursor: not-allowed;
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--lx-space-xl);
+  min-block-size: var(--lx-space-xl);
+  padding: 0;
+  border: 0;
+  border-radius: var(--lx-radius-control);
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 1px;
+}
+
+.cross {
+  position: relative;
+  inline-size: var(--lx-space-md);
+  block-size: var(--lx-space-md);
+}
+
+.cross::before,
+.cross::after {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  block-size: 1px;
+  content: '';
+  background: currentColor;
+  transform: rotate(45deg);
+}
+
+.cross::after {
+  transform: rotate(-45deg);
 }
 
 @media (prefers-reduced-motion: reduce) {

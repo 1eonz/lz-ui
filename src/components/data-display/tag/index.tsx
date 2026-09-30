@@ -3,10 +3,28 @@ import { forwardRef } from 'react';
 import type { CheckableTagProps, TagProps } from './types';
 import styles from './index.module.css';
 /** 紧凑分类标签；关闭行为由 AntD 和宿主控制，相邻间距由外部容器提供。 */
-export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(props, ref) {
+export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
+  { closeIcon, closable, ...props },
+  ref,
+) {
+  // 通过公开 closeIcon 提供原生键盘按钮，AntD 合并自身关闭回调，
+  // 无需复制关闭状态机。Tag 未消费 AntD 返回的关闭禁用值，因此默认按钮
+  // 显式应用 closable.disabled；自定义节点的键盘、名称和禁用由宿主负责。
+  const accessibleCloseIcon = (
+    <button
+      type="button"
+      aria-label="关闭标签"
+      className={styles.close}
+      disabled={typeof closable === 'object' && closable.disabled}
+    >
+      <span className={styles.cross} aria-hidden="true" />
+    </button>
+  );
   return (
     <AntTag
       {...props}
+      closable={closable}
+      closeIcon={closeIcon !== undefined ? closeIcon : closable ? accessibleCloseIcon : undefined}
       ref={ref}
       className={[styles.root, props.className].filter(Boolean).join(' ')}
     />

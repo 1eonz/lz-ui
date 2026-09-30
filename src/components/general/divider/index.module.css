@@ -23,7 +23,7 @@
   content: none;
 }
 .label {
-  /* The visible label is referenced by aria-labelledby on labelled rules. */
+  /* 带标题的分隔线通过 aria-labelledby 引用此可见标题。 */
   padding-inline: var(--lx-space-md);
   font-weight: 600;
   white-space: normal;
@@ -34,7 +34,7 @@
 }
 .left::before,
 .right::after {
-  flex: 0 0 var(--lx-space-lg);
+  flex: 0 0 var(--lx-divider-title-offset);
 }
 .vertical {
   display: inline-block;

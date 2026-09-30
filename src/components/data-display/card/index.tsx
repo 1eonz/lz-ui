@@ -12,7 +12,11 @@ import styles from './index.module.css';
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(props, ref) {
   const { className, ...cardProps } = props;
   return (
-    <AntCard {...cardProps} ref={ref} className={[styles.root, className].filter(Boolean).join(' ')} />
+    <AntCard
+      {...cardProps}
+      ref={ref}
+      className={[styles.root, className].filter(Boolean).join(' ')}
+    />
   );
 });
 export type { CardProps } from './types';

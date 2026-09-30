@@ -4,8 +4,8 @@ import styles from './index.module.css';
 import type { InputNumberProps, InputNumberRef } from './types';
 
 /**
- * Numeric input with AntD parsing and keyboard stepping. Pass `stringMode`
- * when decimal precision exceeds JavaScript's safe numeric range.
+ * 提供 AntD 数值解析和键盘步进的数值输入控件；小数精度超过
+ * JavaScript 安全数值范围时，应传入 stringMode。
  */
 export const InputNumber = forwardRef<InputNumberRef, InputNumberProps>(function InputNumber(
   { className, ...props },

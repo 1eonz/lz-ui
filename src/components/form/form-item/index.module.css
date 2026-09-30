@@ -3,7 +3,7 @@
   color: var(--lx-color-text);
 }
 
-/* AntD renders validation text itself; this wrapper does not replace its live region. */
+/* AntD 自行渲染校验文本；包装层不替换其实时播报区域。 */
 @media (prefers-reduced-motion: reduce) {
   .root {
     transition: none;

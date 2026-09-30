@@ -31,4 +31,14 @@ describe('Avatar', () => {
     expect(avatar).toHaveClass('ant-avatar-sm');
     expect(avatar).not.toHaveStyle({ minWidth: '2rem', minHeight: '2rem' });
   });
+  it('keeps group layout attributes on the same ref root', () => {
+    const ref = createRef<HTMLDivElement>();
+    render(
+      <AvatarGroup ref={ref} className="host-group" style={{ order: 2 }}>
+        <Avatar>甲</Avatar>
+      </AvatarGroup>,
+    );
+    expect(ref.current).toHaveClass('host-group');
+    expect(ref.current).toHaveStyle({ order: 2 });
+  });
 });

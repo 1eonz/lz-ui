@@ -7,12 +7,12 @@
 ```tsx
 import { Spin } from 'lx-ui';
 
-<Spin spinning={loading} tip="正在读取客户…">
-  <CustomerList />
+<Spin spinning tip="正在读取客户…">
+  <div>现有客户内容保持挂载</div>
 </Spin>;
 ```
 
-`loading` 和 `CustomerList` 由业务页面提供；包裹 children 不会自动禁用其中控件。
+实际业务中将 spinning 绑定请求状态；包裹 children 不会自动禁用其中控件。
 
 ## 代码演示
 
@@ -38,18 +38,18 @@ import { Spin } from 'lx-ui';
 
 `SpinProps = Omit<AntSpinProps, 'fullscreen' | 'percent'>`；TypeScript 和运行时均排除这两项。
 
-| 属性 | 类型 | 默认值 | 说明 |
-| --- | --- | --- | --- |
-| spinning | boolean | true | 宿主提供的加载事实 |
-| delay | number | 300 | 延迟视觉显示的毫秒数；0 立即显示 |
-| size | 'small' \| 'default' \| 'large' | default | 默认 indicator 为16/24/36px；自定义图形负责自身尺寸 |
-| tip | ReactNode | — | 区域加载文字；standalone 不展示 tip |
-| indicator | ReactElement&lt;HTMLElement&gt; | lx 单弧 | 显式值优先；不调用全局 setDefaultIndicator |
-| children | ReactNode | — | 存在时使用原生 nested 模式并持续挂载 |
-| className / rootClassName | string | — | 归原生指示器根节点 |
-| wrapperClassName | string | — | 归原生 nested 区域根节点 |
-| style | CSSProperties | — | 原生指示器样式 |
-| prefixCls | string | AntD 配置 | 自定义前缀；局部动效降级不依赖固定 ant 前缀 |
+| 属性                      | 类型                            | 默认值    | 说明                                                |
+| ------------------------- | ------------------------------- | --------- | --------------------------------------------------- |
+| spinning                  | boolean                         | true      | 宿主提供的加载事实                                  |
+| delay                     | number                          | 300       | 延迟视觉显示的毫秒数；0 立即显示                    |
+| size                      | 'small' \| 'default' \| 'large' | default   | 默认 indicator 为16/24/36px；自定义图形负责自身尺寸 |
+| tip                       | ReactNode                       | —         | 区域加载文字；standalone 不展示 tip                 |
+| indicator                 | ReactElement&lt;HTMLElement&gt; | lx 单弧   | 显式值优先；不调用全局 setDefaultIndicator          |
+| children                  | ReactNode                       | —         | 存在时使用原生 nested 模式并持续挂载                |
+| className / rootClassName | string                          | —         | 归原生指示器根节点                                  |
+| wrapperClassName          | string                          | —         | 归原生 nested 区域根节点                            |
+| style                     | CSSProperties                   | —         | 原生指示器样式                                      |
+| prefixCls                 | string                          | AntD 配置 | 自定义前缀；局部动效降级不依赖固定 ant 前缀         |
 
 ### 状态与 Ref
 

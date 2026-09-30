@@ -1,7 +1,7 @@
 .root {
   border-radius: var(--lx-radius-panel);
-  /* Native Alert installs a multi-property leave shorthand. Override only its
-   * timing, retaining AntD's lifecycle/properties and custom prefixCls. */
+  /* 原生 Alert 使用多属性退出简写；仅覆盖时间参数，保留其生命周期、
+   * 过渡属性和自定义 prefixCls，避免复制内部关闭状态机。 */
   transition-duration: var(--lx-motion-alert-exit-duration, 160ms) !important;
   transition-timing-function: ease-out !important;
 }

@@ -2,7 +2,7 @@ import { Badge as AntBadge } from 'antd';
 import { forwardRef } from 'react';
 import type { BadgeProps } from './types';
 import styles from './index.module.css';
-/** Notification count/status marker with stable token-backed presentation. */
+/** 通知计数/状态标记，使用 token 保持稳定展示。 */
 export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(props, ref) {
   return (
     <AntBadge

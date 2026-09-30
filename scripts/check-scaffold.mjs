@@ -55,9 +55,9 @@ const approvedComponents = new Set([
 ]);
 
 /**
- * Keep the design gate narrow during P0: only approved component directories can contain
- * implementation files. Each implemented component must ship docs, CSS, types and a behavior
- * test together, so adding a JSX file alone cannot silently become a public API.
+ * P0 阶段严格限定设计门禁：只有已批准的组件目录可以包含实现文件。
+ * 每个已实现组件必须同时交付文档、CSS、类型和行为测试，避免仅新增
+ * JSX 文件就未经明确审核成为公开 API。
  */
 async function walk(directory) {
   if (directory.endsWith(`${process.platform === 'win32' ? '\\' : '/'}__tests__`)) return;

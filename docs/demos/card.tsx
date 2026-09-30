@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { ButtonRef } from 'lx-ui';
 import { Button, Card, Statistic } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 
 export default function CardDemo() {
+  const loadingRef = useRef<ButtonRef>(null);
   const [tab, setTab] = useState('purchases');
   const [loading, setLoading] = useState(false);
   return (
@@ -10,7 +12,11 @@ export default function CardDemo() {
       <Card
         title="运营指标概览"
         loading={loading}
-        extra={<Button onClick={() => setLoading(true)}>显示加载</Button>}
+        extra={
+          <Button ref={loadingRef} onClick={() => setLoading(true)}>
+            显示加载
+          </Button>
+        }
         tabList={[
           { key: 'purchases', tab: '采购运营' },
           { key: 'supply', tab: '供应链风险' },
@@ -23,7 +29,13 @@ export default function CardDemo() {
         {tab === 'supply' && <Statistic title="高风险供应商" value={12} suffix="家" />}
         {tab === 'audit' && <p>本季度外部审计已完成，待整改事项 3 项。</p>}
       </Card>
-      <Button disabled={!loading} onClick={() => setLoading(false)}>
+      <Button
+        disabled={!loading}
+        onClick={() => {
+          loadingRef.current?.focus();
+          setLoading(false);
+        }}
+      >
         完成加载
       </Button>
       <p role="status">{loading ? '运营指标加载中' : '运营指标已加载'}</p>

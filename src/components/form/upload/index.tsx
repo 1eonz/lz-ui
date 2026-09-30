@@ -3,7 +3,7 @@ import { forwardRef } from 'react';
 import styles from './index.module.css';
 import type { LxUploadProps, LxUploadRef } from './types';
 
-/** File picker that keeps selection local by default; network transport is host-owned. */
+/** 默认仅保留本地文件选择；网络传输由宿主负责。 */
 export const Upload = forwardRef<LxUploadRef, LxUploadProps>(function Upload(
   { className, beforeUpload, ...props },
   ref,

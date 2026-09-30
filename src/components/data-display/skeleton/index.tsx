@@ -4,8 +4,8 @@ import styles from './index.module.css';
 import type { SkeletonProps } from './types';
 
 /**
- * Layout-preserving placeholder for content that is loading. When `loading` is
- * false AntD renders `children`; callers should keep the same outer dimensions.
+ * 为加载内容保留布局的占位。loading 为 false 时 AntD 渲染 children，
+ * 调用者应保持相同的外部尺寸。
  */
 export const Skeleton = forwardRef<HTMLDivElement, SkeletonProps>(function Skeleton(
   {

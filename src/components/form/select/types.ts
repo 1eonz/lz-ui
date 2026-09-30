@@ -1,6 +1,6 @@
 import type { SelectProps as AntSelectProps, RefSelectProps } from 'antd';
 
-/** AntD select options, search, virtual list and controlled value API. */
+/** AntD 选择器的选项、搜索、虚拟列表和受控值 API。 */
 export type SelectProps = AntSelectProps;
-/** Public AntD select focus/blur handle. */
+/** AntD 选择器公开 focus/blur 实例。 */
 export type SelectRef = RefSelectProps;

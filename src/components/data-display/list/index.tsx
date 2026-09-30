@@ -2,7 +2,7 @@ import { List as AntList } from 'antd';
 import { forwardRef, type ForwardedRef, type RefAttributes } from 'react';
 import type { ListProps } from './types';
 import styles from './index.module.css';
-/** Data list with explicit loading, empty and pagination slots. */
+/** 提供明确 loading、empty 和 pagination 插槽的数据列表。 */
 type ListComponent = (<T>(
   props: ListProps<T> & RefAttributes<HTMLDivElement>,
 ) => React.ReactElement) & {
@@ -17,9 +17,8 @@ function ListRender<T>(props: ListProps<T>, ref: ForwardedRef<HTMLDivElement>) {
   );
 }
 
-// React's forwardRef cannot preserve a generic render function. This is the
-// single boundary cast that restores AntD's generic `dataSource`/`renderItem`
-// inference while keeping the ref target explicit as the lx wrapper root.
+// React forwardRef 无法保留泛型渲染函数；仅在此边界转换类型，恢复
+// AntD dataSource/renderItem 泛型推导，ref 目标仍明确为 lx 包装根节点。
 export const List = Object.assign(forwardRef(ListRender) as unknown as ListComponent, {
   Item: AntList.Item,
 });

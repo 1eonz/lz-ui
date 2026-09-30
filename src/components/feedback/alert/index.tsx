@@ -4,14 +4,12 @@ import type { AlertProps, AlertRef } from './types';
 import styles from './index.module.css';
 
 /**
- * Inline feedback message backed by Ant Design 5 Alert.
+ * 基于 Ant Design 5 Alert 的页面内反馈消息。
  *
- * All lifecycle, focus restoration and announcement policy stays with the host.
- * The ref follows AntD's public AlertRef contract and no wrapper or tab stop is
- * added, so the component can be placed in existing flex/grid layouts safely.
- * `onClose` reports user intent; `afterClose` reports AntD's native animation
- * completion and is not guaranteed when motion is disabled. Required host
- * cleanup/focus recovery should use onClose or the host's controlled lifecycle.
+ * 生命周期、焦点恢复和播报策略由宿主管理。ref 遵循公开 AlertRef 契约，
+ * 不添加布局包装或 Tab 停靠点，可用于已有 flex/grid 布局。
+ * onClose 报告用户关闭意图；afterClose 报告原生动画完成，禁用动效时
+ * 不保证触发。必要清理和焦点恢复应使用 onClose 或宿主受控生命周期。
  */
 export const Alert = forwardRef<AlertRef, AlertProps>(function Alert(
   { className, type, banner, ...props },

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { ButtonRef } from 'lx-ui';
 import { Avatar, Button, Empty, List, Result, Tag } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import styles from './data-display-demo.module.css';
@@ -24,6 +25,7 @@ const initialTasks = [
   },
 ];
 export default function ListDemo() {
+  const readyRef = useRef<ButtonRef>(null);
   const [state, setState] = useState<'ready' | 'loading' | 'error'>('ready');
   const [tasks, setTasks] = useState(initialTasks);
   const [completed, setCompleted] = useState<string[]>([]);
@@ -31,11 +33,14 @@ export default function ListDemo() {
     <DataDisplayDemoFrame>
       <div className={styles.row}>
         <Button onClick={() => setState('loading')}>显示加载</Button>
-        <Button onClick={() => setState('ready')}>显示内容</Button>
+        <Button ref={readyRef} onClick={() => setState('ready')}>
+          显示内容
+        </Button>
         <Button onClick={() => setState('error')}>模拟失败</Button>
         <Button
           onClick={() => {
             setTasks([]);
+            setCompleted([]);
             setState('ready');
           }}
         >
@@ -57,7 +62,16 @@ export default function ListDemo() {
             status="error"
             title="事务暂时无法读取"
             subTitle="本地错误演示；点击重试恢复已有事务。"
-            extra={<Button onClick={() => setState('ready')}>重试</Button>}
+            extra={
+              <Button
+                onClick={() => {
+                  readyRef.current?.focus();
+                  setState('ready');
+                }}
+              >
+                重试
+              </Button>
+            }
           />
         ) : (
           <List
@@ -69,7 +83,17 @@ export default function ListDemo() {
                 <Empty
                   variant="small"
                   description="暂无事务"
-                  action={<Button onClick={() => setTasks(initialTasks)}>恢复事务</Button>}
+                  action={
+                    <Button
+                      onClick={() => {
+                        readyRef.current?.focus();
+                        setTasks(initialTasks);
+                        setCompleted([]);
+                      }}
+                    >
+                      恢复事务
+                    </Button>
+                  }
                 />
               ),
             }}
@@ -81,7 +105,10 @@ export default function ListDemo() {
                     key="complete"
                     size="small"
                     disabled={completed.includes(task.id)}
-                    onClick={() => setCompleted((ids) => [...ids, task.id])}
+                    onClick={() => {
+                      readyRef.current?.focus();
+                      setCompleted((ids) => [...ids, task.id]);
+                    }}
                   >
                     {completed.includes(task.id) ? '已完成' : '完成'}
                   </Button>,

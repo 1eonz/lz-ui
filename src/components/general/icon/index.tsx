@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import styles from './index.module.css';
 import type { IconProps } from './types';
 
-/** Presentational icon; any button or link semantics belong to its interactive parent. */
+/** 展示型图标；按钮或链接的交互语义由其父元素持有。 */
 export const Icon = forwardRef<HTMLSpanElement, IconProps>(function Icon(
   {
     component: Component,

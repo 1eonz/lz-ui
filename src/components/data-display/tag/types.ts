@@ -8,7 +8,10 @@ export type TagProps = AntTagProps;
  * 组件不会自行更新 checked；宿主通过 onChange 提交下一次选择。
  * 原生按钮属性和 ref 均属于实际按钮，不增加布局包装层。
  */
-export interface CheckableTagProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onChange'> {
+export interface CheckableTagProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  'onChange'
+> {
   checked: boolean;
   /** 未被 preventDefault 取消的激活触发一次，参数为请求切换到的选中值。 */
   onChange?: (checked: boolean) => void;
