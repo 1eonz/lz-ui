@@ -1,0 +1,68 @@
+.form {
+  color: var(--lx-color-text);
+}
+
+.fieldItem {
+  animation: lx-field-enter 180ms ease-out both;
+}
+
+.compactItem {
+  margin-block-end: var(--lx-space-sm);
+}
+
+.status {
+  padding-block: var(--lx-space-lg);
+  color: var(--lx-color-text-secondary);
+  text-align: center;
+}
+
+.error {
+  color: var(--lx-color-error);
+}
+
+.inlineStatus {
+  margin-block-end: var(--lx-space-md);
+  color: var(--lx-color-text-secondary);
+}
+
+.optionError {
+  color: var(--lx-color-error);
+}
+
+.retry {
+  margin-inline-start: var(--lx-space-sm);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--lx-color-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.retry:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+@keyframes lx-field-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status {
+    transition: none;
+  }
+
+  .fieldItem {
+    animation: none;
+  }
+}

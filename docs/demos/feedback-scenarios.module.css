@@ -1,0 +1,31 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-lg);
+}
+
+.region {
+  display: grid;
+  gap: var(--lx-space-sm);
+  min-block-size: 140px;
+  padding-block: var(--lx-space-md);
+}
+
+.region p {
+  margin: 0;
+}
+
+.customIndicator {
+  /* A caller-authored public indicator owns geometry. Spin's local motion
+   * policy stops this animation when the system requests reduced motion. */
+  inline-size: var(--lx-spin-size-default);
+  block-size: var(--lx-spin-size-default);
+  border: 2px dashed currentColor;
+  border-radius: 50%;
+  animation: rotate var(--lx-motion-spin-duration) linear infinite;
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,66 @@
+.root {
+  color: var(--lx-color-text-secondary);
+  border-color: var(--lx-color-split);
+}
+.horizontal {
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+  margin-block: var(--lx-space-lg);
+  border: 0;
+}
+.horizontal::before,
+.horizontal::after {
+  content: '';
+  flex: 1;
+  border-block-start: 1px solid var(--lx-color-split);
+}
+.horizontal.noLabel {
+  border-block-start: 1px solid var(--lx-color-split);
+}
+.horizontal.noLabel::before,
+.horizontal.noLabel::after {
+  content: none;
+}
+.label {
+  /* The visible label is referenced by aria-labelledby on labelled rules. */
+  padding-inline: var(--lx-space-md);
+  font-weight: 600;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.plain .label {
+  font-weight: 400;
+}
+.left::before,
+.right::after {
+  flex: 0 0 var(--lx-space-lg);
+}
+.vertical {
+  display: inline-block;
+  align-self: stretch;
+  min-block-size: 1em;
+  margin-inline: var(--lx-space-sm);
+  border-inline-start: 1px solid var(--lx-color-split);
+  vertical-align: middle;
+}
+.dashed.vertical {
+  border-inline-start-style: dashed;
+}
+.dotted.vertical {
+  border-inline-start-style: dotted;
+}
+.dashed.horizontal.noLabel {
+  border-block-start-style: dashed;
+}
+.dotted.horizontal.noLabel {
+  border-block-start-style: dotted;
+}
+.dashed.horizontal::before,
+.dashed.horizontal::after {
+  border-block-start-style: dashed;
+}
+.dotted.horizontal::before,
+.dotted.horizontal::after {
+  border-block-start-style: dotted;
+}

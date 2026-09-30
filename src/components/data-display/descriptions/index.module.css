@@ -1,0 +1,8 @@
+.root {
+  display: block;
+  width: 100%;
+  color: var(--lx-color-text);
+}
+.root :global(.ant-descriptions-item-content) {
+  overflow-wrap: anywhere;
+}

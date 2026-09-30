@@ -1,0 +1,9 @@
+.root {
+  display: block;
+  width: 100%;
+  color: var(--lx-color-text);
+}
+.root :global(.ant-result-title),
+.root :global(.ant-result-subtitle) {
+  color: var(--lx-color-text);
+}

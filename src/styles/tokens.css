@@ -1,0 +1,66 @@
+@layer lx-tokens {
+  /* The baseline also serves consumers that render a primitive before mounting the provider. */
+  :root {
+    --lx-color-primary: #0957b6;
+    --lx-color-primary-text: #0957b6;
+    --lx-color-on-primary: #ffffff;
+    --lx-color-surface: #ffffff;
+    --lx-color-bg-base: #f8f9ff;
+    --lx-color-bg-container: #ffffff;
+    --lx-color-bg-elevated: #ffffff;
+    --lx-color-text: #0b1c30;
+    --lx-color-text-secondary: #414755;
+    --lx-color-border: #727786;
+    --lx-color-border-secondary: #c1c6d7;
+    --lx-color-error: #ba1a1a;
+    --lx-color-success: #117c37;
+    --lx-color-warning: #996000;
+    --lx-color-info: #2453ba;
+    --lx-control-height: 40px;
+    --lx-table-row-height: 44px;
+    --lx-table-header-height: 36px;
+    --lx-radius-control: 4px;
+    --lx-radius-panel: 6px;
+    --lx-space-xs: 4px;
+    --lx-space-sm: 8px;
+    --lx-space-md: 12px;
+    --lx-space-lg: 16px;
+    --lx-space-xl: 24px;
+    --lx-motion-duration: 180ms;
+    --lx-focus-ring: #0957b6;
+    --lx-glass-surface: #ffffff;
+    --lx-glass-backdrop-filter: none;
+  }
+
+  [data-lx-mode] {
+    color: var(--lx-color-text);
+    background-color: var(--lx-color-bg-base);
+    color-scheme: light;
+  }
+
+  [data-lx-mode='dark'] {
+    color-scheme: dark;
+  }
+
+  /* Opaque by default; blur is only enabled when supported and motion is allowed. */
+  [data-lx-appearance='glass'] {
+    --lx-glass-surface: var(--lx-color-bg-container);
+  }
+
+  @supports (backdrop-filter: blur(16px)) {
+    [data-lx-appearance='glass'] {
+      --lx-glass-surface: color-mix(in srgb, var(--lx-color-bg-container) 85%, transparent);
+      --lx-glass-backdrop-filter: blur(16px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-lx-mode] {
+      --lx-motion-duration: 0ms !important;
+    }
+    [data-lx-appearance='glass'] {
+      --lx-glass-surface: var(--lx-color-bg-container);
+      --lx-glass-backdrop-filter: none;
+    }
+  }
+}

@@ -1,0 +1,5 @@
+/*
+ * CSS 层级先固定，避免未来组件样式靠不断增加选择器权重解决覆盖问题。
+ * 具体 token 和组件样式等 UI 设计确认后再填充。
+ */
+@layer lx-reset, lx-tokens, lx-components, lx-utilities, lx-overrides;

@@ -1,0 +1,11 @@
+.root {
+  margin-block-end: var(--lx-space-md);
+  color: var(--lx-color-text);
+}
+
+/* AntD renders validation text itself; this wrapper does not replace its live region. */
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+  }
+}

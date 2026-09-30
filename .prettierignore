@@ -1,0 +1,11 @@
+node_modules
+dist
+docs-dist
+coverage
+.cache
+.umi
+.dumi
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+UI

@@ -1,0 +1,5 @@
+registry=https://your-private-registry.example/repository/npm-private/
+always-auth=true
+
+# 真实 token 只通过本机环境或 CI secret 注入，不要提交到仓库。
+# //your-private-registry.example/repository/npm-private/:_authToken=${NPM_TOKEN}

@@ -1,0 +1,2388 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="web_dashboard" name="shell-type" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-error-container': '#93000a',
+              'on-tertiary': '#ffffff',
+              'on-error': '#ffffff',
+              'surface-container-high': '#dce9ff',
+              'tertiary-fixed': '#ffdbcc',
+              'secondary-fixed-dim': '#6cd3f7',
+              'surface-bright': '#f8f9ff',
+              'surface-container-highest': '#d3e4fe',
+              'status-info': '#2563EB',
+              'inverse-on-surface': '#eaf1ff',
+              'outline-variant': '#c1c6d7',
+              'primary-fixed': '#d9e2ff',
+              'inverse-surface': '#213145',
+              'theme-purple': '#7C3AED',
+              'status-warning': '#F59E0B',
+              'theme-green': '#16A34A',
+              'on-tertiary-fixed-variant': '#7c2e00',
+              'surface-dim': '#cbdbf5',
+              'theme-rose': '#E11D48',
+              outline: '#727786',
+              'surface-container-lowest': '#ffffff',
+              'surface-container': '#e5eeff',
+              'status-success': '#16A34A',
+              'on-primary-fixed-variant': '#004398',
+              'theme-orange': '#F97316',
+              'on-primary': '#ffffff',
+              background: '#f8f9ff',
+              'primary-container': '#006ef2',
+              error: '#ba1a1a',
+              'on-secondary-fixed': '#001f28',
+              'status-error': '#DC2626',
+              'primary-fixed-dim': '#afc6ff',
+              'on-tertiary-container': '#fffbff',
+              'tertiary-container': '#c64f00',
+              'secondary-fixed': '#b7eaff',
+              secondary: '#006780',
+              'surface-variant': '#d3e4fe',
+              'on-secondary-fixed-variant': '#004e61',
+              'on-primary-fixed': '#001a43',
+              'on-primary-container': '#fefcff',
+              surface: '#f8f9ff',
+              'surface-tint': '#0059c7',
+              'tertiary-fixed-dim': '#ffb695',
+              'on-tertiary-fixed': '#351000',
+              'on-surface-variant': '#414755',
+              'secondary-container': '#76dcff',
+              'on-secondary-container': '#006077',
+              'on-surface': '#0b1c30',
+              'on-background': '#0b1c30',
+              'on-secondary': '#ffffff',
+              'error-container': '#ffdad6',
+              'surface-container-low': '#eff4ff',
+              primary: '#0057c2',
+              tertiary: '#9e3d00',
+              'theme-cyan': '#0891B2',
+              'inverse-primary': '#afc6ff',
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
+            spacing: {
+              gutter: '1rem',
+              'space-xl': '1.5rem',
+              'space-md': '0.75rem',
+              margin: '1.5rem',
+              'space-sm': '0.5rem',
+              'space-lg': '1rem',
+              'space-xs': '0.25rem',
+            },
+            fontFamily: {
+              'headline-md': ['Inter'],
+              'label-xs': ['Inter'],
+              'body-sm': ['Inter'],
+              'body-md': ['Inter'],
+              'headline-sm': ['Inter'],
+              'body-lg': ['Inter'],
+              'label-md': ['Inter'],
+              'headline-lg': ['Inter'],
+              'headline-xl': ['Inter'],
+              'label-sm': ['Inter'],
+            },
+            fontSize: {
+              'headline-md': ['18px', { lineHeight: '26px', fontWeight: '600' }],
+              'label-xs': [
+                '11px',
+                { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '600' },
+              ],
+              'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+              'body-md': ['14px', { lineHeight: '22px', fontWeight: '400' }],
+              'headline-sm': ['16px', { lineHeight: '24px', fontWeight: '600' }],
+              'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+              'label-md': ['14px', { lineHeight: '20px', fontWeight: '500' }],
+              'headline-lg': [
+                '22px',
+                { lineHeight: '30px', letterSpacing: '-0.01em', fontWeight: '600' },
+              ],
+              'headline-xl': [
+                '28px',
+                { lineHeight: '36px', letterSpacing: '-0.02em', fontWeight: '600' },
+              ],
+              'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-surface font-body-md text-on-surface antialiased">
+    <header
+      class="fixed top-0 left-0 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex items-center justify-between px-margin"
+    >
+      <div class="flex items-center gap-space-lg">
+        <div class="flex items-center gap-space-sm">
+          <div
+            class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-sm text-headline-sm"
+          >
+            LX
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-space-xs">
+              <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                >lx-ui</span
+              ><span
+                class="px-space-xs py-0.5 rounded-DEFAULT bg-surface-container-high text-on-surface-variant font-label-xs text-label-xs"
+                >v0.1</span
+              >
+            </div>
+            <span class="font-label-xs text-label-xs text-on-surface-variant"
+              >Design System Workbench</span
+            >
+          </div>
+        </div>
+        <div class="h-4 w-px bg-outline-variant/40 mx-space-xs"></div>
+        <div class="flex items-center bg-surface-container-low p-1 rounded-lg gap-1">
+          <button
+            class="px-space-sm py-1 rounded-DEFAULT font-label-xs text-label-xs bg-surface-container-lowest shadow-[0_1px_4px_rgba(0,0,0,0.05)] text-primary font-semibold"
+            type="button"
+          >
+            Business</button
+          ><button
+            class="px-space-sm py-1 rounded-DEFAULT font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface"
+            type="button"
+          >
+            Soft</button
+          ><button
+            class="px-space-sm py-1 rounded-DEFAULT font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface"
+            type="button"
+          >
+            Glass
+          </button>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-md">
+        <div class="flex items-center gap-1.5 px-space-sm py-1 bg-surface-container-low rounded-lg">
+          <button
+            class="w-3.5 h-3.5 rounded-full bg-primary ring-2 ring-primary ring-offset-1"
+            title="Ocean Blue"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-orange"
+            title="Vibrant Orange"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-green"
+            title="Emerald Green"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-purple"
+            title="Smart Purple"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-cyan"
+            title="Lucid Cyan"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-rose"
+            title="Brand Rose"
+            type="button"
+          ></button>
+        </div>
+        <div class="flex items-center bg-surface-container-low p-1 rounded-lg gap-1">
+          <button
+            class="px-2 py-1 rounded-DEFAULT font-label-xs text-label-xs bg-surface-container-lowest text-primary shadow-[0_1px_4px_rgba(0,0,0,0.05)] flex items-center gap-1"
+            title="Light Mode"
+            type="button"
+          >
+            <span class="material-symbols-outlined text-[14px]">light_mode</span>Light</button
+          ><button
+            class="px-2 py-1 rounded-DEFAULT font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface flex items-center gap-1"
+            title="Dark Mode"
+            type="button"
+          >
+            <span class="material-symbols-outlined text-[14px]">dark_mode</span>Dark
+          </button>
+        </div>
+        <div class="flex items-center bg-surface-container-low p-1 rounded-lg gap-1">
+          <button
+            class="px-2 py-1 rounded-DEFAULT font-label-xs text-label-xs bg-surface-container-lowest text-primary shadow-[0_1px_4px_rgba(0,0,0,0.05)]"
+            type="button"
+          >
+            Comfortable</button
+          ><button
+            class="px-2 py-1 rounded-DEFAULT font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface"
+            type="button"
+          >
+            Compact
+          </button>
+        </div>
+        <div class="h-4 w-px bg-outline-variant/40"></div>
+        <div class="flex items-center gap-space-xs">
+          <a
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
+            href="#"
+            title="Docs"
+            ><span class="material-symbols-outlined text-[20px]">menu_book</span></a
+          ><a
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
+            href="#"
+            title="Repository"
+            ><span class="material-symbols-outlined text-[20px]">code</span></a
+          >
+        </div>
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+        </div>
+      </div>
+    </header>
+    <aside
+      class="fixed left-0 top-16 bottom-0 w-72 bg-surface-container-lowest z-40 flex flex-col justify-between shadow-[1px_0_8px_rgba(0,0,0,0.02)]"
+    >
+      <div class="flex-1 overflow-y-auto py-space-md px-space-md flex flex-col gap-space-lg">
+        <div class="flex flex-col gap-space-xs">
+          <span
+            class="px-space-sm font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider"
+            >Design Handover Gates</span
+          >
+          <nav
+            class="flex flex-col gap-1"
+            data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg shadow-sm"
+          >
+            <a
+              aria-current="page"
+              class="flex items-center px-space-md py-2.5 transition-colors bg-primary-container text-on-primary-container font-semibold rounded-lg shadow-sm"
+              data-path="tokens-palette"
+              href="#"
+              ><span class="material-symbols-outlined mr-space-sm text-[18px]">palette</span>1.
+              Tokens &amp; Palette</a
+            ><a
+              class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors"
+              data-path="theme-presets"
+              href="#"
+              ><span class="material-symbols-outlined mr-space-sm text-[18px]">auto_awesome</span>2.
+              Theme &amp; Presets</a
+            ><a
+              class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors"
+              data-path="component-states"
+              href="#"
+              ><span class="material-symbols-outlined mr-space-sm text-[18px]">toggle_on</span>3.
+              Component States</a
+            ><a
+              class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors"
+              data-path="protable-searchform"
+              href="#"
+              ><span class="material-symbols-outlined mr-space-sm text-[18px]">table_chart</span>4.
+              ProTable &amp; SearchForm</a
+            >
+          </nav>
+        </div>
+        <div class="flex flex-col gap-space-xs">
+          <span
+            class="px-space-sm font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider"
+            >Enterprise Specs</span
+          >
+          <div class="flex flex-col gap-1 px-space-sm">
+            <div
+              class="flex items-center justify-between py-1 text-on-surface-variant font-label-xs text-label-xs"
+            >
+              <span>Grid Baseline</span
+              ><span class="font-medium text-on-surface">12-Col / 4-8px</span>
+            </div>
+            <div
+              class="flex items-center justify-between py-1 text-on-surface-variant font-label-xs text-label-xs"
+            >
+              <span>Compliance</span
+              ><span class="font-medium text-status-success flex items-center gap-0.5"
+                ><span class="material-symbols-outlined text-[13px]">verified</span>WCAG 2.2
+                AA</span
+              >
+            </div>
+            <div
+              class="flex items-center justify-between py-1 text-on-surface-variant font-label-xs text-label-xs"
+            >
+              <span>Interactive States</span
+              ><span class="font-medium text-on-surface">7 Standardized</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-space-md bg-surface-container-low/50 mx-space-md mb-space-md rounded-xl flex items-center justify-between"
+      >
+        <div class="flex items-center gap-space-sm">
+          <span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+          <div class="flex flex-col">
+            <span class="font-label-sm text-label-sm font-semibold text-on-surface"
+              >Gate Status</span
+            ><span class="font-label-xs text-label-xs text-status-success font-medium"
+              >All 4 Gates Passed</span
+            >
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+          >chevron_right</span
+        >
+      </div>
+    </aside>
+    <div class="pl-72">
+      <main class="w-full pt-16 bg-surface min-h-screen">
+        <div class="flex flex-col w-full">
+          <div class="p-space-xl flex flex-col gap-space-xl">
+            <!-- Top Meta Overview & Spec Baseline -->
+            <div
+              class="bg-surface-container-lowest p-space-xl rounded-xl shadow-sm flex flex-col gap-space-lg relative overflow-hidden"
+            >
+              <div
+                class="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-primary/5 pointer-events-none blur-3xl"
+              ></div>
+              <div
+                class="flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md z-10"
+              >
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-space-sm">
+                    <span
+                      class="px-space-xs py-0.5 rounded-DEFAULT bg-primary-fixed text-on-primary-fixed font-label-xs text-label-xs font-semibold"
+                      >GATE 01</span
+                    >
+                    <span
+                      class="text-on-surface-variant font-label-xs text-label-xs tracking-wider uppercase font-mono"
+                      >Foundations Spec • Layered Tokens</span
+                    >
+                  </div>
+                  <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">
+                    lx-ui Design Tokens &amp; Base Foundations
+                  </h1>
+                  <p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+                    面向企业级中后台 ERP / CRM 系统的底层设计基线。通过严格的 3 层 Token
+                    映射架构（Global Primitive → Semantic →
+                    Component），确保统一的对比度无障碍性与高密度数据处理能力。
+                  </p>
+                </div>
+                <div
+                  class="flex items-center gap-space-sm bg-surface-container-low p-space-sm rounded-lg self-stretch md:self-auto justify-between md:justify-start"
+                >
+                  <div
+                    class="flex items-center gap-2 px-space-sm py-1 bg-surface-container-lowest rounded shadow-sm text-status-success font-label-sm text-label-sm"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">verified</span>
+                    <span>WCAG 2.2 AA Compliant</span>
+                  </div>
+                  <div class="h-4 w-px bg-surface-container-highest"></div>
+                  <div
+                    class="flex items-center gap-1.5 px-space-sm py-1 text-on-surface-variant font-label-xs text-label-xs font-mono"
+                  >
+                    <span class="w-2 h-2 rounded-full bg-primary"></span>
+                    Prefix: <strong class="text-on-surface font-semibold">--lx-*</strong>
+                  </div>
+                </div>
+              </div>
+              <!-- Token Tri-layer Architecture Infographic Bar -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md z-10 pt-space-xs">
+                <div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-1">
+                  <div class="flex items-center justify-between">
+                    <span
+                      class="font-label-xs text-label-xs uppercase font-mono text-on-surface-variant"
+                      >L1. Primitive Tokens</span
+                    >
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant"
+                      >palette</span
+                    >
+                  </div>
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                    >全局物理色板 &amp; 标量</span
+                  >
+                  <span class="font-body-sm text-body-sm text-on-surface-variant font-mono"
+                    >--lx-color-blue-500: #1677FF;</span
+                  >
+                  <span class="font-body-sm text-body-sm text-on-surface-variant"
+                    >不含业务语意，仅作为色彩、字阶、尺寸常量库。</span
+                  >
+                </div>
+                <div class="p-space-md rounded-lg bg-primary/10 flex flex-col gap-1">
+                  <div class="flex items-center justify-between">
+                    <span class="font-label-xs text-label-xs uppercase font-mono text-primary"
+                      >L2. Semantic Tokens</span
+                    >
+                    <span class="material-symbols-outlined text-[16px] text-primary"
+                      >auto_mode</span
+                    >
+                  </div>
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                    >语义层 &amp; 状态绑定</span
+                  >
+                  <span class="font-body-sm text-body-sm text-primary font-mono"
+                    >--lx-theme-primary: var(--lx-color-blue-500);</span
+                  >
+                  <span class="font-body-sm text-body-sm text-on-surface-variant"
+                    >自适应 Light / Dark 主题及六大品牌预设的上下文切换。</span
+                  >
+                </div>
+                <div class="p-space-md rounded-lg bg-surface-container-low flex flex-col gap-1">
+                  <div class="flex items-center justify-between">
+                    <span
+                      class="font-label-xs text-label-xs uppercase font-mono text-on-surface-variant"
+                      >L3. Component Tokens</span
+                    >
+                    <span class="material-symbols-outlined text-[16px] text-on-surface-variant"
+                      >widgets</span
+                    >
+                  </div>
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                    >组件级抽象与作用域</span
+                  >
+                  <span class="font-body-sm text-body-sm text-on-surface-variant font-mono"
+                    >--lx-btn-primary-bg: var(--lx-theme-primary);</span
+                  >
+                  <span class="font-body-sm text-body-sm text-on-surface-variant"
+                    >直接作用于 Button、ProTable、SearchForm 等控件。</span
+                  >
+                </div>
+              </div>
+            </div>
+            <!-- Quick Navigation Jump Tags -->
+            <div
+              class="flex items-center gap-space-xs overflow-x-auto pb-1 text-on-surface-variant font-label-sm text-label-sm"
+            >
+              <span
+                class="font-label-xs text-label-xs uppercase tracking-wider text-outline px-space-xs"
+                >Jump to:</span
+              >
+              <a
+                class="px-space-sm py-1 rounded bg-surface-container-lowest shadow-sm hover:text-primary transition-colors"
+                href="#palette-system"
+                >1. Brand &amp; Status Palette</a
+              >
+              <a
+                class="px-space-sm py-1 rounded bg-surface-container-lowest shadow-sm hover:text-primary transition-colors"
+                href="#neutral-surfaces"
+                >2. Surfaces &amp; Neutrals</a
+              >
+              <a
+                class="px-space-sm py-1 rounded bg-surface-container-lowest shadow-sm hover:text-primary transition-colors"
+                href="#typography-spec"
+                >3. Typography Scale</a
+              >
+              <a
+                class="px-space-sm py-1 rounded bg-surface-container-lowest shadow-sm hover:text-primary transition-colors"
+                href="#density-spacing"
+                >4. Spacing &amp; Density</a
+              >
+              <a
+                class="px-space-sm py-1 rounded bg-surface-container-lowest shadow-sm hover:text-primary transition-colors"
+                href="#radii-elevation"
+                >5. Radii &amp; Elevation</a
+              >
+              <a
+                class="px-space-sm py-1 rounded bg-surface-container-lowest shadow-sm hover:text-primary transition-colors"
+                href="#animation-tokens"
+                >6. Animation Tokens</a
+              >
+            </div>
+            <!-- SECTION 1: Brand & Theme Palettes -->
+            <div class="flex flex-col gap-space-lg" id="palette-system">
+              <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-xs">
+                <div>
+                  <span
+                    class="font-label-xs text-label-xs text-primary font-mono font-semibold uppercase"
+                    >01 / Palette System</span
+                  >
+                  <h2 class="font-headline-lg text-headline-lg text-on-surface">
+                    6 大企业级主题色梯与语义状态色
+                  </h2>
+                </div>
+                <div
+                  class="flex items-center gap-space-sm text-on-surface-variant font-label-xs text-label-xs font-mono"
+                >
+                  <span>Active Step: 500 (Primary Core)</span>
+                  <span>•</span>
+                  <span>Steps: 50 - 900</span>
+                </div>
+              </div>
+              <!-- 6 Themes Grid -->
+              <div class="grid grid-cols-1 xl:grid-cols-2 gap-space-lg">
+                <!-- Ocean Blue -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="w-3.5 h-3.5 rounded-full bg-primary"></span>
+                      <span class="font-headline-sm text-headline-sm text-on-surface"
+                        >Ocean Blue (默认商务)</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                        >#1677FF • --lx-color-blue</span
+                      >
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-xs text-label-xs font-medium"
+                      >Standard</span
+                    >
+                  </div>
+                  <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#E6F4FF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">50</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#E6F4FF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#BAE0FF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">100</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#BAE0FF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#91CAFF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">200</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#91CAFF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#69B1FF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">300</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#69B1FF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#4096FF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">400</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#4096FF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#1677FF] flex items-end p-1 shadow-sm relative">
+                        <span class="font-label-xs text-[10px] text-white font-mono font-bold"
+                          >500</span
+                        ><span
+                          class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-white"
+                        ></span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-primary font-mono font-bold truncate"
+                        >#1677FF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#0958D9] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">600</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#0958D9</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#003EB3] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">700</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#003EB3</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#002C8C] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">800</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#002C8C</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#001D66] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">900</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#001D66</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- Vibrant Orange -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="w-3.5 h-3.5 rounded-full bg-theme-orange"></span>
+                      <span class="font-headline-sm text-headline-sm text-on-surface"
+                        >Vibrant Orange (敏捷零售)</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                        >#F97316 • --lx-color-orange</span
+                      >
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-xs text-label-xs font-medium"
+                      >Preset</span
+                    >
+                  </div>
+                  <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FFF7ED] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">50</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FFF7ED</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FFEDD5] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">100</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FFEDD5</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FED7AA] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">200</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FED7AA</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FDBA74] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">300</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FDBA74</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FB923C] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">400</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FB923C</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#F97316] flex items-end p-1 shadow-sm relative">
+                        <span class="font-label-xs text-[10px] text-white font-mono font-bold"
+                          >500</span
+                        ><span
+                          class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-white"
+                        ></span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-theme-orange font-mono font-bold truncate"
+                        >#F97316</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#EA580C] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">600</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#EA580C</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#C2410C] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">700</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#C2410C</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#9A3412] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">800</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#9A3412</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#7C2D12] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">900</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#7C2D12</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- Emerald Green -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="w-3.5 h-3.5 rounded-full bg-theme-green"></span>
+                      <span class="font-headline-sm text-headline-sm text-on-surface"
+                        >Emerald Green (绿色双碳)</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                        >#16A34A • --lx-color-green</span
+                      >
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-xs text-label-xs font-medium"
+                      >Preset</span
+                    >
+                  </div>
+                  <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#F0FDF4] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">50</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#F0FDF4</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#DCFCE7] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">100</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#DCFCE7</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#BBF7D0] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">200</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#BBF7D0</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#86EFAC] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">300</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#86EFAC</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#4ADE80] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">400</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#4ADE80</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#16A34A] flex items-end p-1 shadow-sm relative">
+                        <span class="font-label-xs text-[10px] text-white font-mono font-bold"
+                          >500</span
+                        ><span
+                          class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-white"
+                        ></span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-theme-green font-mono font-bold truncate"
+                        >#16A34A</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#15803D] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">600</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#15803D</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#166534] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">700</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#166534</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#14532D] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">800</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#14532D</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#052E16] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">900</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#052E16</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- Smart Purple -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="w-3.5 h-3.5 rounded-full bg-theme-purple"></span>
+                      <span class="font-headline-sm text-headline-sm text-on-surface"
+                        >Smart Purple (智慧数据)</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                        >#7C3AED • --lx-color-purple</span
+                      >
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-xs text-label-xs font-medium"
+                      >Preset</span
+                    >
+                  </div>
+                  <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FAF5FF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">50</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FAF5FF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#F3E8FF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">100</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#F3E8FF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#E9D5FF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">200</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#E9D5FF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#D8B4FE] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">300</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#D8B4FE</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#C084FC] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">400</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#C084FC</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#7C3AED] flex items-end p-1 shadow-sm relative">
+                        <span class="font-label-xs text-[10px] text-white font-mono font-bold"
+                          >500</span
+                        ><span
+                          class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-white"
+                        ></span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-theme-purple font-mono font-bold truncate"
+                        >#7C3AED</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#6D28D9] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">600</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#6D28D9</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#5B21B6] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">700</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#5B21B6</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#4C1D95] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">800</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#4C1D95</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#3B0764] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">900</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#3B0764</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- Lucid Cyan -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="w-3.5 h-3.5 rounded-full bg-theme-cyan"></span>
+                      <span class="font-headline-sm text-headline-sm text-on-surface"
+                        >Lucid Cyan (未来科技)</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                        >#0891B2 • --lx-color-cyan</span
+                      >
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-xs text-label-xs font-medium"
+                      >Preset</span
+                    >
+                  </div>
+                  <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#ECFEFF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">50</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#ECFEFF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#CFFAFE] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">100</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#CFFAFE</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#A5F3FC] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">200</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#A5F3FC</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#67E8F9] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">300</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#67E8F9</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#22D3EE] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">400</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#22D3EE</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#0891B2] flex items-end p-1 shadow-sm relative">
+                        <span class="font-label-xs text-[10px] text-white font-mono font-bold"
+                          >500</span
+                        ><span
+                          class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-white"
+                        ></span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-theme-cyan font-mono font-bold truncate"
+                        >#0891B2</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#0E7490] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">600</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#0E7490</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#155E75] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">700</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#155E75</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#164E63] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">800</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#164E63</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#083344] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">900</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#083344</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- Brand Rose -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="w-3.5 h-3.5 rounded-full bg-theme-rose"></span>
+                      <span class="font-headline-sm text-headline-sm text-on-surface"
+                        >Brand Rose (活力消费)</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                        >#E11D48 • --lx-color-rose</span
+                      >
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-xs text-label-xs font-medium"
+                      >Preset</span
+                    >
+                  </div>
+                  <div class="grid grid-cols-5 sm:grid-cols-10 gap-1.5">
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FFF1F2] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">50</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FFF1F2</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FFE4E6] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">100</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FFE4E6</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FECDD3] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">200</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FECDD3</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FDA4AF] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-on-surface font-mono">300</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FDA4AF</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#FB7185] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">400</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#FB7185</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#E11D48] flex items-end p-1 shadow-sm relative">
+                        <span class="font-label-xs text-[10px] text-white font-mono font-bold"
+                          >500</span
+                        ><span
+                          class="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-white"
+                        ></span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-theme-rose font-mono font-bold truncate"
+                        >#E11D48</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#BE123C] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">600</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#BE123C</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#9F1239] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">700</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#9F1239</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#881337] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">800</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#881337</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <div class="h-14 rounded bg-[#4C0519] flex items-end p-1 shadow-sm">
+                        <span class="font-label-xs text-[10px] text-white font-mono">900</span>
+                      </div>
+                      <span
+                        class="font-label-xs text-[9px] text-on-surface-variant font-mono truncate"
+                        >#4C0519</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Functional Semantic Status Colors -->
+              <div
+                class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+              >
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+                  <div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface">
+                      语义状态色 (Functional Semantic Tokens)
+                    </h3>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant"
+                      >包含交互焦点、反馈提示、Badge、Alert 的 Bg / Border / Text 级联绑定</span
+                    >
+                  </div>
+                  <span
+                    class="font-label-xs text-label-xs text-status-success font-semibold flex items-center gap-1"
+                  >
+                    <span class="material-symbols-outlined text-[15px]">check_circle</span> Contrast
+                    Ratio ≥ 4.5:1
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-md">
+                  <!-- Success -->
+                  <div
+                    class="p-space-md rounded-lg bg-[#F0FDF4] flex flex-col gap-space-sm shadow-sm"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-status-success text-[18px]"
+                          >check_circle</span
+                        >
+                        <span class="font-label-md text-label-md font-semibold text-status-success"
+                          >Success 成功</span
+                        >
+                      </div>
+                      <span
+                        class="font-label-xs text-label-xs font-mono text-status-success font-bold"
+                        >#16A34A</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1 font-mono text-[11px] text-on-surface">
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Text)</span>
+                        <span>--lx-status-success</span>
+                      </div>
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Bg)</span>
+                        <span>--lx-status-success-bg</span>
+                      </div>
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Border)</span>
+                        <span>--lx-status-success-border</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Warning -->
+                  <div
+                    class="p-space-md rounded-lg bg-[#FFFBEB] flex flex-col gap-space-sm shadow-sm"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-status-warning text-[18px]"
+                          >warning</span
+                        >
+                        <span class="font-label-md text-label-md font-semibold text-status-warning"
+                          >Warning 警告</span
+                        >
+                      </div>
+                      <span
+                        class="font-label-xs text-label-xs font-mono text-status-warning font-bold"
+                        >#F59E0B</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1 font-mono text-[11px] text-on-surface">
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Text)</span>
+                        <span>--lx-status-warning</span>
+                      </div>
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Bg)</span>
+                        <span>--lx-status-warning-bg</span>
+                      </div>
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Border)</span>
+                        <span>--lx-status-warning-border</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Error -->
+                  <div
+                    class="p-space-md rounded-lg bg-[#FEF2F2] flex flex-col gap-space-sm shadow-sm"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-status-error text-[18px]"
+                          >error</span
+                        >
+                        <span class="font-label-md text-label-md font-semibold text-status-error"
+                          >Error 错误</span
+                        >
+                      </div>
+                      <span
+                        class="font-label-xs text-label-xs font-mono text-status-error font-bold"
+                        >#DC2626</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1 font-mono text-[11px] text-on-surface">
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Text)</span>
+                        <span>--lx-status-error</span>
+                      </div>
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Bg)</span>
+                        <span>--lx-status-error-bg</span>
+                      </div>
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Border)</span>
+                        <span>--lx-status-error-border</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Info -->
+                  <div
+                    class="p-space-md rounded-lg bg-[#EFF6FF] flex flex-col gap-space-sm shadow-sm"
+                  >
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-status-info text-[18px]"
+                          >info</span
+                        >
+                        <span class="font-label-md text-label-md font-semibold text-status-info"
+                          >Info 信息</span
+                        >
+                      </div>
+                      <span class="font-label-xs text-label-xs font-mono text-status-info font-bold"
+                        >#2563EB</span
+                      >
+                    </div>
+                    <div class="flex flex-col gap-1 font-mono text-[11px] text-on-surface">
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Text)</span>
+                        <span>--lx-status-info</span>
+                      </div>
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Bg)</span>
+                        <span>--lx-status-info-bg</span>
+                      </div>
+                      <div class="flex justify-between py-0.5 bg-white/70 px-1.5 rounded">
+                        <span class="text-on-surface-variant">Token (Border)</span>
+                        <span>--lx-status-info-border</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- SECTION 2: Neutral Grays & Surfaces (Dual Mode Spec) -->
+            <div class="flex flex-col gap-space-lg" id="neutral-surfaces">
+              <div>
+                <span
+                  class="font-label-xs text-label-xs text-primary font-mono font-semibold uppercase"
+                  >02 / Surfaces &amp; Neutrals</span
+                >
+                <h2 class="font-headline-lg text-headline-lg text-on-surface">
+                  中性灰阶与表面层级 (Light vs. Dark 双模规范)
+                </h2>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
+                <!-- Light Mode Surfaces -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between pb-space-xs">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="material-symbols-outlined text-primary text-[20px]"
+                        >light_mode</span
+                      >
+                      <span class="font-headline-sm text-headline-sm text-on-surface"
+                        >Light Mode 表面分层</span
+                      >
+                    </div>
+                    <span class="font-label-xs text-label-xs font-mono text-on-surface-variant"
+                      >Background: #F8F9FF</span
+                    >
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="p-space-md rounded bg-[#FFFFFF] shadow-sm flex items-center justify-between"
+                    >
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-on-surface font-semibold"
+                          >Surface Lowest (Cards / Modals / Canvas Base)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-surface-lowest • #FFFFFF</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-xs text-label-xs"
+                        >Lvl 1</span
+                      >
+                    </div>
+                    <div class="p-space-md rounded bg-[#EFF4FF] flex items-center justify-between">
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-on-surface font-semibold"
+                          >Surface Low (Secondary Panels / Sidebars)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-surface-low • #EFF4FF</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-label-xs text-label-xs"
+                        >Lvl 0.5</span
+                      >
+                    </div>
+                    <div class="p-space-md rounded bg-[#E5EEFF] flex items-center justify-between">
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-on-surface font-semibold"
+                          >Surface Container (Group Container / Toolbar)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-surface-container • #E5EEFF</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-label-xs text-label-xs"
+                        >Lvl 0</span
+                      >
+                    </div>
+                    <div class="p-space-md rounded bg-[#DCE9FF] flex items-center justify-between">
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-on-surface font-semibold"
+                          >Surface High (Hover States / Dropdown Shell)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-surface-high • #DCE9FF</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-surface-container-lowest text-on-surface font-label-xs text-label-xs shadow-sm"
+                        >Lvl 2</span
+                      >
+                    </div>
+                    <div class="p-space-md rounded bg-[#D3E4FE] flex items-center justify-between">
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-on-surface font-semibold"
+                          >Surface Highest (Active Pills / Drag Indicator)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-surface-highest • #D3E4FE</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-surface-container-lowest text-on-surface font-label-xs text-label-xs shadow-sm"
+                        >Lvl 3</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <!-- Dark Mode Surfaces Preview (Embedded Dark Container) -->
+                <div
+                  class="bg-[#0B132B] p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md text-white"
+                >
+                  <div class="flex items-center justify-between pb-space-xs">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="material-symbols-outlined text-secondary-fixed-dim text-[20px]"
+                        >dark_mode</span
+                      >
+                      <span class="font-headline-sm text-headline-sm text-white"
+                        >Dark Mode 表面映射 (Token Context)</span
+                      >
+                    </div>
+                    <span class="font-label-xs text-label-xs font-mono text-outline-variant"
+                      >Background: #070B19</span
+                    >
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="p-space-md rounded bg-[#111A38] shadow-sm flex items-center justify-between"
+                    >
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-white font-semibold"
+                          >Dark Surface Lowest (Active Work Area)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-outline-variant font-mono"
+                          >--lx-dark-surface-lowest • #111A38</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-[#1C274E] text-white font-label-xs text-label-xs"
+                        >Lvl 1</span
+                      >
+                    </div>
+                    <div class="p-space-md rounded bg-[#0D1530] flex items-center justify-between">
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-white font-semibold"
+                          >Dark Surface Low (Sub-nav &amp; Rail)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-outline-variant font-mono"
+                          >--lx-dark-surface-low • #0D1530</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-[#1C274E] text-white font-label-xs text-label-xs"
+                        >Lvl 0.5</span
+                      >
+                    </div>
+                    <div class="p-space-md rounded bg-[#162145] flex items-center justify-between">
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-white font-semibold"
+                          >Dark Surface Container (Default Containers)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-outline-variant font-mono"
+                          >--lx-dark-surface-container • #162145</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-[#202E5C] text-white font-label-xs text-label-xs"
+                        >Lvl 0</span
+                      >
+                    </div>
+                    <div class="p-space-md rounded bg-[#1E2C5B] flex items-center justify-between">
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-white font-semibold"
+                          >Dark Surface High (Hover &amp; Focus Layers)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-outline-variant font-mono"
+                          >--lx-dark-surface-high • #1E2C5B</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-[#273872] text-white font-label-xs text-label-xs"
+                        >Lvl 2</span
+                      >
+                    </div>
+                    <div class="p-space-md rounded bg-[#253770] flex items-center justify-between">
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md text-white font-semibold"
+                          >Dark Surface Highest (Popovers &amp; Float Docks)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-outline-variant font-mono"
+                          >--lx-dark-surface-highest • #253770</span
+                        >
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-[#31468C] text-white font-label-xs text-label-xs"
+                        >Lvl 3</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- SECTION 3: Typography Hierarchy & Type Spec -->
+            <div class="flex flex-col gap-space-lg" id="typography-spec">
+              <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-xs">
+                <div>
+                  <span
+                    class="font-label-xs text-label-xs text-primary font-mono font-semibold uppercase"
+                    >03 / Typography Engine</span
+                  >
+                  <h2 class="font-headline-lg text-headline-lg text-on-surface">
+                    Inter &amp; PingFang SC 双语字体排印梯级
+                  </h2>
+                </div>
+                <div
+                  class="flex items-center gap-space-sm font-label-xs text-label-xs text-on-surface-variant font-mono"
+                >
+                  <span>Fallback: -apple-system, sans-serif</span>
+                  <span>•</span>
+                  <span>Numbers: Monospaced Tabular Figures</span>
+                </div>
+              </div>
+              <div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+                <div class="p-space-lg flex flex-col gap-space-lg">
+                  <!-- Type Spec Table -->
+                  <div class="flex flex-col divide-y divide-surface-container-high/60">
+                    <!-- Title 1 -->
+                    <div
+                      class="py-space-md grid grid-cols-1 lg:grid-cols-12 gap-space-md items-center"
+                    >
+                      <div class="lg:col-span-3 flex flex-col">
+                        <span
+                          class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                          >Title 1 (Headline XL)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-type-title-1 • 30px / 38px • 600</span
+                        >
+                      </div>
+                      <div class="lg:col-span-6 flex items-center">
+                        <span
+                          class="text-[30px] leading-[38px] font-semibold text-on-surface tracking-tight"
+                          >企业数据与全域智能工作台</span
+                        >
+                      </div>
+                      <div class="lg:col-span-3 flex justify-end">
+                        <code
+                          class="px-space-sm py-1 bg-surface-container-low rounded font-mono text-[11px] text-primary"
+                          >font-headline-xl text-headline-xl</code
+                        >
+                      </div>
+                    </div>
+                    <!-- Title 2 -->
+                    <div
+                      class="py-space-md grid grid-cols-1 lg:grid-cols-12 gap-space-md items-center"
+                    >
+                      <div class="lg:col-span-3 flex flex-col">
+                        <span
+                          class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                          >Title 2 (Headline LG)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-type-title-2 • 24px / 32px • 600</span
+                        >
+                      </div>
+                      <div class="lg:col-span-6 flex items-center">
+                        <span class="text-[24px] leading-[32px] font-semibold text-on-surface"
+                          >业务分析报表与资源分发中枢</span
+                        >
+                      </div>
+                      <div class="lg:col-span-3 flex justify-end">
+                        <code
+                          class="px-space-sm py-1 bg-surface-container-low rounded font-mono text-[11px] text-primary"
+                          >font-headline-lg text-headline-lg</code
+                        >
+                      </div>
+                    </div>
+                    <!-- Title 3 -->
+                    <div
+                      class="py-space-md grid grid-cols-1 lg:grid-cols-12 gap-space-md items-center"
+                    >
+                      <div class="lg:col-span-3 flex flex-col">
+                        <span
+                          class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                          >Title 3 (Headline MD)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-type-title-3 • 20px / 28px • 600</span
+                        >
+                      </div>
+                      <div class="lg:col-span-6 flex items-center">
+                        <span class="text-[20px] leading-[28px] font-semibold text-on-surface"
+                          >ProTable 表格筛选与高级条件组</span
+                        >
+                      </div>
+                      <div class="lg:col-span-3 flex justify-end">
+                        <code
+                          class="px-space-sm py-1 bg-surface-container-low rounded font-mono text-[11px] text-primary"
+                          >font-headline-md text-headline-md</code
+                        >
+                      </div>
+                    </div>
+                    <!-- Body Large -->
+                    <div
+                      class="py-space-md grid grid-cols-1 lg:grid-cols-12 gap-space-md items-center"
+                    >
+                      <div class="lg:col-span-3 flex flex-col">
+                        <span
+                          class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                          >Body Large (Body LG)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-type-body-lg • 16px / 24px • 400</span
+                        >
+                      </div>
+                      <div class="lg:col-span-6 flex items-center">
+                        <span class="text-[16px] leading-[24px] text-on-surface"
+                          >提供流畅的段落阅读体验，用于导语及重要通知说明。</span
+                        >
+                      </div>
+                      <div class="lg:col-span-3 flex justify-end">
+                        <code
+                          class="px-space-sm py-1 bg-surface-container-low rounded font-mono text-[11px] text-primary"
+                          >font-body-lg text-body-lg</code
+                        >
+                      </div>
+                    </div>
+                    <!-- Body Regular -->
+                    <div
+                      class="py-space-md grid grid-cols-1 lg:grid-cols-12 gap-space-md items-center"
+                    >
+                      <div class="lg:col-span-3 flex flex-col">
+                        <span
+                          class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                          >Body Regular (Body MD)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-type-body-regular • 14px / 22px • 400/500</span
+                        >
+                      </div>
+                      <div class="lg:col-span-6 flex items-center">
+                        <span class="text-[14px] leading-[22px] text-on-surface"
+                          >核心通用字阶：用于表单输入、表格单元格内容与常规正文信息展示。</span
+                        >
+                      </div>
+                      <div class="lg:col-span-3 flex justify-end">
+                        <code
+                          class="px-space-sm py-1 bg-surface-container-low rounded font-mono text-[11px] text-primary"
+                          >font-body-md text-body-md</code
+                        >
+                      </div>
+                    </div>
+                    <!-- Caption -->
+                    <div
+                      class="py-space-md grid grid-cols-1 lg:grid-cols-12 gap-space-md items-center"
+                    >
+                      <div class="lg:col-span-3 flex flex-col">
+                        <span
+                          class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                          >Caption (Body SM / Label SM)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >--lx-type-caption • 12px / 18px • 400/500</span
+                        >
+                      </div>
+                      <div class="lg:col-span-6 flex items-center">
+                        <span class="text-[12px] leading-[18px] text-on-surface-variant"
+                          >次要元数据说明、表单字段检验错误提示、时间戳记与徽章文本。</span
+                        >
+                      </div>
+                      <div class="lg:col-span-3 flex justify-end">
+                        <code
+                          class="px-space-sm py-1 bg-surface-container-low rounded font-mono text-[11px] text-primary"
+                          >font-label-sm text-label-sm</code
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- SECTION 4: Spacing Grid & Density Mode (Comfortable vs Compact) -->
+            <div class="flex flex-col gap-space-lg" id="density-spacing">
+              <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-xs">
+                <div>
+                  <span
+                    class="font-label-xs text-label-xs text-primary font-mono font-semibold uppercase"
+                    >04 / Grid &amp; Density</span
+                  >
+                  <h2 class="font-headline-lg text-headline-lg text-on-surface">
+                    8px 空间系统与 Comfortable / Compact 双密度对照
+                  </h2>
+                </div>
+                <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                  >Incremental: 4px, 8px, 12px, 16px, 24px, 32px, 48px</span
+                >
+              </div>
+              <!-- Spacing Strip Visualizer -->
+              <div
+                class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+              >
+                <h3 class="font-headline-sm text-headline-sm text-on-surface">
+                  8px 基础间距网格 (Spacing Scale Tokens)
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-space-md">
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="h-20 bg-surface-container-low rounded-lg p-2 flex flex-col justify-end items-center"
+                    >
+                      <div
+                        class="w-full bg-primary/20 rounded flex items-center justify-center font-mono text-[10px] text-primary font-semibold"
+                        style="height: 4px"
+                      ></div>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-label-xs text-label-xs font-semibold text-on-surface"
+                        >4px • xxs</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant"
+                        >--lx-space-xxs</span
+                      >
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="h-20 bg-surface-container-low rounded-lg p-2 flex flex-col justify-end items-center"
+                    >
+                      <div
+                        class="w-full bg-primary/30 rounded flex items-center justify-center font-mono text-[10px] text-primary font-semibold"
+                        style="height: 8px"
+                      ></div>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-label-xs text-label-xs font-semibold text-on-surface"
+                        >8px • xs</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant"
+                        >--lx-space-xs</span
+                      >
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="h-20 bg-surface-container-low rounded-lg p-2 flex flex-col justify-end items-center"
+                    >
+                      <div
+                        class="w-full bg-primary/40 rounded flex items-center justify-center font-mono text-[10px] text-primary font-semibold"
+                        style="height: 12px"
+                      ></div>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-label-xs text-label-xs font-semibold text-on-surface"
+                        >12px • sm</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant"
+                        >--lx-space-sm</span
+                      >
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="h-20 bg-surface-container-low rounded-lg p-2 flex flex-col justify-end items-center"
+                    >
+                      <div
+                        class="w-full bg-primary/50 rounded flex items-center justify-center font-mono text-[10px] text-white font-semibold"
+                        style="height: 16px"
+                      ></div>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-label-xs text-label-xs font-semibold text-on-surface"
+                        >16px • md (Gutter)</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant"
+                        >--lx-space-md</span
+                      >
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="h-20 bg-surface-container-low rounded-lg p-2 flex flex-col justify-end items-center"
+                    >
+                      <div
+                        class="w-full bg-primary/70 rounded flex items-center justify-center font-mono text-[10px] text-white font-semibold"
+                        style="height: 24px"
+                      ></div>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-label-xs text-label-xs font-semibold text-on-surface"
+                        >24px • lg (Margin)</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant"
+                        >--lx-space-lg</span
+                      >
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="h-20 bg-surface-container-low rounded-lg p-2 flex flex-col justify-end items-center"
+                    >
+                      <div
+                        class="w-full bg-primary/85 rounded flex items-center justify-center font-mono text-[10px] text-white font-semibold"
+                        style="height: 32px"
+                      ></div>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-label-xs text-label-xs font-semibold text-on-surface"
+                        >32px • xl</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant"
+                        >--lx-space-xl</span
+                      >
+                    </div>
+                  </div>
+                  <div class="flex flex-col gap-2">
+                    <div
+                      class="h-20 bg-surface-container-low rounded-lg p-2 flex flex-col justify-end items-center"
+                    >
+                      <div
+                        class="w-full bg-primary rounded flex items-center justify-center font-mono text-[10px] text-white font-semibold"
+                        style="height: 48px"
+                      ></div>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="font-label-xs text-label-xs font-semibold text-on-surface"
+                        >48px • xxl</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant"
+                        >--lx-space-xxl</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Density Comparison Arena (40px vs 32px) -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
+                <!-- Comfortable Mode Card -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between pb-space-xs">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="material-symbols-outlined text-primary text-[20px]"
+                        >view_agenda</span
+                      >
+                      <div class="flex flex-col">
+                        <span
+                          class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                          >Comfortable Mode (舒适模式)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >Control Height: 40px • Row Height: 48px</span
+                        >
+                      </div>
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-xs text-label-xs font-bold"
+                      >DEFAULT</span
+                    >
+                  </div>
+                  <div
+                    class="p-space-md bg-surface-container-low rounded-lg flex flex-col gap-space-md"
+                  >
+                    <div class="flex items-center gap-space-sm">
+                      <input
+                        class="h-10 px-3 bg-surface-container-lowest rounded-lg font-body-md text-body-md text-on-surface flex-1 shadow-sm"
+                        readonly=""
+                        type="text"
+                        value="lx-order-98214"
+                      />
+                      <button
+                        class="h-10 px-space-md bg-primary text-on-primary font-label-md text-label-md rounded-lg shadow-sm flex items-center gap-1.5 font-medium"
+                        type="button"
+                      >
+                        <span class="material-symbols-outlined text-[18px]">search</span>
+                        <span>查询记录</span>
+                      </button>
+                    </div>
+                    <!-- Comfortable Row Sample -->
+                    <div
+                      class="flex items-center justify-between h-12 px-3 bg-surface-container-lowest rounded-lg shadow-sm"
+                    >
+                      <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-status-success"></span>
+                        <span class="font-label-md text-label-md font-medium text-on-surface"
+                          >结算账单 (Q3 Consolidated)</span
+                        >
+                      </div>
+                      <span class="font-mono text-label-sm text-label-sm text-on-surface-variant"
+                        >¥ 1,280,450.00</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center justify-between text-on-surface-variant font-label-xs text-label-xs"
+                    >
+                      <span>应用场景：分析大屏、普通业务主页、高信息可读性后台</span>
+                      <span class="font-mono">--lx-control-height: 40px</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Compact Mode Card -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between pb-space-xs">
+                    <div class="flex items-center gap-space-sm">
+                      <span class="material-symbols-outlined text-secondary text-[20px]"
+                        >density_medium</span
+                      >
+                      <div class="flex flex-col">
+                        <span
+                          class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                          >Compact Mode (紧凑模式)</span
+                        >
+                        <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >Control Height: 32px • Row Height: 36px</span
+                        >
+                      </div>
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-xs text-label-xs font-bold font-mono"
+                      >HIGH-DENSITY</span
+                    >
+                  </div>
+                  <div
+                    class="p-space-md bg-surface-container-low rounded-lg flex flex-col gap-space-sm"
+                  >
+                    <div class="flex items-center gap-space-sm">
+                      <input
+                        class="h-8 px-2.5 bg-surface-container-lowest rounded font-body-sm text-body-sm text-on-surface flex-1 shadow-sm"
+                        readonly=""
+                        type="text"
+                        value="lx-order-98214"
+                      />
+                      <button
+                        class="h-8 px-3 bg-secondary text-on-secondary font-label-sm text-label-sm rounded shadow-sm flex items-center gap-1 font-medium"
+                        type="button"
+                      >
+                        <span class="material-symbols-outlined text-[16px]">filter_alt</span>
+                        <span>筛选</span>
+                      </button>
+                    </div>
+                    <!-- Compact Row Sample -->
+                    <div
+                      class="flex items-center justify-between h-9 px-2.5 bg-surface-container-lowest rounded shadow-sm"
+                    >
+                      <div class="flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+                        <span class="font-label-sm text-label-sm font-medium text-on-surface"
+                          >结算账单 (Q3 Consolidated)</span
+                        >
+                      </div>
+                      <span class="font-mono text-label-xs text-label-xs text-on-surface-variant"
+                        >¥ 1,280,450.00</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center justify-between text-on-surface-variant font-label-xs text-label-xs"
+                    >
+                      <span>应用场景：ERP 原材料明细、仓储高频盘点、财务对账总表</span>
+                      <span class="font-mono">--lx-control-height: 32px</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- SECTION 5: Radii & Elevation / Shadows (Three Presets) -->
+            <div class="flex flex-col gap-space-lg" id="radii-elevation">
+              <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-xs">
+                <div>
+                  <span
+                    class="font-label-xs text-label-xs text-primary font-mono font-semibold uppercase"
+                    >05 / Radii &amp; Elevation</span
+                  >
+                  <h2 class="font-headline-lg text-headline-lg text-on-surface">
+                    三重视觉风格预设 (Business, Soft, Glass)
+                  </h2>
+                </div>
+                <span class="font-label-xs text-label-xs text-on-surface-variant"
+                  >圆角、投影、景深与模糊度的层次化组合</span
+                >
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+                <!-- Style 1: Business (商务稳重) -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-[4px] shadow-[0_1px_3px_rgba(0,0,0,0.05)] flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                      >1. Business 商务稳重</span
+                    >
+                    <span
+                      class="px-2 py-0.5 rounded-[2px] bg-surface-container-high font-mono text-[10px] text-on-surface"
+                      >Radius: 4px</span
+                    >
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    低标高、克制阴影。采用紧凑的 4px
+                    圆角与纯净的表面区分，减少多余视觉噪音，专注于巨量企业数据分析。
+                  </p>
+                  <div
+                    class="p-space-md bg-surface-container-low rounded-[4px] flex flex-col gap-2"
+                  >
+                    <span
+                      class="font-label-xs text-label-xs font-mono text-on-surface-variant uppercase"
+                      >Elevation Tokens:</span
+                    >
+                    <span class="font-mono text-[11px] text-on-surface"
+                      >--lx-radius-base: 4px;</span
+                    >
+                    <span class="font-mono text-[11px] text-on-surface"
+                      >--lx-shadow-card: 0 1px 3px rgba(0,0,0,0.05);</span
+                    >
+                    <div class="mt-2 flex gap-2">
+                      <button
+                        class="h-8 px-3 rounded-[4px] bg-primary text-on-primary font-label-xs text-label-xs shadow-sm font-semibold"
+                        type="button"
+                      >
+                        Confirm
+                      </button>
+                      <button
+                        class="h-8 px-3 rounded-[4px] bg-surface-container text-on-surface-variant font-label-xs text-label-xs"
+                        type="button"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Style 2: Soft (轻盈现代) -->
+                <div
+                  class="bg-surface-container-lowest p-space-lg rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.06)] flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                      >2. Soft 轻盈现代</span
+                    >
+                    <span
+                      class="px-2 py-0.5 rounded-DEFAULT bg-primary-fixed text-on-primary-fixed font-mono text-[10px]"
+                      >Radius: 8px</span
+                    >
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    环境光漫反射与平滑层次。8px 适度圆角搭配平滑多层 Ambient
+                    Shadows，界面通透富有亲和力。
+                  </p>
+                  <div class="p-space-md bg-surface-container-low rounded-xl flex flex-col gap-2">
+                    <span
+                      class="font-label-xs text-label-xs font-mono text-on-surface-variant uppercase"
+                      >Elevation Tokens:</span
+                    >
+                    <span class="font-mono text-[11px] text-on-surface"
+                      >--lx-radius-base: 8px;</span
+                    >
+                    <span class="font-mono text-[11px] text-on-surface"
+                      >--lx-shadow-card: 0 4px 16px rgba(0,0,0,0.06);</span
+                    >
+                    <div class="mt-2 flex gap-2">
+                      <button
+                        class="h-8 px-3 rounded-lg bg-primary text-on-primary font-label-xs text-label-xs shadow-sm font-semibold"
+                        type="button"
+                      >
+                        Submit
+                      </button>
+                      <button
+                        class="h-8 px-3 rounded-lg bg-surface-container text-on-surface-variant font-label-xs text-label-xs"
+                        type="button"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Style 3: Glass (玻璃液态) -->
+                <div
+                  class="bg-white/70 backdrop-blur-xl p-space-lg rounded-2xl shadow-[0_8px_32px_rgba(31,38,135,0.07)] flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                      >3. Glass 玻璃液态</span
+                    >
+                    <span
+                      class="px-2 py-0.5 rounded-lg bg-secondary-fixed text-on-secondary-fixed font-mono text-[10px]"
+                      >Radius: 16px</span
+                    >
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    半透明磨砂介质与微内发光。12px/16px 大圆角配合 backdrop-filter:
+                    blur(16px)，用于仪表盘高光卡片。
+                  </p>
+                  <div
+                    class="p-space-md bg-surface-container-low/60 backdrop-blur-md rounded-2xl flex flex-col gap-2"
+                  >
+                    <span
+                      class="font-label-xs text-label-xs font-mono text-on-surface-variant uppercase"
+                      >Elevation Tokens:</span
+                    >
+                    <span class="font-mono text-[11px] text-on-surface"
+                      >--lx-radius-base: 16px;</span
+                    >
+                    <span class="font-mono text-[11px] text-on-surface"
+                      >--lx-backdrop-blur: blur(16px);</span
+                    >
+                    <div class="mt-2 flex gap-2">
+                      <button
+                        class="h-8 px-3 rounded-xl bg-primary text-on-primary font-label-xs text-label-xs shadow-sm font-semibold"
+                        type="button"
+                      >
+                        Inspect
+                      </button>
+                      <button
+                        class="h-8 px-3 rounded-xl bg-surface-container/70 text-on-surface-variant font-label-xs text-label-xs"
+                        type="button"
+                      >
+                        Later
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- SECTION 6: Animation & Interactive Transitions -->
+            <div
+              class="bg-surface-container-lowest p-space-xl rounded-xl shadow-sm flex flex-col gap-space-lg"
+              id="animation-tokens"
+            >
+              <div
+                class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm pb-space-xs"
+              >
+                <div>
+                  <span
+                    class="font-label-xs text-label-xs text-primary font-mono font-semibold uppercase"
+                    >06 / Motion &amp; Interaction</span
+                  >
+                  <h2 class="font-headline-lg text-headline-lg text-on-surface">
+                    动画与交互过渡规范 (Animation Tokens)
+                  </h2>
+                </div>
+                <div
+                  class="flex items-center gap-2 px-space-sm py-1 bg-surface-container-low rounded-lg text-on-surface-variant font-label-xs text-label-xs font-mono"
+                >
+                  <span class="material-symbols-outlined text-[16px] text-status-success"
+                    >accessibility_new</span
+                  >
+                  <span>prefers-reduced-motion: reduce 完整支持</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+                <!-- Micro-interaction -->
+                <div
+                  class="p-space-md rounded-lg bg-surface-container-low flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-label-xs text-label-xs font-mono text-primary font-semibold uppercase"
+                        >Level 1: Micro</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant">120 - 180ms</span>
+                    </div>
+                    <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                      >微交互与状态反馈</span
+                    >
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      按钮悬停、激活轻微回弹、Check/Radio 勾选状态瞬时变化。使用标准的
+                      cubic-bezier(0, 0, 0.2, 1) ease-out。
+                    </p>
+                  </div>
+                  <div class="flex flex-col gap-2 pt-space-xs">
+                    <span class="font-mono text-[10px] text-on-surface-variant"
+                      >--lx-motion-micro: 140ms ease-out;</span
+                    >
+                    <button
+                      class="w-full py-2 bg-surface-container-lowest hover:bg-primary hover:text-on-primary rounded font-label-sm text-label-sm text-on-surface transition-all duration-150 ease-out shadow-sm flex items-center justify-center gap-1"
+                      type="button"
+                    >
+                      <span>Hover / Tap to Test</span>
+                      <span class="material-symbols-outlined text-[16px]">touch_app</span>
+                    </button>
+                  </div>
+                </div>
+                <!-- Transient / Flyout -->
+                <div
+                  class="p-space-md rounded-lg bg-surface-container-low flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-label-xs text-label-xs font-mono text-secondary font-semibold uppercase"
+                        >Level 2: Flyout</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant">160 - 240ms</span>
+                    </div>
+                    <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                      >下拉浮窗与气泡提示</span
+                    >
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      Select 下拉菜单呼出、Tooltip 渐显、Popover
+                      气泡卡片展开。位移与透明度双属性复合淡入。
+                    </p>
+                  </div>
+                  <div class="flex flex-col gap-2 pt-space-xs">
+                    <span class="font-mono text-[10px] text-on-surface-variant"
+                      >--lx-motion-flyout: 200ms cubic-bezier(0.16, 1, 0.3, 1);</span
+                    >
+                    <div class="relative group">
+                      <button
+                        class="w-full py-2 bg-surface-container-lowest rounded font-label-sm text-label-sm text-on-surface shadow-sm flex items-center justify-center gap-1"
+                        type="button"
+                      >
+                        <span>Hover for Flyout</span>
+                        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+                      </button>
+                      <div
+                        class="absolute bottom-full left-0 right-0 mb-1 p-2 bg-surface-container-highest rounded text-on-surface font-label-xs text-label-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-md text-center"
+                      >
+                        Sample Flyout Layer (200ms)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Structural / Modal & Drawer -->
+                <div
+                  class="p-space-md rounded-lg bg-surface-container-low flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-label-xs text-label-xs font-mono text-theme-purple font-semibold uppercase"
+                        >Level 3: Structural</span
+                      >
+                      <span class="font-mono text-[10px] text-on-surface-variant">220 - 360ms</span>
+                    </div>
+                    <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                      >抽屉滑出与模态弹窗</span
+                    >
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      侧边 Drawer 进出滑入、Modal
+                      遮罩层景深过渡。模拟物理阻尼效果，确保视线平稳聚焦。
+                    </p>
+                  </div>
+                  <div class="flex flex-col gap-2 pt-space-xs">
+                    <span class="font-mono text-[10px] text-on-surface-variant"
+                      >--lx-motion-drawer: 280ms cubic-bezier(0.25, 1, 0.5, 1);</span
+                    >
+                    <div
+                      class="w-full py-2 bg-surface-container-lowest rounded font-label-sm text-label-sm text-on-surface shadow-sm flex items-center justify-center gap-1.5 font-mono text-[11px]"
+                    >
+                      <span class="w-2 h-2 rounded-full bg-theme-purple animate-ping"></span>
+                      <span>Damped Spring Curve</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Bottom Token Export & Dev Handover Panel -->
+            <div
+              class="p-space-lg bg-surface-container-lowest rounded-xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-md"
+            >
+              <div class="flex items-center gap-space-md">
+                <div
+                  class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary"
+                >
+                  <span class="material-symbols-outlined text-[24px]">terminal</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                    >Token Engine Ready for Delivery</span
+                  >
+                  <span class="font-body-sm text-body-sm text-on-surface-variant"
+                    >支持 Style Dictionary 导出 CSS Variables、SCSS Map 与 Tailwind Plugin
+                    配置包</span
+                  >
+                </div>
+              </div>
+              <div class="flex items-center gap-space-sm w-full md:w-auto">
+                <button
+                  class="flex-1 md:flex-none h-10 px-space-md bg-surface-container-low hover:bg-surface-container rounded-lg font-label-md text-label-md text-on-surface font-medium flex items-center justify-center gap-1.5 transition-colors"
+                  type="button"
+                >
+                  <span class="material-symbols-outlined text-[18px]">content_copy</span>
+                  <span>Copy Tokens.json</span>
+                </button>
+                <button
+                  class="flex-1 md:flex-none h-10 px-space-md bg-primary hover:bg-primary-container text-on-primary rounded-lg font-label-md text-label-md font-medium flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                  type="button"
+                >
+                  <span class="material-symbols-outlined text-[18px]">download</span>
+                  <span>Export Tailwind Config</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

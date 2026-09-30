@@ -1,0 +1,90 @@
+.surface {
+  color: var(--lx-color-text);
+  background: var(--lx-color-bg-base);
+  padding: var(--lx-space-lg);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.toolbar,
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-md);
+}
+
+.toolbar {
+  padding-block-end: var(--lx-space-lg);
+  margin-block-end: var(--lx-space-lg);
+  border-block-end: 1px solid var(--lx-color-split);
+}
+
+.stack {
+  display: grid;
+  gap: var(--lx-space-lg);
+  min-inline-size: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: var(--lx-space-lg);
+}
+
+.muted {
+  color: var(--lx-color-text-secondary);
+  margin: 0;
+}
+
+.metric {
+  background: var(--lx-color-primary-bg);
+  padding: var(--lx-space-lg);
+  border-radius: var(--lx-radius-panel);
+  font-variant-numeric: tabular-nums;
+}
+
+.success {
+  color: var(--lx-color-success);
+}
+
+.avatar {
+  background: var(--lx-color-primary);
+  color: var(--lx-color-on-primary);
+}
+
+/* Only the table specimen scrolls: its stable columns must remain inspectable
+ * without introducing horizontal overflow on the documentation page itself. */
+.scroll {
+  min-inline-size: 0;
+  overflow-x: auto;
+}
+
+/* Loading, error and resolved specimens share a reserved content region. */
+.reserved {
+  min-block-size: 200px;
+}
+
+.note {
+  padding: var(--lx-space-md);
+  background: var(--lx-color-ambient);
+  border-radius: var(--lx-radius-control);
+}
+
+/* CheckableTag provides the selected appearance; its native button parent
+ * provides keyboard handling until lx-ui exposes a checkable primitive. */
+.checkable {
+  min-block-size: var(--lx-space-xl);
+  padding: 0;
+  border: 0;
+  border-radius: var(--lx-radius-control);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.checkable:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}

@@ -1,0 +1,3 @@
+.root {
+  min-block-size: var(--lx-control-height);
+}

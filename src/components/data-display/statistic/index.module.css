@@ -1,0 +1,7 @@
+.root {
+  color: var(--lx-color-text);
+  min-width: 0;
+}
+.root :global(.ant-statistic-content-value) {
+  font-variant-numeric: tabular-nums;
+}

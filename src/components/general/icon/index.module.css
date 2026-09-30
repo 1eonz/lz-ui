@@ -1,0 +1,34 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 1em;
+  block-size: 1em;
+  flex: none;
+  line-height: 1;
+  vertical-align: -0.125em;
+  color: inherit;
+}
+
+.svg {
+  display: block;
+  inline-size: 1em;
+  block-size: 1em;
+  fill: currentColor;
+}
+
+.spin {
+  animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    animation: none;
+  }
+}

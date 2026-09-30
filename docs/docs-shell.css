@@ -1,0 +1,27 @@
+/* Dumi's desktop nav keeps 48px item gaps until 767px, which compresses
+   Chinese labels into vertical text on tablet-sized documentation windows. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  :root .dumi-default-navbar > li:not(:last-child) {
+    margin-inline-end: 16px;
+  }
+
+  :root .dumi-default-search-bar {
+    width: clamp(168px, 22vw, 240px);
+    margin-inline-start: 16px;
+  }
+
+  .dumi-default-navbar > li > a {
+    white-space: nowrap;
+    font-size: 14px;
+  }
+}
+
+/* Dumi's default #d56161 is 3.3:1 on its light inline-code surface.
+   This documentation-only token clears AA for normal-size code text. */
+:root[data-prefers-color='light'] {
+  --lx-docs-inline-code: #8f3030;
+}
+
+:root[data-prefers-color='light'] .markdown *:not(pre) code {
+  color: var(--lx-docs-inline-code);
+}

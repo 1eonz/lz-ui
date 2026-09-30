@@ -1,0 +1,17 @@
+.root {
+  color: var(--lx-color-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Stop line sweeps, SVG circles/dashboard and steps without assuming a host
+   * prefixCls. The local root also contains any caller-provided format content. */
+  .root,
+  .root *,
+  .root::before,
+  .root::after,
+  .root *::before,
+  .root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

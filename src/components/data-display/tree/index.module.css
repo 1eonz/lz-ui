@@ -1,0 +1,8 @@
+.root {
+  --lx-tree-focus-color: var(--lx-color-primary);
+}
+
+.root :global(.ant-tree-node-content-wrapper:focus-visible) {
+  outline: 2px solid var(--lx-tree-focus-color);
+  outline-offset: 1px;
+}

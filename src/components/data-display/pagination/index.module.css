@@ -1,0 +1,13 @@
+.root {
+  /* These variables are intentionally non-layout tokens: AntD owns item sizing and spacing. */
+  --lx-pagination-focus-color: var(--lx-color-primary);
+}
+
+.root :global(.ant-pagination-item:focus-visible),
+.root :global(.ant-pagination-prev:focus-visible),
+.root :global(.ant-pagination-next:focus-visible),
+.root :global(.ant-pagination-jump-prev:focus-visible),
+.root :global(.ant-pagination-jump-next:focus-visible) {
+  outline: 2px solid var(--lx-pagination-focus-color);
+  outline-offset: 2px;
+}

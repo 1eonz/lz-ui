@@ -1,0 +1,9 @@
+.root {
+  /* Non-layout token: AntD remains responsible for row, cell and scroll sizing. */
+  --lx-table-focus-color: var(--lx-color-primary);
+}
+
+.root :global(.ant-table-cell):focus-within {
+  outline: 2px solid var(--lx-table-focus-color);
+  outline-offset: -2px;
+}

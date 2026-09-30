@@ -1,0 +1,166 @@
+.demo {
+  max-inline-size: 35rem;
+}
+
+.demoOptions {
+  margin-block-end: var(--lx-space-lg);
+  border-block-end: 1px solid var(--lx-color-border-secondary);
+}
+
+.demoOptions summary {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  justify-content: space-between;
+  min-block-size: var(--lx-control-height);
+  color: var(--lx-color-text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Remove browser disclosure markers so the custom arrow is the only affordance. */
+.demoOptions summary::-webkit-details-marker {
+  display: none;
+}
+
+.demoOptions summary::marker {
+  content: '';
+}
+
+.demoOptions summary::before {
+  content: '▸';
+  margin-inline-end: var(--lx-space-xs);
+  color: var(--lx-color-primary);
+  transition: transform var(--lx-motion-duration) ease;
+}
+
+.demoOptions[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.demoOptions summary:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 3px;
+  border-radius: var(--lx-radius-control);
+}
+
+.demoSummaryMeta {
+  color: var(--lx-color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+.demoToolbar,
+.demoActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lx-space-sm);
+}
+
+.demoToolbar {
+  gap: var(--lx-space-md);
+  padding-block: var(--lx-space-sm) var(--lx-space-md);
+}
+
+.demoControl {
+  display: grid;
+  gap: var(--lx-space-xs);
+  color: var(--lx-color-text-secondary);
+}
+
+.demoSelect {
+  min-block-size: var(--lx-control-height);
+  padding-inline: var(--lx-space-sm);
+  border: 1px solid var(--lx-color-border);
+  border-radius: var(--lx-radius-control);
+  background: var(--lx-color-bg-container);
+  color: var(--lx-color-text);
+  font: inherit;
+}
+
+.failureToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-xs);
+  align-self: end;
+  min-block-size: var(--lx-control-height);
+  color: var(--lx-color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.demoSelect:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 0;
+}
+
+.demoSuccess {
+  margin-block: var(--lx-space-md) 0;
+  padding: var(--lx-space-md);
+  border: 1px solid var(--lx-color-success);
+  border-radius: var(--lx-radius-control);
+  background: var(--lx-color-success-bg);
+  color: var(--lx-color-success);
+}
+
+.demoSuccess p {
+  margin: 0;
+}
+
+.successActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lx-space-sm);
+  margin-block-start: var(--lx-space-sm);
+}
+
+.savedAction {
+  display: block;
+  margin-block-start: var(--lx-space-sm);
+  color: var(--lx-color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.retryAction {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--lx-color-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.retryAction:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .demoOptions summary {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--lx-space-xs);
+    padding-block: var(--lx-space-sm);
+  }
+
+  .demoControl,
+  .demoSelect {
+    flex: 1 1 8rem;
+  }
+
+  .demoSelect,
+  .demoActions button,
+  .successActions button,
+  .demo :global(.ant-input),
+  .demo :global(.ant-select-selector),
+  .demo :global(.ant-input-number),
+  .demo :global(.ant-picker) {
+    min-block-size: 44px;
+  }
+
+  .failureToggle {
+    align-self: stretch;
+    min-block-size: 44px;
+  }
+}

@@ -1,0 +1,33 @@
+.root {
+  border-radius: var(--lx-radius-panel);
+  /* Native Alert installs a multi-property leave shorthand. Override only its
+   * timing, retaining AntD's lifecycle/properties and custom prefixCls. */
+  transition-duration: var(--lx-motion-alert-exit-duration, 160ms) !important;
+  transition-timing-function: ease-out !important;
+}
+
+.root.info {
+  background-color: var(--lx-color-info-bg);
+  border-color: var(--lx-color-info);
+}
+
+.root.success {
+  background-color: var(--lx-color-success-bg);
+  border-color: var(--lx-color-success);
+}
+
+.root.warning {
+  background-color: var(--lx-color-warning-bg);
+  border-color: var(--lx-color-warning);
+}
+
+.root.error {
+  background-color: var(--lx-color-error-bg);
+  border-color: var(--lx-color-error);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none !important;
+  }
+}

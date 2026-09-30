@@ -1,0 +1,35 @@
+.section {
+  display: grid;
+  gap: var(--lx-space-md);
+  min-inline-size: 0;
+  padding-block: var(--lx-space-lg);
+  border-block-end: 1px solid var(--lx-color-border-secondary);
+}
+
+.section h3,
+.section p {
+  margin: 0;
+}
+
+.section h3 {
+  font-size: var(--lx-font-size-heading-4);
+}
+
+.section > button {
+  justify-self: start;
+}
+
+.content {
+  display: grid;
+  gap: var(--lx-space-sm);
+  min-block-size: 140px;
+  padding-block: var(--lx-space-md);
+}
+
+.actions,
+.progressVariants {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-lg);
+}

@@ -1,0 +1,16 @@
+.root {
+  min-block-size: var(--lx-control-height);
+  border-radius: var(--lx-radius-control);
+  transition-duration: var(--lx-motion-duration);
+}
+
+.root:disabled {
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+    animation: none;
+  }
+}

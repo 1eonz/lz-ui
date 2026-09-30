@@ -1,0 +1,2 @@
+/* npm 消费者只需要引入这个稳定入口，不需要知道内部 styles 目录。 */
+@import './styles/index.css';

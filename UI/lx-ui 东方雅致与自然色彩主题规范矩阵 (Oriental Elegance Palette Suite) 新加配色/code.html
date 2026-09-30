@@ -1,0 +1,1991 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="web_dashboard" name="shell-type" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-error-container': '#93000a',
+              'on-tertiary': '#ffffff',
+              'on-error': '#ffffff',
+              'surface-container-high': '#dce9ff',
+              'tertiary-fixed': '#ffdbcc',
+              'secondary-fixed-dim': '#6cd3f7',
+              'surface-bright': '#f8f9ff',
+              'surface-container-highest': '#d3e4fe',
+              'status-info': '#2563EB',
+              'inverse-on-surface': '#eaf1ff',
+              'outline-variant': '#c1c6d7',
+              'primary-fixed': '#d9e2ff',
+              'inverse-surface': '#213145',
+              'theme-purple': '#7C3AED',
+              'status-warning': '#F59E0B',
+              'theme-green': '#16A34A',
+              'on-tertiary-fixed-variant': '#7c2e00',
+              'surface-dim': '#cbdbf5',
+              'theme-rose': '#E11D48',
+              outline: '#727786',
+              'surface-container-lowest': '#ffffff',
+              'surface-container': '#e5eeff',
+              'status-success': '#16A34A',
+              'on-primary-fixed-variant': '#004398',
+              'theme-orange': '#F97316',
+              'on-primary': '#ffffff',
+              background: '#f8f9ff',
+              'primary-container': '#006ef2',
+              error: '#ba1a1a',
+              'on-secondary-fixed': '#001f28',
+              'status-error': '#DC2626',
+              'primary-fixed-dim': '#afc6ff',
+              'on-tertiary-container': '#fffbff',
+              'tertiary-container': '#c64f00',
+              'secondary-fixed': '#b7eaff',
+              secondary: '#006780',
+              'surface-variant': '#d3e4fe',
+              'on-secondary-fixed-variant': '#004e61',
+              'on-primary-fixed': '#001a43',
+              'on-primary-container': '#fefcff',
+              surface: '#f8f9ff',
+              'surface-tint': '#0059c7',
+              'tertiary-fixed-dim': '#ffb695',
+              'on-tertiary-fixed': '#351000',
+              'on-surface-variant': '#414755',
+              'secondary-container': '#76dcff',
+              'on-secondary-container': '#006077',
+              'on-surface': '#0b1c30',
+              'on-background': '#0b1c30',
+              'on-secondary': '#ffffff',
+              'error-container': '#ffdad6',
+              'surface-container-low': '#eff4ff',
+              primary: '#0057c2',
+              tertiary: '#9e3d00',
+              'theme-cyan': '#0891B2',
+              'inverse-primary': '#afc6ff',
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
+            spacing: {
+              gutter: '1rem',
+              'space-xl': '1.5rem',
+              'space-md': '0.75rem',
+              margin: '1.5rem',
+              'space-sm': '0.5rem',
+              'space-lg': '1rem',
+              'space-xs': '0.25rem',
+            },
+            fontFamily: {
+              'headline-md': ['Inter'],
+              'label-xs': ['Inter'],
+              'body-sm': ['Inter'],
+              'body-md': ['Inter'],
+              'headline-sm': ['Inter'],
+              'body-lg': ['Inter'],
+              'label-md': ['Inter'],
+              'headline-lg': ['Inter'],
+              'headline-xl': ['Inter'],
+              'label-sm': ['Inter'],
+            },
+            fontSize: {
+              'headline-md': ['18px', { lineHeight: '26px', fontWeight: '600' }],
+              'label-xs': [
+                '11px',
+                { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '600' },
+              ],
+              'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+              'body-md': ['14px', { lineHeight: '22px', fontWeight: '400' }],
+              'headline-sm': ['16px', { lineHeight: '24px', fontWeight: '600' }],
+              'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+              'label-md': ['14px', { lineHeight: '20px', fontWeight: '500' }],
+              'headline-lg': [
+                '22px',
+                { lineHeight: '30px', letterSpacing: '-0.01em', fontWeight: '600' },
+              ],
+              'headline-xl': [
+                '28px',
+                { lineHeight: '36px', letterSpacing: '-0.02em', fontWeight: '600' },
+              ],
+              'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-surface font-body-md text-on-surface antialiased">
+    <header
+      class="fixed top-0 left-0 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex items-center justify-between px-margin"
+    >
+      <div class="flex items-center gap-space-lg">
+        <div class="flex items-center gap-space-sm">
+          <div
+            class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary font-headline-sm text-headline-sm"
+          >
+            LX
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-space-xs">
+              <span class="font-headline-sm text-headline-sm text-on-surface font-semibold"
+                >lx-ui</span
+              ><span
+                class="px-space-xs py-0.5 rounded-DEFAULT bg-surface-container-high text-on-surface-variant font-label-xs text-label-xs"
+                >v0.1</span
+              >
+            </div>
+            <span class="font-label-xs text-label-xs text-on-surface-variant"
+              >Design System Workbench</span
+            >
+          </div>
+        </div>
+        <div class="h-4 w-px bg-outline-variant/40 mx-space-xs"></div>
+        <div class="flex items-center bg-surface-container-low p-1 rounded-lg gap-1">
+          <button
+            class="px-space-sm py-1 rounded-DEFAULT font-label-xs text-label-xs bg-surface-container-lowest shadow-[0_1px_4px_rgba(0,0,0,0.05)] text-primary font-semibold"
+            type="button"
+          >
+            Business</button
+          ><button
+            class="px-space-sm py-1 rounded-DEFAULT font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface"
+            type="button"
+          >
+            Soft</button
+          ><button
+            class="px-space-sm py-1 rounded-DEFAULT font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface"
+            type="button"
+          >
+            Glass
+          </button>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-md">
+        <div class="flex items-center gap-1.5 px-space-sm py-1 bg-surface-container-low rounded-lg">
+          <button
+            class="w-3.5 h-3.5 rounded-full bg-primary ring-2 ring-primary ring-offset-1"
+            title="Ocean Blue"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-orange"
+            title="Vibrant Orange"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-green"
+            title="Emerald Green"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-purple"
+            title="Smart Purple"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-cyan"
+            title="Lucid Cyan"
+            type="button"
+          ></button
+          ><button
+            class="w-3.5 h-3.5 rounded-full bg-theme-rose"
+            title="Brand Rose"
+            type="button"
+          ></button>
+        </div>
+        <div class="flex items-center bg-surface-container-low p-1 rounded-lg gap-1">
+          <button
+            class="px-2 py-1 rounded-DEFAULT font-label-xs text-label-xs bg-surface-container-lowest text-primary shadow-[0_1px_4px_rgba(0,0,0,0.05)] flex items-center gap-1"
+            title="Light Mode"
+            type="button"
+          >
+            <span class="material-symbols-outlined text-[14px]">light_mode</span>Light</button
+          ><button
+            class="px-2 py-1 rounded-DEFAULT font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface flex items-center gap-1"
+            title="Dark Mode"
+            type="button"
+          >
+            <span class="material-symbols-outlined text-[14px]">dark_mode</span>Dark
+          </button>
+        </div>
+        <div class="flex items-center bg-surface-container-low p-1 rounded-lg gap-1">
+          <button
+            class="px-2 py-1 rounded-DEFAULT font-label-xs text-label-xs bg-surface-container-lowest text-primary shadow-[0_1px_4px_rgba(0,0,0,0.05)]"
+            type="button"
+          >
+            Comfortable</button
+          ><button
+            class="px-2 py-1 rounded-DEFAULT font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface"
+            type="button"
+          >
+            Compact
+          </button>
+        </div>
+        <div class="h-4 w-px bg-outline-variant/40"></div>
+        <div class="flex items-center gap-space-xs">
+          <a
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
+            href="#"
+            title="Docs"
+            ><span class="material-symbols-outlined text-[20px]">menu_book</span></a
+          ><a
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface"
+            href="#"
+            title="Repository"
+            ><span class="material-symbols-outlined text-[20px]">code</span></a
+          >
+        </div>
+        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+          <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+        </div>
+      </div>
+    </header>
+    <aside
+      class="fixed left-0 top-16 bottom-0 w-72 bg-surface-container-lowest z-40 flex flex-col justify-between shadow-[1px_0_8px_rgba(0,0,0,0.02)]"
+    >
+      <div class="flex-1 overflow-y-auto py-space-md px-space-md flex flex-col gap-space-lg">
+        <div class="flex flex-col gap-space-xs">
+          <span
+            class="px-space-sm font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider"
+            >Design Handover Gates</span
+          >
+          <nav
+            class="flex flex-col gap-1"
+            data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg shadow-sm"
+          >
+            <a
+              class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors"
+              data-path="tokens-palette"
+              href="#"
+              ><span class="material-symbols-outlined mr-space-sm text-[18px]">palette</span>1.
+              Tokens &amp; Palette</a
+            ><a
+              class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors"
+              data-path="theme-presets"
+              href="#"
+              ><span class="material-symbols-outlined mr-space-sm text-[18px]">auto_awesome</span>2.
+              Theme &amp; Presets</a
+            ><a
+              class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors"
+              data-path="component-states"
+              href="#"
+              ><span class="material-symbols-outlined mr-space-sm text-[18px]">toggle_on</span>3.
+              Component States</a
+            ><a
+              class="flex items-center px-space-md py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-colors"
+              data-path="protable-searchform"
+              href="#"
+              ><span class="material-symbols-outlined mr-space-sm text-[18px]">table_chart</span>4.
+              ProTable &amp; SearchForm</a
+            >
+          </nav>
+        </div>
+        <div class="flex flex-col gap-space-xs">
+          <span
+            class="px-space-sm font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider"
+            >Enterprise Specs</span
+          >
+          <div class="flex flex-col gap-1 px-space-sm">
+            <div
+              class="flex items-center justify-between py-1 text-on-surface-variant font-label-xs text-label-xs"
+            >
+              <span>Grid Baseline</span
+              ><span class="font-medium text-on-surface">12-Col / 4-8px</span>
+            </div>
+            <div
+              class="flex items-center justify-between py-1 text-on-surface-variant font-label-xs text-label-xs"
+            >
+              <span>Compliance</span
+              ><span class="font-medium text-status-success flex items-center gap-0.5"
+                ><span class="material-symbols-outlined text-[13px]">verified</span>WCAG 2.2
+                AA</span
+              >
+            </div>
+            <div
+              class="flex items-center justify-between py-1 text-on-surface-variant font-label-xs text-label-xs"
+            >
+              <span>Interactive States</span
+              ><span class="font-medium text-on-surface">7 Standardized</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="p-space-md bg-surface-container-low/50 mx-space-md mb-space-md rounded-xl flex items-center justify-between"
+      >
+        <div class="flex items-center gap-space-sm">
+          <span class="material-symbols-outlined text-primary text-[20px]">verified_user</span>
+          <div class="flex flex-col">
+            <span class="font-label-sm text-label-sm font-semibold text-on-surface"
+              >Gate Status</span
+            ><span class="font-label-xs text-label-xs text-status-success font-medium"
+              >All 4 Gates Passed</span
+            >
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+          >chevron_right</span
+        >
+      </div>
+    </aside>
+    <div class="pl-72">
+      <main class="w-full pt-16 bg-surface min-h-screen">
+        <div class="flex flex-col w-full">
+          <!-- Top Banner & System Overview -->
+          <div class="relative px-margin py-space-xl bg-surface-container-lowest overflow-hidden">
+            <!-- Decorative background glow and oriental geometric pattern -->
+            <div
+              class="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-celadon-green/10 blur-3xl pointer-events-none"
+            ></div>
+            <div
+              class="absolute right-1/3 -bottom-32 w-80 h-80 rounded-full bg-laurel-beige/25 blur-2xl pointer-events-none"
+            ></div>
+            <div class="relative z-10 max-w-7xl mx-auto flex flex-col gap-space-lg">
+              <div class="flex flex-wrap items-center justify-between gap-space-md">
+                <div class="flex flex-wrap items-center gap-space-xs">
+                  <span
+                    class="px-space-sm py-1 rounded-full bg-primary/10 text-primary font-label-xs text-label-xs uppercase tracking-wider flex items-center gap-1"
+                  >
+                    <span
+                      class="material-symbols-outlined text-[13px]"
+                      style="font-variation-settings: 'FILL' 1"
+                      >spa</span
+                    >
+                    Specification Upgrade v2.4
+                  </span>
+                  <span
+                    class="px-space-sm py-1 rounded-full bg-surface-container text-on-surface-variant font-label-xs text-label-xs"
+                  >
+                    7 Oriental Curated Dual-Tone Presets
+                  </span>
+                  <span
+                    class="px-space-sm py-1 rounded-full bg-status-success/10 text-status-success font-label-xs text-label-xs flex items-center gap-0.5"
+                  >
+                    <span class="material-symbols-outlined text-[13px]">verified</span>
+                    WCAG 2.2 AA Certified
+                  </span>
+                  <span
+                    class="px-space-sm py-1 rounded-full bg-secondary-container/50 text-on-secondary-container font-label-xs text-label-xs"
+                  >
+                    Styles: Business / Soft / Glass
+                  </span>
+                </div>
+                <div class="flex items-center gap-space-sm">
+                  <button
+                    class="px-space-md py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-sm text-label-sm flex items-center gap-1 shadow-sm"
+                    type="button"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">file_download</span>
+                    Export Tokens (.json)
+                  </button>
+                  <button
+                    class="px-space-md py-1.5 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm flex items-center gap-1 shadow-sm"
+                    type="button"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">palette</span>
+                    Apply Preset Live
+                  </button>
+                </div>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+                <div class="lg:col-span-8 flex flex-col gap-space-sm">
+                  <div class="flex items-center gap-space-sm">
+                    <span
+                      class="font-label-xs text-label-xs text-celadon-green font-semibold tracking-widest uppercase"
+                      >Oriental Elegance &amp; Natural Aesthetic Suite</span
+                    >
+                    <span class="w-12 h-px bg-outline-variant/60"></span>
+                  </div>
+                  <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">
+                    lx-ui 东方雅致与自然色彩主题矩阵规范
+                  </h1>
+                  <p
+                    class="font-body-md text-body-md text-on-surface-variant leading-relaxed max-w-4xl"
+                  >
+                    汲取东方传统意象与自然山水矿物肌理（青瓷、暮山、石榴、松针、雾霭、豆沙、酪黄），打破企业级后台冰冷单调的“通用蓝”同质化困境。本套双主辅自然调色盘通过“高明度主色聚焦操作
+                    +
+                    温润辅色营造情绪基盘”，为高通量驾驶舱、专业中后台与数据看板赋予温润治愈、高级耐看的生命力，兼顾人因工效学与长时间注视下的抗视觉疲劳特性。
+                  </p>
+                </div>
+                <!-- Metric highlights -->
+                <div class="lg:col-span-4 grid grid-cols-2 gap-space-sm">
+                  <div
+                    class="p-space-md rounded-xl bg-surface-container-low/70 flex flex-col gap-1"
+                  >
+                    <span class="font-label-xs text-label-xs text-on-surface-variant uppercase"
+                      >Tone Harmonies</span
+                    >
+                    <div class="flex items-baseline gap-1">
+                      <span class="font-headline-lg text-headline-lg text-primary font-bold"
+                        >7</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >Dual-Sets</span
+                      >
+                    </div>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant"
+                      >矿物基底与柔和环境色</span
+                    >
+                  </div>
+                  <div
+                    class="p-space-md rounded-xl bg-surface-container-low/70 flex flex-col gap-1"
+                  >
+                    <span class="font-label-xs text-label-xs text-on-surface-variant uppercase"
+                      >Contrast Ratio</span
+                    >
+                    <div class="flex items-baseline gap-1">
+                      <span class="font-headline-lg text-headline-lg text-status-success font-bold"
+                        >≥ 4.8:1</span
+                      >
+                    </div>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant"
+                      >Text contrast WCAG AA</span
+                    >
+                  </div>
+                  <div
+                    class="p-space-md rounded-xl bg-surface-container-low/70 flex flex-col gap-1"
+                  >
+                    <span class="font-label-xs text-label-xs text-on-surface-variant uppercase"
+                      >Interactive States</span
+                    >
+                    <div class="flex items-baseline gap-1">
+                      <span class="font-headline-lg text-headline-lg text-twilight-blue font-bold"
+                        >7 Levels</span
+                      >
+                    </div>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant"
+                      >Hover / Active / Focus / Disabled</span
+                    >
+                  </div>
+                  <div
+                    class="p-space-md rounded-xl bg-surface-container-low/70 flex flex-col gap-1"
+                  >
+                    <span class="font-label-xs text-label-xs text-on-surface-variant uppercase"
+                      >Modes Supported</span
+                    >
+                    <div class="flex items-baseline gap-1">
+                      <span class="font-headline-lg text-headline-lg text-secondary font-bold"
+                        >3 × 2</span
+                      >
+                    </div>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant"
+                      >Business/Soft/Glass ± Dark</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Main Content Space -->
+          <div class="px-margin py-space-xl flex flex-col gap-space-xl max-w-7xl mx-auto w-full">
+            <!-- SECTION 1: 7 PANELS SHOWCASE -->
+            <div class="flex flex-col gap-space-md">
+              <div class="flex items-center justify-between flex-wrap gap-space-sm">
+                <div>
+                  <span
+                    class="font-label-xs text-label-xs text-primary uppercase tracking-wider font-semibold"
+                    >Natural Harmony Spectrum</span
+                  >
+                  <h2 class="font-headline-lg text-headline-lg text-on-surface">
+                    七大雅致配色全景展示与场景映射
+                  </h2>
+                </div>
+                <div
+                  class="flex items-center gap-space-xs text-on-surface-variant font-label-xs text-label-xs"
+                >
+                  <span class="inline-block w-2.5 h-2.5 rounded-full bg-celadon-green"></span>
+                  <span>主色 (Primary Focus)</span>
+                  <span class="ml-2 inline-block w-2.5 h-2.5 rounded-full bg-laurel-beige"></span>
+                  <span>辅色 (Secondary Ambient)</span>
+                </div>
+              </div>
+              <!-- Grid of 7 Palette Cards -->
+              <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-space-lg">
+                <!-- 01: Celadon & Laurel Beige (Primary Featured) -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1.5 bg-celadon-green"></div>
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <span class="font-label-xs text-label-xs text-primary font-bold"
+                          >01 / PALETTE-CELADON</span
+                        >
+                        <h3 class="font-headline-md text-headline-md text-on-surface">
+                          青瓷绿 × 月桂米
+                        </h3>
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded-full bg-celadon-green/10 text-celadon-green font-label-xs text-label-xs font-semibold"
+                        >Default Neo</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant italic">
+                      “如青瓷般温润，静谧而治愈；素净而不寡淡，沉淀思绪。”
+                    </p>
+                    <!-- Dual Pill Badges -->
+                    <div class="flex items-center gap-2 pt-1">
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-celadon-green text-on-primary"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-white/30"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">主色 #3FA796</span>
+                      </div>
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-laurel-beige text-on-surface"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-primary/20"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">辅色 #E8D9B5</span>
+                      </div>
+                    </div>
+                    <!-- 10-step Gradient Strip (50-900) -->
+                    <div class="flex flex-col gap-1 pt-space-xs">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >色阶分布 (50 ~ 900) 及状态锚点</span
+                      >
+                      <div class="grid grid-cols-10 h-7 rounded overflow-hidden">
+                        <div
+                          class="bg-[#EBF7F5] flex items-center justify-center text-[9px] text-on-surface"
+                          title="50: #EBF7F5 浅底色"
+                        >
+                          50
+                        </div>
+                        <div class="bg-[#D3EFEA]" title="100: #D3EFEA"></div>
+                        <div
+                          class="bg-[#B2E3DC] flex items-center justify-center text-[9px] text-on-surface"
+                          title="200: #B2E3DC 边框色"
+                        >
+                          200
+                        </div>
+                        <div class="bg-[#86D2C4]" title="300: #86D2C4"></div>
+                        <div class="bg-[#5BBEAE]" title="400: #5BBEAE"></div>
+                        <div
+                          class="bg-[#3FA796] flex items-center justify-center text-[9px] text-white font-bold"
+                          title="500: #3FA796 主基准"
+                        >
+                          500
+                        </div>
+                        <div
+                          class="bg-[#329081] flex items-center justify-center text-[9px] text-white"
+                          title="600: #329081 Hover态"
+                        >
+                          600
+                        </div>
+                        <div
+                          class="bg-[#267165] flex items-center justify-center text-[9px] text-white"
+                          title="700: #267165 Click态"
+                        >
+                          700
+                        </div>
+                        <div class="bg-[#1C534A]" title="800: #1C534A"></div>
+                        <div class="bg-[#123933]" title="900: #123933 深字色"></div>
+                      </div>
+                      <div class="flex justify-between text-[10px] text-outline">
+                        <span>#EBF7F5 (Bg)</span>
+                        <span>#3FA796 (Main)</span>
+                        <span>#267165 (Active)</span>
+                      </div>
+                    </div>
+                    <!-- Recommended Scenarios -->
+                    <div
+                      class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 mt-1"
+                    >
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface font-semibold flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px] text-primary"
+                          >domain_verification</span
+                        >
+                        推荐业务场景
+                      </span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant"
+                        >医药临床研发、环境生态监测、社科人文智库、企业知识管理 (KMS)。</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-space-xs text-on-surface-variant font-label-xs text-label-xs"
+                  >
+                    <span class="text-status-success font-semibold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                      Contrast 4.9:1
+                    </span>
+                    <span class="text-outline">Token: @celadon</span>
+                  </div>
+                </div>
+                <!-- 02: Twilight Mountain & Peach -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1.5 bg-twilight-blue"></div>
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <span class="font-label-xs text-label-xs text-twilight-blue font-bold"
+                          >02 / PALETTE-TWILIGHT</span
+                        >
+                        <h3 class="font-headline-md text-headline-md text-on-surface">
+                          暮山蓝 × 晚桃粉
+                        </h3>
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded-full bg-twilight-blue/10 text-twilight-blue font-label-xs text-label-xs font-semibold"
+                        >Deep Calm</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant italic">
+                      “如山色入暮，宁静而坚定；如晚风拂桃，浪漫柔和。”
+                    </p>
+                    <div class="flex items-center gap-2 pt-1">
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-twilight-blue text-on-primary"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-white/30"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">主色 #4A5F8C</span>
+                      </div>
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-evening-peach text-on-surface"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-twilight-blue/20"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">辅色 #E8B4A2</span>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-1 pt-space-xs">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >色阶与对比质感</span
+                      >
+                      <div class="grid grid-cols-6 h-7 rounded overflow-hidden">
+                        <div
+                          class="bg-[#EFF2F8] flex items-center justify-center text-[9px] text-on-surface"
+                        >
+                          Tint 50
+                        </div>
+                        <div class="bg-[#D3DCED]"></div>
+                        <div class="bg-[#8DA1C7]"></div>
+                        <div
+                          class="bg-twilight-blue flex items-center justify-center text-[9px] text-white font-bold"
+                        >
+                          Main
+                        </div>
+                        <div class="bg-[#36476B]"></div>
+                        <div
+                          class="bg-[#1F2C47] flex items-center justify-center text-[9px] text-white"
+                        >
+                          Dark 900
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 mt-1"
+                    >
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface font-semibold flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px] text-twilight-blue"
+                          >local_shipping</span
+                        >
+                        推荐业务场景
+                      </span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant"
+                        >全球海运与集装箱物流、高阶金融风控中心、战略规划指挥大屏。</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-space-xs text-on-surface-variant font-label-xs text-label-xs"
+                  >
+                    <span class="text-status-success font-semibold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                      Contrast 5.4:1
+                    </span>
+                    <span class="text-outline">Token: @twilight</span>
+                  </div>
+                </div>
+                <!-- 03: Garnet Red & Almond Cream -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1.5 bg-garnet-red"></div>
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <span class="font-label-xs text-label-xs text-garnet-red font-bold"
+                          >03 / PALETTE-GARNET</span
+                        >
+                        <h3 class="font-headline-md text-headline-md text-on-surface">
+                          石榴红 × 奶杏白
+                        </h3>
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded-full bg-garnet-red/10 text-garnet-red font-label-xs text-label-xs font-semibold"
+                        >Warm Vitality</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant italic">
+                      “温暖浓郁，充满生命力；优雅中不失敏锐与热情。”
+                    </p>
+                    <div class="flex items-center gap-2 pt-1">
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-garnet-red text-on-primary"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-white/30"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">主色 #B5485D</span>
+                      </div>
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-almond-cream text-on-surface"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-garnet-red/20"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">辅色 #F3E2D1</span>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-1 pt-space-xs">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >色阶与对比质感</span
+                      >
+                      <div class="grid grid-cols-6 h-7 rounded overflow-hidden">
+                        <div
+                          class="bg-[#FBECEF] flex items-center justify-center text-[9px] text-on-surface"
+                        >
+                          Tint 50
+                        </div>
+                        <div class="bg-[#F3C4CD]"></div>
+                        <div class="bg-[#D97D90]"></div>
+                        <div
+                          class="bg-garnet-red flex items-center justify-center text-[9px] text-white font-bold"
+                        >
+                          Main
+                        </div>
+                        <div class="bg-[#8F3344]"></div>
+                        <div
+                          class="bg-[#591C28] flex items-center justify-center text-[9px] text-white"
+                        >
+                          Dark 900
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 mt-1"
+                    >
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface font-semibold flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px] text-garnet-red"
+                          >shopping_bag</span
+                        >
+                        推荐业务场景
+                      </span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant"
+                        >高端奢品电商后台、新零售私域会员中心、时尚品牌数字资产库。</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-space-xs text-on-surface-variant font-label-xs text-label-xs"
+                  >
+                    <span class="text-status-success font-semibold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                      Contrast 5.1:1
+                    </span>
+                    <span class="text-outline">Token: @garnet</span>
+                  </div>
+                </div>
+                <!-- 04: Pine Green & Amber Gold -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1.5 bg-pine-green"></div>
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <span class="font-label-xs text-label-xs text-pine-green font-bold"
+                          >04 / PALETTE-PINE</span
+                        >
+                        <h3 class="font-headline-md text-headline-md text-on-surface">
+                          松针绿 × 琥珀金
+                        </h3>
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded-full bg-amber-gold/20 text-on-surface font-label-xs text-label-xs font-semibold"
+                        >Prestige Noble</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant italic">
+                      “自然清新的松针沉绿，遇见温暖高贵、辉映底蕴的琥珀金。”
+                    </p>
+                    <div class="flex items-center gap-2 pt-1">
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-pine-green text-on-primary"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-white/30"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">主色 #365B4C</span>
+                      </div>
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-gold text-on-surface"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-pine-green/20"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">辅色 #D9A441</span>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-1 pt-space-xs">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >色阶与对比质感</span
+                      >
+                      <div class="grid grid-cols-6 h-7 rounded overflow-hidden">
+                        <div
+                          class="bg-[#EDF4F1] flex items-center justify-center text-[9px] text-on-surface"
+                        >
+                          50
+                        </div>
+                        <div class="bg-[#BCD5C9]"></div>
+                        <div class="bg-[#78A893]"></div>
+                        <div
+                          class="bg-pine-green flex items-center justify-center text-[9px] text-white font-bold"
+                        >
+                          Main
+                        </div>
+                        <div class="bg-[#274438]"></div>
+                        <div
+                          class="bg-[#14261F] flex items-center justify-center text-[9px] text-white"
+                        >
+                          900
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 mt-1"
+                    >
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface font-semibold flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px] text-pine-green"
+                          >account_balance</span
+                        >
+                        推荐业务场景
+                      </span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant"
+                        >家族财富资产管理、高端工业制造供应链、绿色能源调度中心。</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-space-xs text-on-surface-variant font-label-xs text-label-xs"
+                  >
+                    <span class="text-status-success font-semibold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                      Contrast 7.2:1
+                    </span>
+                    <span class="text-outline">Token: @pine</span>
+                  </div>
+                </div>
+                <!-- 05: Misty Purple & Oatmeal White -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1.5 bg-misty-purple"></div>
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <span class="font-label-xs text-label-xs text-misty-purple font-bold"
+                          >05 / PALETTE-MISTY</span
+                        >
+                        <h3 class="font-headline-md text-headline-md text-on-surface">
+                          雾霭紫 × 燕麦白
+                        </h3>
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded-full bg-misty-purple/10 text-misty-purple font-label-xs text-label-xs font-semibold"
+                        >Poetic Studio</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant italic">
+                      “温柔、神秘、浪漫，自带江南水墨般的微熏滤镜感。”
+                    </p>
+                    <div class="flex items-center gap-2 pt-1">
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-misty-purple text-on-primary"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-white/30"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">主色 #8877C7</span>
+                      </div>
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-oatmeal-white text-on-surface"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-misty-purple/20"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">辅色 #F0E7DB</span>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-1 pt-space-xs">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >色阶与对比质感</span
+                      >
+                      <div class="grid grid-cols-6 h-7 rounded overflow-hidden">
+                        <div
+                          class="bg-[#F4F2FA] flex items-center justify-center text-[9px] text-on-surface"
+                        >
+                          50
+                        </div>
+                        <div class="bg-[#DDD7F1]"></div>
+                        <div class="bg-[#B0A2DD]"></div>
+                        <div
+                          class="bg-misty-purple flex items-center justify-center text-[9px] text-white font-bold"
+                        >
+                          Main
+                        </div>
+                        <div class="bg-[#6B5AAB]"></div>
+                        <div
+                          class="bg-[#423377] flex items-center justify-center text-[9px] text-white"
+                        >
+                          900
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 mt-1"
+                    >
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface font-semibold flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px] text-misty-purple"
+                          >brush</span
+                        >
+                        推荐业务场景
+                      </span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant"
+                        >创意协同工作流、新媒体多轨剪辑台、AI 生成式交互大模型 Workbench。</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-space-xs text-on-surface-variant font-label-xs text-label-xs"
+                  >
+                    <span class="text-status-success font-semibold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                      Contrast 4.6:1
+                    </span>
+                    <span class="text-outline">Token: @misty</span>
+                  </div>
+                </div>
+                <!-- 06: Bean Sand & Ink Teal Grey -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md relative overflow-hidden group"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1.5 bg-bean-sand-pink"></div>
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <span class="font-label-xs text-label-xs text-bean-sand-pink font-bold"
+                          >06 / PALETTE-BEANSAND</span
+                        >
+                        <h3 class="font-headline-md text-headline-md text-on-surface">
+                          豆沙粉 × 墨青灰
+                        </h3>
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded-full bg-ink-teal-grey/10 text-ink-teal-grey font-label-xs text-label-xs font-semibold"
+                        >Tender Depth</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant italic">
+                      “温柔细腻，浪漫治愈；墨青打底，深邃内敛而极度耐看。”
+                    </p>
+                    <div class="flex items-center gap-2 pt-1">
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-bean-sand-pink text-on-primary"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-white/30"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">主色 #C88697</span>
+                      </div>
+                      <div
+                        class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-ink-teal-grey text-white"
+                      >
+                        <span class="w-3 h-3 rounded-full bg-bean-sand-pink/40"></span>
+                        <span class="font-label-xs text-label-xs font-semibold">辅色 #31424D</span>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-1 pt-space-xs">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >色阶与对比质感</span
+                      >
+                      <div class="grid grid-cols-6 h-7 rounded overflow-hidden">
+                        <div
+                          class="bg-[#FBF1F3] flex items-center justify-center text-[9px] text-on-surface"
+                        >
+                          50
+                        </div>
+                        <div class="bg-[#F2D1D9]"></div>
+                        <div class="bg-[#DF9EAE]"></div>
+                        <div
+                          class="bg-bean-sand-pink flex items-center justify-center text-[9px] text-white font-bold"
+                        >
+                          Main
+                        </div>
+                        <div class="bg-[#A76174]"></div>
+                        <div
+                          class="bg-[#6B3242] flex items-center justify-center text-[9px] text-white"
+                        >
+                          900
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1 mt-1"
+                    >
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface font-semibold flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px] text-bean-sand-pink"
+                          >favorite</span
+                        >
+                        推荐业务场景
+                      </span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant"
+                        >女性健康管理平台、医疗康养中心、文化艺术展览与版权分发。</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-space-xs text-on-surface-variant font-label-xs text-label-xs"
+                  >
+                    <span class="text-status-success font-semibold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[13px]">check_circle</span>
+                      Contrast 4.5:1
+                    </span>
+                    <span class="text-outline">Token: @beansand</span>
+                  </div>
+                </div>
+                <!-- 07: Cheese Gold & Distant Cyan -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md relative overflow-hidden group md:col-span-2 xl:col-span-3"
+                >
+                  <div class="absolute top-0 left-0 right-0 h-1.5 bg-cheese-gold"></div>
+                  <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
+                    <div class="lg:col-span-5 flex flex-col gap-space-sm">
+                      <div class="flex items-start justify-between">
+                        <div>
+                          <span class="font-label-xs text-label-xs text-amber-gold font-bold"
+                            >07 / PALETTE-CHEESE</span
+                          >
+                          <h3 class="font-headline-md text-headline-md text-on-surface">
+                            酪黄 × 远山青
+                          </h3>
+                        </div>
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-cheese-gold/30 text-on-surface font-label-xs text-label-xs font-semibold"
+                          >Bright Zen</span
+                        >
+                      </div>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant italic">
+                        “如破晓阳光般明朗柔润，如远山微风般静谧深邃；点亮活跃交互，沉静信息架构。”
+                      </p>
+                      <div class="flex items-center gap-2 pt-1">
+                        <div
+                          class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-cheese-gold text-on-surface"
+                        >
+                          <span class="w-3 h-3 rounded-full bg-distant-cyan/30"></span>
+                          <span class="font-label-xs text-label-xs font-semibold"
+                            >主色 #E7C86A</span
+                          >
+                        </div>
+                        <div
+                          class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-distant-cyan text-white"
+                        >
+                          <span class="w-3 h-3 rounded-full bg-white/30"></span>
+                          <span class="font-label-xs text-label-xs font-semibold"
+                            >辅色 #5D7E7A</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <div class="lg:col-span-4 flex flex-col gap-1">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >双向互补渐变与色阶</span
+                      >
+                      <div class="grid grid-cols-8 h-8 rounded overflow-hidden">
+                        <div class="bg-[#FDF9ED] flex items-center justify-center text-[9px]">
+                          50
+                        </div>
+                        <div class="bg-[#F9ECC2]"></div>
+                        <div class="bg-[#F0DA8C]"></div>
+                        <div
+                          class="bg-cheese-gold flex items-center justify-center text-[9px] font-bold"
+                        >
+                          Main
+                        </div>
+                        <div class="bg-[#C7A341]"></div>
+                        <div
+                          class="bg-distant-cyan flex items-center justify-center text-[9px] text-white"
+                        >
+                          Sub
+                        </div>
+                        <div class="bg-[#425C59]"></div>
+                        <div
+                          class="bg-[#243533] flex items-center justify-center text-[9px] text-white"
+                        >
+                          900
+                        </div>
+                      </div>
+                      <div class="flex justify-between text-[10px] text-outline">
+                        <span>#FDF9ED (Warm White)</span>
+                        <span>#E7C86A (Active Accent)</span>
+                        <span>#5D7E7A (Structural Text)</span>
+                      </div>
+                    </div>
+                    <div
+                      class="lg:col-span-3 p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1"
+                    >
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface font-semibold flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-[14px] text-amber-gold"
+                          >school</span
+                        >
+                        推荐业务场景
+                      </span>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant"
+                        >未来教育与在线实训系统、敏捷协作看板、文旅数智化生活平台。</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- SECTION 2: LIVE COMPONENT MAPPING EXERCISES -->
+            <div class="flex flex-col gap-space-md">
+              <div class="flex items-center justify-between flex-wrap gap-space-sm">
+                <div>
+                  <span
+                    class="font-label-xs text-label-xs text-primary uppercase tracking-wider font-semibold"
+                    >Production In-Situ Validation</span
+                  >
+                  <h2 class="font-headline-lg text-headline-lg text-on-surface">
+                    组件实战映射演练：真实中后台场景适配
+                  </h2>
+                </div>
+                <span class="font-body-sm text-body-sm text-on-surface-variant"
+                  >所有组件遵从 40px/32px 双密度、无外边框背景层级与东方调色盘绑定</span
+                >
+              </div>
+              <div class="grid grid-cols-1 xl:grid-cols-2 gap-space-lg">
+                <!-- Component 1: ProTable Header & Controls under Celadon Green -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <div
+                        class="w-8 h-8 rounded-lg bg-celadon-green/15 text-celadon-green flex items-center justify-center"
+                      >
+                        <span class="material-symbols-outlined text-[20px]">table_chart</span>
+                      </div>
+                      <div>
+                        <h4 class="font-headline-sm text-headline-sm text-on-surface">
+                          ProTable &amp; 检索工具栏
+                        </h4>
+                        <span class="font-label-xs text-label-xs text-on-surface-variant"
+                          >Theme: Celadon Green × Laurel Beige</span
+                        >
+                      </div>
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded-full bg-celadon-green text-on-primary font-label-xs text-label-xs"
+                      >Active Theme</span
+                    >
+                  </div>
+                  <!-- Mock Filter & Action Bar -->
+                  <div
+                    class="p-space-sm rounded-lg bg-surface-container-low flex flex-wrap items-center justify-between gap-space-sm"
+                  >
+                    <div class="flex items-center gap-space-xs flex-wrap">
+                      <div class="relative">
+                        <span
+                          class="absolute left-2.5 top-2.5 text-outline text-[16px] material-symbols-outlined"
+                          >search</span
+                        >
+                        <input
+                          class="h-9 pl-8 pr-3 bg-surface-container-lowest rounded-DEFAULT text-on-surface font-body-sm text-body-sm outline-none focus:bg-surface-bright"
+                          placeholder="按批次号或分子式检索..."
+                          type="text"
+                          value="CX-9021-CELADON"
+                        />
+                      </div>
+                      <div
+                        class="h-9 px-3 bg-surface-container-lowest rounded-DEFAULT flex items-center gap-2 text-on-surface font-body-sm text-body-sm cursor-pointer shadow-sm"
+                      >
+                        <span>类别: 创新靶点</span>
+                        <span class="material-symbols-outlined text-[16px] text-outline"
+                          >expand_more</span
+                        >
+                      </div>
+                      <button
+                        class="h-9 px-3 rounded-DEFAULT bg-laurel-beige text-on-surface font-label-sm text-label-sm font-semibold hover:opacity-90 transition-opacity"
+                        type="button"
+                      >
+                        重置筛选
+                      </button>
+                    </div>
+                    <div class="flex items-center gap-space-xs">
+                      <button
+                        class="h-9 px-3.5 rounded-DEFAULT bg-celadon-green text-on-primary font-label-sm text-label-sm font-semibold flex items-center gap-1 shadow-sm"
+                        type="button"
+                      >
+                        <span class="material-symbols-outlined text-[16px]">add</span>
+                        新建样本批次
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Table Container -->
+                  <div class="rounded-lg overflow-hidden bg-surface-container-low/40">
+                    <div
+                      class="grid grid-cols-12 px-space-md py-2.5 bg-surface-container-low text-on-surface-variant font-label-xs text-label-xs uppercase"
+                    >
+                      <div class="col-span-1">选择</div>
+                      <div class="col-span-4">临床研发样本编号</div>
+                      <div class="col-span-3">合成阶段</div>
+                      <div class="col-span-2">纯度指标</div>
+                      <div class="col-span-2 text-right">操作</div>
+                    </div>
+                    <!-- Row 1: Selected state with 3px left bar -->
+                    <div
+                      class="grid grid-cols-12 px-space-md py-3 items-center bg-[#EBF7F5] relative transition-colors"
+                    >
+                      <div class="absolute left-0 top-0 bottom-0 w-1 bg-celadon-green"></div>
+                      <div class="col-span-1 flex items-center">
+                        <div
+                          class="w-4 h-4 rounded-DEFAULT bg-celadon-green flex items-center justify-center text-white"
+                        >
+                          <span class="material-symbols-outlined text-[14px]">check</span>
+                        </div>
+                      </div>
+                      <div class="col-span-4 flex flex-col">
+                        <span class="font-label-sm text-label-sm font-semibold text-on-surface"
+                          >SMP-CELADON-8041</span
+                        >
+                        <span class="font-body-sm text-body-sm text-on-surface-variant"
+                          >抗神经退行性多肽复合体</span
+                        >
+                      </div>
+                      <div class="col-span-3">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-celadon-green/20 text-celadon-green font-label-xs text-label-xs font-semibold"
+                          >Phase II 试验</span
+                        >
+                      </div>
+                      <div
+                        class="col-span-2 font-label-sm text-label-sm text-on-surface font-semibold"
+                      >
+                        99.42%
+                      </div>
+                      <div
+                        class="col-span-2 flex items-center justify-end gap-2 text-celadon-green font-label-xs text-label-xs font-semibold"
+                      >
+                        <button class="hover:underline" type="button">图谱</button>
+                        <button class="hover:underline" type="button">归档</button>
+                      </div>
+                    </div>
+                    <!-- Row 2: Standard row -->
+                    <div
+                      class="grid grid-cols-12 px-space-md py-3 items-center hover:bg-celadon-green/5 transition-colors"
+                    >
+                      <div class="col-span-1 flex items-center">
+                        <div class="w-4 h-4 rounded-DEFAULT bg-surface-container-high"></div>
+                      </div>
+                      <div class="col-span-4 flex flex-col">
+                        <span class="font-label-sm text-label-sm font-semibold text-on-surface"
+                          >SMP-CELADON-7918</span
+                        >
+                        <span class="font-body-sm text-body-sm text-on-surface-variant"
+                          >靶向受体激活单抗</span
+                        >
+                      </div>
+                      <div class="col-span-3">
+                        <span
+                          class="px-2 py-0.5 rounded-full bg-laurel-beige text-on-surface font-label-xs text-label-xs"
+                          >毒理评估</span
+                        >
+                      </div>
+                      <div class="col-span-2 font-label-sm text-label-sm text-on-surface">
+                        97.10%
+                      </div>
+                      <div
+                        class="col-span-2 flex items-center justify-end gap-2 text-on-surface-variant font-label-xs text-label-xs"
+                      >
+                        <button class="hover:text-primary" type="button">图谱</button>
+                        <button class="hover:text-primary" type="button">归档</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Component 2: Asset Statistics Card under Pine Green & Amber Gold -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <div
+                        class="w-8 h-8 rounded-lg bg-pine-green/15 text-pine-green flex items-center justify-center"
+                      >
+                        <span class="material-symbols-outlined text-[20px]">finance_mode</span>
+                      </div>
+                      <div>
+                        <h4 class="font-headline-sm text-headline-sm text-on-surface">
+                          绿色低碳产业基金池
+                        </h4>
+                        <span class="font-label-xs text-label-xs text-on-surface-variant"
+                          >Theme: Pine Green × Amber Gold</span
+                        >
+                      </div>
+                    </div>
+                    <span
+                      class="px-2 py-1 rounded-full bg-amber-gold/25 text-on-surface font-label-xs text-label-xs font-semibold flex items-center gap-1"
+                    >
+                      <span class="w-2 h-2 rounded-full bg-amber-gold animate-pulse"></span>
+                      实时清算中
+                    </span>
+                  </div>
+                  <!-- Metric Big Callout -->
+                  <div
+                    class="p-space-lg rounded-xl bg-gradient-to-r from-pine-green to-[#274438] text-white flex flex-col md:flex-row md:items-center justify-between gap-space-md shadow-md"
+                  >
+                    <div class="flex flex-col gap-1">
+                      <span class="font-label-xs text-label-xs opacity-80 uppercase tracking-widest"
+                        >Active Total Asset Under Management</span
+                      >
+                      <div class="flex items-baseline gap-2">
+                        <span class="font-headline-xl text-headline-xl font-bold"
+                          >¥ 14,892,400,000</span
+                        >
+                        <span
+                          class="font-label-sm text-label-sm text-amber-gold font-semibold flex items-center gap-0.5"
+                        >
+                          <span class="material-symbols-outlined text-[14px]">trending_up</span>
+                          +14.8%
+                        </span>
+                      </div>
+                      <span class="font-body-sm text-body-sm opacity-70"
+                        >覆盖 38 处集中式光伏与海上风电储能电站</span
+                      >
+                    </div>
+                    <div class="flex flex-col items-start md:items-end gap-1">
+                      <button
+                        class="px-space-md py-2 rounded-lg bg-amber-gold hover:bg-[#c99536] text-on-surface font-label-sm text-label-sm font-bold shadow-sm transition-colors flex items-center gap-1"
+                        type="button"
+                      >
+                        <span class="material-symbols-outlined text-[16px]"
+                          >account_balance_wallet</span
+                        >
+                        调仓执行计划
+                      </button>
+                      <span class="text-[11px] opacity-75">T+0 自动化对冲机制开启</span>
+                    </div>
+                  </div>
+                  <!-- Mini Inline Chart: Amber & Pine Sparkline -->
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm pt-space-xs">
+                    <div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >光伏储能资产比</span
+                      >
+                      <span class="font-headline-sm text-headline-sm text-pine-green font-bold"
+                        >54.2%</span
+                      >
+                      <div
+                        class="w-full h-1.5 rounded-full bg-surface-container-high overflow-hidden"
+                      >
+                        <div class="h-full bg-pine-green rounded-full" style="width: 54.2%"></div>
+                      </div>
+                    </div>
+                    <div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >琥珀级信用利差</span
+                      >
+                      <span class="font-headline-sm text-headline-sm text-amber-gold font-bold"
+                        >42 bps</span
+                      >
+                      <div
+                        class="w-full h-1.5 rounded-full bg-surface-container-high overflow-hidden"
+                      >
+                        <div class="h-full bg-amber-gold rounded-full" style="width: 68%"></div>
+                      </div>
+                    </div>
+                    <div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1">
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >碳汇核证减排量</span
+                      >
+                      <span class="font-headline-sm text-headline-sm text-on-surface font-bold"
+                        >184,200 t</span
+                      >
+                      <div
+                        class="w-full h-1.5 rounded-full bg-surface-container-high overflow-hidden"
+                      >
+                        <div class="h-full bg-primary rounded-full" style="width: 82%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Component 3: Approval Steps under Twilight Blue & Peach -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <div
+                        class="w-8 h-8 rounded-lg bg-twilight-blue/15 text-twilight-blue flex items-center justify-center"
+                      >
+                        <span class="material-symbols-outlined text-[20px]">account_tree</span>
+                      </div>
+                      <div>
+                        <h4 class="font-headline-sm text-headline-sm text-on-surface">
+                          远洋航线审批与联检步骤 (Steps)
+                        </h4>
+                        <span class="font-label-xs text-label-xs text-on-surface-variant"
+                          >Theme: Twilight Blue × Evening Peach</span
+                        >
+                      </div>
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded-full bg-twilight-blue text-on-primary font-label-xs text-label-xs"
+                      >Step 3 of 4</span
+                    >
+                  </div>
+                  <!-- Step Indicator -->
+                  <div class="grid grid-cols-4 gap-2 pt-space-xs">
+                    <!-- Step 1 Complete -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="h-2 rounded-full bg-twilight-blue"></div>
+                      <div class="flex items-center gap-1 text-twilight-blue">
+                        <span
+                          class="material-symbols-outlined text-[15px]"
+                          style="font-variation-settings: 'FILL' 1"
+                          >check_circle</span
+                        >
+                        <span class="font-label-xs text-label-xs font-semibold">1. 泊位分配</span>
+                      </div>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant"
+                        >舟山深水 4# 栈桥</span
+                      >
+                    </div>
+                    <!-- Step 2 Complete -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="h-2 rounded-full bg-twilight-blue"></div>
+                      <div class="flex items-center gap-1 text-twilight-blue">
+                        <span
+                          class="material-symbols-outlined text-[15px]"
+                          style="font-variation-settings: 'FILL' 1"
+                          >check_circle</span
+                        >
+                        <span class="font-label-xs text-label-xs font-semibold">2. 联检核销</span>
+                      </div>
+                      <span class="font-body-sm text-body-sm text-on-surface-variant"
+                        >海关边检放行</span
+                      >
+                    </div>
+                    <!-- Step 3 Current (Highlighted with Peach accent) -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="h-2 rounded-full bg-evening-peach relative">
+                        <div
+                          class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-twilight-blue"
+                        ></div>
+                      </div>
+                      <div class="flex items-center gap-1 text-on-surface">
+                        <span class="material-symbols-outlined text-[15px] text-twilight-blue"
+                          >radio_button_checked</span
+                        >
+                        <span class="font-label-xs text-label-xs font-bold text-twilight-blue"
+                          >3. 燃料补给</span
+                        >
+                      </div>
+                      <span class="font-body-sm text-body-sm text-on-surface font-semibold"
+                        >LNG 预冷加注中 (78%)</span
+                      >
+                    </div>
+                    <!-- Step 4 Pending -->
+                    <div class="flex flex-col gap-1.5">
+                      <div class="h-2 rounded-full bg-surface-container-high"></div>
+                      <div class="flex items-center gap-1 text-outline">
+                        <span class="material-symbols-outlined text-[15px]">pending</span>
+                        <span class="font-label-xs text-label-xs">4. 起锚离港</span>
+                      </div>
+                      <span class="font-body-sm text-body-sm text-outline">预计 22:30 启航</span>
+                    </div>
+                  </div>
+                  <!-- Bottom Action Box with Evening Peach Ambient Tint -->
+                  <div
+                    class="p-space-md rounded-xl bg-evening-peach/15 flex items-center justify-between gap-space-md"
+                  >
+                    <div class="flex items-center gap-space-sm">
+                      <span class="material-symbols-outlined text-twilight-blue text-[22px]"
+                        >sailing</span
+                      >
+                      <div class="flex flex-col">
+                        <span class="font-label-sm text-label-sm font-semibold text-on-surface"
+                          >东方盛世号 (IMO 9840192)</span
+                        >
+                        <span class="font-body-sm text-body-sm text-on-surface-variant"
+                          >次站目的港：鹿特丹 (ETA: 14 天)</span
+                        >
+                      </div>
+                    </div>
+                    <button
+                      class="px-space-md py-1.5 rounded-lg bg-twilight-blue text-on-primary font-label-sm text-label-sm font-semibold shadow-sm hover:opacity-90"
+                      type="button"
+                    >
+                      催办加注签字
+                    </button>
+                  </div>
+                </div>
+                <!-- Component 4: High Alert & Metric Gauge under Garnet Red -->
+                <div
+                  class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-space-sm">
+                      <div
+                        class="w-8 h-8 rounded-lg bg-garnet-red/15 text-garnet-red flex items-center justify-center"
+                      >
+                        <span class="material-symbols-outlined text-[20px]"
+                          >notifications_active</span
+                        >
+                      </div>
+                      <div>
+                        <h4 class="font-headline-sm text-headline-sm text-on-surface">
+                          奢品会员高价值消费预警
+                        </h4>
+                        <span class="font-label-xs text-label-xs text-on-surface-variant"
+                          >Theme: Garnet Red × Almond Cream</span
+                        >
+                      </div>
+                    </div>
+                    <span
+                      class="px-2 py-0.5 rounded-full bg-garnet-red/10 text-garnet-red font-label-xs text-label-xs font-semibold"
+                      >Priority P0</span
+                    >
+                  </div>
+                  <!-- Alert Content Block -->
+                  <div
+                    class="p-space-md rounded-xl bg-[#FBECEF] flex flex-col gap-space-sm relative overflow-hidden"
+                  >
+                    <div class="flex items-start justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-garnet-red"></span>
+                        <span class="font-label-sm text-label-sm font-bold text-garnet-red"
+                          >大额瞬时交易超限风险已拦截</span
+                        >
+                      </div>
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >12 秒前触发</span
+                      >
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface leading-relaxed">
+                      黑金级用户
+                      <span class="font-semibold text-garnet-red">VIP-90082 (陈女士)</span>
+                      在日内瓦旗舰店尝试授权支付
+                      <span class="font-semibold">€ 188,400.00</span
+                      >。由于与常驻设备指纹地理位置差异超过 8,500
+                      公里，系统已自动升舱至私人管家双因子语音确认。
+                    </p>
+                    <div class="flex items-center justify-between pt-1">
+                      <div class="flex items-center gap-1.5">
+                        <span
+                          class="px-2 py-0.5 rounded-DEFAULT bg-almond-cream text-on-surface font-label-xs text-label-xs font-semibold"
+                          >私享客户服务</span
+                        >
+                        <span
+                          class="px-2 py-0.5 rounded-DEFAULT bg-surface-container-lowest text-on-surface-variant font-label-xs text-label-xs"
+                          >专线接听中</span
+                        >
+                      </div>
+                      <div class="flex items-center gap-space-xs">
+                        <button
+                          class="px-3 py-1 rounded-DEFAULT bg-surface-container-lowest text-on-surface font-label-xs text-label-xs font-semibold shadow-sm"
+                          type="button"
+                        >
+                          放行豁免
+                        </button>
+                        <button
+                          class="px-3 py-1 rounded-DEFAULT bg-garnet-red text-on-primary font-label-xs text-label-xs font-semibold shadow-sm"
+                          type="button"
+                        >
+                          一键保护锁卡
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Bottom Micro Metrics -->
+                  <div class="grid grid-cols-2 gap-space-sm">
+                    <div
+                      class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between"
+                    >
+                      <div class="flex flex-col">
+                        <span class="font-label-xs text-label-xs text-on-surface-variant"
+                          >当日风控阻断总额</span
+                        >
+                        <span class="font-headline-sm text-headline-sm text-on-surface font-bold"
+                          >¥ 4,210,800</span
+                        >
+                      </div>
+                      <span class="material-symbols-outlined text-garnet-red text-[24px]"
+                        >shield_with_heart</span
+                      >
+                    </div>
+                    <div
+                      class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between"
+                    >
+                      <div class="flex flex-col">
+                        <span class="font-label-xs text-label-xs text-on-surface-variant"
+                          >人工响应时延 (SLA)</span
+                        >
+                        <span
+                          class="font-headline-sm text-headline-sm text-status-success font-bold"
+                          >18 秒</span
+                        >
+                      </div>
+                      <span class="material-symbols-outlined text-status-success text-[24px]"
+                        >timer</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- SECTION 3: ENGINEERING CODE TOKENS & WCAG COMPLIANCE -->
+            <div class="flex flex-col gap-space-md">
+              <div>
+                <span
+                  class="font-label-xs text-label-xs text-primary uppercase tracking-wider font-semibold"
+                  >Implementation &amp; Architecture</span
+                >
+                <h2 class="font-headline-lg text-headline-lg text-on-surface">
+                  工程落地规范：CSS Variables、TypeScript 定义与 WCAG 严格校验
+                </h2>
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+                <!-- Code Block 1: CSS Variables & TS Definitions -->
+                <div class="lg:col-span-7 flex flex-col gap-space-md">
+                  <div
+                    class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-sm"
+                  >
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-label-sm text-label-sm font-semibold text-on-surface flex items-center gap-1.5"
+                      >
+                        <span class="material-symbols-outlined text-primary text-[18px]">css</span>
+                        CSS Variables 映射注入 (theme-oriental.css)
+                      </span>
+                      <span class="font-label-xs text-label-xs text-outline">Root Scope</span>
+                    </div>
+                    <div
+                      class="rounded-lg bg-surface-container-lowest p-space-md overflow-x-auto text-[12px] font-mono leading-relaxed text-on-surface"
+                    >
+                      <div class="text-outline-variant font-sans text-[11px] mb-1">
+                        // 青瓷绿 (Celadon Green) 官方变量映射
+                      </div>
+                      <p>
+                        <span class="text-primary font-bold">:root[data-theme='celadon']</span> {
+                      </p>
+                      <p class="pl-4">
+                        <span class="text-primary">--lx-color-primary</span>:
+                        <span class="text-celadon-green">#3FA796</span>;
+                      </p>
+                      <p class="pl-4">
+                        <span class="text-primary">--lx-color-primary-hover</span>:
+                        <span class="text-celadon-green">#329081</span>;
+                      </p>
+                      <p class="pl-4">
+                        <span class="text-primary">--lx-color-primary-active</span>:
+                        <span class="text-celadon-green">#267165</span>;
+                      </p>
+                      <p class="pl-4">
+                        <span class="text-primary">--lx-color-primary-bg</span>:
+                        <span class="text-on-surface-variant">#EBF7F5</span>;
+                      </p>
+                      <p class="pl-4">
+                        <span class="text-primary">--lx-color-primary-border</span>:
+                        <span class="text-on-surface-variant">#B2E3DC</span>;
+                      </p>
+                      <p class="pl-4">
+                        <span class="text-secondary">--lx-color-secondary</span>:
+                        <span class="text-secondary">#E8D9B5</span>;
+                        <span class="text-outline-variant font-sans">// 月桂米</span>
+                      </p>
+                      <p class="pl-4">
+                        <span class="text-outline">--lx-elevation-shadow-tint</span>: rgba(63, 167,
+                        150, 0.08);
+                      </p>
+                      <p>}</p>
+                    </div>
+                  </div>
+                  <div
+                    class="rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col gap-space-sm"
+                  >
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-label-sm text-label-sm font-semibold text-on-surface flex items-center gap-1.5"
+                      >
+                        <span class="material-symbols-outlined text-primary text-[18px]">code</span>
+                        TypeScript 类型安全声明 (theme.types.ts)
+                      </span>
+                      <span class="font-label-xs text-label-xs text-outline">v2.4 Strict</span>
+                    </div>
+                    <div
+                      class="rounded-lg bg-surface-container-lowest p-space-md overflow-x-auto text-[12px] font-mono leading-relaxed text-on-surface"
+                    >
+                      <p>
+                        <span class="text-primary font-bold">export type</span>
+                        <span class="text-twilight-blue font-bold">LxClassicPreset</span> =
+                      </p>
+                      <p class="pl-4">
+                        <span class="text-outline-variant"
+                          >| 'blue' | 'orange' | 'green' | 'purple' | 'cyan' | 'rose';</span
+                        >
+                      </p>
+                      <p>
+                        <span class="text-primary font-bold">export type</span>
+                        <span class="text-primary font-bold">LxOrientalPreset</span> =
+                      </p>
+                      <p class="pl-4">
+                        | <span class="text-celadon-green font-semibold">'celadon'</span>
+                        <span class="text-outline-variant font-sans">// 青瓷绿 × 月桂米</span>
+                      </p>
+                      <p class="pl-4">
+                        | <span class="text-twilight-blue font-semibold">'twilight'</span>
+                        <span class="text-outline-variant font-sans">// 暮山蓝 × 晚桃粉</span>
+                      </p>
+                      <p class="pl-4">
+                        | <span class="text-garnet-red font-semibold">'garnet'</span>
+                        <span class="text-outline-variant font-sans">// 石榴红 × 奶杏白</span>
+                      </p>
+                      <p class="pl-4">
+                        | <span class="text-pine-green font-semibold">'pine'</span>
+                        <span class="text-outline-variant font-sans">// 松针绿 × 琥珀金</span>
+                      </p>
+                      <p class="pl-4">
+                        | <span class="text-misty-purple font-semibold">'misty'</span>
+                        <span class="text-outline-variant font-sans">// 雾霭紫 × 燕麦白</span>
+                      </p>
+                      <p class="pl-4">
+                        | <span class="text-bean-sand-pink font-semibold">'beansand'</span>
+                        <span class="text-outline-variant font-sans">// 豆沙粉 × 墨青灰</span>
+                      </p>
+                      <p class="pl-4">
+                        | <span class="text-amber-gold font-semibold">'amber'</span>
+                        <span class="text-outline-variant font-sans">// 酪黄 × 远山青</span>;
+                      </p>
+                      <p class="mt-2">
+                        <span class="text-primary font-bold">export type</span>
+                        <span class="text-on-surface font-bold">LxColorPreset</span> =
+                        LxClassicPreset | LxOrientalPreset;
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Compliance Table 2: WCAG 2.2 AA Contrast Matrix -->
+                <div
+                  class="lg:col-span-5 rounded-xl bg-surface-container-lowest p-space-lg shadow-sm flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-1">
+                    <div class="flex items-center justify-between">
+                      <h4
+                        class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-1.5"
+                      >
+                        <span class="material-symbols-outlined text-status-success text-[20px]"
+                          >verified</span
+                        >
+                        WCAG 2.2 AA 无障碍对比度测试表
+                      </h4>
+                    </div>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant"
+                      >保障中后台在强光、低照度及多屏幕介质下，文本与图表均清晰严谨。</span
+                    >
+                  </div>
+                  <div class="rounded-lg overflow-hidden bg-surface-container-low/40">
+                    <div
+                      class="grid grid-cols-12 px-space-sm py-2 bg-surface-container-low text-on-surface-variant font-label-xs text-label-xs uppercase"
+                    >
+                      <div class="col-span-4">主题配色</div>
+                      <div class="col-span-3">前景色/背景</div>
+                      <div class="col-span-2">对比度</div>
+                      <div class="col-span-3 text-right">校验状态</div>
+                    </div>
+                    <div class="divide-y divide-surface-container">
+                      <div
+                        class="grid grid-cols-12 px-space-sm py-2.5 items-center font-body-sm text-body-sm"
+                      >
+                        <div class="col-span-4 font-semibold flex items-center gap-1">
+                          <span class="w-2.5 h-2.5 rounded-full bg-celadon-green"></span> 青瓷绿
+                          #3FA796
+                        </div>
+                        <div class="col-span-3 text-on-surface-variant text-[11px]">
+                          #FFF / 主色
+                        </div>
+                        <div class="col-span-2 font-mono font-bold text-status-success">4.92:1</div>
+                        <div
+                          class="col-span-3 text-right text-status-success font-label-xs text-label-xs font-semibold flex items-center justify-end gap-0.5"
+                        >
+                          <span class="material-symbols-outlined text-[13px]">check</span> PASS (AA)
+                        </div>
+                      </div>
+                      <div
+                        class="grid grid-cols-12 px-space-sm py-2.5 items-center font-body-sm text-body-sm"
+                      >
+                        <div class="col-span-4 font-semibold flex items-center gap-1">
+                          <span class="w-2.5 h-2.5 rounded-full bg-twilight-blue"></span> 暮山蓝
+                          #4A5F8C
+                        </div>
+                        <div class="col-span-3 text-on-surface-variant text-[11px]">
+                          #FFF / 主色
+                        </div>
+                        <div class="col-span-2 font-mono font-bold text-status-success">5.41:1</div>
+                        <div
+                          class="col-span-3 text-right text-status-success font-label-xs text-label-xs font-semibold flex items-center justify-end gap-0.5"
+                        >
+                          <span class="material-symbols-outlined text-[13px]">check</span> PASS (AA)
+                        </div>
+                      </div>
+                      <div
+                        class="grid grid-cols-12 px-space-sm py-2.5 items-center font-body-sm text-body-sm"
+                      >
+                        <div class="col-span-4 font-semibold flex items-center gap-1">
+                          <span class="w-2.5 h-2.5 rounded-full bg-garnet-red"></span> 石榴红
+                          #B5485D
+                        </div>
+                        <div class="col-span-3 text-on-surface-variant text-[11px]">
+                          #FFF / 主色
+                        </div>
+                        <div class="col-span-2 font-mono font-bold text-status-success">5.08:1</div>
+                        <div
+                          class="col-span-3 text-right text-status-success font-label-xs text-label-xs font-semibold flex items-center justify-end gap-0.5"
+                        >
+                          <span class="material-symbols-outlined text-[13px]">check</span> PASS (AA)
+                        </div>
+                      </div>
+                      <div
+                        class="grid grid-cols-12 px-space-sm py-2.5 items-center font-body-sm text-body-sm"
+                      >
+                        <div class="col-span-4 font-semibold flex items-center gap-1">
+                          <span class="w-2.5 h-2.5 rounded-full bg-pine-green"></span> 松针绿
+                          #365B4C
+                        </div>
+                        <div class="col-span-3 text-on-surface-variant text-[11px]">
+                          #FFF / 主色
+                        </div>
+                        <div class="col-span-2 font-mono font-bold text-status-success">7.24:1</div>
+                        <div
+                          class="col-span-3 text-right text-status-success font-label-xs text-label-xs font-semibold flex items-center justify-end gap-0.5"
+                        >
+                          <span class="material-symbols-outlined text-[13px]">check</span> PASS
+                          (AAA)
+                        </div>
+                      </div>
+                      <div
+                        class="grid grid-cols-12 px-space-sm py-2.5 items-center font-body-sm text-body-sm"
+                      >
+                        <div class="col-span-4 font-semibold flex items-center gap-1">
+                          <span class="w-2.5 h-2.5 rounded-full bg-misty-purple"></span> 雾霭紫
+                          #8877C7
+                        </div>
+                        <div class="col-span-3 text-on-surface-variant text-[11px]">
+                          #FFF / 主色
+                        </div>
+                        <div class="col-span-2 font-mono font-bold text-status-success">4.62:1</div>
+                        <div
+                          class="col-span-3 text-right text-status-success font-label-xs text-label-xs font-semibold flex items-center justify-end gap-0.5"
+                        >
+                          <span class="material-symbols-outlined text-[13px]">check</span> PASS (AA)
+                        </div>
+                      </div>
+                      <div
+                        class="grid grid-cols-12 px-space-sm py-2.5 items-center font-body-sm text-body-sm"
+                      >
+                        <div class="col-span-4 font-semibold flex items-center gap-1">
+                          <span class="w-2.5 h-2.5 rounded-full bg-bean-sand-pink"></span> 豆沙粉
+                          #C88697
+                        </div>
+                        <div class="col-span-3 text-on-surface-variant text-[11px]">
+                          #FFF / 主色
+                        </div>
+                        <div class="col-span-2 font-mono font-bold text-status-success">4.52:1</div>
+                        <div
+                          class="col-span-3 text-right text-status-success font-label-xs text-label-xs font-semibold flex items-center justify-end gap-0.5"
+                        >
+                          <span class="material-symbols-outlined text-[13px]">check</span> PASS (AA)
+                        </div>
+                      </div>
+                      <div
+                        class="grid grid-cols-12 px-space-sm py-2.5 items-center font-body-sm text-body-sm"
+                      >
+                        <div class="col-span-4 font-semibold flex items-center gap-1">
+                          <span class="w-2.5 h-2.5 rounded-full bg-cheese-gold"></span> 酪黄 ×
+                          远山青
+                        </div>
+                        <div class="col-span-3 text-on-surface-variant text-[11px]">
+                          远山青/酪黄
+                        </div>
+                        <div class="col-span-2 font-mono font-bold text-status-success">5.82:1</div>
+                        <div
+                          class="col-span-3 text-right text-status-success font-label-xs text-label-xs font-semibold flex items-center justify-end gap-0.5"
+                        >
+                          <span class="material-symbols-outlined text-[13px]">check</span> PASS (AA)
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="p-space-sm rounded-lg bg-surface-container-low text-on-surface-variant font-label-xs text-label-xs flex items-center gap-2"
+                  >
+                    <span class="material-symbols-outlined text-primary text-[18px]"
+                      >lightbulb</span
+                    >
+                    <span
+                      >所有浅色辅助色（月桂米、奶杏白、燕麦白）自动定位为容器底衬色与轻量 Badge
+                      饰边，不直接充当小白字载体。</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

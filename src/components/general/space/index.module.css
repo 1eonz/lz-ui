@@ -1,0 +1,24 @@
+.root {
+  display: inline-flex;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.vertical {
+  flex-direction: column;
+}
+.block {
+  display: flex;
+  inline-size: 100%;
+}
+.split {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+.splitGroup {
+  /* Atomic inline-flex group prevents wrap from leaving a separator orphaned. */
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+}

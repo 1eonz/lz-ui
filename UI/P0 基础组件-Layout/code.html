@@ -1,0 +1,2034 @@
+<!doctype html>
+
+<html class="scroll-smooth" lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>lx-ui P0 布局组件全量交互与样式详细规范 | Layout &amp; Container Specification</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS v3 with configuration -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-tertiary-fixed': '#351000',
+              'primary-fixed': '#d9e2ff',
+              'on-surface': '#0b1c30',
+              'on-primary-fixed-variant': '#004398',
+              'on-secondary': '#ffffff',
+              'inverse-surface': '#213145',
+              'on-tertiary-fixed-variant': '#7c2e00',
+              'theme-cyan': '#0891B2',
+              'outline-variant': '#c1c6d7',
+              'secondary-container': '#76dcff',
+              'surface-container-lowest': '#ffffff',
+              'on-primary-fixed': '#001a43',
+              'surface-tint': '#0059c7',
+              'status-error': '#DC2626',
+              'on-error': '#ffffff',
+              'primary-container': '#006ef2',
+              'inverse-on-surface': '#eaf1ff',
+              'surface-container-highest': '#d3e4fe',
+              primary: '#0057c2',
+              background: '#f8f9ff',
+              surface: '#f8f9ff',
+              'on-error-container': '#93000a',
+              'primary-fixed-dim': '#afc6ff',
+              'surface-container-high': '#dce9ff',
+              'on-secondary-fixed-variant': '#004e61',
+              'secondary-fixed': '#b7eaff',
+              'surface-variant': '#d3e4fe',
+              'theme-orange': '#F97316',
+              'on-primary-container': '#fefcff',
+              secondary: '#006780',
+              'tertiary-fixed': '#ffdbcc',
+              'on-primary': '#ffffff',
+              'surface-bright': '#f8f9ff',
+              'on-secondary-container': '#006077',
+              'theme-purple': '#7C3AED',
+              tertiary: '#9e3d00',
+              'surface-dim': '#cbdbf5',
+              'tertiary-fixed-dim': '#ffb695',
+              'surface-container': '#e5eeff',
+              'on-tertiary-container': '#fffbff',
+              'theme-green': '#16A34A',
+              'on-surface-variant': '#414755',
+              'theme-rose': '#E11D48',
+              'status-warning': '#F59E0B',
+              'on-secondary-fixed': '#001f28',
+              'tertiary-container': '#c64f00',
+              'inverse-primary': '#afc6ff',
+              'secondary-fixed-dim': '#6cd3f7',
+              'error-container': '#ffdad6',
+              error: '#ba1a1a',
+              'status-success': '#16A34A',
+              'status-info': '#2563EB',
+              outline: '#727786',
+              'surface-container-low': '#eff4ff',
+              'on-tertiary': '#ffffff',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              'space-xl': '1.5rem',
+              margin: '1.5rem',
+              'space-md': '0.75rem',
+              'space-sm': '0.5rem',
+              'space-xs': '0.25rem',
+              'space-lg': '1rem',
+              gutter: '1rem',
+            },
+            fontFamily: {
+              'headline-xl': ['Inter', 'sans-serif'],
+              'headline-lg': ['Inter', 'sans-serif'],
+              'body-lg': ['Inter', 'sans-serif'],
+              'label-sm': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'body-md': ['Inter', 'sans-serif'],
+              'headline-md': ['Inter', 'sans-serif'],
+              'headline-sm': ['Inter', 'sans-serif'],
+              'body-sm': ['Inter', 'sans-serif'],
+              'label-xs': ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            fontSize: {
+              'headline-xl': [
+                '28px',
+                { lineHeight: '36px', letterSpacing: '-0.02em', fontWeight: '600' },
+              ],
+              'headline-lg': [
+                '22px',
+                { lineHeight: '30px', letterSpacing: '-0.01em', fontWeight: '600' },
+              ],
+              'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+              'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+              'label-md': ['14px', { lineHeight: '20px', fontWeight: '500' }],
+              'body-md': ['14px', { lineHeight: '22px', fontWeight: '400' }],
+              'headline-md': ['18px', { lineHeight: '26px', fontWeight: '600' }],
+              'headline-sm': ['16px', { lineHeight: '24px', fontWeight: '600' }],
+              'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+              'label-xs': [
+                '11px',
+                { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '600' },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      :root {
+        --lx-layout-header-height: 56px;
+        --lx-layout-sider-width: 224px;
+        --lx-layout-sider-collapsed-width: 64px;
+        --lx-layout-bg: #f8f9ff;
+        --lx-layout-content-padding: 24px;
+        --lx-grid-columns: 24;
+        --lx-grid-gutter-x: 16px;
+        --lx-page-container-footer-height: 56px;
+        --lx-layout-sider-transition: 240ms cubic-bezier(0.2, 0, 0, 1);
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 20;
+      }
+      .grid-stripes {
+        background-image: repeating-linear-gradient(
+          45deg,
+          rgba(0, 87, 194, 0.04) 0,
+          rgba(0, 87, 194, 0.04) 10px,
+          transparent 10px,
+          transparent 20px
+        );
+      }
+      .transition-sider {
+        transition: all 240ms cubic-bezier(0.2, 0, 0, 1);
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface font-body-md antialiased min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"
+  >
+    <!-- Top Global Header / Brand Topbar -->
+    <header
+      class="sticky top-0 z-50 bg-surface-container-lowest/90 backdrop-blur border-b border-outline-variant/40 px-space-xl py-space-sm flex items-center justify-between shadow-sm"
+      role="banner"
+    >
+      <div class="flex items-center gap-space-md">
+        <div
+          class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-sm shadow-sm"
+        >
+          LX
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-headline-sm tracking-tight text-on-surface">lx-ui Design System</span>
+            <span
+              class="px-2 py-0.5 rounded-full text-label-xs bg-primary-fixed text-on-primary-fixed-variant border border-primary/20"
+              >Design Specs</span
+            >
+            <span
+              class="px-2 py-0.5 rounded-full text-label-xs bg-surface-container-high text-on-surface-variant font-mono"
+              >v2.4.2</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-md">
+        <div
+          class="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-low text-label-xs text-on-surface-variant border border-outline-variant/30"
+        >
+          <span class="w-2 h-2 rounded-full bg-status-success inline-block animate-pulse"></span>
+          <span>A11y WCAG 2.2 AA Verified</span>
+        </div>
+        <a
+          class="px-3 py-1.5 rounded-lg text-label-sm font-medium bg-surface-container hover:bg-surface-container-high text-primary transition-colors flex items-center gap-1"
+          href="#token-spec"
+        >
+          <span class="material-symbols-outlined text-sm">code</span> Token 映射表
+        </a>
+      </div>
+    </header>
+    <!-- Sticky Sub-Navigation (Anchors) -->
+    <nav
+      aria-label="页面组件分类导航"
+      class="sticky top-14 z-40 bg-surface-container-lowest border-b border-outline-variant/50 px-space-xl shadow-xs overflow-x-auto"
+      role="navigation"
+    >
+      <div class="max-w-7xl mx-auto flex items-center gap-space-lg py-2">
+        <span
+          class="text-label-xs font-semibold uppercase text-outline tracking-wider flex items-center gap-1 whitespace-nowrap"
+        >
+          <span class="material-symbols-outlined text-xs">navigation</span> 快速锚点:
+        </span>
+        <div class="flex items-center gap-1 text-label-sm">
+          <a
+            class="px-3 py-1 rounded-md text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors whitespace-nowrap font-medium"
+            href="#category-overview"
+            >00. 规范概览</a
+          >
+          <a
+            class="px-3 py-1 rounded-md text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors whitespace-nowrap font-medium"
+            href="#layout-blueprint"
+            >01. Layout 布局骨架</a
+          >
+          <a
+            class="px-3 py-1 rounded-md text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors whitespace-nowrap font-medium"
+            href="#flex-engine"
+            >02. Flex 弹性引擎</a
+          >
+          <a
+            class="px-3 py-1 rounded-md text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors whitespace-nowrap font-medium"
+            href="#grid-system"
+            >03. Grid 24栅格系统</a
+          >
+          <a
+            class="px-3 py-1 rounded-md text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors whitespace-nowrap font-medium"
+            href="#page-container"
+            >04. PageContainer 容器</a
+          >
+          <a
+            class="px-3 py-1 rounded-md text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors whitespace-nowrap font-medium"
+            href="#token-spec"
+            >05. 响应式与工程Token</a
+          >
+        </div>
+      </div>
+    </nav>
+    <main class="max-w-7xl mx-auto px-space-xl py-space-xl space-y-12" role="main">
+      <!-- 1. Header & Category Overview -->
+      <section
+        class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/40 shadow-sm relative overflow-hidden"
+        id="category-overview"
+      >
+        <div
+          class="absolute right-0 top-0 w-96 h-96 bg-primary-fixed/20 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"
+        ></div>
+        <div class="relative z-10 space-y-4">
+          <!-- Badges -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span
+              class="px-2.5 py-1 rounded-md text-label-xs font-semibold tracking-wide bg-primary text-on-primary uppercase shadow-xs"
+              >P0 CATEGORY 06</span
+            >
+            <span
+              class="px-2.5 py-1 rounded-md text-label-xs font-medium bg-surface-container-high text-on-surface-variant flex items-center gap-1 border border-outline-variant/30"
+            >
+              <span class="material-symbols-outlined text-xs text-status-success">verified</span>
+              WCAG 2.2 AA Compliant
+            </span>
+            <span
+              class="px-2.5 py-1 rounded-md text-label-xs font-medium bg-surface-container text-secondary flex items-center gap-1 border border-outline-variant/30"
+            >
+              <span class="material-symbols-outlined text-xs">rocket_launch</span> Production Ready
+              v2.4.2
+            </span>
+            <span
+              class="px-2.5 py-1 rounded-md text-label-xs font-mono bg-theme-purple/10 text-theme-purple border border-theme-purple/20"
+            >
+              Zero Cumulative Layout Shift (CLS)
+            </span>
+          </div>
+          <!-- Title & Subtitle -->
+          <div>
+            <h1 class="text-headline-xl text-on-surface font-bold tracking-tight">
+              布局组件全量交互与样式详细规范
+              <span class="text-primary font-normal block md:inline text-headline-lg md:ml-3"
+                >Layout &amp; Container Specification</span
+              >
+            </h1>
+            <p class="mt-2 text-body-lg text-on-surface-variant max-w-4xl">
+              企业级高可用中后台界面排版中枢。涵盖 Header / Sider / Content / Footer 骨架拓扑、Flex
+              弹性多维对齐、Grid 24 栅格响应式断点系统与 PageContainer
+              核心业务页面容器，赋能复杂业务流无缝适配。
+            </p>
+          </div>
+          <!-- Metric Badges -->
+          <div
+            class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-outline-variant/30"
+          >
+            <div class="bg-surface-container-low p-3.5 rounded-lg border border-outline-variant/20">
+              <div class="text-label-xs font-medium text-on-surface-variant">核心组件覆盖</div>
+              <div class="text-headline-sm font-bold text-primary mt-1 flex items-baseline gap-1">
+                4 核心组件
+                <span class="text-label-sm font-normal text-status-success">100% 覆盖</span>
+              </div>
+              <div class="text-label-xs text-outline mt-0.5">Layout, Flex, Grid, PageContainer</div>
+            </div>
+            <div class="bg-surface-container-low p-3.5 rounded-lg border border-outline-variant/20">
+              <div class="text-label-xs font-medium text-on-surface-variant">响应式断点矩阵</div>
+              <div class="text-headline-sm font-bold text-on-surface mt-1 font-mono">6 档阶梯</div>
+              <div class="text-label-xs text-outline mt-0.5">xs / sm / md / lg / xl / xxl</div>
+            </div>
+            <div class="bg-surface-container-low p-3.5 rounded-lg border border-outline-variant/20">
+              <div class="text-label-xs font-medium text-on-surface-variant">侧栏物理动效参数</div>
+              <div class="text-headline-sm font-bold text-secondary mt-1 font-mono">240ms</div>
+              <div class="text-label-xs text-outline mt-0.5">cubic-bezier(0.2, 0, 0, 1)</div>
+            </div>
+            <div class="bg-surface-container-low p-3.5 rounded-lg border border-outline-variant/20">
+              <div class="text-label-xs font-medium text-on-surface-variant">Token 与计算引擎</div>
+              <div class="text-headline-sm font-bold text-theme-green mt-1 flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">check_circle</span> 生产级就绪
+              </div>
+              <div class="text-label-xs text-outline mt-0.5">全量 CSS 变量解耦与契约保障</div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 2. Component 01: Layout 布局骨架 -->
+      <section class="space-y-6" id="layout-blueprint">
+        <div
+          class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-outline-variant/40 pb-3"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
+              <span class="text-label-xs font-bold text-primary uppercase font-mono"
+                >COMPONENT 01</span
+              >
+            </div>
+            <h2 class="text-headline-lg font-bold text-on-surface mt-1">
+              Layout 布局骨架 (Header, Sider, Content, Footer)
+            </h2>
+            <p class="text-body-md text-on-surface-variant">
+              中后台经典三段式与多列拓扑架构，提供原生零抖动推挤折叠、固定顶栏与吸底脚标能力。
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              class="px-2.5 py-1 rounded bg-surface-container text-label-xs font-mono text-on-surface-variant border border-outline-variant/30"
+            >
+              &lt;Layout.Sider /&gt;
+            </span>
+            <span
+              class="px-2.5 py-1 rounded bg-surface-container text-label-xs font-mono text-on-surface-variant border border-outline-variant/30"
+            >
+              &lt;Layout.Content /&gt;
+            </span>
+          </div>
+        </div>
+        <!-- Layout Topologies Side-by-Side Blueprint -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Topology A: Classic Top-Nav + Left-Sider -->
+          <div
+            class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="w-6 h-6 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-xs"
+                    >A</span
+                  >
+                  <span class="text-headline-sm font-semibold text-on-surface">标准左右工作台</span>
+                </div>
+                <span class="text-label-xs px-2 py-0.5 rounded bg-surface-container text-outline"
+                  >经典主流</span
+                >
+              </div>
+              <p class="text-body-sm text-on-surface-variant mb-4">
+                Header 置顶，下方容纳固定 Sider 侧边栏与自适应 Content 主内容区，底部嵌套业务
+                Footer。
+              </p>
+              <!-- Topology Graphic preview -->
+              <div
+                class="border border-outline-variant/60 rounded-lg p-2 bg-surface-container-low flex flex-col gap-1.5 h-56 font-mono text-[10px]"
+              >
+                <div
+                  class="h-7 bg-primary text-on-primary rounded flex items-center justify-between px-3 font-semibold shadow-xs"
+                >
+                  <span>Header (56px)</span>
+                  <div class="flex gap-1 items-center opacity-80">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+                  </div>
+                </div>
+                <div class="flex-1 flex gap-1.5 min-h-0">
+                  <div
+                    class="w-20 bg-surface-container-high rounded p-1.5 flex flex-col justify-between text-on-surface-variant border border-outline-variant/30"
+                  >
+                    <span class="font-semibold text-primary">Sider 224px</span>
+                    <div class="space-y-1 opacity-70">
+                      <div class="h-2 bg-primary/20 rounded"></div>
+                      <div class="h-2 bg-primary/20 rounded w-4/5"></div>
+                      <div class="h-2 bg-primary/20 rounded w-2/3"></div>
+                    </div>
+                    <span class="text-[9px] text-outline">Fixed Left</span>
+                  </div>
+                  <div class="flex-1 flex flex-col gap-1.5">
+                    <div
+                      class="flex-1 bg-surface-container-lowest rounded p-2 border border-outline-variant/40 flex flex-col justify-center items-center text-outline"
+                    >
+                      <span class="font-semibold text-on-surface">Content (flex: 1)</span>
+                      <span class="text-[9px] mt-0.5">Padding 24px · 业务视图</span>
+                    </div>
+                    <div
+                      class="h-6 bg-surface-container rounded flex items-center justify-center text-on-surface-variant font-medium border border-outline-variant/20"
+                    >
+                      Footer (48px)
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-label-xs text-outline"
+            >
+              <span>层级: Header (z: 100) &gt; Sider (z: 90)</span>
+              <span class="font-mono">overflow-y: auto</span>
+            </div>
+          </div>
+          <!-- Topology B: Collapsible Sider with Trigger & Dynamic Toggle -->
+          <div
+            class="bg-surface-container-lowest rounded-xl p-5 border border-primary/40 shadow-sm flex flex-col justify-between relative ring-1 ring-primary/20"
+          >
+            <div
+              class="absolute -top-3 right-4 bg-primary text-on-primary text-[10px] font-semibold px-2 py-0.5 rounded shadow"
+            >
+              实时交互演示 (Live Demo)
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="w-6 h-6 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-xs"
+                    >B</span
+                  >
+                  <span class="text-headline-sm font-semibold text-on-surface">折叠触发侧边栏</span>
+                </div>
+                <span
+                  class="text-label-xs px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-mono"
+                  >224px ↔ 64px</span
+                >
+              </div>
+              <p class="text-body-sm text-on-surface-variant mb-4">
+                通过底部 Trigger 或顶栏折叠按钮平滑过渡，内容区无缝推挤，杜绝回流撕裂。
+              </p>
+              <!-- Dynamic Interactive Preview -->
+              <div
+                class="border border-outline-variant/60 rounded-lg p-2 bg-surface-container-low flex flex-col gap-1.5 h-56 font-mono text-[10px] relative overflow-hidden"
+              >
+                <div
+                  class="h-7 bg-inverse-surface text-inverse-on-surface rounded flex items-center justify-between px-3"
+                >
+                  <div class="flex items-center gap-2">
+                    <button
+                      class="w-5 h-5 rounded hover:bg-white/20 flex items-center justify-center text-white transition-colors"
+                      id="sider-toggle-btn"
+                      title="切换折叠状态"
+                    >
+                      <span class="material-symbols-outlined text-xs" id="sider-icon"
+                        >menu_open</span
+                      >
+                    </button>
+                    <span class="font-semibold text-[11px]">System Workbench</span>
+                  </div>
+                  <span class="text-[9px] opacity-75">Admin Portal</span>
+                </div>
+                <div class="flex-1 flex gap-1.5 min-h-0">
+                  <!-- Collapsible Sider Mock -->
+                  <div
+                    class="w-[110px] transition-sider bg-surface-container-high rounded p-1.5 flex flex-col justify-between border border-outline-variant/40 shadow-xs relative"
+                    id="interactive-sider"
+                  >
+                    <div>
+                      <div class="flex items-center gap-1.5 mb-2 px-1">
+                        <span class="w-3 h-3 rounded-full bg-primary flex-shrink-0"></span>
+                        <span
+                          class="font-semibold text-primary truncate text-[10px]"
+                          id="sider-label"
+                          >控制台目录</span
+                        >
+                      </div>
+                      <div class="space-y-1 text-on-surface-variant">
+                        <div
+                          class="flex items-center gap-1.5 p-1 rounded bg-surface-container-lowest"
+                        >
+                          <span class="material-symbols-outlined text-xs text-primary"
+                            >dashboard</span
+                          >
+                          <span class="sider-text truncate">仪表概览</span>
+                        </div>
+                        <div
+                          class="flex items-center gap-1.5 p-1 rounded hover:bg-surface-container"
+                        >
+                          <span class="material-symbols-outlined text-xs">account_tree</span>
+                          <span class="sider-text truncate">业务拓扑</span>
+                        </div>
+                        <div
+                          class="flex items-center gap-1.5 p-1 rounded hover:bg-surface-container"
+                        >
+                          <span class="material-symbols-outlined text-xs">settings</span>
+                          <span class="sider-text truncate">系统参数</span>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Sider Built-in Trigger -->
+                    <button
+                      class="w-full py-1 mt-1 bg-surface-container-lowest border border-outline-variant/40 rounded flex items-center justify-center text-primary hover:bg-primary hover:text-on-primary transition-colors cursor-pointer"
+                      id="sider-inner-trigger"
+                      title="展开/收起侧边栏"
+                    >
+                      <span class="material-symbols-outlined text-xs" id="trigger-arrow"
+                        >chevron_left</span
+                      >
+                    </button>
+                  </div>
+                  <!-- Dynamic Content Push -->
+                  <div
+                    class="flex-1 bg-surface-container-lowest rounded p-2 border border-outline-variant/40 flex flex-col justify-between"
+                  >
+                    <div class="flex items-center justify-between text-on-surface-variant">
+                      <span class="font-bold text-on-surface">主内容排版区</span>
+                      <span
+                        class="px-1.5 py-0.2 bg-theme-green/10 text-theme-green rounded font-mono text-[9px]"
+                        id="sider-status-badge"
+                        >展开态 (224px)</span
+                      >
+                    </div>
+                    <div
+                      class="p-2 rounded bg-surface-container-low border border-outline-variant/20 text-center"
+                    >
+                      <span class="text-label-xs text-primary font-mono block"
+                        >transition: 240ms cubic-bezier(0.2, 0, 0, 1)</span
+                      >
+                      <span class="text-[9px] text-outline"
+                        >右侧根据侧栏实时宽度流式自适应重绘</span
+                      >
+                    </div>
+                    <div class="text-[9px] text-outline flex justify-between">
+                      <span>Flex-grow: 1</span>
+                      <span>No horizontal scroll</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-label-xs"
+            >
+              <span class="text-on-surface-variant font-mono">collapsedWidth={64}</span>
+              <button
+                class="text-primary hover:underline font-medium text-xs flex items-center gap-0.5"
+                id="sider-manual-trigger"
+              >
+                点击模拟折叠切换 <span class="material-symbols-outlined text-xs">sync_alt</span>
+              </button>
+            </div>
+          </div>
+          <!-- Topology C: Nested Layout with Sub-Sider -->
+          <div
+            class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <span
+                    class="w-6 h-6 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-xs"
+                    >C</span
+                  >
+                  <span class="text-headline-sm font-semibold text-on-surface"
+                    >双侧栏级联 (Sub-Sider)</span
+                  >
+                </div>
+                <span class="text-label-xs px-2 py-0.5 rounded bg-surface-container text-outline"
+                  >高阶云控台</span
+                >
+              </div>
+              <p class="text-body-sm text-on-surface-variant mb-4">
+                Master Sider (64px 极简图标栏) + Sub Sider (160px 二级菜单树) + 业务内容 +
+                吸底操作栏。
+              </p>
+              <!-- Topology Graphic preview -->
+              <div
+                class="border border-outline-variant/60 rounded-lg p-2 bg-surface-container-low flex flex-col gap-1.5 h-56 font-mono text-[10px]"
+              >
+                <div
+                  class="h-7 bg-primary text-on-primary rounded flex items-center justify-between px-3"
+                >
+                  <span>Global Header</span>
+                  <span class="text-[9px] opacity-75">Multi-Tenant</span>
+                </div>
+                <div class="flex-1 flex gap-1 min-h-0">
+                  <div
+                    class="w-9 bg-inverse-surface text-inverse-on-surface rounded p-1 flex flex-col items-center gap-1.5"
+                  >
+                    <span
+                      class="w-4 h-4 rounded bg-primary flex items-center justify-center text-[9px] font-bold"
+                      >M</span
+                    >
+                    <div class="w-3 h-3 rounded bg-white/20"></div>
+                    <div class="w-3 h-3 rounded bg-white/20"></div>
+                    <div class="w-3 h-3 rounded bg-white/20"></div>
+                    <span class="mt-auto text-[8px] text-white/50">64px</span>
+                  </div>
+                  <div
+                    class="w-16 bg-surface-container-high rounded p-1 flex flex-col justify-between border border-outline-variant/30"
+                  >
+                    <div class="space-y-1">
+                      <span class="font-bold text-on-surface text-[8px]">二级分组</span>
+                      <div class="h-1.5 bg-primary/30 rounded w-full"></div>
+                      <div class="h-1.5 bg-primary/30 rounded w-3/4"></div>
+                      <div class="h-1.5 bg-primary/30 rounded w-5/6"></div>
+                    </div>
+                    <span class="text-[8px] text-outline">Sub 160px</span>
+                  </div>
+                  <div class="flex-1 flex flex-col gap-1">
+                    <div
+                      class="flex-1 bg-surface-container-lowest rounded p-1.5 border border-outline-variant/40 flex flex-col justify-center items-center text-center"
+                    >
+                      <span class="font-bold text-on-surface">Content</span>
+                      <span class="text-[8px] text-outline">主工作区</span>
+                    </div>
+                    <div
+                      class="h-5 bg-primary-fixed text-on-primary-fixed-variant rounded flex items-center justify-center font-semibold text-[8px] border border-primary/20"
+                    >
+                      Sticky Footer 操作栏 (56px)
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-label-xs text-outline"
+            >
+              <span>场景: 复杂微前端与超大型配置中心</span>
+              <span class="font-mono">z-index: 100</span>
+            </div>
+          </div>
+        </div>
+        <!-- State & Responsive Collapse Logic Banner -->
+        <div
+          class="bg-surface-container-low rounded-lg p-4 border border-outline-variant/30 flex flex-col md:flex-row items-start md:items-center justify-between gap-4"
+        >
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-primary text-xl">devices</span>
+            <div>
+              <div class="text-label-md font-semibold text-on-surface">
+                响应式侧栏断点触发规则 (Responsive Trigger Engine)
+              </div>
+              <div class="text-body-sm text-on-surface-variant">
+                当视口屏幕宽度低于 <code>breakpoint="lg" (992px)</code> 时，Sider 自动切换为 64px
+                收起态或抽屉遮罩态，防止内容挤压。
+              </div>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-2 font-mono text-label-xs bg-surface-container-lowest px-3 py-1.5 rounded-lg border border-outline-variant/40 flex-shrink-0"
+          >
+            <span class="text-outline">Transition Spec:</span>
+            <span class="text-primary font-semibold">240ms cubic-bezier(0.2, 0, 0, 1)</span>
+          </div>
+        </div>
+      </section>
+      <!-- 3. Component 02: Flex 弹性布局引擎 -->
+      <section class="space-y-6" id="flex-engine">
+        <div
+          class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-outline-variant/40 pb-3"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-secondary inline-block"></span>
+              <span class="text-label-xs font-bold text-secondary uppercase font-mono"
+                >COMPONENT 02</span
+              >
+            </div>
+            <h2 class="text-headline-lg font-bold text-on-surface mt-1">
+              Flex 弹性布局引擎 (Flex Container &amp; Flex Item)
+            </h2>
+            <p class="text-body-md text-on-surface-variant">
+              一维轴向排版标准，内置 6 种主轴对齐、5 种交叉轴对齐、三阶标准化间隙 (gap)
+              与子项弹性伸缩契约。
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              class="px-2.5 py-1 rounded bg-surface-container text-label-xs font-mono text-on-surface-variant border border-outline-variant/30"
+            >
+              display: flex
+            </span>
+            <span
+              class="px-2.5 py-1 rounded bg-surface-container text-label-xs font-mono text-on-surface-variant border border-outline-variant/30"
+            >
+              gap: 8px | 16px | 24px
+            </span>
+          </div>
+        </div>
+        <!-- Interactive Flex Matrix Playground -->
+        <div
+          class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/40 shadow-sm space-y-6"
+        >
+          <!-- Controls Bar -->
+          <div
+            class="grid grid-cols-1 md:grid-cols-4 gap-4 pb-6 border-b border-outline-variant/30"
+          >
+            <!-- Justify Content Control -->
+            <div>
+              <label
+                class="block text-label-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 flex items-center justify-between"
+              >
+                <span>Justify-Content (主轴对齐)</span>
+                <span class="font-mono text-primary font-bold" id="jc-active-val">flex-start</span>
+              </label>
+              <select
+                class="w-full text-label-sm rounded-lg border-outline-variant/60 bg-surface-container-low text-on-surface focus:border-primary focus:ring-primary"
+                id="select-justify"
+              >
+                <option selected="" value="justify-start">flex-start (起点对齐)</option>
+                <option value="justify-center">center (居中对齐)</option>
+                <option value="justify-end">flex-end (末端对齐)</option>
+                <option value="justify-between">space-between (两端分散)</option>
+                <option value="justify-around">space-around (环绕均分)</option>
+                <option value="justify-evenly">space-evenly (绝对均分)</option>
+              </select>
+            </div>
+            <!-- Align Items Control -->
+            <div>
+              <label
+                class="block text-label-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 flex items-center justify-between"
+              >
+                <span>Align-Items (交叉轴对齐)</span>
+                <span class="font-mono text-primary font-bold" id="ai-active-val">center</span>
+              </label>
+              <select
+                class="w-full text-label-sm rounded-lg border-outline-variant/60 bg-surface-container-low text-on-surface focus:border-primary focus:ring-primary"
+                id="select-align"
+              >
+                <option value="items-start">flex-start (顶部对齐)</option>
+                <option selected="" value="items-center">center (垂直居中)</option>
+                <option value="items-end">flex-end (底部对齐)</option>
+                <option value="items-stretch">stretch (高度拉伸满)</option>
+                <option value="items-baseline">baseline (文字基线)</option>
+              </select>
+            </div>
+            <!-- Preset Gap Control -->
+            <div>
+              <label
+                class="block text-label-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5 flex items-center justify-between"
+              >
+                <span>Gap 间隙预设</span>
+                <span class="font-mono text-secondary font-bold" id="gap-active-val"
+                  >middle (16px)</span
+                >
+              </label>
+              <div class="grid grid-cols-3 gap-1">
+                <button
+                  class="gap-btn py-1.5 text-label-xs rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-medium transition-colors"
+                  data-gap="gap-2"
+                  data-gap-label="small (8px)"
+                >
+                  8px S
+                </button>
+                <button
+                  class="gap-btn active-gap py-1.5 text-label-xs rounded bg-primary text-on-primary font-medium transition-colors shadow-xs"
+                  data-gap="gap-4"
+                  data-gap-label="middle (16px)"
+                >
+                  16px M
+                </button>
+                <button
+                  class="gap-btn py-1.5 text-label-xs rounded bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-medium transition-colors"
+                  data-gap="gap-6"
+                  data-gap-label="large (24px)"
+                >
+                  24px L
+                </button>
+              </div>
+            </div>
+            <!-- Wrap Control -->
+            <div>
+              <label
+                class="block text-label-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-1.5"
+              >
+                Flex-Wrap 换行控制
+              </label>
+              <div class="flex items-center gap-2 pt-1">
+                <button
+                  class="flex-1 py-1.5 px-3 rounded-lg border border-outline-variant/50 text-label-sm text-on-surface font-medium bg-surface-container-low flex items-center justify-center gap-1.5 hover:bg-surface-container transition-colors"
+                  id="toggle-wrap"
+                >
+                  <span class="material-symbols-outlined text-sm">wrap_text</span>
+                  <span id="wrap-status-text">nowrap (单行不折行)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- Live Visual Stage -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between text-label-xs text-outline font-mono">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">straighten</span>
+                容器主轴交互渲染视窗 (Flex Container Stage)
+              </span>
+              <span id="flex-applied-classes">class="flex justify-start items-center gap-4"</span>
+            </div>
+            <div
+              class="min-h-[160px] p-6 bg-surface-container-low rounded-xl border border-dashed border-outline-variant/60 flex justify-start items-center gap-4 transition-all duration-300 relative overflow-hidden"
+              id="flex-stage-container"
+            >
+              <!-- Flex Child 1 -->
+              <div
+                class="w-32 bg-surface-container-lowest p-3.5 rounded-lg border-2 border-primary/40 shadow-xs flex flex-col justify-between shrink-0 transition-all hover:scale-105"
+              >
+                <div class="flex items-center justify-between">
+                  <span
+                    class="w-5 h-5 rounded-full bg-primary text-on-primary text-xs flex items-center justify-center font-bold"
+                    >1</span
+                  >
+                  <span class="text-label-xs font-mono text-outline">order: 1</span>
+                </div>
+                <div class="my-2">
+                  <div class="font-bold text-headline-sm text-primary">Item Alpha</div>
+                  <div class="text-[11px] text-on-surface-variant">flex: none (固定)</div>
+                </div>
+                <div class="h-1.5 w-full bg-primary/20 rounded"></div>
+              </div>
+              <!-- Flex Child 2 -->
+              <div
+                class="w-36 bg-surface-container-lowest p-3.5 rounded-lg border-2 border-secondary/40 shadow-xs flex flex-col justify-between shrink-0 transition-all hover:scale-105"
+              >
+                <div class="flex items-center justify-between">
+                  <span
+                    class="w-5 h-5 rounded-full bg-secondary text-on-secondary text-xs flex items-center justify-center font-bold"
+                    >2</span
+                  >
+                  <span class="text-label-xs font-mono text-outline">order: 2</span>
+                </div>
+                <div class="my-2">
+                  <div class="font-bold text-headline-sm text-secondary">Item Beta</div>
+                  <div class="text-[11px] text-on-surface-variant">h: 88px (高基线)</div>
+                </div>
+                <div
+                  class="h-6 w-full bg-secondary/15 rounded flex items-center justify-center text-[10px] text-secondary font-mono"
+                >
+                  Tall Content
+                </div>
+              </div>
+              <!-- Flex Child 3 -->
+              <div
+                class="w-40 bg-surface-container-lowest p-3.5 rounded-lg border-2 border-theme-purple/40 shadow-xs flex flex-col justify-between shrink-0 transition-all hover:scale-105"
+              >
+                <div class="flex items-center justify-between">
+                  <span
+                    class="w-5 h-5 rounded-full bg-theme-purple text-white text-xs flex items-center justify-center font-bold"
+                    >3</span
+                  >
+                  <span class="text-label-xs font-mono text-outline">order: 3</span>
+                </div>
+                <div class="my-2">
+                  <div class="font-bold text-headline-sm text-theme-purple">Item Gamma</div>
+                  <div class="text-[11px] text-on-surface-variant">flex: 1 1 auto (自适应)</div>
+                </div>
+                <div class="h-1.5 w-full bg-theme-purple/20 rounded"></div>
+              </div>
+              <!-- Flex Child 4 -->
+              <div
+                class="w-28 bg-surface-container-lowest p-3.5 rounded-lg border-2 border-theme-orange/40 shadow-xs flex flex-col justify-between shrink-0 transition-all hover:scale-105"
+              >
+                <div class="flex items-center justify-between">
+                  <span
+                    class="w-5 h-5 rounded-full bg-theme-orange text-white text-xs flex items-center justify-center font-bold"
+                    >4</span
+                  >
+                  <span class="text-label-xs font-mono text-outline">order: 4</span>
+                </div>
+                <div class="my-2">
+                  <div class="font-bold text-headline-sm text-theme-orange">Item Delta</div>
+                  <div class="text-[11px] text-on-surface-variant">Compact Tag</div>
+                </div>
+                <div class="h-1.5 w-full bg-theme-orange/20 rounded"></div>
+              </div>
+            </div>
+          </div>
+          <!-- Flex Item Child Properties Specification Guide -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <div class="p-3.5 rounded-lg bg-surface-container-low border border-outline-variant/20">
+              <span class="text-label-xs font-mono text-primary font-bold block mb-1"
+                >flex: "1 1 auto" (自适应填充)</span
+              >
+              <p class="text-body-sm text-on-surface-variant">
+                元素在空间充足时按权重放大，在空间狭窄时等比收缩，中后台搜索栏与标题栏最常用形态。
+              </p>
+            </div>
+            <div class="p-3.5 rounded-lg bg-surface-container-low border border-outline-variant/20">
+              <span class="text-label-xs font-mono text-secondary font-bold block mb-1"
+                >flex: "none" (绝对尺寸固定)</span
+              >
+              <p class="text-body-sm text-on-surface-variant">
+                锁定元素的原始宽高 (`0 0
+                auto`)，通常用于操作按钮组、头像、标签图标等不可变几何实体。
+              </p>
+            </div>
+            <div class="p-3.5 rounded-lg bg-surface-container-low border border-outline-variant/20">
+              <span class="text-label-xs font-mono text-theme-purple font-bold block mb-1"
+                >order: number (视觉序列解耦)</span
+              >
+              <p class="text-body-sm text-on-surface-variant">
+                在响应式场景下无需改变 DOM 结构，即可通过 order 参数重排操作列与信息块的展示顺序。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 4. Component 03: Grid 24栅格响应式系统 -->
+      <section class="space-y-6" id="grid-system">
+        <div
+          class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-outline-variant/40 pb-3"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-theme-cyan inline-block"></span>
+              <span class="text-label-xs font-bold text-theme-cyan uppercase font-mono"
+                >COMPONENT 03</span
+              >
+            </div>
+            <h2 class="text-headline-lg font-bold text-on-surface mt-1">
+              Grid 24栅格响应式系统 (Row &amp; Col)
+            </h2>
+            <p class="text-body-md text-on-surface-variant">
+              企业级 24 栅格细分算法，支持百分比无损切分、水平/垂直双向 Gutter 边距及 6
+              档端云响应式阶梯。
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              class="px-2.5 py-1 rounded bg-surface-container text-label-xs font-mono text-on-surface-variant border border-outline-variant/30"
+            >
+              Total Columns: 24
+            </span>
+            <span
+              class="px-2.5 py-1 rounded bg-surface-container text-label-xs font-mono text-on-surface-variant border border-outline-variant/30"
+            >
+              Gutter: [16, 24]
+            </span>
+          </div>
+        </div>
+        <div
+          class="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/40 shadow-sm space-y-8"
+        >
+          <!-- 24-Column Visual Base Ruler -->
+          <div class="space-y-2">
+            <div
+              class="flex items-center justify-between text-label-xs font-semibold text-on-surface-variant"
+            >
+              <span class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-xs text-primary">view_column</span>
+                24 栅格基准标尺刻度 (Base 24-Column Metric Grid Ruler)
+              </span>
+              <span class="font-mono text-outline">100% Width / 24 Cols = 4.166% per col</span>
+            </div>
+            <div
+              class="grid grid-cols-24 gap-1 p-2 bg-surface-container-low rounded-lg border border-outline-variant/30 font-mono text-[10px] text-center select-none overflow-x-auto"
+            >
+              <!-- 24 columns generated visually -->
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                1
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                2
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                3
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                4
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                5
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                6
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                7
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                8
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                9
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                10
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                11
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                12
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                13
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                14
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                15
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                16
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                17
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                18
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                19
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                20
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                21
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                22
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                23
+              </div>
+              <div
+                class="bg-primary/10 text-primary py-2 rounded font-semibold border border-primary/20"
+              >
+                24
+              </div>
+            </div>
+          </div>
+          <!-- Common Col Span Recipes Showcase -->
+          <div class="space-y-4">
+            <div class="text-label-sm font-semibold text-on-surface">
+              企业经典分栏配方矩阵 (Standard Col Span Recipes)
+            </div>
+            <div class="space-y-3 font-mono text-label-xs">
+              <!-- 24/24 Full Width -->
+              <div>
+                <div class="flex justify-between text-outline text-[11px] mb-1">
+                  <span>配方 01: 全宽撑满 (Full Width)</span>
+                  <span>col-span-24 (100%)</span>
+                </div>
+                <div class="grid grid-cols-24 gap-2">
+                  <div
+                    class="col-span-24 bg-surface-container-high py-2.5 px-3 rounded-lg text-primary font-bold border border-primary/30 flex items-center justify-between"
+                  >
+                    <span>&lt;Col span={24} /&gt;</span>
+                    <span class="text-on-surface-variant font-normal"
+                      >用于全局告警通知、宽表过滤条件栏、概览巨幅图表</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <!-- 12 + 12 Split -->
+              <div>
+                <div class="flex justify-between text-outline text-[11px] mb-1">
+                  <span>配方 02: 对等双栏双拼 (50% - 50% Dual Split)</span>
+                  <span>col-span-12 + col-span-12</span>
+                </div>
+                <div class="grid grid-cols-24 gap-3">
+                  <div
+                    class="col-span-12 bg-primary/10 py-2.5 px-3 rounded-lg text-primary font-bold border border-primary/20 flex items-center justify-between"
+                  >
+                    <span>Col span={12}</span>
+                    <span class="text-[10px] text-outline">左侧详情</span>
+                  </div>
+                  <div
+                    class="col-span-12 bg-primary/10 py-2.5 px-3 rounded-lg text-primary font-bold border border-primary/20 flex items-center justify-between"
+                  >
+                    <span>Col span={12}</span>
+                    <span class="text-[10px] text-outline">右侧对照/操作</span>
+                  </div>
+                </div>
+              </div>
+              <!-- 8 + 8 + 8 Triple Split -->
+              <div>
+                <div class="flex justify-between text-outline text-[11px] mb-1">
+                  <span>配方 03: 三栏平衡布局 (33.3% Triple Split)</span>
+                  <span>col-span-8 * 3</span>
+                </div>
+                <div class="grid grid-cols-24 gap-3">
+                  <div
+                    class="col-span-8 bg-secondary/10 py-2.5 px-3 rounded-lg text-secondary font-bold border border-secondary/20 text-center"
+                  >
+                    Col span={8}
+                  </div>
+                  <div
+                    class="col-span-8 bg-secondary/10 py-2.5 px-3 rounded-lg text-secondary font-bold border border-secondary/20 text-center"
+                  >
+                    Col span={8}
+                  </div>
+                  <div
+                    class="col-span-8 bg-secondary/10 py-2.5 px-3 rounded-lg text-secondary font-bold border border-secondary/20 text-center"
+                  >
+                    Col span={8}
+                  </div>
+                </div>
+              </div>
+              <!-- 6 + 6 + 6 + 6 Quad Split -->
+              <div>
+                <div class="flex justify-between text-outline text-[11px] mb-1">
+                  <span>配方 04: 四栏指标卡矩阵 (25% Quad Split)</span>
+                  <span>col-span-6 * 4 (典型 KPI 卡片)</span>
+                </div>
+                <div class="grid grid-cols-24 gap-3">
+                  <div
+                    class="col-span-6 bg-theme-purple/10 py-2.5 px-2 rounded-lg text-theme-purple font-bold border border-theme-purple/20 text-center truncate"
+                  >
+                    span={6} (指标 A)
+                  </div>
+                  <div
+                    class="col-span-6 bg-theme-purple/10 py-2.5 px-2 rounded-lg text-theme-purple font-bold border border-theme-purple/20 text-center truncate"
+                  >
+                    span={6} (指标 B)
+                  </div>
+                  <div
+                    class="col-span-6 bg-theme-purple/10 py-2.5 px-2 rounded-lg text-theme-purple font-bold border border-theme-purple/20 text-center truncate"
+                  >
+                    span={6} (指标 C)
+                  </div>
+                  <div
+                    class="col-span-6 bg-theme-purple/10 py-2.5 px-2 rounded-lg text-theme-purple font-bold border border-theme-purple/20 text-center truncate"
+                  >
+                    span={6} (指标 D)
+                  </div>
+                </div>
+              </div>
+              <!-- Asymmetric 16 + 8 Split -->
+              <div>
+                <div class="flex justify-between text-outline text-[11px] mb-1">
+                  <span>配方 05: 黄金非对称侧挂 (Asymmetric: 16 Main Content + 8 Side Widget)</span>
+                  <span>col-span-16 (66.6%) + col-span-8 (33.3%)</span>
+                </div>
+                <div class="grid grid-cols-24 gap-3">
+                  <div
+                    class="col-span-16 bg-surface-container-high py-2.5 px-3 rounded-lg text-on-surface font-bold border border-outline-variant/40 flex items-center justify-between"
+                  >
+                    <span>Col span={16} (主表格/数据大盘)</span>
+                    <span class="text-[10px] text-outline font-normal">主工作视窗</span>
+                  </div>
+                  <div
+                    class="col-span-8 bg-surface-container py-2.5 px-3 rounded-lg text-on-surface-variant font-bold border border-outline-variant/30 flex items-center justify-between"
+                  >
+                    <span>Col span={8}</span>
+                    <span class="text-[10px] text-outline font-normal">辅助侧卡/审批流</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Responsive Breakpoint Matrix Table & Fallback Card Demo -->
+          <div class="space-y-4 pt-4 border-t border-outline-variant/30">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <div class="text-label-sm font-semibold text-on-surface">
+                  响应式断点阶梯规范 (Breakpoint Responsive Hierarchy)
+                </div>
+                <div class="text-body-sm text-on-surface-variant">
+                  严格对齐 Ant Design / lx-ui 响应式规范，自动在极小屏收敛为单列。
+                </div>
+              </div>
+              <div
+                class="flex items-center gap-1 font-mono text-label-xs bg-surface-container px-2.5 py-1 rounded border border-outline-variant/30"
+              >
+                <span>Demo Prop:</span>
+                <span class="text-primary font-bold">{ xs: 24, sm: 12, md: 8, lg: 6 }</span>
+              </div>
+            </div>
+            <!-- Breakpoint Table -->
+            <div class="overflow-x-auto rounded-lg border border-outline-variant/40">
+              <table class="w-full text-left font-mono text-label-sm border-collapse">
+                <thead
+                  class="bg-surface-container text-on-surface-variant border-b border-outline-variant/40"
+                >
+                  <tr>
+                    <th class="py-2.5 px-4 font-bold">断点代码 (Breakpoint)</th>
+                    <th class="py-2.5 px-4 font-bold">媒体查询临界值 (Media Query)</th>
+                    <th class="py-2.5 px-4 font-bold">设备定位 (Target Device)</th>
+                    <th class="py-2.5 px-4 font-bold">推荐默认网格行为</th>
+                    <th class="py-2.5 px-4 font-bold">推荐 Gutter</th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="divide-y divide-outline-variant/20 bg-surface-container-lowest text-on-surface"
+                >
+                  <tr>
+                    <td class="py-2.5 px-4 font-bold text-theme-rose">xs</td>
+                    <td class="py-2.5 px-4 text-on-surface-variant">&lt; 576px</td>
+                    <td class="py-2.5 px-4">移动手机 (Mobile Portrait)</td>
+                    <td class="py-2.5 px-4">
+                      <span class="px-2 py-0.5 rounded bg-surface-container text-label-xs"
+                        >span={24} (强制单列折行)</span
+                      >
+                    </td>
+                    <td class="py-2.5 px-4 text-outline">8px</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-4 font-bold text-theme-orange">sm</td>
+                    <td class="py-2.5 px-4 text-on-surface-variant">≥ 576px</td>
+                    <td class="py-2.5 px-4">平板竖屏 (Tablet Portrait)</td>
+                    <td class="py-2.5 px-4">
+                      <span class="px-2 py-0.5 rounded bg-surface-container text-label-xs"
+                        >span={12} (双列并排)</span
+                      >
+                    </td>
+                    <td class="py-2.5 px-4 text-outline">16px</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-4 font-bold text-status-warning">md</td>
+                    <td class="py-2.5 px-4 text-on-surface-variant">≥ 768px</td>
+                    <td class="py-2.5 px-4">平板横屏 (Tablet Landscape)</td>
+                    <td class="py-2.5 px-4">
+                      <span class="px-2 py-0.5 rounded bg-surface-container text-label-xs"
+                        >span={8} (三列分布)</span
+                      >
+                    </td>
+                    <td class="py-2.5 px-4 text-outline">16px</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-4 font-bold text-primary">lg</td>
+                    <td class="py-2.5 px-4 text-on-surface-variant">≥ 992px</td>
+                    <td class="py-2.5 px-4">桌面小屏 (Desktop Compact)</td>
+                    <td class="py-2.5 px-4">
+                      <span
+                        class="px-2 py-0.5 rounded bg-primary/10 text-primary text-label-xs font-semibold"
+                        >span={6} (标准四列卡片)</span
+                      >
+                    </td>
+                    <td class="py-2.5 px-4 text-outline">24px</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-4 font-bold text-secondary">xl</td>
+                    <td class="py-2.5 px-4 text-on-surface-variant">≥ 1200px</td>
+                    <td class="py-2.5 px-4">桌面标准屏 (Standard Desktop)</td>
+                    <td class="py-2.5 px-4">
+                      <span class="px-2 py-0.5 rounded bg-surface-container text-label-xs"
+                        >span={6} 或 span={4}</span
+                      >
+                    </td>
+                    <td class="py-2.5 px-4 text-outline">24px</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2.5 px-4 font-bold text-theme-purple">xxl</td>
+                    <td class="py-2.5 px-4 text-on-surface-variant">≥ 1600px</td>
+                    <td class="py-2.5 px-4">超宽带座舱 (Ultra-wide Monitor)</td>
+                    <td class="py-2.5 px-4">
+                      <span class="px-2 py-0.5 rounded bg-surface-container text-label-xs"
+                        >span={4} (六列高密平铺)</span
+                      >
+                    </td>
+                    <td class="py-2.5 px-4 text-outline">32px</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- 5. Component 04: PageContainer 核心业务页面容器 -->
+      <section class="space-y-6" id="page-container">
+        <div
+          class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-outline-variant/40 pb-3"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-theme-purple inline-block"></span>
+              <span class="text-label-xs font-bold text-theme-purple uppercase font-mono"
+                >COMPONENT 04</span
+              >
+            </div>
+            <h2 class="text-headline-lg font-bold text-on-surface mt-1">
+              PageContainer 核心业务页面容器 (The Enterprise Workhorse)
+            </h2>
+            <p class="text-body-md text-on-surface-variant">
+              封装标准面包屑导航、页面级复合标题、标签元数据、Tab 视图切换、卡片主体及吸底操作栏
+              (Sticky Footer)。
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              class="px-2.5 py-1 rounded bg-theme-purple/10 text-label-xs font-mono text-theme-purple border border-theme-purple/20"
+            >
+              &lt;PageContainer /&gt;
+            </span>
+          </div>
+        </div>
+        <!-- Live Mockup of Production-Grade PageContainer -->
+        <div
+          class="bg-surface-container-lowest rounded-xl border border-outline-variant/50 shadow-md overflow-hidden relative"
+        >
+          <!-- Slot 1: Breadcrumb Header Bar -->
+          <div
+            class="px-8 pt-6 pb-3 bg-surface-container-low/60 border-b border-outline-variant/30 flex items-center justify-between text-label-sm"
+          >
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-on-surface-variant">
+              <a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+                <span class="material-symbols-outlined text-sm">home</span> 首页
+              </a>
+              <span class="text-outline">/</span>
+              <a class="hover:text-primary transition-colors" href="#">国际结算中心</a>
+              <span class="text-outline">/</span>
+              <span class="text-on-surface font-medium">履约详情与审批</span>
+            </nav>
+            <div class="text-label-xs text-outline font-mono">Slot: breadcrumb</div>
+          </div>
+          <!-- Slot 2: Page Header Composite Block -->
+          <div class="px-8 py-5 bg-surface-container-lowest border-b border-outline-variant/30">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              <!-- Left: Title, Badges & Metadata -->
+              <div class="space-y-2">
+                <div class="flex items-center gap-3">
+                  <a
+                    class="w-8 h-8 rounded-lg border border-outline-variant/60 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary transition-colors"
+                    href="#"
+                    title="返回上一页"
+                  >
+                    <span class="material-symbols-outlined text-base">arrow_back</span>
+                  </a>
+                  <h3 class="text-headline-lg font-bold text-on-surface tracking-tight">
+                    国际供应链结算详情与履约看板
+                  </h3>
+                  <span
+                    class="px-2.5 py-0.5 rounded-full text-label-xs font-semibold bg-primary-fixed text-on-primary-fixed-variant border border-primary/20"
+                  >
+                    在途 84 笔
+                  </span>
+                  <span
+                    class="px-2.5 py-0.5 rounded-full text-label-xs font-semibold bg-status-warning/15 text-status-warning border border-status-warning/30 flex items-center gap-1"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-status-warning animate-ping"></span>
+                    SLA 预警
+                  </span>
+                </div>
+                <p class="text-body-sm text-on-surface-variant pl-11">
+                  合同编号:
+                  <span class="font-mono font-medium text-on-surface">CN-2024-XQ-9941</span> ·
+                  账期状态: <span class="text-theme-green font-medium">T+30 正常计息</span> ·
+                  经办人: 李思远 (工号 9402)
+                </p>
+              </div>
+              <!-- Right: Action Bar Slot (extra) -->
+              <div class="flex items-center gap-2.5 pl-11 lg:pl-0">
+                <button
+                  class="px-3.5 py-2 rounded-lg text-label-sm font-medium bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors flex items-center gap-1.5 border border-outline-variant/40 shadow-xs"
+                >
+                  <span class="material-symbols-outlined text-base">download</span> 导出对账单
+                </button>
+                <button
+                  class="px-3.5 py-2 rounded-lg text-label-sm font-medium bg-surface-container-high hover:bg-surface-container-highest text-on-surface transition-colors flex items-center gap-1.5 border border-outline-variant/40 shadow-xs"
+                >
+                  <span class="material-symbols-outlined text-base">notifications_active</span>
+                  配置告警
+                </button>
+                <button
+                  class="px-4 py-2 rounded-lg text-label-sm font-semibold bg-primary hover:bg-primary-container text-on-primary transition-colors flex items-center gap-1.5 shadow-sm"
+                >
+                  <span class="material-symbols-outlined text-base">task_alt</span> 主要行动 CTA:
+                  批量审批
+                </button>
+              </div>
+            </div>
+            <!-- Slot 3: Content Tabs -->
+            <div
+              class="mt-6 flex items-center gap-8 border-b border-outline-variant/30 text-label-md"
+            >
+              <button
+                class="pb-3 border-b-2 border-primary text-primary font-bold flex items-center gap-1.5"
+              >
+                <span>概览与指标</span>
+                <span class="px-1.5 py-0.2 rounded-full text-label-xs bg-primary/10 text-primary"
+                  >12</span
+                >
+              </button>
+              <button
+                class="pb-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-1.5"
+              >
+                <span>结算明细</span>
+              </button>
+              <button
+                class="pb-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-1.5"
+              >
+                <span>审批日志</span>
+              </button>
+              <button
+                class="pb-3 border-b-2 border-transparent text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-1.5"
+              >
+                <span>关联拓扑</span>
+              </button>
+            </div>
+          </div>
+          <!-- Slot 4: Body Content Area (Nested Search Form & Metrics Cards) -->
+          <div class="p-8 bg-surface space-y-6">
+            <!-- Nested Search Form Simulation -->
+            <div
+              class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/40 shadow-xs"
+            >
+              <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div>
+                  <label class="block text-label-xs font-medium text-on-surface-variant mb-1"
+                    >交易单据号</label
+                  >
+                  <input
+                    class="w-full text-label-sm rounded-lg border-outline-variant/50 bg-surface-container-low text-on-surface focus:border-primary focus:ring-primary font-mono"
+                    readonly=""
+                    type="text"
+                    value="TX-2024-901"
+                  />
+                </div>
+                <div>
+                  <label class="block text-label-xs font-medium text-on-surface-variant mb-1"
+                    >结算货币币种</label
+                  >
+                  <input
+                    class="w-full text-label-sm rounded-lg border-outline-variant/50 bg-surface-container-low text-on-surface focus:border-primary focus:ring-primary"
+                    readonly=""
+                    type="text"
+                    value="USD (美元结算池)"
+                  />
+                </div>
+                <div>
+                  <label class="block text-label-xs font-medium text-on-surface-variant mb-1"
+                    >履约风险等级</label
+                  >
+                  <input
+                    class="w-full text-label-sm rounded-lg border-outline-variant/50 bg-surface-container-low text-on-surface focus:border-primary focus:ring-primary"
+                    readonly=""
+                    type="text"
+                    value="低风险 (Low Risk, L1)"
+                  />
+                </div>
+                <div class="flex items-end gap-2">
+                  <button
+                    class="flex-1 py-2 px-3 rounded-lg bg-primary text-on-primary text-label-sm font-medium hover:bg-primary-container transition-colors"
+                  >
+                    查询过滤
+                  </button>
+                  <button
+                    class="py-2 px-3 rounded-lg bg-surface-container text-on-surface-variant text-label-sm hover:bg-surface-container-high transition-colors"
+                  >
+                    重置
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Summary Metric Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div
+                class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/40 shadow-xs"
+              >
+                <span class="text-label-sm text-on-surface-variant">待清算头寸总额</span>
+                <div class="text-headline-xl font-bold text-on-surface mt-2 font-mono">
+                  $1,482,900.00
+                </div>
+                <div class="mt-2 text-label-xs text-status-success flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs">trending_up</span> 比上周环比提升
+                  14.2%
+                </div>
+              </div>
+              <div
+                class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/40 shadow-xs"
+              >
+                <span class="text-label-sm text-on-surface-variant">已承兑银行承兑汇票</span>
+                <div class="text-headline-xl font-bold text-secondary mt-2 font-mono">
+                  ¥ 9,210,000
+                </div>
+                <div class="mt-2 text-label-xs text-on-surface-variant flex items-center gap-1">
+                  <span>银行信用背书率: 98.4%</span>
+                </div>
+              </div>
+              <div
+                class="bg-surface-container-lowest p-5 rounded-xl border border-outline-variant/40 shadow-xs"
+              >
+                <span class="text-label-sm text-on-surface-variant">逾期风险兜底基金</span>
+                <div class="text-headline-xl font-bold text-theme-purple mt-2 font-mono">
+                  $500,000.00
+                </div>
+                <div class="mt-2 text-label-xs text-theme-purple flex items-center gap-1">
+                  <span class="material-symbols-outlined text-xs">verified_user</span>
+                  资本充足率充足
+                </div>
+              </div>
+            </div>
+            <!-- Empty filler for height demonstration -->
+            <div
+              class="h-16 rounded-lg border border-dashed border-outline-variant/40 flex items-center justify-center text-label-sm text-outline"
+            >
+              &lt;Slot: Content 业务长列表与表格主渲染视窗 · 演示底部吸附固定栏避让效果&gt;
+            </div>
+          </div>
+          <!-- Slot 5: Affix / Sticky Footer Toolbar (吸底操作栏规范) -->
+          <div
+            class="sticky bottom-0 z-30 bg-surface-container-lowest/95 backdrop-blur-md border-t border-outline-variant/50 px-8 py-3 flex items-center justify-between shadow-lg"
+          >
+            <div class="flex items-center gap-3">
+              <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span>
+              <span class="text-label-sm font-semibold text-on-surface"
+                >批量批阅模式: <span class="text-primary font-bold">已选 12 项</span> 结算单</span
+              >
+              <span class="text-label-xs text-outline hidden md:inline"
+                >| 合计清算金额: $341,200.00</span
+              >
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                class="px-3.5 py-1.5 rounded-lg text-label-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors"
+              >
+                清空所选
+              </button>
+              <button
+                class="px-4 py-2 rounded-lg text-label-sm font-medium bg-error/10 hover:bg-error/20 text-error transition-colors"
+              >
+                驳回终止 (Reject)
+              </button>
+              <button
+                class="px-5 py-2 rounded-lg text-label-sm font-semibold bg-primary hover:bg-primary-container text-on-primary transition-colors shadow-sm flex items-center gap-1.5"
+              >
+                <span class="material-symbols-outlined text-sm">done_all</span> 确认放款审批
+                (Approve)
+              </button>
+            </div>
+          </div>
+        </div>
+        <!-- PageContainer Props Specification Table -->
+        <div
+          class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs"
+        >
+          <div class="text-label-sm font-semibold text-on-surface mb-3 flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm text-primary">tune</span>
+            PageContainer 核心 Props API 规范字典
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-label-xs border-collapse">
+              <thead
+                class="bg-surface-container text-on-surface-variant border-b border-outline-variant/40"
+              >
+                <tr>
+                  <th class="py-2 px-3 font-semibold">属性名 (Prop)</th>
+                  <th class="py-2 px-3 font-semibold">类型 (Type)</th>
+                  <th class="py-2 px-3 font-semibold">默认值 (Default)</th>
+                  <th class="py-2 px-3 font-semibold">说明 (Description)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-outline-variant/20 text-on-surface">
+                <tr>
+                  <td class="py-2 px-3 font-bold text-primary">title</td>
+                  <td class="py-2 px-3 text-secondary">ReactNode | string</td>
+                  <td class="py-2 px-3 text-outline">-</td>
+                  <td class="py-2 px-3 font-sans">
+                    页面主标题，字号 22px / 28px，支持复合徽章注入
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-bold text-primary">breadcrumb</td>
+                  <td class="py-2 px-3 text-secondary">BreadcrumbProps</td>
+                  <td class="py-2 px-3 text-outline">-</td>
+                  <td class="py-2 px-3 font-sans">
+                    页面顶部面包屑路径，支持图标、路由及自定义分隔符
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-bold text-primary">extra</td>
+                  <td class="py-2 px-3 text-secondary">ReactNode</td>
+                  <td class="py-2 px-3 text-outline">-</td>
+                  <td class="py-2 px-3 font-sans">
+                    操作区插槽，右对齐排放主要 CTA 按钮与辅助工具按钮
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-bold text-primary">tabList</td>
+                  <td class="py-2 px-3 text-secondary">Array&lt;TabItem&gt;</td>
+                  <td class="py-2 px-3 text-outline">[]</td>
+                  <td class="py-2 px-3 font-sans">
+                    页头内置 Tabs 标签数组，自动与底层页面路由参数协同
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-bold text-primary">footer</td>
+                  <td class="py-2 px-3 text-secondary">ReactNode[] | ReactNode</td>
+                  <td class="py-2 px-3 text-outline">-</td>
+                  <td class="py-2 px-3 font-sans">
+                    吸底固定工具栏 (Affix Toolbar)，高度 56px，z-index 100
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-bold text-primary">fixedHeader</td>
+                  <td class="py-2 px-3 text-secondary">boolean</td>
+                  <td class="py-2 px-3 text-outline">false</td>
+                  <td class="py-2 px-3 font-sans">
+                    页头是否锁定固定在视口顶端，滚动时自带毛玻璃遮罩
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!-- 6. Component 05: 工程实现映射规范 (Engineering & CSS Tokens Spec) -->
+      <section class="space-y-6" id="token-spec">
+        <div
+          class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-outline-variant/40 pb-3"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-status-success inline-block"></span>
+              <span class="text-label-xs font-bold text-status-success uppercase font-mono"
+                >SPECIFICATION 05</span
+              >
+            </div>
+            <h2 class="text-headline-lg font-bold text-on-surface mt-1">
+              工程实现映射规范 (Engineering &amp; CSS Tokens Spec)
+            </h2>
+            <p class="text-body-md text-on-surface-variant">
+              严格对齐 lx-ui 设计系统 Design Tokens，全量暴露 CSS 变量、A11y
+              无障碍标准与高缩放适配准则。
+            </p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- CSS Tokens Contract Table -->
+          <div
+            class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span
+                  class="text-headline-sm font-semibold text-on-surface flex items-center gap-1.5"
+                >
+                  <span class="material-symbols-outlined text-primary text-base">css</span>
+                  标准化 CSS 变量映射表 (Design Tokens)
+                </span>
+                <span
+                  class="text-label-xs px-2 py-0.5 rounded bg-surface-container text-outline font-mono"
+                  >:root Contract</span
+                >
+              </div>
+              <div class="overflow-x-auto rounded-lg border border-outline-variant/30">
+                <table class="w-full text-left font-mono text-label-xs">
+                  <thead
+                    class="bg-surface-container text-on-surface-variant border-b border-outline-variant/30"
+                  >
+                    <tr>
+                      <th class="py-2 px-3 font-semibold">CSS Token 变量名</th>
+                      <th class="py-2 px-3 font-semibold">默认规范值</th>
+                      <th class="py-2 px-3 font-semibold">业务角色说明</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-outline-variant/20 bg-surface-container-lowest">
+                    <tr>
+                      <td class="py-2 px-3 text-primary font-bold">--lx-layout-header-height</td>
+                      <td class="py-2 px-3 text-on-surface">56px</td>
+                      <td class="py-2 px-3 text-on-surface-variant font-sans">
+                        全局顶栏固定物理高度
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 px-3 text-primary font-bold">--lx-layout-sider-width</td>
+                      <td class="py-2 px-3 text-on-surface">224px</td>
+                      <td class="py-2 px-3 text-on-surface-variant font-sans">
+                        侧边栏展开态默认物理宽度
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 px-3 text-primary font-bold">
+                        --lx-layout-sider-collapsed-width
+                      </td>
+                      <td class="py-2 px-3 text-on-surface">64px</td>
+                      <td class="py-2 px-3 text-on-surface-variant font-sans">
+                        侧边栏迷你紧凑收起态宽度
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 px-3 text-primary font-bold">--lx-layout-sider-transition</td>
+                      <td class="py-2 px-3 text-secondary">240ms cubic-bezier(...)</td>
+                      <td class="py-2 px-3 text-on-surface-variant font-sans">
+                        侧边栏平滑推挤非线性动效
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 px-3 text-primary font-bold">--lx-layout-bg</td>
+                      <td class="py-2 px-3 text-on-surface">#f8f9ff</td>
+                      <td class="py-2 px-3 text-on-surface-variant font-sans">
+                        后台全局画布底色 (surface-bright)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 px-3 text-primary font-bold">--lx-layout-content-padding</td>
+                      <td class="py-2 px-3 text-on-surface">24px</td>
+                      <td class="py-2 px-3 text-on-surface-variant font-sans">
+                        主工作视窗默认内边距
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 px-3 text-primary font-bold">--lx-grid-columns</td>
+                      <td class="py-2 px-3 text-on-surface">24</td>
+                      <td class="py-2 px-3 text-on-surface-variant font-sans">
+                        全局栅格等分基数总数
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 px-3 text-primary font-bold">--lx-grid-gutter-x</td>
+                      <td class="py-2 px-3 text-on-surface">16px</td>
+                      <td class="py-2 px-3 text-on-surface-variant font-sans">
+                        横向栅格单元间槽间隔基准
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 px-3 text-primary font-bold">
+                        --lx-page-container-footer-height
+                      </td>
+                      <td class="py-2 px-3 text-on-surface">56px</td>
+                      <td class="py-2 px-3 text-on-surface-variant font-sans">
+                        吸底悬浮操作栏物理高度
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="mt-4 text-[11px] text-outline flex items-center gap-1 font-mono">
+              <span class="material-symbols-outlined text-xs">info</span> 开发者可在主主题 provider
+              注入自定义 CSS Variables 完成跨主题覆盖。
+            </div>
+          </div>
+          <!-- A11y & Engineering Principles -->
+          <div
+            class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/40 shadow-xs flex flex-col justify-between"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-4">
+                <span
+                  class="text-headline-sm font-semibold text-on-surface flex items-center gap-1.5"
+                >
+                  <span class="material-symbols-outlined text-status-success text-base"
+                    >accessibility_new</span
+                  >
+                  A11y 无障碍与工程保真准则
+                </span>
+                <span
+                  class="text-label-xs px-2 py-0.5 rounded bg-status-success/15 text-status-success font-semibold"
+                  >WCAG 2.2 AA</span
+                >
+              </div>
+              <div class="space-y-3.5">
+                <div
+                  class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/20 flex gap-3"
+                >
+                  <div
+                    class="w-7 h-7 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-xs shrink-0"
+                  >
+                    1
+                  </div>
+                  <div>
+                    <div class="text-label-sm font-bold text-on-surface">
+                      语义化 Landmark 角色标记 (Semantic Landmarks)
+                    </div>
+                    <p class="text-body-sm text-on-surface-variant mt-0.5">
+                      全局骨架必须严格绑定语义属性：Header 声明
+                      <code>role="banner"</code>，侧边栏声明
+                      <code>role="navigation"</code>，主内容区声明
+                      <code>role="main"</code>，页脚声明
+                      <code>role="contentinfo"</code>，保障读屏软件快速跳转。
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/20 flex gap-3"
+                >
+                  <div
+                    class="w-7 h-7 rounded bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xs shrink-0"
+                  >
+                    2
+                  </div>
+                  <div>
+                    <div class="text-label-sm font-bold text-on-surface">
+                      焦点可见性与键盘触发 (Focus Ring &amp; Keyboard Ops)
+                    </div>
+                    <p class="text-body-sm text-on-surface-variant mt-0.5">
+                      侧栏折叠按钮 (Trigger) 必须支持 <code>Tab</code> 键聚焦并具备
+                      <code>outline: 2px solid var(--lx-color-primary)</code> 高亮轮廓；支持
+                      <code>Enter / Space</code> 物理键盘切换。
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/20 flex gap-3"
+                >
+                  <div
+                    class="w-7 h-7 rounded bg-theme-purple/10 text-theme-purple flex items-center justify-center font-bold text-xs shrink-0"
+                  >
+                    3
+                  </div>
+                  <div>
+                    <div class="text-label-sm font-bold text-on-surface">
+                      200% 页面级无损缩放 (Reflow &amp; Non-Horizontal Scroll)
+                    </div>
+                    <p class="text-body-sm text-on-surface-variant mt-0.5">
+                      在浏览器 200% 视图缩放或移动端视口下，PageContainer
+                      自动降级为单列纵向流，吸底操作栏保持
+                      <code>safe-area-inset-bottom</code> 避让，严禁产生破坏性横向双滚动条。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="mt-4 pt-3 border-t border-outline-variant/30 flex items-center justify-between text-label-xs text-outline"
+            >
+              <span class="font-mono">零 Cumulative Layout Shift (CLS &lt; 0.05)</span>
+              <span class="text-status-success font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">done</span> 经过生产压力测试
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Global Footer -->
+    <footer
+      class="mt-16 bg-surface-container-lowest border-t border-outline-variant/40 py-8 px-space-xl text-center text-label-sm text-on-surface-variant"
+      role="contentinfo"
+    >
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <span
+            class="w-6 h-6 rounded bg-primary text-on-primary font-bold text-xs flex items-center justify-center"
+            >LX</span
+          >
+          <span class="font-semibold text-on-surface">lx-ui Design System</span>
+          <span class="text-outline">· P0 布局组件全量规范 Dashboard</span>
+        </div>
+        <div class="text-label-xs text-outline font-mono">
+          All 4 Core Components Specified: Layout, Flex, Grid, PageContainer · WCAG 2.2 AA Certified
+        </div>
+        <div>
+          <a
+            class="text-primary hover:underline font-medium flex items-center gap-1"
+            href="#category-overview"
+          >
+            返回顶部 <span class="material-symbols-outlined text-xs">arrow_upward</span>
+          </a>
+        </div>
+      </div>
+    </footer>
+    <!-- Inline Vanilla JavaScript Micro-Interactions -->
+    <script>
+      // Component 01: Sider Live Collapse Toggle Engine
+      const siderToggleBtn = document.getElementById('sider-toggle-btn');
+      const siderInnerTrigger = document.getElementById('sider-inner-trigger');
+      const siderManualTrigger = document.getElementById('sider-manual-trigger');
+      const interactiveSider = document.getElementById('interactive-sider');
+      const siderIcon = document.getElementById('sider-icon');
+      const triggerArrow = document.getElementById('trigger-arrow');
+      const siderStatusBadge = document.getElementById('sider-status-badge');
+      const siderLabel = document.getElementById('sider-label');
+      const siderTexts = document.querySelectorAll('.sider-text');
+
+      let isCollapsed = false;
+
+      function toggleSiderCollapse() {
+        isCollapsed = !isCollapsed;
+        if (isCollapsed) {
+          interactiveSider.style.width = '42px';
+          siderIcon.textContent = 'menu';
+          triggerArrow.textContent = 'chevron_right';
+          siderStatusBadge.textContent = '收起态 (64px)';
+          siderStatusBadge.classList.replace('text-theme-green', 'text-theme-orange');
+          siderStatusBadge.classList.replace('bg-theme-green/10', 'bg-theme-orange/10');
+          siderLabel.classList.add('hidden');
+          siderTexts.forEach((el) => el.classList.add('hidden'));
+        } else {
+          interactiveSider.style.width = '110px';
+          siderIcon.textContent = 'menu_open';
+          triggerArrow.textContent = 'chevron_left';
+          siderStatusBadge.textContent = '展开态 (224px)';
+          siderStatusBadge.classList.replace('text-theme-orange', 'text-theme-green');
+          siderStatusBadge.classList.replace('bg-theme-orange/10', 'bg-theme-green/10');
+          siderLabel.classList.remove('hidden');
+          siderTexts.forEach((el) => el.classList.remove('hidden'));
+        }
+      }
+
+      if (siderToggleBtn) siderToggleBtn.addEventListener('click', toggleSiderCollapse);
+      if (siderInnerTrigger) siderInnerTrigger.addEventListener('click', toggleSiderCollapse);
+      if (siderManualTrigger) siderManualTrigger.addEventListener('click', toggleSiderCollapse);
+
+      // Component 02: Flex Playground Reactive State
+      const flexStage = document.getElementById('flex-stage-container');
+      const selectJustify = document.getElementById('select-justify');
+      const selectAlign = document.getElementById('select-align');
+      const gapButtons = document.querySelectorAll('.gap-btn');
+      const toggleWrapBtn = document.getElementById('toggle-wrap');
+      const wrapStatusText = document.getElementById('wrap-status-text');
+      const jcActiveVal = document.getElementById('jc-active-val');
+      const aiActiveVal = document.getElementById('ai-active-val');
+      const gapActiveVal = document.getElementById('gap-active-val');
+      const flexAppliedClasses = document.getElementById('flex-applied-classes');
+
+      let currentJustify = 'justify-start';
+      let currentAlign = 'items-center';
+      let currentGap = 'gap-4';
+      let isWrapped = false;
+
+      function updateFlexStage() {
+        // Clean previous classes
+        flexStage.className = `min-h-[160px] p-6 bg-surface-container-low rounded-xl border border-dashed border-outline-variant/60 flex ${currentJustify} ${currentAlign} ${currentGap} ${isWrapped ? 'flex-wrap' : 'flex-nowrap'} transition-all duration-300 relative overflow-hidden`;
+        flexAppliedClasses.textContent = `class="flex ${currentJustify} ${currentAlign} ${currentGap} ${isWrapped ? 'flex-wrap' : 'flex-nowrap'}"`;
+      }
+
+      if (selectJustify) {
+        selectJustify.addEventListener('change', (e) => {
+          currentJustify = e.target.value;
+          jcActiveVal.textContent = e.target.options[e.target.selectedIndex].text.split(' ')[0];
+          updateFlexStage();
+        });
+      }
+
+      if (selectAlign) {
+        selectAlign.addEventListener('change', (e) => {
+          currentAlign = e.target.value;
+          aiActiveVal.textContent = e.target.options[e.target.selectedIndex].text.split(' ')[0];
+          updateFlexStage();
+        });
+      }
+
+      gapButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          gapButtons.forEach((b) => {
+            b.classList.remove('bg-primary', 'text-on-primary', 'shadow-xs');
+            b.classList.add('bg-surface-container', 'text-on-surface-variant');
+          });
+          btn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+          btn.classList.add('bg-primary', 'text-on-primary', 'shadow-xs');
+
+          currentGap = btn.getAttribute('data-gap');
+          gapActiveVal.textContent = btn.getAttribute('data-gap-label');
+          updateFlexStage();
+        });
+      });
+
+      if (toggleWrapBtn) {
+        toggleWrapBtn.addEventListener('click', () => {
+          isWrapped = !isWrapped;
+          if (isWrapped) {
+            wrapStatusText.textContent = 'wrap (自动折行)';
+            toggleWrapBtn.classList.add('border-primary', 'text-primary', 'bg-primary/10');
+          } else {
+            wrapStatusText.textContent = 'nowrap (单行不折行)';
+            toggleWrapBtn.classList.remove('border-primary', 'text-primary', 'bg-primary/10');
+          }
+          updateFlexStage();
+        });
+      }
+    </script>
+  </body>
+</html>

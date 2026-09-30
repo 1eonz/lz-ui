@@ -1,0 +1,3084 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="web_dashboard" name="shell-type" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @layer base {
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          overscroll-behavior: none;
+        }
+        main > :first-child {
+          margin-top: 0 !important;
+        }
+        main > :last-child {
+          margin-bottom: 0 !important;
+        }
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-error-container': '#93000a',
+              'theme-purple': '#7C3AED',
+              'tertiary-fixed': '#ffdbcc',
+              'surface-variant': '#d3e4fe',
+              'tertiary-fixed-dim': '#ffb695',
+              'secondary-fixed-dim': '#6cd3f7',
+              'on-tertiary-fixed-variant': '#7c2e00',
+              'error-container': '#ffdad6',
+              'on-primary-fixed-variant': '#004398',
+              'inverse-primary': '#afc6ff',
+              'on-surface': '#0b1c30',
+              'surface-tint': '#0059c7',
+              'theme-green': '#16A34A',
+              'inverse-surface': '#213145',
+              'on-primary': '#ffffff',
+              'theme-cyan': '#0891B2',
+              'surface-dim': '#cbdbf5',
+              'on-tertiary-fixed': '#351000',
+              'surface-container-lowest': '#ffffff',
+              'surface-container': '#e5eeff',
+              'surface-container-low': '#eff4ff',
+              error: '#ba1a1a',
+              'status-warning': '#F59E0B',
+              'inverse-on-surface': '#eaf1ff',
+              background: '#f8f9ff',
+              'theme-orange': '#F97316',
+              primary: '#0057c2',
+              'primary-fixed-dim': '#afc6ff',
+              surface: '#f8f9ff',
+              'on-error': '#ffffff',
+              outline: '#727786',
+              'tertiary-container': '#c64f00',
+              'on-primary-container': '#fefcff',
+              'on-primary-fixed': '#001a43',
+              'surface-container-high': '#dce9ff',
+              'primary-fixed': '#d9e2ff',
+              'surface-bright': '#f8f9ff',
+              'status-error': '#DC2626',
+              'on-surface-variant': '#414755',
+              'on-tertiary-container': '#fffbff',
+              'secondary-fixed': '#b7eaff',
+              'outline-variant': '#c1c6d7',
+              'theme-rose': '#E11D48',
+              'surface-container-highest': '#d3e4fe',
+              'on-secondary-fixed': '#001f28',
+              'status-info': '#2563EB',
+              tertiary: '#9e3d00',
+              'on-secondary-fixed-variant': '#004e61',
+              'primary-container': '#006ef2',
+              'on-background': '#0b1c30',
+              'status-success': '#16A34A',
+              'on-secondary': '#ffffff',
+              'on-secondary-container': '#006077',
+              'on-tertiary': '#ffffff',
+              secondary: '#006780',
+              'secondary-container': '#76dcff',
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
+            spacing: {
+              'space-lg': '1rem',
+              'space-xs': '0.25rem',
+              margin: '1.5rem',
+              'space-md': '0.75rem',
+              'space-sm': '0.5rem',
+              'space-xl': '1.5rem',
+              gutter: '1rem',
+            },
+            fontFamily: {
+              'body-sm': ['Inter'],
+              'body-lg': ['Inter'],
+              'headline-md': ['Inter'],
+              'label-sm': ['Inter'],
+              'headline-sm': ['Inter'],
+              'body-md': ['Inter'],
+              'headline-xl': ['Inter'],
+              'label-md': ['Inter'],
+              'label-xs': ['Inter'],
+              'headline-lg': ['Inter'],
+            },
+            fontSize: {
+              'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+              'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+              'headline-md': ['18px', { lineHeight: '26px', fontWeight: '600' }],
+              'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+              'headline-sm': ['16px', { lineHeight: '24px', fontWeight: '600' }],
+              'body-md': ['14px', { lineHeight: '22px', fontWeight: '400' }],
+              'headline-xl': [
+                '28px',
+                { lineHeight: '36px', letterSpacing: '-0.02em', fontWeight: '600' },
+              ],
+              'label-md': ['14px', { lineHeight: '20px', fontWeight: '500' }],
+              'label-xs': [
+                '11px',
+                { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '600' },
+              ],
+              'headline-lg': [
+                '22px',
+                { lineHeight: '30px', letterSpacing: '-0.01em', fontWeight: '600' },
+              ],
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="bg-surface font-body-md text-on-surface">
+    <aside
+      class="fixed left-0 top-0 h-full w-64 bg-surface-container-low z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"
+    >
+      <div class="flex flex-col h-full">
+        <div class="h-16 px-space-xl flex items-center justify-between">
+          <div class="flex items-center gap-space-sm">
+            <div class="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+              <span class="material-symbols-outlined text-on-primary text-[18px]">widgets</span>
+            </div>
+            <span class="font-headline-sm text-headline-sm text-primary font-bold tracking-tight"
+              >LX-UI Spec</span
+            >
+          </div>
+          <span
+            class="font-label-xs text-label-xs bg-surface-container text-on-surface-variant px-space-xs py-0.5 rounded"
+            >v2.4</span
+          >
+        </div>
+        <div class="px-space-md py-space-xs">
+          <div
+            class="bg-surface-container-highest/60 rounded-lg px-space-sm py-space-xs flex items-center gap-space-xs"
+          >
+            <span class="material-symbols-outlined text-on-surface-variant text-[16px]">search</span
+            ><span class="font-body-sm text-body-sm text-on-surface-variant"
+              >检索规范与组件...</span
+            >
+          </div>
+        </div>
+        <div class="flex-1 overflow-y-auto px-space-sm py-space-sm">
+          <div class="px-space-sm pb-space-xs">
+            <span
+              class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold"
+              >规范架构模块</span
+            >
+          </div>
+          <nav
+            class="flex flex-col gap-1"
+            data-active-classes="bg-primary-container text-on-primary-container font-semibold rounded-lg"
+          >
+            <a
+              class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md"
+              data-path="design-tokens"
+              href="#"
+              ><span class="material-symbols-outlined text-[20px]">palette</span
+              ><span class="">Tokens 设计基准</span></a
+            ><a
+              class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md"
+              data-path="general-components"
+              href="#"
+              ><span class="material-symbols-outlined text-[20px]">smart_button</span
+              ><span class="">General 通用组件</span></a
+            ><a
+              class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md"
+              data-path="form-components"
+              href="#"
+              ><span class="material-symbols-outlined text-[20px]">input</span
+              ><span class="">Form 表达控制</span></a
+            ><a
+              aria-current="page"
+              class="flex items-center gap-space-sm px-space-sm py-2 transition-colors bg-primary-container text-on-primary-container font-semibold rounded-lg"
+              data-path="data-display-overview"
+              href="#"
+              ><span class="material-symbols-outlined text-[20px]">table_chart</span
+              ><span class="">Data Display 数据展示</span></a
+            ><a
+              class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md"
+              data-path="feedback-components"
+              href="#"
+              ><span class="material-symbols-outlined text-[20px]">notification_important</span
+              ><span class="">Feedback 反馈层级</span></a
+            ><a
+              class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md"
+              data-path="navigation-components"
+              href="#"
+              ><span class="material-symbols-outlined text-[20px]">explore</span
+              ><span class="">Navigation 路由体系</span></a
+            ><a
+              class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md"
+              data-path="layout-patterns"
+              href="#"
+              ><span class="material-symbols-outlined text-[20px]">grid_view</span
+              ><span class="">Layout 栅格间距</span></a
+            ><a
+              class="flex items-center gap-space-sm px-space-sm py-2 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-label-md text-label-md"
+              data-path="business-templates"
+              href="#"
+              ><span class="material-symbols-outlined text-[20px]">domain</span
+              ><span class="">Business 复合模板</span></a
+            >
+          </nav>
+        </div>
+        <div class="p-space-md border-t border-transparent bg-surface-container">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-space-xs">
+              <span class="w-2 h-2 rounded-full bg-status-success"></span
+              ><span class="font-label-xs text-label-xs text-on-surface font-medium"
+                >Design System Sync</span
+              >
+            </div>
+            <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+              >v2.4.0</span
+            >
+          </div>
+        </div>
+      </div>
+    </aside>
+    <div class="pl-64">
+      <header
+        class="fixed top-0 left-64 right-0 h-16 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-xl"
+      >
+        <div class="flex items-center gap-space-lg">
+          <div
+            class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-lg"
+          >
+            <span class="font-label-xs text-label-xs text-on-surface-variant">Preset</span
+            ><span class="font-label-sm text-label-sm text-on-surface font-semibold"
+              >Business Soft</span
+            >
+          </div>
+          <div
+            class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-lg"
+          >
+            <span class="font-label-xs text-label-xs text-on-surface-variant">Density</span>
+            <div class="flex items-center gap-1">
+              <span
+                class="font-label-xs text-label-xs bg-primary text-on-primary px-1.5 py-0.5 rounded font-semibold"
+                >Comfortable</span
+              ><span
+                class="font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface cursor-pointer px-1.5 py-0.5 rounded"
+                >Compact</span
+              >
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-space-xs bg-surface-container-low px-space-sm py-1 rounded-lg"
+          >
+            <span class="font-label-xs text-label-xs text-on-surface-variant">Accessibility</span
+            ><span
+              class="inline-flex items-center gap-1 font-label-xs text-label-xs text-status-success font-semibold"
+              ><span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>WCAG 2.2 AA
+              Pass</span
+            >
+          </div>
+        </div>
+        <div class="flex items-center gap-space-md">
+          <div
+            class="flex items-center gap-space-xs bg-surface-container px-space-sm py-1 rounded-full text-on-surface"
+          >
+            <span class="font-label-xs text-label-xs text-on-surface-variant">Focus:</span
+            ><span class="font-label-sm text-label-sm font-semibold text-primary"
+              >Data Display</span
+            >
+          </div>
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+        </div>
+      </header>
+      <main class="relative pt-16 bg-surface min-h-screen">
+        <div class="flex flex-col w-full">
+          <!-- Page Header Anchor / Breadcrumb / Specs Badge -->
+          <section
+            class="px-space-xl py-space-lg flex flex-col gap-space-sm bg-surface-container-low"
+          >
+            <div class="flex flex-wrap items-center justify-between gap-space-md">
+              <div class="flex flex-col gap-1">
+                <div
+                  class="flex items-center gap-space-xs font-label-xs text-label-xs text-on-surface-variant"
+                >
+                  <span class="">LX-UI Design Spec</span>
+                  <span class="">/</span>
+                  <span class="text-primary font-semibold">Data Display 数据展示规范族</span>
+                  <span
+                    class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-mono font-medium"
+                    >13 Core Components</span
+                  >
+                </div>
+                <h1
+                  class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-bold"
+                >
+                  Data Display 数据展示规范族全景矩阵
+                </h1>
+                <p class="font-body-md text-body-md text-on-surface-variant max-w-4xl">
+                  面向高密度企业级系统、ERP及复杂决策中台的数据呈现体系。提供严格对齐的4px网格节拍、Tabular-nums数字对齐、高对比度无边框分层与WCAG
+                  2.2 AA级色彩语义。
+                </p>
+              </div>
+              <div class="flex items-center gap-space-sm">
+                <div
+                  class="flex items-center gap-2 px-space-md py-space-xs bg-surface-container rounded-lg shadow-sm"
+                >
+                  <span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+                  <span class="font-label-sm text-label-sm text-on-surface"
+                    >AA 4.5:1 Contrast Verified</span
+                  >
+                </div>
+                <div
+                  class="flex items-center gap-2 px-space-md py-space-xs bg-surface-container-highest rounded-lg shadow-sm"
+                >
+                  <span class="material-symbols-outlined text-status-success text-[18px]"
+                    >motion_photos_on</span
+                  >
+                  <span class="font-label-sm text-label-sm text-on-surface"
+                    >Bezier: cubic-bezier(0.2, 0, 0, 1)</span
+                  >
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- Spec Sticky Quick-Navigator -->
+          <div
+            class="sticky top-16 z-30 px-space-xl py-2 bg-surface-container-lowest shadow-sm flex items-center gap-space-sm overflow-x-auto whitespace-nowrap"
+          >
+            <span
+              class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider"
+              >快捷定位：</span
+            >
+            <a
+              class="px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-xs text-label-xs hover:bg-primary hover:text-on-primary transition-all"
+              href="#spec-table"
+              >01 Table 表格</a
+            >
+            <a
+              class="px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-xs text-label-xs hover:bg-primary hover:text-on-primary transition-all"
+              href="#spec-pagination"
+              >02 Pagination 分页器</a
+            >
+            <a
+              class="px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-xs text-label-xs hover:bg-primary hover:text-on-primary transition-all"
+              href="#spec-tree"
+              >03 Tree 树形</a
+            >
+            <a
+              class="px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-xs text-label-xs hover:bg-primary hover:text-on-primary transition-all"
+              href="#spec-card"
+              >04 Card 卡片</a
+            >
+            <a
+              class="px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-xs text-label-xs hover:bg-primary hover:text-on-primary transition-all"
+              href="#spec-tag-badge"
+              >05-06 Tag &amp; Badge 标签徽标</a
+            >
+            <a
+              class="px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-xs text-label-xs hover:bg-primary hover:text-on-primary transition-all"
+              href="#spec-avatar-list"
+              >07-08 Avatar &amp; List 头像列表</a
+            >
+            <a
+              class="px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-xs text-label-xs hover:bg-primary hover:text-on-primary transition-all"
+              href="#spec-descriptions-stat"
+              >09-10 Descriptions &amp; Stat 描述统计</a
+            >
+            <a
+              class="px-space-sm py-1 rounded bg-surface-container text-on-surface font-label-xs text-label-xs hover:bg-primary hover:text-on-primary transition-all"
+              href="#spec-empty-skeleton-result"
+              >11-13 Empty &amp; Skeleton &amp; Result 状态反馈</a
+            >
+          </div>
+          <div class="px-space-xl py-space-xl flex flex-col gap-12 max-w-[1600px] mx-auto w-full">
+            <!-- ================= 01 TABLE 表格 ================= -->
+            <section class="flex flex-col gap-space-md" id="spec-table">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span
+                    class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold font-mono"
+                    >01</span
+                  >
+                  <div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                      Table 高级表格体系
+                    </h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      支持列冻结（Pinning）、行级状态机（Default/Hover/Selected/Expanded）、双密度及双向排序列微交互
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-space-sm">
+                  <div class="flex items-center gap-1 bg-surface-container p-1 rounded-lg">
+                    <button
+                      class="px-3 py-1 rounded font-label-xs text-label-xs font-semibold bg-surface-container-lowest text-primary shadow-sm transition-all"
+                      id="btn-density-comfortable"
+                      onclick="toggleTableDensity('comfortable')"
+                    >
+                      舒适 (48px)
+                    </button>
+                    <button
+                      class="px-3 py-1 rounded font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface transition-all"
+                      id="btn-density-compact"
+                      onclick="toggleTableDensity('compact')"
+                    >
+                      紧凑 (36px)
+                    </button>
+                  </div>
+                  <span
+                    class="px-space-xs py-1 rounded bg-surface-container-high font-label-xs text-label-xs text-on-surface-variant font-mono"
+                    >Token: --lx-table-row</span
+                  >
+                </div>
+              </div>
+              <!-- Table Matrix Demo Card -->
+              <div
+                class="bg-surface-container-lowest rounded-xl shadow-md overflow-hidden flex flex-col"
+              >
+                <!-- Table Toolbar -->
+                <div
+                  class="p-space-md bg-surface-container-low flex flex-wrap items-center justify-between gap-space-md"
+                >
+                  <div class="flex items-center gap-space-md">
+                    <span class="font-headline-sm text-headline-sm text-on-surface"
+                      >企业采购结算明细单 (ERP-CORE)</span
+                    >
+                    <span
+                      class="px-2 py-0.5 rounded-full bg-surface-container text-on-surface font-label-xs text-label-xs"
+                      >实时联机对账</span
+                    >
+                  </div>
+                  <div class="flex items-center gap-space-sm">
+                    <div
+                      class="flex items-center gap-2 bg-surface-container-lowest px-3 py-1.5 rounded-lg shadow-sm"
+                    >
+                      <span class="material-symbols-outlined text-on-surface-variant text-[16px]"
+                        >filter_list</span
+                      >
+                      <span class="font-label-sm text-label-sm text-on-surface-variant"
+                        >快速筛选: 全状态</span
+                      >
+                    </div>
+                    <button
+                      class="bg-primary text-on-primary px-3 py-1.5 rounded-lg font-label-sm text-label-sm font-semibold flex items-center gap-1 shadow-sm hover:opacity-95"
+                    >
+                      <span class="material-symbols-outlined text-[16px]">file_download</span>
+                      <span class="">导出规范集</span>
+                    </button>
+                  </div>
+                </div>
+                <!-- Table Container with Pinning Simulation -->
+                <div class="overflow-x-auto relative">
+                  <table
+                    class="w-full text-left font-body-sm text-body-sm table-fixed min-w-[1100px]"
+                    id="spec-demo-table"
+                  >
+                    <thead
+                      class="bg-surface-container font-label-sm text-label-sm text-on-surface uppercase"
+                    >
+                      <tr>
+                        <!-- Pin Left -->
+                        <th
+                          class="w-14 px-4 py-3 sticky left-0 z-20 bg-surface-container shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]"
+                        >
+                          <input
+                            class="w-4 h-4 rounded text-primary focus:ring-0 accent-primary cursor-pointer"
+                            type="checkbox"
+                          />
+                        </th>
+                        <th
+                          class="w-36 px-4 py-3 sticky left-14 z-20 bg-surface-container shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          <span class="">订单编号</span>
+                        </th>
+                        <th class="w-56 px-4 py-3">供应商实体 (Vendor)</th>
+                        <th
+                          class="w-36 px-4 py-3 cursor-pointer group"
+                          onclick="toggleSortAmount()"
+                        >
+                          <div class="flex items-center gap-1">
+                            <span class="">结算金额 (CNY)</span>
+                            <span
+                              class="material-symbols-outlined text-primary text-[16px] transition-transform duration-200"
+                              id="sort-icon-amount"
+                              >swap_vert</span
+                            >
+                          </div>
+                        </th>
+                        <th class="w-48 px-4 py-3">履约达成进度</th>
+                        <th class="w-32 px-4 py-3">结算状态</th>
+                        <th class="w-44 px-4 py-3">状态机标记</th>
+                        <!-- Pin Right Action -->
+                        <th
+                          class="w-40 px-4 py-3 text-right sticky right-0 z-20 bg-surface-container shadow-[-3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          <span class="">操作</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y-0 text-on-surface font-body-sm">
+                      <!-- Row 1: Default State -->
+                      <tr
+                        class="table-row-item hover:bg-[#f0f7ff] transition-colors duration-100 bg-surface-container-lowest"
+                      >
+                        <td
+                          class="px-4 py-3 sticky left-0 bg-inherit shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]"
+                        >
+                          <input
+                            class="w-4 h-4 rounded accent-primary cursor-pointer"
+                            type="checkbox"
+                          />
+                        </td>
+                        <td
+                          class="px-4 py-3 font-mono font-medium text-primary sticky left-14 bg-inherit shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          PO-202410881
+                        </td>
+                        <td class="px-4 py-3">
+                          <div class="flex flex-col">
+                            <span class="font-medium text-on-surface"
+                              >上海联盛光电高新材料有限公司</span
+                            >
+                            <span
+                              class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                              >信用评级: AAA·直签</span
+                            >
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 font-mono font-semibold tabular-nums text-on-surface">
+                          ¥ 1,428,900.00
+                        </td>
+                        <td class="px-4 py-3">
+                          <div class="flex items-center gap-2">
+                            <div
+                              class="flex-1 bg-surface-container-high rounded-full h-1.5 overflow-hidden"
+                            >
+                              <div class="bg-primary h-full rounded-full" style="width: 82%"></div>
+                            </div>
+                            <span
+                              class="font-mono font-medium text-label-xs text-on-surface-variant"
+                              >82%</span
+                            >
+                          </div>
+                        </td>
+                        <td class="px-4 py-3">
+                          <span
+                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-theme-green/10 text-theme-green font-label-xs text-label-xs font-semibold"
+                          >
+                            <span class="w-1.5 h-1.5 rounded-full bg-theme-green"></span>
+                            <span class="">已完成交付</span>
+                          </span>
+                        </td>
+                        <td class="px-4 py-3">
+                          <span
+                            class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-xs text-label-xs font-mono"
+                            >Row: Default</span
+                          >
+                        </td>
+                        <td
+                          class="px-4 py-3 text-right sticky right-0 bg-inherit shadow-[-3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          <div
+                            class="flex items-center justify-end gap-2 text-primary font-label-sm text-label-sm"
+                          >
+                            <button class="hover:underline">详情</button>
+                            <button class="hover:underline">凭证</button>
+                            <span
+                              class="material-symbols-outlined text-on-surface-variant text-[16px] cursor-pointer"
+                              >more_horiz</span
+                            >
+                          </div>
+                        </td>
+                      </tr>
+                      <!-- Row 2: Selected State -->
+                      <tr class="table-row-item bg-primary-fixed/25 transition-colors duration-100">
+                        <td
+                          class="px-4 py-3 sticky left-0 bg-surface-container-low shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]"
+                        >
+                          <input
+                            checked=""
+                            class="w-4 h-4 rounded accent-primary cursor-pointer"
+                            type="checkbox"
+                          />
+                        </td>
+                        <td
+                          class="px-4 py-3 font-mono font-medium text-primary sticky left-14 bg-surface-container-low shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          PO-202410882
+                        </td>
+                        <td class="px-4 py-3">
+                          <div class="flex flex-col">
+                            <span class="font-semibold text-on-surface"
+                              >深圳信创智研半导体装备股份</span
+                            >
+                            <span
+                              class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                              >框架协议 24-B款</span
+                            >
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 font-mono font-semibold tabular-nums text-on-surface">
+                          ¥ 3,892,150.00
+                        </td>
+                        <td class="px-4 py-3">
+                          <div class="flex items-center gap-2">
+                            <div
+                              class="flex-1 bg-surface-container-high rounded-full h-1.5 overflow-hidden"
+                            >
+                              <div class="bg-primary h-full rounded-full" style="width: 45%"></div>
+                            </div>
+                            <span
+                              class="font-mono font-medium text-label-xs text-on-surface-variant"
+                              >45%</span
+                            >
+                          </div>
+                        </td>
+                        <td class="px-4 py-3">
+                          <span
+                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-warning/10 text-status-warning font-label-xs text-label-xs font-semibold"
+                          >
+                            <span class="w-1.5 h-1.5 rounded-full bg-status-warning"></span>
+                            <span class="">付款批次审核</span>
+                          </span>
+                        </td>
+                        <td class="px-4 py-3">
+                          <span
+                            class="px-2 py-0.5 rounded bg-primary text-on-primary font-label-xs text-label-xs font-mono font-medium"
+                            >Row: Selected</span
+                          >
+                        </td>
+                        <td
+                          class="px-4 py-3 text-right sticky right-0 bg-surface-container-low shadow-[-3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          <div
+                            class="flex items-center justify-end gap-2 text-primary font-label-sm text-label-sm"
+                          >
+                            <button class="hover:underline">对账审核</button>
+                            <span
+                              class="material-symbols-outlined text-on-surface-variant text-[16px] cursor-pointer"
+                              >more_horiz</span
+                            >
+                          </div>
+                        </td>
+                      </tr>
+                      <!-- Row 3: Hover Simulated State -->
+                      <tr class="table-row-item bg-[#f0f7ff]">
+                        <td
+                          class="px-4 py-3 sticky left-0 bg-[#f0f7ff] shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]"
+                        >
+                          <input
+                            class="w-4 h-4 rounded accent-primary cursor-pointer"
+                            type="checkbox"
+                          />
+                        </td>
+                        <td
+                          class="px-4 py-3 font-mono font-medium text-primary sticky left-14 bg-[#f0f7ff] shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          PO-202410883
+                        </td>
+                        <td class="px-4 py-3">
+                          <div class="flex flex-col">
+                            <span class="font-medium text-on-surface"
+                              >北京数极万联软件系统集团</span
+                            >
+                            <span
+                              class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                              >SaaS按年订阅服务</span
+                            >
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 font-mono font-semibold tabular-nums text-on-surface">
+                          ¥ 640,000.00
+                        </td>
+                        <td class="px-4 py-3">
+                          <div class="flex items-center gap-2">
+                            <div
+                              class="flex-1 bg-surface-container-high rounded-full h-1.5 overflow-hidden"
+                            >
+                              <div
+                                class="bg-status-success h-full rounded-full"
+                                style="width: 100%"
+                              ></div>
+                            </div>
+                            <span
+                              class="font-mono font-medium text-label-xs text-status-success font-semibold"
+                              >100%</span
+                            >
+                          </div>
+                        </td>
+                        <td class="px-4 py-3">
+                          <span
+                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-info/10 text-status-info font-label-xs text-label-xs font-semibold"
+                          >
+                            <span class="w-1.5 h-1.5 rounded-full bg-status-info"></span>
+                            <span class="">已开具专票</span>
+                          </span>
+                        </td>
+                        <td class="px-4 py-3">
+                          <span
+                            class="px-2 py-0.5 rounded bg-surface-container-high text-primary font-label-xs text-label-xs font-mono font-medium"
+                            >Row: Hover (Simulated)</span
+                          >
+                        </td>
+                        <td
+                          class="px-4 py-3 text-right sticky right-0 bg-[#f0f7ff] shadow-[-3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          <div
+                            class="flex items-center justify-end gap-2 text-primary font-label-sm text-label-sm"
+                          >
+                            <button class="hover:underline">开票详情</button>
+                            <span
+                              class="material-symbols-outlined text-on-surface-variant text-[16px] cursor-pointer"
+                              >more_horiz</span
+                            >
+                          </div>
+                        </td>
+                      </tr>
+                      <!-- Row 4: Expanded Parent Row -->
+                      <tr class="table-row-item bg-surface-container-lowest">
+                        <td
+                          class="px-4 py-3 sticky left-0 bg-inherit shadow-[2px_0_4px_-1px_rgba(0,0,0,0.06)]"
+                        >
+                          <div class="flex items-center gap-1">
+                            <button
+                              class="text-primary hover:bg-surface-container p-0.5 rounded"
+                              onclick="toggleExpandRow()"
+                            >
+                              <span
+                                class="material-symbols-outlined text-[18px] transition-transform duration-200 rotate-90"
+                                id="expand-icon"
+                                >arrow_right</span
+                              >
+                            </button>
+                            <input
+                              class="w-4 h-4 rounded accent-primary cursor-pointer"
+                              type="checkbox"
+                            />
+                          </div>
+                        </td>
+                        <td
+                          class="px-4 py-3 font-mono font-medium text-primary sticky left-14 bg-inherit shadow-[3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          PO-202410884
+                        </td>
+                        <td class="px-4 py-3">
+                          <div class="flex flex-col">
+                            <span class="font-medium text-on-surface"
+                              >江苏恒天精工机械智能装备制造</span
+                            >
+                            <span class="font-label-xs text-label-xs text-status-warning font-mono"
+                              >包含 3 笔子项目分摊</span
+                            >
+                          </div>
+                        </td>
+                        <td class="px-4 py-3 font-mono font-semibold tabular-nums text-on-surface">
+                          ¥ 5,120,000.00
+                        </td>
+                        <td class="px-4 py-3">
+                          <div class="flex items-center gap-2">
+                            <div
+                              class="flex-1 bg-surface-container-high rounded-full h-1.5 overflow-hidden"
+                            >
+                              <div
+                                class="bg-theme-orange h-full rounded-full"
+                                style="width: 28%"
+                              ></div>
+                            </div>
+                            <span class="font-mono font-medium text-label-xs text-theme-orange"
+                              >28%</span
+                            >
+                          </div>
+                        </td>
+                        <td class="px-4 py-3">
+                          <span
+                            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-error/10 text-status-error font-label-xs text-label-xs font-semibold"
+                          >
+                            <span class="w-1.5 h-1.5 rounded-full bg-status-error"></span>
+                            <span class="">质检验收偏倚</span>
+                          </span>
+                        </td>
+                        <td class="px-4 py-3">
+                          <span
+                            class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-xs text-label-xs font-mono"
+                            >Row: Expanded</span
+                          >
+                        </td>
+                        <td
+                          class="px-4 py-3 text-right sticky right-0 bg-inherit shadow-[-3px_0_6px_-2px_rgba(0,0,0,0.08)]"
+                        >
+                          <div
+                            class="flex items-center justify-end gap-2 text-primary font-label-sm text-label-sm"
+                          >
+                            <button class="hover:underline">异常处置</button>
+                            <span
+                              class="material-symbols-outlined text-on-surface-variant text-[16px] cursor-pointer"
+                              >more_horiz</span
+                            >
+                          </div>
+                        </td>
+                      </tr>
+                      <!-- Expanded Child Detail Card Area -->
+                      <tr class="bg-surface-container-low" id="expand-child-content">
+                        <td class="p-space-md" colspan="8">
+                          <div
+                            class="bg-surface-container-lowest rounded-lg p-space-md shadow-sm flex flex-col gap-space-sm"
+                          >
+                            <div class="flex items-center justify-between">
+                              <div
+                                class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface font-semibold"
+                              >
+                                <span class="material-symbols-outlined text-primary text-[18px]"
+                                  >account_tree</span
+                                >
+                                <span class=""
+                                  >订单级联子项与资金分拆明细 (Sub-Allocation Matrix)</span
+                                >
+                              </div>
+                              <span
+                                class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                                >SLA 验收周期: 45 自然日</span
+                              >
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+                              <div
+                                class="p-space-sm rounded bg-surface-container-low flex flex-col"
+                              >
+                                <span class="font-label-xs text-label-xs text-on-surface-variant"
+                                  >首期设备定金 (30%)</span
+                                >
+                                <span class="font-mono text-headline-sm font-bold text-on-surface"
+                                  >¥ 1,536,000.00</span
+                                >
+                                <span
+                                  class="font-label-xs text-label-xs text-status-success font-medium"
+                                  >已电汇核销</span
+                                >
+                              </div>
+                              <div
+                                class="p-space-sm rounded bg-surface-container-low flex flex-col"
+                              >
+                                <span class="font-label-xs text-label-xs text-on-surface-variant"
+                                  >中期到货款 (50%)</span
+                                >
+                                <span
+                                  class="font-mono text-headline-sm font-bold text-status-warning"
+                                  >¥ 2,560,000.00</span
+                                >
+                                <span
+                                  class="font-label-xs text-label-xs text-status-warning font-medium"
+                                  >质检单审批中</span
+                                >
+                              </div>
+                              <div
+                                class="p-space-sm rounded bg-surface-container-low flex flex-col"
+                              >
+                                <span class="font-label-xs text-label-xs text-on-surface-variant"
+                                  >质保尾款 (20%)</span
+                                >
+                                <span
+                                  class="font-mono text-headline-sm font-bold text-on-surface-variant"
+                                  >¥ 1,024,000.00</span
+                                >
+                                <span
+                                  class="font-label-xs text-label-xs text-on-surface-variant font-medium"
+                                  >预计 2025-06 触发</span
+                                >
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+            <!-- ================= 02 PAGINATION 分页器 ================= -->
+            <section class="flex flex-col gap-space-md" id="spec-pagination">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span
+                    class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold font-mono"
+                    >02</span
+                  >
+                  <div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                      Pagination 分页器控制规范
+                    </h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      含数据统计、页面规格下拉、数字胶囊、省略号跳页及目标直达输入器
+                    </p>
+                  </div>
+                </div>
+                <span
+                  class="px-space-xs py-1 rounded bg-surface-container-high font-label-xs text-label-xs text-on-surface-variant font-mono"
+                  >WCAG 2.2 键盘Tab巡检支持</span
+                >
+              </div>
+              <div
+                class="p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-wrap items-center justify-between gap-space-md"
+              >
+                <!-- Size 1: Large (40px) -->
+                <div
+                  class="flex flex-col gap-space-sm pb-space-md border-b border-outline-variant/60"
+                >
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="px-2 py-0.5 rounded bg-primary-fixed text-primary font-mono text-label-xs font-semibold"
+                        >Large (40px)</span
+                      >
+                      <span class="font-label-sm text-on-surface font-semibold"
+                        >大号尺寸 (触控屏、大屏看板、宽屏决策驾驶舱主翻页)</span
+                      >
+                    </div>
+                    <span class="font-mono text-label-xs text-on-surface-variant"
+                      >Token: --lx-pagination-h-lg: 40px | font: 16px</span
+                    >
+                  </div>
+                  <div
+                    class="p-space-md bg-surface-container-low rounded-xl flex flex-wrap items-center justify-between gap-space-md"
+                  >
+                    <div
+                      class="flex items-center gap-space-sm font-body-lg text-body-lg text-on-surface-variant"
+                    >
+                      <span class=""
+                        >共
+                        <strong class="text-on-surface font-mono font-semibold">2,480</strong>
+                        条数据</span
+                      >
+                      <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                      <span class="">第 3 / 124 页</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <!-- Page Size Selector (40px) -->
+                      <div
+                        class="relative inline-flex items-center bg-surface-container-lowest px-3 h-10 rounded-lg text-on-surface font-label-md text-label-md cursor-pointer shadow-sm border border-outline-variant/60 hover:border-primary transition-colors"
+                      >
+                        <span class="">20 条/页</span>
+                        <span
+                          class="material-symbols-outlined text-[18px] ml-1.5 text-on-surface-variant"
+                          >expand_more</span
+                        >
+                      </div>
+                      <!-- Prev button -->
+                      <button
+                        class="h-10 w-10 rounded-lg bg-surface-container-lowest text-on-surface flex items-center justify-center hover:bg-surface-container shadow-sm border border-outline-variant/60 transition-colors"
+                        title="上一页 (Alt+Left)"
+                      >
+                        <span class="material-symbols-outlined text-[20px]">chevron_left</span>
+                      </button>
+                      <!-- Number 1: Default -->
+                      <button
+                        class="h-10 w-10 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:border-primary font-label-md text-label-md font-medium flex items-center justify-center shadow-sm border border-outline-variant/60 transition-colors"
+                      >
+                        1
+                      </button>
+                      <!-- Number 2: Hover simulated -->
+                      <button
+                        class="h-10 w-10 rounded-lg bg-surface-container text-primary font-label-md text-label-md font-semibold flex items-center justify-center shadow-sm border border-primary transition-colors"
+                      >
+                        2
+                      </button>
+                      <!-- Number 3: Active State -->
+                      <button
+                        class="h-10 w-10 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold flex items-center justify-center shadow-md shadow-primary/20"
+                      >
+                        3
+                      </button>
+                      <!-- Number 4: Default -->
+                      <button
+                        class="h-10 w-10 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container font-label-md text-label-md font-medium flex items-center justify-center shadow-sm border border-outline-variant/60 transition-colors"
+                      >
+                        4
+                      </button>
+                      <!-- Fast-Forward Ellipsis (Hover shows double arrow hint) -->
+                      <button
+                        class="h-10 w-10 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-primary hover:bg-surface-container hover:border-primary font-label-md flex items-center justify-center shadow-sm border border-outline-variant/60 transition-colors group"
+                        title="向后快速翻 5 页"
+                      >
+                        <span class="material-symbols-outlined text-[18px] group-hover:hidden"
+                          >more_horiz</span
+                        >
+                        <span
+                          class="material-symbols-outlined text-[18px] hidden group-hover:block text-primary"
+                          >keyboard_double_arrow_right</span
+                        >
+                      </button>
+                      <!-- Last Page -->
+                      <button
+                        class="h-10 w-10 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container font-label-md text-label-md font-medium flex items-center justify-center shadow-sm border border-outline-variant/60 transition-colors"
+                      >
+                        124
+                      </button>
+                      <!-- Next button -->
+                      <button
+                        class="h-10 w-10 rounded-lg bg-surface-container-lowest text-on-surface flex items-center justify-center hover:bg-surface-container shadow-sm border border-outline-variant/60 transition-colors"
+                        title="下一页 (Alt+Right)"
+                      >
+                        <span class="material-symbols-outlined text-[20px]">chevron_right</span>
+                      </button>
+                      <!-- Quick Jumper (40px) -->
+                      <div
+                        class="flex items-center gap-space-xs ml-space-sm font-label-md text-label-md text-on-surface-variant"
+                      >
+                        <span class="">跳至</span>
+                        <input
+                          class="w-14 h-10 text-center bg-surface-container-lowest rounded-lg font-mono text-on-surface font-semibold focus:outline-none border border-outline-variant/60 focus:border-primary shadow-sm"
+                          type="text"
+                          value="3"
+                          placeholder="页"
+                        />
+                        <span class="">页</span>
+                        <button
+                          class="h-10 px-3 bg-surface-container-lowest hover:bg-surface-container text-primary font-label-sm font-semibold rounded-lg border border-outline-variant/60 shadow-sm transition-colors"
+                        >
+                          确定
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Size 2: Middle / Default (32px) -->
+                <div
+                  class="flex flex-col gap-space-sm pb-space-md border-b border-outline-variant/60"
+                >
+                  <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                      <span
+                        class="px-2 py-0.5 rounded bg-surface-container text-primary font-mono text-label-xs font-semibold"
+                        >Middle / Default (32px)</span
+                      >
+                      <span class="font-label-sm text-on-surface font-semibold"
+                        >默认标准中号 (企业级标准ERP/CRM表格、主数据全景推荐)</span
+                      >
+                    </div>
+                    <span class="font-mono text-label-xs text-on-surface-variant"
+                      >Token: --lx-pagination-h-md: 32px | font: 14px</span
+                    >
+                  </div>
+                  <div
+                    class="p-space-md bg-surface-container-low rounded-xl flex flex-wrap items-center justify-between gap-space-md"
+                  >
+                    <div
+                      class="flex items-center gap-space-sm font-body-sm text-body-sm text-on-surface-variant"
+                    >
+                      <span class=""
+                        >共
+                        <strong class="text-on-surface font-mono font-semibold">2,480</strong>
+                        条数据</span
+                      >
+                      <span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+                      <span class="">显示 21 - 40 条</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-space-xs">
+                      <!-- Page Size Selector (32px) -->
+                      <div
+                        class="relative inline-flex items-center bg-surface-container-lowest px-2.5 h-8 rounded-lg text-on-surface font-label-sm text-label-sm cursor-pointer shadow-sm border border-outline-variant/60 hover:border-primary transition-colors"
+                      >
+                        <span class="">20 条/页</span>
+                        <span
+                          class="material-symbols-outlined text-[16px] ml-1 text-on-surface-variant"
+                          >expand_more</span
+                        >
+                      </div>
+                      <!-- Disabled Prev -->
+                      <button
+                        class="w-8 h-8 rounded-lg bg-surface-container-low text-outline-variant cursor-not-allowed flex items-center justify-center border border-outline-variant/60 shadow-sm"
+                        disabled=""
+                        title="首页无法继续向前"
+                      >
+                        <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                      </button>
+                      <!-- Page 1: Default -->
+                      <button
+                        class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:border-primary font-label-sm text-label-sm font-medium flex items-center justify-center shadow-sm border border-outline-variant/60 transition-colors"
+                      >
+                        1
+                      </button>
+                      <!-- Page 2: Active -->
+                      <button
+                        class="w-8 h-8 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold flex items-center justify-center shadow-md shadow-primary/20"
+                      >
+                        2
+                      </button>
+                      <!-- Page 3: Default -->
+                      <button
+                        class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:border-primary font-label-sm text-label-sm font-medium flex items-center justify-center shadow-sm border border-outline-variant/60 transition-colors"
+                      >
+                        3
+                      </button>
+                      <!-- Page 4: Default -->
+                      <button
+                        class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container hover:border-primary font-label-sm text-label-sm font-medium flex items-center justify-center shadow-sm border border-outline-variant/60 transition-colors"
+                      >
+                        4
+                      </button>
+                      <!-- Fast-Forward Ellipsis -->
+                      <button
+                        class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-primary hover:bg-surface-container hover:border-primary font-label-sm text-label-sm flex items-center justify-center shadow-sm border border-outline-variant/60 transition-colors group"
+                        title="向后快速跳 5 页"
+                      >
+                        <span class="material-symbols-outlined text-[16px] group-hover:hidden"
+                          >more_horiz</span
+                        >
+                        <span
+                          class="material-symbols-outlined text-[16px] hidden group-hover:block text-primary"
+                          >keyboard_double_arrow_right</span
+                        >
+                      </button>
+                      <!-- Page 124 -->
+                      <button
+                        class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface hover:bg-surface-container font-label-sm text-label-sm font-medium flex items-center justify-center shadow-sm border border-outline-variant/60 transition-colors"
+                      >
+                        124
+                      </button>
+                      <!-- Next button -->
+                      <button
+                        class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface flex items-center justify-center hover:bg-surface-container shadow-sm border border-outline-variant/60 transition-colors"
+                        title="下一页"
+                      >
+                        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                      </button>
+                      <!-- Quick Jumper (32px) -->
+                      <div
+                        class="flex items-center gap-space-xs ml-space-sm font-label-sm text-label-sm text-on-surface-variant"
+                      >
+                        <span class="">跳至</span>
+                        <input
+                          class="w-12 h-8 text-center bg-surface-container-lowest rounded-lg font-mono text-on-surface font-semibold focus:outline-none border border-outline-variant/60 focus:border-primary shadow-sm"
+                          type="text"
+                          value="2"
+                        />
+                        <span class="">页</span>
+                        <button
+                          class="h-8 px-2.5 bg-surface-container-lowest hover:bg-surface-container text-primary font-label-xs font-semibold rounded-lg border border-outline-variant/60 shadow-sm transition-colors"
+                        >
+                          跳转
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Size 3: Small (24px) & Mini / Drawer Mode in 2-Column Grid -->
+                <div
+                  class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg pb-space-md border-b border-outline-variant/60"
+                >
+                  <!-- Size 3: Small (24px) -->
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-mono text-label-xs font-semibold"
+                          >Small (24px)</span
+                        >
+                        <span class="font-label-sm text-on-surface font-semibold"
+                          >小号紧凑型 (侧边抽屉、弹窗Modal、嵌入子表)</span
+                        >
+                      </div>
+                      <span class="font-mono text-label-xs text-on-surface-variant"
+                        >Token: --lx-pagination-h-sm: 24px</span
+                      >
+                    </div>
+                    <div
+                      class="p-space-sm bg-surface-container-low rounded-lg flex flex-wrap items-center justify-between gap-space-sm"
+                    >
+                      <div
+                        class="flex items-center gap-2 font-mono text-label-xs text-on-surface-variant"
+                      >
+                        <span class="">共 420 条</span>
+                        <div
+                          class="relative inline-flex items-center bg-surface-container-lowest px-1.5 h-6 rounded text-on-surface font-mono text-label-xs cursor-pointer shadow-sm border border-outline-variant/60 hover:border-primary"
+                        >
+                          <span class="">10/页</span>
+                          <span
+                            class="material-symbols-outlined text-[12px] ml-0.5 text-on-surface-variant"
+                            >expand_more</span
+                          >
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <button
+                          class="w-6 h-6 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center hover:bg-surface-container border border-outline-variant/60 shadow-sm"
+                          title="上一页"
+                        >
+                          <span class="material-symbols-outlined text-[14px]">chevron_left</span>
+                        </button>
+                        <button
+                          class="w-6 h-6 rounded bg-primary text-on-primary font-mono text-label-xs font-semibold flex items-center justify-center shadow-sm"
+                        >
+                          1
+                        </button>
+                        <button
+                          class="w-6 h-6 rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container font-mono text-label-xs flex items-center justify-center border border-outline-variant/60 shadow-sm"
+                        >
+                          2
+                        </button>
+                        <button
+                          class="w-6 h-6 rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container font-mono text-label-xs flex items-center justify-center border border-outline-variant/60 shadow-sm"
+                        >
+                          3
+                        </button>
+                        <span class="px-0.5 text-on-surface-variant font-mono text-label-xs"
+                          >...</span
+                        >
+                        <button
+                          class="w-6 h-6 rounded bg-surface-container-lowest text-on-surface hover:bg-surface-container font-mono text-label-xs flex items-center justify-center border border-outline-variant/60 shadow-sm"
+                        >
+                          42
+                        </button>
+                        <button
+                          class="w-6 h-6 rounded bg-surface-container-lowest text-on-surface flex items-center justify-center hover:bg-surface-container border border-outline-variant/60 shadow-sm"
+                          title="下一页"
+                        >
+                          <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                        </button>
+                        <!-- Small Jumper (24px) -->
+                        <div
+                          class="flex items-center gap-1 ml-1 text-label-xs text-on-surface-variant"
+                        >
+                          <input
+                            class="w-8 h-6 text-center bg-surface-container-lowest rounded font-mono text-label-xs text-on-surface font-semibold focus:outline-none border border-outline-variant/60 focus:border-primary shadow-sm"
+                            type="text"
+                            value="1"
+                          />
+                          <span class="">页</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Simple Mini Mode -->
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span
+                          class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-mono text-label-xs font-semibold"
+                          >Mini / Simple Mode</span
+                        >
+                        <span class="font-label-sm text-on-surface font-semibold"
+                          >极简翻页模式 (移动响应端、极窄统计栏)</span
+                        >
+                      </div>
+                      <span class="font-mono text-label-xs text-secondary">简约模式</span>
+                    </div>
+                    <div
+                      class="p-space-sm bg-surface-container-low rounded-lg flex items-center justify-between gap-space-sm"
+                    >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >Mini Jumper 紧凑直达</span
+                      >
+                      <div class="flex items-center gap-2">
+                        <button
+                          class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface flex items-center justify-center hover:bg-surface-container border border-outline-variant/60 shadow-sm transition-colors"
+                          title="上一页"
+                        >
+                          <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                        </button>
+                        <div
+                          class="flex items-center gap-1 font-mono text-label-sm text-on-surface"
+                        >
+                          <input
+                            class="w-10 h-8 text-center bg-surface-container-lowest rounded-lg border border-outline-variant/60 font-semibold focus:outline-none focus:border-primary shadow-sm"
+                            type="text"
+                            value="3"
+                          />
+                          <span class="text-on-surface-variant">/</span>
+                          <span class="text-on-surface-variant font-medium">124</span>
+                        </div>
+                        <button
+                          class="w-8 h-8 rounded-lg bg-surface-container-lowest text-on-surface flex items-center justify-center hover:bg-surface-container border border-outline-variant/60 shadow-sm transition-colors"
+                          title="下一页"
+                        >
+                          <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Specification & Token Table -->
+                <div class="flex flex-col gap-space-xs">
+                  <span
+                    class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold"
+                    >Pagination 规格属性与 Token 对应标准 (WCAG 2.2 AA)</span
+                  >
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-space-sm">
+                    <div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1">
+                      <div
+                        class="flex items-center justify-between font-label-xs text-label-xs font-semibold text-primary"
+                      >
+                        <span class="">Large (40px)</span>
+                        <span class="font-mono text-on-surface-variant">h-10 / 40px</span>
+                      </div>
+                      <span class="font-body-sm text-body-sm text-on-surface"
+                        >尺寸: 40x40px | 字号: 16px (body-lg) | 间距: 8px (gap-2)</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                        >Padding: 8px 12px | 圆角: 8px (rounded-lg)</span
+                      >
+                    </div>
+                    <div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1">
+                      <div
+                        class="flex items-center justify-between font-label-xs text-label-xs font-semibold text-primary"
+                      >
+                        <span class="">Middle / Default (32px)</span>
+                        <span class="font-mono text-on-surface-variant">h-8 / 32px</span>
+                      </div>
+                      <span class="font-body-sm text-body-sm text-on-surface"
+                        >尺寸: 32x32px | 字号: 14px (body-md) | 间距: 6px (gap-1.5)</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                        >Padding: 4px 8px | 圆角: 8px (rounded-lg)</span
+                      >
+                    </div>
+                    <div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1">
+                      <div
+                        class="flex items-center justify-between font-label-xs text-label-xs font-semibold text-primary"
+                      >
+                        <span class="">Small (24px)</span>
+                        <span class="font-mono text-on-surface-variant">h-6 / 24px</span>
+                      </div>
+                      <span class="font-body-sm text-body-sm text-on-surface"
+                        >尺寸: 24x24px | 字号: 12px (body-sm) | 间距: 4px (gap-1)</span
+                      >
+                      <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                        >Padding: 2px 6px | 圆角: 4px (rounded)</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- ================= 03 TREE 树形控件 ================= -->
+            <section class="flex flex-col gap-space-md" id="spec-tree">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span
+                    class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold font-mono"
+                    >03</span
+                  >
+                  <div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                      Tree 组织与权限树形控件
+                    </h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      引导辅助虚线、节点三角旋向微动效、三态复选框（选定/未选/半选）、拖拽指示条与聚焦态
+                    </p>
+                  </div>
+                </div>
+                <span
+                  class="px-space-xs py-1 rounded bg-surface-container-high font-label-xs text-label-xs text-on-surface-variant font-mono"
+                  >Draggable: Drop Target Highlight</span
+                >
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
+                <!-- Tree Interactive Component Showcase -->
+                <div
+                  class="p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <span class="font-headline-sm text-headline-sm text-on-surface"
+                      >企业组织架构与权限组</span
+                    >
+                    <div class="flex items-center gap-1 text-primary font-label-xs text-label-xs">
+                      <span class="material-symbols-outlined text-[16px]">unfold_more</span>
+                      <span class="">全部展开</span>
+                    </div>
+                  </div>
+                  <div class="flex flex-col text-on-surface font-body-sm">
+                    <!-- Root Level -->
+                    <div
+                      class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-surface-container transition-colors group cursor-pointer"
+                    >
+                      <span
+                        class="material-symbols-outlined text-on-surface-variant text-[18px] transition-transform duration-200"
+                        >arrow_drop_down</span
+                      >
+                      <!-- Checked State -->
+                      <input
+                        checked=""
+                        class="w-4 h-4 rounded accent-primary cursor-pointer"
+                        type="checkbox"
+                      />
+                      <span class="material-symbols-outlined text-primary text-[18px]"
+                        >corporate_fare</span
+                      >
+                      <span class="font-semibold text-on-surface">集团控股总部 (Global HQ)</span>
+                      <span
+                        class="ml-auto font-label-xs text-label-xs text-on-surface-variant bg-surface-container px-2 py-0.5 rounded"
+                        >6,800 人</span
+                      >
+                    </div>
+                    <!-- Level 1 with dotted connector -->
+                    <div class="pl-6 relative">
+                      <div
+                        class="absolute left-2.5 top-0 bottom-2 w-px border-l border-dashed border-outline-variant/60"
+                      ></div>
+                      <!-- Node 1: Indeterminate -->
+                      <div
+                        class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-surface-container transition-colors cursor-pointer relative"
+                      >
+                        <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+                          >arrow_drop_down</span
+                        >
+                        <!-- Indeterminate Custom Checkbox -->
+                        <div
+                          class="w-4 h-4 rounded bg-primary flex items-center justify-center cursor-pointer"
+                        >
+                          <span class="w-2 h-0.5 bg-on-primary rounded"></span>
+                        </div>
+                        <span class="material-symbols-outlined text-theme-cyan text-[18px]"
+                          >cloud</span
+                        >
+                        <span class="font-medium text-on-surface"
+                          >智能云与产业数字化事业群 (Cloud BG)</span
+                        >
+                        <span
+                          class="ml-auto font-label-xs text-label-xs bg-theme-cyan/10 text-theme-cyan px-2 py-0.5 rounded"
+                          >半选授权</span
+                        >
+                      </div>
+                      <!-- Level 2 Sub-tree -->
+                      <div class="pl-6 relative">
+                        <div
+                          class="absolute left-2.5 top-0 bottom-2 w-px border-l border-dashed border-outline-variant/60"
+                        ></div>
+                        <div
+                          class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-surface-container transition-colors cursor-pointer"
+                        >
+                          <span
+                            class="material-symbols-outlined text-on-surface-variant text-[18px] opacity-0"
+                            >arrow_drop_down</span
+                          >
+                          <input
+                            checked=""
+                            class="w-4 h-4 rounded accent-primary cursor-pointer"
+                            type="checkbox"
+                          />
+                          <span
+                            class="material-symbols-outlined text-on-surface-variant text-[18px]"
+                            >terminal</span
+                          >
+                          <span class="">基础架构与内核研发中心</span>
+                        </div>
+                        <!-- Drop Target Demonstration Line -->
+                        <div class="my-1 relative flex items-center">
+                          <div class="w-full h-0.5 bg-primary shadow-sm rounded-full"></div>
+                          <span
+                            class="absolute -left-1 w-2 h-2 rounded-full bg-primary ring-2 ring-primary-fixed"
+                          ></span>
+                          <span
+                            class="absolute right-2 font-label-xs text-label-xs bg-primary text-on-primary px-1.5 py-0.2 rounded font-mono"
+                            >Drop Target 指示条</span
+                          >
+                        </div>
+                        <div
+                          class="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-primary-fixed/30 text-primary font-medium transition-colors cursor-pointer"
+                        >
+                          <span class="material-symbols-outlined text-primary text-[18px] opacity-0"
+                            >arrow_drop_down</span
+                          >
+                          <input
+                            class="w-4 h-4 rounded accent-primary cursor-pointer"
+                            type="checkbox"
+                          />
+                          <span class="material-symbols-outlined text-primary text-[18px]"
+                            >security</span
+                          >
+                          <span class="">数据安全与信创审计实验室 (Active Node)</span>
+                        </div>
+                      </div>
+                      <!-- Node 2: Unchecked -->
+                      <div
+                        class="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-surface-container transition-colors cursor-pointer relative"
+                      >
+                        <span
+                          class="material-symbols-outlined text-on-surface-variant text-[18px] -rotate-90"
+                          >arrow_drop_down</span
+                        >
+                        <input
+                          class="w-4 h-4 rounded accent-primary cursor-pointer"
+                          type="checkbox"
+                        />
+                        <span class="material-symbols-outlined text-theme-purple text-[18px]"
+                          >account_balance</span
+                        >
+                        <span class="">全球财务共享中心 (SSC)</span>
+                        <span
+                          class="ml-auto font-label-xs text-label-xs text-on-surface-variant font-mono"
+                          >只读</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Tree State Rules Specification Matrix -->
+                <div
+                  class="p-space-lg bg-surface-container-low rounded-xl flex flex-col justify-between gap-space-md"
+                >
+                  <div>
+                    <h3
+                      class="font-headline-sm text-headline-sm text-on-surface font-semibold mb-space-sm"
+                    >
+                      Tree 规范状态机定义
+                    </h3>
+                    <div class="space-y-space-sm font-body-sm text-body-sm text-on-surface-variant">
+                      <div
+                        class="p-space-sm bg-surface-container-lowest rounded-lg shadow-sm flex items-start gap-space-sm"
+                      >
+                        <span
+                          class="w-6 h-6 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-label-xs"
+                          >1</span
+                        >
+                        <div>
+                          <strong class="text-on-surface">展开/收起过渡:</strong>
+                          <span class="text-on-surface-variant"
+                            >三角图标 90° 旋转，动效耗时 180ms ease-in-out，禁止卡顿闪烁。</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="p-space-sm bg-surface-container-lowest rounded-lg shadow-sm flex items-start gap-space-sm"
+                      >
+                        <span
+                          class="w-6 h-6 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-label-xs"
+                          >2</span
+                        >
+                        <div>
+                          <strong class="text-on-surface">节点三态继承:</strong>
+                          <span class="text-on-surface-variant"
+                            >子项全选中 -&gt; 父项Checked；部分选中 -&gt;
+                            父项Indeterminate（水平横杠标示）；子项全部未选 -&gt;
+                            父项Unchecked。</span
+                          >
+                        </div>
+                      </div>
+                      <div
+                        class="p-space-sm bg-surface-container-lowest rounded-lg shadow-sm flex items-start gap-space-sm"
+                      >
+                        <span
+                          class="w-6 h-6 rounded bg-primary/10 text-primary flex items-center justify-center font-bold text-label-xs"
+                          >3</span
+                        >
+                        <div>
+                          <strong class="text-on-surface">拖拽排序与插槽 (Drag &amp; Drop):</strong>
+                          <span class="text-on-surface-variant"
+                            >目标节点上下方出现 2px
+                            高亮蓝线及原点定位器，若移入节点内则触发节点背景蓝染。</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between text-on-surface-variant font-mono font-label-xs text-label-xs p-space-sm bg-surface-container rounded-lg"
+                  >
+                    <span class="">Indent: 24px/Level</span>
+                    <span class="">Connector: 1px dotted rgba(0,0,0,0.12)</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- ================= 04 CARD 卡片容器 ================= -->
+            <section class="flex flex-col gap-space-md" id="spec-card">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span
+                    class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold font-mono"
+                    >04</span
+                  >
+                  <div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                      Card 卡片容器与三款风格预设
+                    </h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      Business (商务稳重)、Soft (轻盈现代)、Glass (玻璃微拟态)
+                      对比与网格/标签栏容器应用
+                    </p>
+                  </div>
+                </div>
+                <span
+                  class="px-space-xs py-1 rounded bg-surface-container-high font-label-xs text-label-xs text-on-surface-variant font-mono"
+                  >Presets: Business | Soft | Glass</span
+                >
+              </div>
+              <!-- 3 Style Presets Tri-Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+                <!-- Preset 1: Business (Flat, high contrast, clean) -->
+                <div
+                  class="bg-surface-container-lowest rounded p-space-lg shadow-sm flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-label-xs text-label-xs uppercase px-2 py-0.5 rounded bg-surface-container text-on-surface font-semibold"
+                        >Preset: Business</span
+                      >
+                      <span class="material-symbols-outlined text-on-surface-variant text-[18px]"
+                        >more_vert</span
+                      >
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+                      商务稳重 (Business)
+                    </h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      纯色平铺分层、4px圆角控制、零夸张弥散投影。专为极端高密度报表与重度ERP办公场景研发，抗视觉疲劳。
+                    </p>
+                  </div>
+                  <div
+                    class="p-space-sm bg-surface-container-low rounded flex items-center justify-between font-label-xs text-label-xs"
+                  >
+                    <span class="text-on-surface-variant">圆角: 4px | 阴影: None</span>
+                    <span class="text-primary font-semibold">企业默认选用</span>
+                  </div>
+                </div>
+                <!-- Preset 2: Soft (Gentle ambient shadow, 8px radius) -->
+                <div
+                  class="bg-surface-container-lowest rounded-xl p-space-lg shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-label-xs text-label-xs uppercase px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-semibold"
+                        >Preset: Soft</span
+                      >
+                      <span class="material-symbols-outlined text-primary text-[18px]"
+                        >verified</span
+                      >
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+                      轻盈现代 (Soft)
+                    </h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      8px-12px圆角过渡，自然主光漫反射阴影（rgba(15,23,42,0.06)），180ms浮起响应。平衡亲和力与结构感。
+                    </p>
+                  </div>
+                  <div
+                    class="p-space-sm bg-surface-container-low rounded-lg flex items-center justify-between font-label-xs text-label-xs"
+                  >
+                    <span class="text-on-surface-variant">圆角: 8px | 阴影: Ambient</span>
+                    <span class="text-primary font-semibold">SaaS管理台推荐</span>
+                  </div>
+                </div>
+                <!-- Preset 3: Glass (Backdrop blur, frosted sheen) -->
+                <div
+                  class="bg-surface-container-lowest/80 backdrop-blur-xl rounded-2xl p-space-lg shadow-lg relative overflow-hidden flex flex-col justify-between gap-space-md"
+                >
+                  <div
+                    class="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-primary/10 blur-2xl pointer-events-none"
+                  ></div>
+                  <div class="flex flex-col gap-space-sm relative z-10">
+                    <div class="flex items-center justify-between">
+                      <span
+                        class="font-label-xs text-label-xs uppercase px-2 py-0.5 rounded bg-secondary-container text-on-secondary-container font-semibold"
+                        >Preset: Glass</span
+                      >
+                      <span class="material-symbols-outlined text-secondary text-[18px]"
+                        >auto_awesome</span
+                      >
+                    </div>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+                      玻璃拟态 (Glass)
+                    </h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      16px高阶高斯模糊毛玻璃，光泽透光背衬，常用于监控指挥驾驶舱、悬浮工具条与全局关键模态卡。
+                    </p>
+                  </div>
+                  <div
+                    class="p-space-sm bg-surface-container/60 rounded-xl flex items-center justify-between font-label-xs text-label-xs relative z-10"
+                  >
+                    <span class="text-on-surface-variant">Blur: 16px | 纯透高保真</span>
+                    <span class="text-secondary font-semibold">驾驶舱视觉流</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Advanced Card with Tab Navigation Header -->
+              <div class="bg-surface-container-lowest rounded-xl shadow-md overflow-hidden">
+                <div
+                  class="flex items-center justify-between px-space-lg pt-space-md bg-surface-container-low"
+                >
+                  <div class="flex items-center gap-space-lg">
+                    <button
+                      class="pb-3 font-label-sm text-label-sm font-semibold text-primary shadow-[inset_0_-2px_0_0_currentColor]"
+                    >
+                      资金结算概况
+                    </button>
+                    <button
+                      class="pb-3 font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface"
+                    >
+                      供应链风险告警
+                    </button>
+                    <button
+                      class="pb-3 font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface"
+                    >
+                      外部承运审计
+                    </button>
+                  </div>
+                  <div class="pb-3 flex items-center gap-space-xs">
+                    <span class="font-label-xs text-label-xs text-on-surface-variant"
+                      >数据周期:</span
+                    >
+                    <span
+                      class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-xs text-label-xs font-medium"
+                      >近 30 天</span
+                    >
+                  </div>
+                </div>
+                <div class="p-space-lg grid grid-cols-1 md:grid-cols-4 gap-space-md">
+                  <div class="p-space-md rounded-lg bg-surface-container-low flex flex-col">
+                    <span class="font-label-xs text-label-xs text-on-surface-variant"
+                      >采购总计单量</span
+                    >
+                    <span
+                      class="font-headline-lg text-headline-lg font-bold text-on-surface mt-1 font-mono"
+                      >1,829
+                      <span class="font-body-sm text-body-sm font-normal text-on-surface-variant"
+                        >单</span
+                      ></span
+                    >
+                    <span class="font-label-xs text-label-xs text-status-success font-semibold mt-2"
+                      >↑ 8.2% 同比上期</span
+                    >
+                  </div>
+                  <div class="p-space-md rounded-lg bg-surface-container-low flex flex-col">
+                    <span class="font-label-xs text-label-xs text-on-surface-variant"
+                      >在途物料总额</span
+                    >
+                    <span
+                      class="font-headline-lg text-headline-lg font-bold text-primary mt-1 font-mono"
+                      >¥ 24.8
+                      <span class="font-body-sm text-body-sm font-normal text-on-surface-variant"
+                        >M</span
+                      ></span
+                    >
+                    <span class="font-label-xs text-label-xs text-on-surface-variant mt-2 font-mono"
+                      >92 个承运单在途</span
+                    >
+                  </div>
+                  <div class="p-space-md rounded-lg bg-surface-container-low flex flex-col">
+                    <span class="font-label-xs text-label-xs text-on-surface-variant"
+                      >加急交割比例</span
+                    >
+                    <span
+                      class="font-headline-lg text-headline-lg font-bold text-theme-orange mt-1 font-mono"
+                      >12.4%</span
+                    >
+                    <span class="font-label-xs text-label-xs text-theme-orange mt-2 font-semibold"
+                      >高于预警阈值 10%</span
+                    >
+                  </div>
+                  <div class="p-space-md rounded-lg bg-surface-container-low flex flex-col">
+                    <span class="font-label-xs text-label-xs text-on-surface-variant"
+                      >入库一次合格率</span
+                    >
+                    <span
+                      class="font-headline-lg text-headline-lg font-bold text-status-success mt-1 font-mono"
+                      >99.82%</span
+                    >
+                    <span class="font-label-xs text-label-xs text-status-success mt-2 font-semibold"
+                      >达标 A 级标杆</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- ================= 05 TAG & 06 BADGE 标签与徽标 ================= -->
+            <section class="flex flex-col gap-space-md" id="spec-tag-badge">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span
+                    class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold font-mono"
+                    >05-06</span
+                  >
+                  <div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                      Tag 语义标签 &amp; Badge 徽标系统
+                    </h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      涵盖语义调色盘、可关闭标签微动效、可选择胶囊（Checkable）、呼吸红蓝点状态徽标及角标
+                      Ribbon
+                    </p>
+                  </div>
+                </div>
+                <span
+                  class="px-space-xs py-1 rounded bg-surface-container-high font-label-xs text-label-xs text-on-surface-variant font-mono"
+                  >Interactive dismiss: 120ms fade</span
+                >
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg">
+                <!-- Tag Matrix Showcase -->
+                <div
+                  class="p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                      Tag 语义色值与交互矩阵
+                    </h3>
+                    <span class="font-label-xs text-label-xs text-on-surface-variant"
+                      >10% 浅底 + 实色文字</span
+                    >
+                  </div>
+                  <!-- Semantic States -->
+                  <div class="flex flex-col gap-space-sm">
+                    <span
+                      class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold"
+                      >标准语义标签</span
+                    >
+                    <div class="flex flex-wrap items-center gap-space-sm">
+                      <span
+                        class="px-2.5 py-1 rounded-md bg-surface-container text-on-surface font-label-sm text-label-sm font-medium"
+                        >常规中性</span
+                      >
+                      <span
+                        class="px-2.5 py-1 rounded-md bg-primary-fixed text-primary font-label-sm text-label-sm font-medium"
+                        >主品牌蓝 (Primary)</span
+                      >
+                      <span
+                        class="px-2.5 py-1 rounded-md bg-status-success/15 text-status-success font-label-sm text-label-sm font-medium flex items-center gap-1"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+                        <span class="">准时交付 (Success)</span>
+                      </span>
+                      <span
+                        class="px-2.5 py-1 rounded-md bg-theme-orange/15 text-theme-orange font-label-sm text-label-sm font-medium flex items-center gap-1"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-theme-orange"></span>
+                        <span class="">额度预警 (Warning)</span>
+                      </span>
+                      <span
+                        class="px-2.5 py-1 rounded-md bg-status-error/15 text-status-error font-label-sm text-label-sm font-medium flex items-center gap-1"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-status-error"></span>
+                        <span class="">熔断中断 (Danger)</span>
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Dismissible Interactive Tags -->
+                  <div class="flex flex-col gap-space-sm">
+                    <span
+                      class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold"
+                      >可移除标签 (Dismissible, 120ms fade-out)</span
+                    >
+                    <div
+                      class="flex flex-wrap items-center gap-space-sm"
+                      id="dismissible-tag-container"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-container-high text-on-surface font-label-sm text-label-sm transition-all duration-150"
+                        id="tag-erp"
+                      >
+                        <span class="">ERP 模块: 金蝶直连</span>
+                        <span
+                          class="material-symbols-outlined text-[14px] hover:text-status-error cursor-pointer"
+                          onclick="dismissTag('tag-erp')"
+                          >close</span
+                        >
+                      </span>
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-container-high text-on-surface font-label-sm text-label-sm transition-all duration-150"
+                        id="tag-sla"
+                      >
+                        <span class="">结算协议: 季结45天</span>
+                        <span
+                          class="material-symbols-outlined text-[14px] hover:text-status-error cursor-pointer"
+                          onclick="dismissTag('tag-sla')"
+                          >close</span
+                        >
+                      </span>
+                      <span
+                        class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-surface-container-high text-on-surface font-label-sm text-label-sm transition-all duration-150"
+                        id="tag-vip"
+                      >
+                        <span class="">VIP 供应链保障</span>
+                        <span
+                          class="material-symbols-outlined text-[14px] hover:text-status-error cursor-pointer"
+                          onclick="dismissTag('tag-vip')"
+                          >close</span
+                        >
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Selectable Checkable Tag -->
+                  <div class="flex flex-col gap-space-sm">
+                    <span
+                      class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold"
+                      >可筛选标签胶囊 (Checkable Tag)</span
+                    >
+                    <div class="flex flex-wrap items-center gap-space-sm">
+                      <button
+                        class="px-3 py-1 rounded-full font-label-sm text-label-sm font-semibold bg-primary text-on-primary shadow-sm transition-all"
+                        onclick="toggleCheckTag(this)"
+                      >
+                        全选业务项 (Active)
+                      </button>
+                      <button
+                        class="px-3 py-1 rounded-full font-label-sm text-label-sm font-medium bg-surface-container-low text-on-surface hover:bg-surface-container transition-all"
+                        onclick="toggleCheckTag(this)"
+                      >
+                        固定资产类
+                      </button>
+                      <button
+                        class="px-3 py-1 rounded-full font-label-sm text-label-sm font-medium bg-surface-container-low text-on-surface hover:bg-surface-container transition-all"
+                        onclick="toggleCheckTag(this)"
+                      >
+                        研发开支类
+                      </button>
+                      <button
+                        class="px-3 py-1 rounded-full font-label-sm text-label-sm font-medium bg-surface-container-low text-on-surface hover:bg-surface-container transition-all"
+                        onclick="toggleCheckTag(this)"
+                      >
+                        物流劳务类
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Badge System Showcase -->
+                <div
+                  class="p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col justify-between gap-space-md relative overflow-hidden"
+                >
+                  <!-- Ribbon Badge Corner Demonstration -->
+                  <div
+                    class="absolute -right-8 top-5 bg-gradient-to-r from-theme-orange to-status-error text-on-primary text-[10px] font-bold py-1 px-10 transform rotate-45 shadow-sm uppercase tracking-wider"
+                  >
+                    SLA VIP 认证
+                  </div>
+                  <div>
+                    <h3
+                      class="font-headline-sm text-headline-sm text-on-surface font-semibold mb-space-sm"
+                    >
+                      Badge 徽标数与状态小圆点
+                    </h3>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md">
+                      用于突显待办数量、消息计数溢出（99+ / 999+）与系统级联机呼吸状态
+                    </p>
+                    <div class="grid grid-cols-2 gap-space-md mb-space-md">
+                      <!-- Attached to Icon -->
+                      <div
+                        class="p-space-md rounded-lg bg-surface-container-low flex items-center justify-between"
+                      >
+                        <span class="font-label-sm text-label-sm text-on-surface"
+                          >图元附着徽标 (Icon)</span
+                        >
+                        <div class="relative">
+                          <span
+                            class="material-symbols-outlined text-[28px] text-on-surface-variant"
+                            >notifications</span
+                          >
+                          <span
+                            class="absolute -top-1 -right-2 bg-status-error text-on-error font-mono text-[10px] font-bold px-1.5 py-0.2 rounded-full ring-2 ring-surface-container-lowest"
+                            >99+</span
+                          >
+                        </div>
+                      </div>
+                      <!-- Attached to Avatar -->
+                      <div
+                        class="p-space-md rounded-lg bg-surface-container-low flex items-center justify-between"
+                      >
+                        <span class="font-label-sm text-label-sm text-on-surface"
+                          >头像附着徽标</span
+                        >
+                        <div class="relative">
+                          <div
+                            class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-sm"
+                          >
+                            LX
+                          </div>
+                          <span
+                            class="absolute -top-1 -right-1 bg-status-error text-on-error font-mono text-[10px] font-bold px-1 rounded-full ring-2 ring-surface-container-lowest"
+                            >8</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Breathing Status Dots Matrix -->
+                    <div class="flex flex-col gap-space-xs">
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface-variant uppercase tracking-wider font-semibold"
+                        >状态小圆点 (Status Dots &amp; Pulse)</span
+                      >
+                      <div class="grid grid-cols-2 md:grid-cols-4 gap-space-sm pt-1">
+                        <div class="flex items-center gap-2 p-2 rounded bg-surface-container-low">
+                          <span class="relative flex h-2.5 w-2.5">
+                            <span
+                              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"
+                            ></span>
+                            <span
+                              class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"
+                            ></span>
+                          </span>
+                          <span class="font-label-xs text-label-xs text-on-surface"
+                            >进行中 (Processing)</span
+                          >
+                        </div>
+                        <div class="flex items-center gap-2 p-2 rounded bg-surface-container-low">
+                          <span class="h-2.5 w-2.5 rounded-full bg-status-success"></span>
+                          <span class="font-label-xs text-label-xs text-on-surface"
+                            >正常运行 (Success)</span
+                          >
+                        </div>
+                        <div class="flex items-center gap-2 p-2 rounded bg-surface-container-low">
+                          <span class="h-2.5 w-2.5 rounded-full bg-status-warning"></span>
+                          <span class="font-label-xs text-label-xs text-on-surface"
+                            >告警排队 (Warning)</span
+                          >
+                        </div>
+                        <div class="flex items-center gap-2 p-2 rounded bg-surface-container-low">
+                          <span class="h-2.5 w-2.5 rounded-full bg-status-error"></span>
+                          <span class="font-label-xs text-label-xs text-on-surface"
+                            >系统熔断 (Error)</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="p-space-sm bg-surface-container rounded-lg font-mono font-label-xs text-label-xs text-on-surface-variant flex items-center justify-between"
+                  >
+                    <span class="">Overflow: 99+ / 999+</span>
+                    <span class="">Pulse: 1.5s infinite ping</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- ================= 07 AVATAR & 08 LIST 头像与列表 ================= -->
+            <section class="flex flex-col gap-space-md" id="spec-avatar-list">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span
+                    class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold font-mono"
+                    >07-08</span
+                  >
+                  <div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                      Avatar 头像组 &amp; List 企业事务流列表
+                    </h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      头像三种规格（48/36/24px）与堆叠展开动效；企业级审批与日志流水列表，含加载更多状态
+                    </p>
+                  </div>
+                </div>
+                <span
+                  class="px-space-xs py-1 rounded bg-surface-container-high font-label-xs text-label-xs text-on-surface-variant font-mono"
+                  >Stacked Avatar: -ml-2 hover expand</span
+                >
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+                <!-- 07 Avatar Specification (5 cols) -->
+                <div
+                  class="lg:col-span-5 p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-space-md">
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                      Avatar 规范形态矩阵
+                    </h3>
+                    <!-- Size Comparison -->
+                    <div class="flex flex-col gap-space-xs">
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface-variant font-semibold"
+                        >规格对齐: 大 (48px) / 中 (36px) / 小 (24px)</span
+                      >
+                      <div class="flex items-center gap-space-md">
+                        <div class="flex items-center gap-2">
+                          <div class="relative">
+                            <img
+                              class="w-12 h-12 rounded-full object-cover shadow-sm"
+                              data-alt="High-end studio portrait of a corporate executive in a navy blue tailored blazer with soft neutral studio background, crisp modern enterprise lighting"
+                              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiVbI25XXahVKik4K2r3yxPfivKWsaivl8GMMId-covDSZhkDAejVR9b28TNmgIIVzG725ieSD49UpJ54EMiUCVpI89UoEdkTUrcA56nUc2scyBqLXF7AQW8O9OZrIN80UgrcxhGDVLLyB3yTiOdo_jPcVxD2LObQrdDGUisnn_6r_C_bxCEZit4v63OFgxhDRO1qekTtWePK7sr3XPvA6tO94YwwtRY640D5vVIwINIrD80a9qSWNgQ"
+                            />
+                            <span
+                              class="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-status-success ring-2 ring-surface-container-lowest"
+                            ></span>
+                          </div>
+                          <span
+                            class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                            >48px</span
+                          >
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <div
+                            class="w-9 h-9 rounded-full bg-theme-purple text-on-primary font-semibold flex items-center justify-center font-label-sm text-label-sm shadow-sm"
+                          >
+                            张
+                          </div>
+                          <span
+                            class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                            >36px</span
+                          >
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <div
+                            class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center"
+                          >
+                            <span class="material-symbols-outlined text-[14px]">person</span>
+                          </div>
+                          <span
+                            class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                            >24px</span
+                          >
+                        </div>
+                        <div class="flex items-center gap-2">
+                          <div
+                            class="w-9 h-9 rounded-lg bg-secondary text-on-secondary font-semibold flex items-center justify-center font-label-sm text-label-sm"
+                          >
+                            ERP
+                          </div>
+                          <span
+                            class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                            >圆角 8px</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Avatar Group Stack -->
+                    <div class="flex flex-col gap-space-xs">
+                      <span
+                        class="font-label-xs text-label-xs text-on-surface-variant font-semibold"
+                        >Avatar.Group 堆叠组 (负间距与溢出气泡)</span
+                      >
+                      <div class="flex items-center">
+                        <div
+                          class="flex items-center -space-x-2 overflow-hidden hover:space-x-1 transition-all duration-200"
+                        >
+                          <img
+                            class="w-9 h-9 rounded-full object-cover ring-2 ring-surface-container-lowest"
+                            data-alt="Corporate headshot of a female financial risk analyst wearing glasses and formal grey attire with bright clean workspace background"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdstDCacO_1ujWrs0qV2imm7KDGwjyOV_AHE_G92w891tb7ViFDfR3oixne28XEhUQtlF6E9EAKY29r3bGUX39nZaN79RcurUxIS6s46uTlvCh_hS0jvpFnFumKSGFEo-VkCExbNtCuxDCwzu-zQ0VYhtKykxRu52uSlPIbBh5nnvYTMDgTYQHmbc03yYgbSs_YTPbl-LrfIB9iEKFoPSo4iSr3RW2V_zcQMizE-kvI7nwhIQWHe6ATQ"
+                          />
+                          <img
+                            class="w-9 h-9 rounded-full object-cover ring-2 ring-surface-container-lowest"
+                            data-alt="Professional portrait of a male software engineer with slight smile in minimalist modern enterprise environment"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVsIBxdgkwAkCElM_1nb43r6oIkvwYt0kuw9Mv5iF7jT5dG770oXwNyhNHZwOD4hv8wXR_qlR3ruHcJ8l_xFwGiW312IUWXIUIh1-56of9uypf898agtP7IQO-b4XFS50BHOf9gVXdC2P775NAn6uSJa6kgsQwPY8piX5_S3zOIhrpEi5rLCpcO_lSS4uDSI9xRLNB_YuglzTj-O7RwOsApkD5kBke5Vcfcc--D4cNRwhyxRgLofoATg"
+                          />
+                          <div
+                            class="w-9 h-9 rounded-full bg-theme-cyan text-on-primary font-bold text-xs flex items-center justify-center ring-2 ring-surface-container-lowest"
+                          >
+                            王
+                          </div>
+                          <div
+                            class="w-9 h-9 rounded-full bg-theme-orange text-on-primary font-bold text-xs flex items-center justify-center ring-2 ring-surface-container-lowest"
+                          >
+                            李
+                          </div>
+                          <div
+                            class="w-9 h-9 rounded-full bg-surface-container-highest text-on-surface font-mono font-bold text-xs flex items-center justify-center ring-2 ring-surface-container-lowest"
+                          >
+                            +4
+                          </div>
+                        </div>
+                        <span
+                          class="ml-space-md font-label-xs text-label-xs text-on-surface-variant"
+                          >共 8 位审批人协办</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="p-space-sm bg-surface-container-low rounded-lg font-body-sm text-body-sm text-on-surface-variant"
+                  >
+                    <span class=""
+                      >规则:
+                      纯色头像底色由系统根据用户姓名散列（Hash）映射生成，保证全局色谱分布均匀。</span
+                    >
+                  </div>
+                </div>
+                <!-- 08 List Specification (7 cols) -->
+                <div
+                  class="lg:col-span-7 p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-space-sm">
+                    <div class="flex items-center justify-between">
+                      <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                        List 企业资金事务流明细
+                      </h3>
+                      <span class="font-label-xs text-label-xs text-on-surface-variant"
+                        >Seamless List 模式</span
+                      >
+                    </div>
+                    <!-- List Items -->
+                    <div class="flex flex-col divide-y-0">
+                      <!-- Item 1 -->
+                      <div
+                        class="py-3 px-space-sm rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-between gap-space-md"
+                      >
+                        <div class="flex items-center gap-space-sm min-w-0">
+                          <div
+                            class="w-10 h-10 rounded-full bg-theme-green/10 text-theme-green flex items-center justify-center shrink-0"
+                          >
+                            <span class="material-symbols-outlined text-[20px]"
+                              >account_balance_wallet</span
+                            >
+                          </div>
+                          <div class="flex flex-col min-w-0">
+                            <div class="flex items-center gap-2">
+                              <span
+                                class="font-label-md text-label-md font-semibold text-on-surface truncate"
+                                >大宗物资战略储备资金清算入账</span
+                              >
+                              <span
+                                class="px-1.5 py-0.2 rounded bg-theme-green/10 text-theme-green font-label-xs text-label-xs font-semibold"
+                                >已入账</span
+                              >
+                            </div>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant truncate"
+                              >交易流水号: TRX-202410-0982 · 发起自招商银行总行托管专户</span
+                            >
+                          </div>
+                        </div>
+                        <div class="flex flex-col items-end shrink-0">
+                          <span
+                            class="font-mono font-bold text-label-md text-theme-green tabular-nums"
+                            >+ ¥ 1,280,000.00</span
+                          >
+                          <span
+                            class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                            >10 分钟前</span
+                          >
+                        </div>
+                      </div>
+                      <!-- Item 2 -->
+                      <div
+                        class="py-3 px-space-sm rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-between gap-space-md"
+                      >
+                        <div class="flex items-center gap-space-sm min-w-0">
+                          <div
+                            class="w-10 h-10 rounded-full bg-status-error/10 text-status-error flex items-center justify-center shrink-0"
+                          >
+                            <span class="material-symbols-outlined text-[20px]">outbound</span>
+                          </div>
+                          <div class="flex flex-col min-w-0">
+                            <div class="flex items-center gap-2">
+                              <span
+                                class="font-label-md text-label-md font-semibold text-on-surface truncate"
+                                >晶圆光刻胶采购尾款跨境外汇支付</span
+                              >
+                              <span
+                                class="px-1.5 py-0.2 rounded bg-status-error/10 text-status-error font-label-xs text-label-xs font-semibold"
+                                >外汇审核</span
+                              >
+                            </div>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant truncate"
+                              >外汇报关单据已上传 · 涉及美元兑换汇率锁定期</span
+                            >
+                          </div>
+                        </div>
+                        <div class="flex flex-col items-end shrink-0">
+                          <span
+                            class="font-mono font-bold text-label-md text-on-surface tabular-nums"
+                            >- $ 420,500.00</span
+                          >
+                          <span
+                            class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                            >今天 11:24</span
+                          >
+                        </div>
+                      </div>
+                      <!-- Item 3 -->
+                      <div
+                        class="py-3 px-space-sm rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-between gap-space-md"
+                      >
+                        <div class="flex items-center gap-space-sm min-w-0">
+                          <div
+                            class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0"
+                          >
+                            <span class="material-symbols-outlined text-[20px]">sync</span>
+                          </div>
+                          <div class="flex flex-col min-w-0">
+                            <div class="flex items-center gap-2">
+                              <span
+                                class="font-label-md text-label-md font-semibold text-on-surface truncate"
+                                >季度研发准备金内部划转与预算锁死</span
+                              >
+                              <span
+                                class="px-1.5 py-0.2 rounded bg-primary-fixed text-primary font-label-xs text-label-xs font-semibold"
+                                >内部结转</span
+                              >
+                            </div>
+                            <span class="font-body-sm text-body-sm text-on-surface-variant truncate"
+                              >划转至 AI实验室研发成本核算池 · 审批流程已全绿单通过</span
+                            >
+                          </div>
+                        </div>
+                        <div class="flex flex-col items-end shrink-0">
+                          <span class="font-mono font-bold text-label-md text-primary tabular-nums"
+                            >¥ 850,000.00</span
+                          >
+                          <span
+                            class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                            >昨天 17:40</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Infinite Load More Action State -->
+                  <div class="pt-space-xs flex justify-center">
+                    <button
+                      class="w-full py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-sm text-label-sm font-semibold flex items-center justify-center gap-2 transition-colors"
+                      id="btn-load-more"
+                      onclick="simulateLoadMore()"
+                    >
+                      <span class="material-symbols-outlined text-[16px]" id="load-icon"
+                        >expand_circle_down</span
+                      >
+                      <span id="load-text" class="">加载更多交易流水记录 (剩余 18 条)</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- ================= 09 DESCRIPTIONS & 10 STATISTIC 描述列表与统计数值 ================= -->
+            <section class="flex flex-col gap-space-md" id="spec-descriptions-stat">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span
+                    class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold font-mono"
+                    >09-10</span
+                  >
+                  <div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                      Descriptions 描述列表 &amp; Statistic 关键指标
+                    </h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      包含12列自适应键值网格、无边框底色分区模式、Tabular-nums数字对齐、微型Sparkline走势图与倒计时器
+                    </p>
+                  </div>
+                </div>
+                <span
+                  class="px-space-xs py-1 rounded bg-surface-container-high font-label-xs text-label-xs text-on-surface-variant font-mono"
+                  >Tabular-nums: Monospaced Metrics</span
+                >
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+                <!-- 09 Descriptions (7 cols) -->
+                <div
+                  class="lg:col-span-7 p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-space-md">
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-[20px]"
+                          >assignment</span
+                        >
+                        <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                          战略合作框架协议核心履约项 (Descriptions)
+                        </h3>
+                      </div>
+                      <span
+                        class="px-2 py-0.5 rounded bg-surface-container font-label-xs text-label-xs text-on-surface font-mono"
+                        >MODE: BORDERLESS-TONED</span
+                      >
+                    </div>
+                    <!-- Responsive 12-column Key-Value Pair Matrix -->
+                    <div
+                      class="grid grid-cols-1 sm:grid-cols-12 rounded-lg overflow-hidden bg-surface-container-low text-body-sm text-body-sm"
+                    >
+                      <!-- Item 1 -->
+                      <div
+                        class="sm:col-span-4 p-space-sm bg-surface-container font-semibold text-on-surface flex items-center"
+                      >
+                        协议系统全局 UID
+                      </div>
+                      <div
+                        class="sm:col-span-8 p-space-sm bg-surface-container-lowest font-mono text-primary font-medium flex items-center"
+                      >
+                        CTR-2024-GLOBAL-09941
+                      </div>
+                      <!-- Item 2 -->
+                      <div
+                        class="sm:col-span-4 p-space-sm bg-surface-container font-semibold text-on-surface flex items-center"
+                      >
+                        签约主体机构
+                      </div>
+                      <div
+                        class="sm:col-span-8 p-space-sm bg-surface-container-lowest text-on-surface flex items-center"
+                      >
+                        深蓝智造工业互联科技有限公司
+                      </div>
+                      <!-- Item 3 -->
+                      <div
+                        class="sm:col-span-4 p-space-sm bg-surface-container font-semibold text-on-surface flex items-center"
+                      >
+                        结算条款与SLA级别
+                      </div>
+                      <div
+                        class="sm:col-span-8 p-space-sm bg-surface-container-lowest text-on-surface flex items-center gap-2"
+                      >
+                        <span class="font-medium">NET 60 天月结</span>
+                        <span
+                          class="px-2 py-0.5 rounded bg-theme-purple/10 text-theme-purple font-label-xs text-label-xs font-semibold"
+                          >Tier-1 战略合作方</span
+                        >
+                      </div>
+                      <!-- Item 4 -->
+                      <div
+                        class="sm:col-span-4 p-space-sm bg-surface-container font-semibold text-on-surface flex items-center"
+                      >
+                        履约保证金账户状态
+                      </div>
+                      <div
+                        class="sm:col-span-8 p-space-sm bg-surface-container-lowest text-on-surface flex items-center gap-2"
+                      >
+                        <span class="w-2 h-2 rounded-full bg-status-success"></span>
+                        <span class="font-mono font-medium">¥ 5,000,000.00 (足额质押)</span>
+                      </div>
+                      <!-- Item 5 -->
+                      <div
+                        class="sm:col-span-4 p-space-sm bg-surface-container font-semibold text-on-surface flex items-center"
+                      >
+                        首席法务审计签名人
+                      </div>
+                      <div
+                        class="sm:col-span-8 p-space-sm bg-surface-container-lowest text-on-surface flex items-center justify-between"
+                      >
+                        <div class="flex items-center gap-2">
+                          <div
+                            class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-[10px] font-bold"
+                          >
+                            周
+                          </div>
+                          <span class="">周铭轩 (Senior General Counsel)</span>
+                        </div>
+                        <span class="font-mono text-label-xs text-status-success font-semibold"
+                          >CA数字证书已验签</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between font-label-xs text-label-xs text-on-surface-variant p-space-sm bg-surface-container-low rounded-lg"
+                  >
+                    <span class="">自适应规则: 12-Column 智能折叠，移动端降级为上下结构</span>
+                    <span class="font-mono">Padding: 8px 12px</span>
+                  </div>
+                </div>
+                <!-- 10 Statistic (5 cols) -->
+                <div
+                  class="lg:col-span-5 p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex flex-col gap-space-md">
+                    <div class="flex items-center justify-between">
+                      <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                        Statistic 统计关键指标与趋势
+                      </h3>
+                      <span class="material-symbols-outlined text-primary text-[20px]"
+                        >trending_up</span
+                      >
+                    </div>
+                    <!-- KPI Metric Card 1 -->
+                    <div
+                      class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-xs relative overflow-hidden"
+                    >
+                      <div
+                        class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm"
+                      >
+                        <span class="">当月采购净清算总额 (Tabular-nums)</span>
+                        <span
+                          class="material-symbols-outlined text-[16px] text-on-surface-variant cursor-pointer"
+                          title="排除退款及暂扣款净值"
+                          >info</span
+                        >
+                      </div>
+                      <div class="flex items-baseline gap-2">
+                        <span
+                          class="font-headline-sm text-headline-sm font-semibold text-on-surface font-mono"
+                          >¥</span
+                        >
+                        <span
+                          class="font-headline-xl text-headline-xl font-bold text-on-surface font-mono tabular-nums tracking-tight"
+                          >1,280,450.00</span
+                        >
+                      </div>
+                      <div class="flex items-center justify-between mt-1">
+                        <div
+                          class="flex items-center gap-1 font-label-xs text-label-xs font-semibold text-status-success"
+                        >
+                          <span class="material-symbols-outlined text-[16px]">arrow_drop_up</span>
+                          <span class="">+14.8% 环比增长</span>
+                        </div>
+                        <!-- Sparkline Micro SVG Chart (Under 1KB, Theme compliant) -->
+                        <div class="w-28 h-8">
+                          <svg class="w-full h-full text-primary" fill="none" viewBox="0 0 100 30">
+                            <path
+                              d="M0 24 Q 15 28, 25 18 T 50 12 T 75 19 T 100 4"
+                              stroke="currentColor"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2.5"
+                            ></path>
+                            <path
+                              d="M0 24 Q 15 28, 25 18 T 50 12 T 75 19 T 100 4 L 100 30 L 0 30 Z"
+                              fill="currentColor"
+                              fill-opacity="0.08"
+                            ></path>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Countdown Timer Demonstration -->
+                    <div
+                      class="p-space-md rounded-xl bg-surface-container-low flex items-center justify-between"
+                    >
+                      <div class="flex flex-col">
+                        <span class="font-label-xs text-label-xs text-on-surface-variant"
+                          >大宗物料竞价截标倒计时</span
+                        >
+                        <span class="font-label-sm text-label-sm text-on-surface font-medium"
+                          >供应商第4轮竞投阶段</span
+                        >
+                      </div>
+                      <div
+                        class="flex items-center gap-1 font-mono font-bold text-headline-sm text-headline-sm text-primary"
+                      >
+                        <span class="px-2 py-1 bg-surface-container rounded">08</span>
+                        <span class="">:</span>
+                        <span class="px-2 py-1 bg-surface-container rounded">42</span>
+                        <span class="">:</span>
+                        <span class="px-2 py-1 bg-surface-container rounded text-status-error"
+                          >19</span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="p-space-sm bg-surface-container rounded-lg font-mono font-label-xs text-label-xs text-on-surface-variant flex items-center justify-between"
+                  >
+                    <span class="">Font: tabular-nums</span>
+                    <span class="">Micro Chart: Pure Inline SVG</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- ================= 11 EMPTY, 12 SKELETON, 13 RESULT 状态与反馈展示 ================= -->
+            <section class="flex flex-col gap-space-md" id="spec-empty-skeleton-result">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-space-sm">
+                  <span
+                    class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center font-bold font-mono"
+                    >11-13</span
+                  >
+                  <div>
+                    <h2 class="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                      Empty 空状态 · Skeleton 骨架屏 · Result 结果反馈
+                    </h2>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant">
+                      轻量无侵入插画空状态、1500ms渐变光扫骨架屏切换动效与全套企业级业务结果图章
+                    </p>
+                  </div>
+                </div>
+                <span
+                  class="px-space-xs py-1 rounded bg-surface-container-high font-label-xs text-label-xs text-on-surface-variant font-mono"
+                  >End-to-End Status Feedback</span
+                >
+              </div>
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-space-lg">
+                <!-- 11 Empty State -->
+                <div
+                  class="p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                      11. Empty 空状态
+                    </h3>
+                    <span class="font-label-xs text-label-xs text-on-surface-variant"
+                      >中性低彩度</span
+                    >
+                  </div>
+                  <!-- Empty Canvas Illustration and Text -->
+                  <div class="flex flex-col items-center justify-center py-6 text-center">
+                    <!-- Inline Refined Vector Empty Box -->
+                    <div
+                      class="w-24 h-24 mb-space-sm flex items-center justify-center rounded-full bg-surface-container-low text-primary"
+                    >
+                      <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 64 64">
+                        <rect
+                          class="stroke-outline"
+                          height="36"
+                          rx="4"
+                          stroke-dasharray="4 3"
+                          stroke-width="2"
+                          width="40"
+                          x="12"
+                          y="16"
+                        ></rect>
+                        <path
+                          class="stroke-primary"
+                          d="M22 28H42"
+                          stroke-linecap="round"
+                          stroke-width="2"
+                        ></path>
+                        <path
+                          class="stroke-outline-variant"
+                          d="M22 36H34"
+                          stroke-linecap="round"
+                          stroke-width="2"
+                        ></path>
+                        <circle
+                          class="fill-surface-container stroke-primary"
+                          cx="46"
+                          cy="46"
+                          r="10"
+                          stroke-width="2"
+                        ></circle>
+                        <path
+                          class="stroke-primary"
+                          d="M43 46H49"
+                          stroke-linecap="round"
+                          stroke-width="2"
+                        ></path>
+                      </svg>
+                    </div>
+                    <h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                      暂无关联采购结算单据
+                    </h4>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs mt-1">
+                      该供应商在此核算周期内尚未产生任何合同执行记账，可点击下方创建新往来单据。
+                    </p>
+                    <button
+                      class="mt-space-md px-space-md py-2 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold shadow-sm hover:opacity-95"
+                    >
+                      立即新建采购单
+                    </button>
+                  </div>
+                  <div
+                    class="p-space-sm bg-surface-container-low rounded-lg font-label-xs text-label-xs text-on-surface-variant text-center"
+                  >
+                    包含表格嵌入式 (Table-inline Empty) 紧凑版变体
+                  </div>
+                </div>
+                <!-- 12 Skeleton Shimmer Wave -->
+                <div
+                  class="p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                      <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                        12. Skeleton 骨架屏
+                      </h3>
+                      <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    </div>
+                    <button
+                      class="font-label-xs text-label-xs text-primary bg-primary-fixed px-2 py-0.5 rounded font-semibold hover:underline"
+                      onclick="toggleSkeletonContent()"
+                    >
+                      模拟加载切换
+                    </button>
+                  </div>
+                  <!-- Skeleton Container -->
+                  <div class="flex flex-col gap-space-sm py-2" id="skeleton-box">
+                    <!-- Avatar & Header Line -->
+                    <div class="flex items-center gap-space-sm">
+                      <div
+                        class="w-12 h-12 rounded-full bg-surface-container-highest animate-pulse shrink-0"
+                      ></div>
+                      <div class="flex flex-col gap-2 flex-1">
+                        <div
+                          class="h-4 bg-surface-container-highest rounded animate-pulse w-3/4"
+                        ></div>
+                        <div
+                          class="h-3 bg-surface-container-highest rounded animate-pulse w-1/2"
+                        ></div>
+                      </div>
+                    </div>
+                    <!-- Paragraph skeleton blocks -->
+                    <div class="space-y-2 mt-space-sm">
+                      <div
+                        class="h-3 bg-surface-container-highest rounded animate-pulse w-full"
+                      ></div>
+                      <div
+                        class="h-3 bg-surface-container-highest rounded animate-pulse w-5/6"
+                      ></div>
+                      <div
+                        class="h-3 bg-surface-container-highest rounded animate-pulse w-2/3"
+                      ></div>
+                    </div>
+                    <!-- Card skeleton footer -->
+                    <div class="grid grid-cols-2 gap-2 mt-space-sm">
+                      <div class="h-8 bg-surface-container-highest rounded-lg animate-pulse"></div>
+                      <div class="h-8 bg-surface-container-highest rounded-lg animate-pulse"></div>
+                    </div>
+                  </div>
+                  <!-- Real Content Box (Toggled) -->
+                  <div class="hidden flex flex-col gap-space-sm py-2" id="skeleton-real-content">
+                    <div class="flex items-center gap-space-sm">
+                      <img
+                        class="w-12 h-12 rounded-full object-cover shrink-0"
+                        data-alt="Headshot photo of an enterprise software architect in sharp modern attire inside a high-tech office with cool daylight"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzHR1hgamqfjL2f2ObsV55KlL6m81eI8BCyu4za4Az3hQUC4i3DJ9XBeZHQxNVOMl6_uLJarIAFNHLRfSYbV_q2hF3gaLqepk0NjR2EiMJfFjTmWtdy3KNZ73_2koJhFr2X0X14Jtohs5i2hhOth88LvAUxAwQJPE8DkCZhXrW0lfDhzOjshOBAkSd5qq3HIzPjeTJuZ33Hx74XLYQOUKxbUgEPI05lA6JBszkAVWb1GvfpF2EGrl_AA"
+                      />
+                      <div class="flex flex-col">
+                        <span class="font-label-md text-label-md font-bold text-on-surface"
+                          >林瀚城 · 首席架构师</span
+                        >
+                        <span class="font-label-xs text-label-xs text-primary font-mono"
+                          >架构合规委员会已核准</span
+                        >
+                      </div>
+                    </div>
+                    <p class="font-body-sm text-body-sm text-on-surface-variant mt-space-xs">
+                      供应链全链路多活分布式集群扩容计划完成，压测 TPS 峰值提升至 24,000
+                      单/秒，延迟收敛至 12ms。
+                    </p>
+                    <div
+                      class="p-space-sm bg-surface-container-low rounded-lg font-mono font-bold text-label-sm text-status-success"
+                    >
+                      状态: 100% 部署完毕 · 性能指标优秀
+                    </div>
+                  </div>
+                  <div
+                    class="p-space-sm bg-surface-container-low rounded-lg font-mono font-label-xs text-label-xs text-on-surface-variant text-center"
+                  >
+                    Shimmer Pulse: 1500ms 周期无缝波纹
+                  </div>
+                </div>
+                <!-- 13 Result State Machine -->
+                <div
+                  class="p-space-lg bg-surface-container-lowest rounded-xl shadow-md flex flex-col justify-between gap-space-md"
+                >
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                      13. Result 结果页面组件
+                    </h3>
+                    <span class="font-label-xs text-label-xs text-on-surface-variant font-mono"
+                      >4-State Matrix</span
+                    >
+                  </div>
+                  <!-- Result Card Demonstration with Tabs -->
+                  <div class="flex flex-col">
+                    <div
+                      class="flex items-center justify-center gap-2 p-1 bg-surface-container-low rounded-lg mb-space-md"
+                    >
+                      <button
+                        class="px-2 py-1 rounded font-label-xs text-label-xs font-semibold bg-surface-container-lowest text-status-success shadow-sm"
+                        id="res-tab-success"
+                        onclick="switchResultTab('success')"
+                      >
+                        成功 (Success)
+                      </button>
+                      <button
+                        class="px-2 py-1 rounded font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface"
+                        id="res-tab-error"
+                        onclick="switchResultTab('error')"
+                      >
+                        失败 (Error)
+                      </button>
+                      <button
+                        class="px-2 py-1 rounded font-label-xs text-label-xs text-on-surface-variant hover:text-on-surface"
+                        id="res-tab-info"
+                        onclick="switchResultTab('info')"
+                      >
+                        提示 (Info)
+                      </button>
+                    </div>
+                    <!-- State 1: Success Display -->
+                    <div
+                      class="flex flex-col items-center text-center py-2"
+                      id="result-view-success"
+                    >
+                      <div
+                        class="w-14 h-14 rounded-full bg-status-success/15 text-status-success flex items-center justify-center mb-space-sm"
+                      >
+                        <span class="material-symbols-outlined text-[32px]">check_circle</span>
+                      </div>
+                      <h4 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+                        采购付款凭证提交成功
+                      </h4>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 max-w-xs">
+                        单据号
+                        <span class="font-mono text-primary font-medium">TRX-202410-0982</span>
+                        已推送至银行托管资金系统，预计2小时内完成入账回执。
+                      </p>
+                      <div class="flex items-center gap-2 mt-space-md">
+                        <button
+                          class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold"
+                        >
+                          查看详情
+                        </button>
+                        <button
+                          class="px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface font-label-sm text-label-sm font-medium"
+                        >
+                          返回工作台
+                        </button>
+                      </div>
+                    </div>
+                    <!-- State 2: Error Display (Hidden by default) -->
+                    <div
+                      class="hidden flex flex-col items-center text-center py-2"
+                      id="result-view-error"
+                    >
+                      <div
+                        class="w-14 h-14 rounded-full bg-status-error/15 text-status-error flex items-center justify-center mb-space-sm"
+                      >
+                        <span class="material-symbols-outlined text-[32px]">cancel</span>
+                      </div>
+                      <h4 class="font-headline-sm text-headline-sm text-status-error font-bold">
+                        交易核验未通过
+                      </h4>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 max-w-xs">
+                        错误码:
+                        <span class="font-mono font-bold text-on-surface"
+                          >#ERR_TRANSACTION_TIMEOUT</span
+                        >
+                        供应商结算专户处于年检冻结状态，请核实银行专户信息后重新发起。
+                      </p>
+                      <div class="flex items-center gap-2 mt-space-md">
+                        <button
+                          class="px-3 py-1.5 rounded-lg bg-status-error text-on-error font-label-sm text-label-sm font-semibold"
+                        >
+                          重新发起
+                        </button>
+                        <button
+                          class="px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface font-label-sm text-label-sm font-medium"
+                        >
+                          查看合规指引
+                        </button>
+                      </div>
+                    </div>
+                    <!-- State 3: Info Display (Hidden by default) -->
+                    <div
+                      class="hidden flex flex-col items-center text-center py-2"
+                      id="result-view-info"
+                    >
+                      <div
+                        class="w-14 h-14 rounded-full bg-primary/15 text-primary flex items-center justify-center mb-space-sm"
+                      >
+                        <span class="material-symbols-outlined text-[32px]">info</span>
+                      </div>
+                      <h4 class="font-headline-sm text-headline-sm text-on-surface font-bold">
+                        跨数据中心集群维护通知
+                      </h4>
+                      <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 max-w-xs">
+                        华东金融二区将于今日 23:00
+                        启动跨区存储无损平滑迁移，期间对账功能将进入只读缓存模式。
+                      </p>
+                      <div class="flex items-center gap-2 mt-space-md">
+                        <button
+                          class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-sm text-label-sm font-semibold"
+                        >
+                          已获悉
+                        </button>
+                        <button
+                          class="px-3 py-1.5 rounded-lg bg-surface-container-low text-on-surface font-label-sm text-label-sm font-medium"
+                        >
+                          迁移保障预案
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="p-space-sm bg-surface-container-low rounded-lg font-mono font-label-xs text-label-xs text-on-surface-variant text-center"
+                  >
+                    Tokens: --lx-status-success / --lx-status-error
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- Bottom Compliance & Token Footer Matrix -->
+            <footer
+              class="p-space-lg bg-surface-container-low rounded-2xl flex flex-wrap items-center justify-between gap-space-md"
+            >
+              <div class="flex flex-col gap-1">
+                <span class="font-label-sm text-label-sm text-on-surface font-bold"
+                  >LX-UI Data Display 规范合规标准与系统集成</span
+                >
+                <span class="font-body-sm text-body-sm text-on-surface-variant"
+                  >所有展示类组件均已内置无障碍支持（WCAG 2.2
+                  AA）、响应式断点栅格自适应及统一贝塞尔动效控制</span
+                >
+              </div>
+              <div
+                class="flex items-center gap-space-md font-mono text-label-xs text-label-xs text-on-surface-variant"
+              >
+                <span class="px-2 py-1 bg-surface-container-lowest rounded shadow-sm"
+                  >Grid: 4px/8px Unit</span
+                >
+                <span class="px-2 py-1 bg-surface-container-lowest rounded shadow-sm"
+                  >Token Group: Data-Display-v2</span
+                >
+                <span class="px-2 py-1 bg-primary text-on-primary font-semibold rounded shadow-sm"
+                  >Status: Approved</span
+                >
+              </div>
+            </footer>
+          </div>
+        </div>
+        <script>
+          // Table Density Switching Micro-interaction
+          function toggleTableDensity(density) {
+            const table = document.getElementById('spec-demo-table');
+            const btnComfortable = document.getElementById('btn-density-comfortable');
+            const btnCompact = document.getElementById('btn-density-compact');
+            const cells = table.querySelectorAll('th, td');
+
+            if (density === 'compact') {
+              cells.forEach((el) => {
+                el.classList.remove('py-3');
+                el.classList.add('py-1.5');
+              });
+              btnCompact.classList.add(
+                'bg-surface-container-lowest',
+                'text-primary',
+                'shadow-sm',
+                'font-semibold',
+              );
+              btnCompact.classList.remove('text-on-surface-variant');
+              btnComfortable.classList.remove(
+                'bg-surface-container-lowest',
+                'text-primary',
+                'shadow-sm',
+                'font-semibold',
+              );
+              btnComfortable.classList.add('text-on-surface-variant');
+            } else {
+              cells.forEach((el) => {
+                el.classList.remove('py-1.5');
+                el.classList.add('py-3');
+              });
+              btnComfortable.classList.add(
+                'bg-surface-container-lowest',
+                'text-primary',
+                'shadow-sm',
+                'font-semibold',
+              );
+              btnComfortable.classList.remove('text-on-surface-variant');
+              btnCompact.classList.remove(
+                'bg-surface-container-lowest',
+                'text-primary',
+                'shadow-sm',
+                'font-semibold',
+              );
+              btnCompact.classList.add('text-on-surface-variant');
+            }
+          }
+
+          // Column Sort Arrow Flipping
+          let isSortAsc = false;
+          function toggleSortAmount() {
+            const icon = document.getElementById('sort-icon-amount');
+            isSortAsc = !isSortAsc;
+            if (isSortAsc) {
+              icon.innerText = 'arrow_upward';
+            } else {
+              icon.innerText = 'arrow_downward';
+            }
+          }
+
+          // Expandable Table Row Toggle
+          let isRowExpanded = true;
+          function toggleExpandRow() {
+            const childRow = document.getElementById('expand-child-content');
+            const icon = document.getElementById('expand-icon');
+            isRowExpanded = !isRowExpanded;
+            if (isRowExpanded) {
+              childRow.classList.remove('hidden');
+              icon.classList.add('rotate-90');
+            } else {
+              childRow.classList.add('hidden');
+              icon.classList.remove('rotate-90');
+            }
+          }
+
+          // Dismissible Tag with Fade
+          function dismissTag(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.style.opacity = '0';
+            el.style.transform = 'scale(0.85)';
+            setTimeout(() => {
+              el.remove();
+            }, 120);
+          }
+
+          // Checkable Tag Toggle
+          function toggleCheckTag(button) {
+            if (button.classList.contains('bg-primary')) {
+              button.classList.remove('bg-primary', 'text-on-primary', 'font-semibold');
+              button.classList.add('bg-surface-container-low', 'text-on-surface', 'font-medium');
+            } else {
+              button.classList.remove('bg-surface-container-low', 'text-on-surface', 'font-medium');
+              button.classList.add('bg-primary', 'text-on-primary', 'font-semibold');
+            }
+          }
+
+          // Infinite Scroll Load More Simulation
+          function simulateLoadMore() {
+            const btn = document.getElementById('btn-load-more');
+            const icon = document.getElementById('load-icon');
+            const text = document.getElementById('load-text');
+            icon.classList.add('animate-spin');
+            text.innerText = '正在调取历史清算凭证数据...';
+            setTimeout(() => {
+              icon.classList.remove('animate-spin');
+              text.innerText = '已呈现全部 24 条交易记录 (无更多)';
+              btn.classList.add('opacity-60', 'cursor-not-allowed');
+              btn.disabled = true;
+            }, 800);
+          }
+
+          // Skeleton to Actual Content Switcher
+          let isSkeleton = true;
+          function toggleSkeletonContent() {
+            const skel = document.getElementById('skeleton-box');
+            const real = document.getElementById('skeleton-real-content');
+            isSkeleton = !isSkeleton;
+            if (isSkeleton) {
+              skel.classList.remove('hidden');
+              real.classList.add('hidden');
+            } else {
+              skel.classList.add('hidden');
+              real.classList.remove('hidden');
+            }
+          }
+
+          // Result Matrix State Switcher
+          function switchResultTab(tab) {
+            const tabs = ['success', 'error', 'info'];
+            tabs.forEach((t) => {
+              const btn = document.getElementById('res-tab-' + t);
+              const view = document.getElementById('result-view-' + t);
+              if (t === tab) {
+                btn.classList.add('bg-surface-container-lowest', 'shadow-sm', 'font-semibold');
+                if (t === 'success') btn.classList.add('text-status-success');
+                if (t === 'error') btn.classList.add('text-status-error');
+                if (t === 'info') btn.classList.add('text-primary');
+                btn.classList.remove('text-on-surface-variant');
+                view.classList.remove('hidden');
+              } else {
+                btn.classList.remove(
+                  'bg-surface-container-lowest',
+                  'shadow-sm',
+                  'font-semibold',
+                  'text-status-success',
+                  'text-status-error',
+                  'text-primary',
+                );
+                btn.classList.add('text-on-surface-variant');
+                view.classList.add('hidden');
+              }
+            });
+          }
+        </script>
+      </main>
+    </div>
+  </body>
+</html>

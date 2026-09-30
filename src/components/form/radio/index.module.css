@@ -1,0 +1,12 @@
+.root {
+  min-block-size: var(--lx-control-height);
+}
+.group {
+  border-radius: var(--lx-radius-control);
+  transition-duration: var(--lx-motion-duration);
+}
+@media (prefers-reduced-motion: reduce) {
+  .group {
+    transition: none;
+  }
+}

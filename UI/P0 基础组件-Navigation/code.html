@@ -1,0 +1,1979 @@
+<!doctype html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>lx-ui P0 导航与路径组件全量交互与样式详细规范</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Noto+Sans+SC:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'theme-rose': '#E11D48',
+              'primary-container': '#006ef2',
+              'surface-container-low': '#eff4ff',
+              'secondary-container': '#76dcff',
+              'inverse-surface': '#213145',
+              'surface-tint': '#0059c7',
+              secondary: '#006780',
+              'on-primary': '#ffffff',
+              'inverse-primary': '#afc6ff',
+              'status-success': '#16A34A',
+              'outline-variant': '#c1c6d7',
+              'tertiary-container': '#c64f00',
+              'on-surface-variant': '#414755',
+              'inverse-on-surface': '#eaf1ff',
+              error: '#ba1a1a',
+              'on-secondary-fixed': '#001f28',
+              'on-secondary-container': '#006077',
+              'on-tertiary-fixed-variant': '#7c2e00',
+              'status-error': '#DC2626',
+              'error-container': '#ffdad6',
+              'primary-fixed-dim': '#afc6ff',
+              'tertiary-fixed-dim': '#ffb695',
+              'theme-orange': '#F97316',
+              primary: '#0057c2',
+              'surface-variant': '#d3e4fe',
+              'status-warning': '#F59E0B',
+              'on-secondary-fixed-variant': '#004e61',
+              'on-primary-container': '#fefcff',
+              'surface-bright': '#f8f9ff',
+              'on-background': '#0b1c30',
+              'on-secondary': '#ffffff',
+              'secondary-fixed-dim': '#6cd3f7',
+              'tertiary-fixed': '#ffdbcc',
+              'on-tertiary-fixed': '#351000',
+              tertiary: '#9e3d00',
+              'surface-container': '#e5eeff',
+              'on-primary-fixed': '#001a43',
+              background: '#f8f9ff',
+              'surface-container-high': '#dce9ff',
+              'status-info': '#2563EB',
+              'on-error-container': '#93000a',
+              'on-surface': '#0b1c30',
+              'surface-dim': '#cbdbf5',
+              'theme-cyan': '#0891B2',
+              'theme-purple': '#7C3AED',
+              'on-tertiary-container': '#fffbff',
+              'surface-container-highest': '#d3e4fe',
+              'surface-container-lowest': '#ffffff',
+              'on-primary-fixed-variant': '#004398',
+              'on-tertiary': '#ffffff',
+              'primary-fixed': '#d9e2ff',
+              'theme-green': '#16A34A',
+              outline: '#727786',
+              'on-error': '#ffffff',
+              'secondary-fixed': '#b7eaff',
+              surface: '#f8f9ff',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              'space-xl': '1.5rem',
+              margin: '1.5rem',
+              'space-md': '0.75rem',
+              'space-xs': '0.25rem',
+              'space-sm': '0.5rem',
+              gutter: '1rem',
+              'space-lg': '1rem',
+            },
+            fontFamily: {
+              'headline-sm': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'body-lg': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'headline-lg': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'label-sm': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'body-md': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'headline-xl': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'body-sm': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'label-xs': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'label-md': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'headline-md': ['Inter', 'Noto Sans SC', 'sans-serif'],
+            },
+            fontSize: {
+              'headline-sm': ['16px', { lineHeight: '24px', fontWeight: '600' }],
+              'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }],
+              'headline-lg': [
+                '22px',
+                { lineHeight: '30px', letterSpacing: '-0.01em', fontWeight: '600' },
+              ],
+              'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+              'body-md': ['14px', { lineHeight: '22px', fontWeight: '400' }],
+              'headline-xl': [
+                '28px',
+                { lineHeight: '36px', letterSpacing: '-0.02em', fontWeight: '600' },
+              ],
+              'body-sm': ['12px', { lineHeight: '18px', fontWeight: '400' }],
+              'label-xs': [
+                '11px',
+                { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '600' },
+              ],
+              'label-md': ['14px', { lineHeight: '20px', fontWeight: '500' }],
+              'headline-md': ['18px', { lineHeight: '26px', fontWeight: '600' }],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 1;
+      }
+      @keyframes pulse-ring {
+        0% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(0, 87, 194, 0.5);
+        }
+        70% {
+          transform: scale(1);
+          box-shadow: 0 0 0 8px rgba(0, 87, 194, 0);
+        }
+        100% {
+          transform: scale(0.95);
+          box-shadow: 0 0 0 0 rgba(0, 87, 194, 0);
+        }
+      }
+      .pulse-glow {
+        animation: pulse-ring 2s infinite ease-in-out;
+      }
+      .subtle-shadow {
+        box-shadow:
+          0 4px 20px -2px rgba(11, 28, 48, 0.08),
+          0 2px 6px -1px rgba(11, 28, 48, 0.04);
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface antialiased font-body-md min-h-screen">
+    <!-- IMMUTABLE READ-ONLY TOP NAVIGATION ANCHOR (Relevant Top-level Category Screen) -->
+    <div
+      class="relative flex h-auto w-full flex-col bg-slate-50 group/design-root overflow-x-hidden"
+      style="font-family: Inter, 'Noto Sans', sans-serif"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <header
+              class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e6ecf4] px-10 py-3"
+            >
+              <div class="flex items-center gap-8">
+                <div class="flex items-center gap-4 text-[#0c131d]">
+                  <div class="size-4">
+                    <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"
+                        fill="currentColor"
+                      ></path>
+                    </svg>
+                  </div>
+                  <h2 class="text-[#0c131d] text-lg font-bold leading-tight tracking-[-0.015em]">
+                    lx-ui Design System
+                  </h2>
+                </div>
+                <label class="flex flex-col min-w-40 !h-10 max-w-64">
+                  <div class="flex w-full flex-1 items-stretch rounded h-full">
+                    <div
+                      class="text-[#456ba1] flex border-none bg-[#e6ecf4] items-center justify-center pl-4 rounded-l border-r-0"
+                      data-icon="MagnifyingGlass"
+                      data-size="24px"
+                      data-weight="regular"
+                    >
+                      <svg
+                        fill="currentColor"
+                        height="24px"
+                        viewbox="0 0 256 256"
+                        width="24px"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <input
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded text-[#0c131d] focus:outline-0 focus:ring-0 border-none bg-[#e6ecf4] focus:border-none h-full placeholder:text-[#456ba1] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                      placeholder="Search"
+                      value=""
+                    />
+                  </div>
+                </label>
+              </div>
+              <div class="flex flex-1 justify-end gap-8">
+                <div class="flex items-center gap-9">
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#">组件总览</a>
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#"
+                    >通用 Foundation</a
+                  >
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#"
+                    >布局 Layout</a
+                  >
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#"
+                    >导航 Navigation</a
+                  >
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#"
+                    >数据录入 Form</a
+                  >
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#"
+                    >反馈 Feedback</a
+                  >
+                </div>
+                <div class="flex gap-2">
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-[#1677ff] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+                  >
+                    <span class="truncate">导出 Token 规范</span>
+                  </button>
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-[#e6ecf4] text-[#0c131d] text-sm font-bold leading-normal tracking-[0.015em]"
+                  >
+                    <span class="truncate">v2.4.0-beta.2</span>
+                  </button>
+                </div>
+                <div
+                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                  data-alt="System architect avatar photo taken in a minimal bright high-tech office with clean rim lighting and professional navy and crisp white modern aesthetic tone."
+                  style="
+                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA2wNKMRPJLxkPnTreKElfSbIchbFyJf1xOU8jzy3rLEU--rQGL6g6zd0iRcW--HGLuoE72Jx8OGRKhb-aytd-yPklIuhpgHM6Vq6HAbGf3iGVq-Nxeh4EKuYCg0VPP9AaDqV1ZUr_Be5wv9NvKQ7q4CQSuhJVAAN0MlYoKrXt11YWBT3JsPwmqn15A6GMIONUhyr-y97MXLrWkzhrCOApKqzm5e4FUw_p8bv09sK0ACjBRvn9Fc60Z3w');
+                  "
+                ></div>
+              </div>
+            </header>
+            <div class="flex h-full min-h-[700px] flex-col justify-between bg-slate-50 p-4">
+              <div class="flex flex-col gap-4">
+                <div class="flex gap-3">
+                  <div
+                    class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                    data-alt="Category icon abstract glyph showcasing enterprise navigation blueprints and dynamic directional arrows in crisp high-contrast cyan and cobalt hues."
+                    style="
+                      background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB1GWcL__2qPFfnr0VU0oS4Ve6CR0WjrUaxoO8Th6NSmef_YXJ_ztE5ed01Gg7_4rhdC5m0nP6AA3HtRXrtyzAo14Mg-2V3tGw9Rw7RiaLYcbgNk0ZhDvuco7YarGSTTEq1cwIMq8WjPid419suFNsWmxTgXQxTPtvs_QsrmpTTEJTQWLeeCDEcRRpg6bKRshFIKmEkWOVYvwK7EdeoMT9m-DUmZyx9TvagZ22EgIilimWvhN15r8CGag');
+                    "
+                  ></div>
+                  <div class="flex flex-col">
+                    <h1 class="text-[#0c131d] text-base font-medium leading-normal">
+                      Navigation Components
+                    </h1>
+                    <p class="text-[#456ba1] text-sm font-normal leading-normal">
+                      Category 05 · WCAG 2.2 AA
+                    </p>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-3 px-3 py-2 rounded bg-[#e6ecf4]">
+                    <div
+                      class="text-[#0c131d]"
+                      data-icon="FolderOpen"
+                      data-size="24px"
+                      data-weight="fill"
+                    >
+                      <svg
+                        fill="currentColor"
+                        height="24px"
+                        viewbox="0 0 256 256"
+                        width="24px"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M245,110.64A16,16,0,0,0,232,104H216V88a16,16,0,0,0-16-16H130.67L102.94,51.2a16.14,16.14,0,0,0-9.6-3.2H40A16,16,0,0,0,24,64V208h0a8,8,0,0,0,8,8H211.1a8,8,0,0,0,7.59-5.47l28.49-85.47A16.05,16.05,0,0,0,245,110.64ZM93.34,64l27.73,20.8a16.12,16.12,0,0,0,9.6,3.2H200v16H69.77a16,16,0,0,0-15.18,10.94L40,158.7V64Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#0c131d] text-sm font-medium leading-normal">Tabs 标签页</p>
+                  </div>
+                  <div class="flex items-center gap-3 px-3 py-2">
+                    <div
+                      class="text-[#0c131d]"
+                      data-icon="CaretDown"
+                      data-size="24px"
+                      data-weight="regular"
+                    >
+                      <svg
+                        fill="currentColor"
+                        height="24px"
+                        viewbox="0 0 256 256"
+                        width="24px"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#0c131d] text-sm font-medium leading-normal">
+                      Dropdown 下拉菜单
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-3 px-3 py-2">
+                    <div
+                      class="text-[#0c131d]"
+                      data-icon="NavigationArrow"
+                      data-size="24px"
+                      data-weight="regular"
+                    >
+                      <svg
+                        fill="currentColor"
+                        height="24px"
+                        viewbox="0 0 256 256"
+                        width="24px"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M229.33,98.21,53.41,33l-.16-.05A16,16,0,0,0,32.9,53.25a1,1,0,0,0,.05.16L98.21,229.33A15.77,15.77,0,0,0,113.28,240h.3a15.77,15.77,0,0,0,15-11.29l23.56-76.56,76.56-23.56a16,16,0,0,0,.62-30.38ZM224,113.3l-76.56,23.56a16,16,0,0,0-10.58,10.58L113.3,224h0l-.06-.17L48,48l175.82,65.22.16.06Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#0c131d] text-sm font-medium leading-normal">
+                      Breadcrumb 面包屑
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-3 px-3 py-2">
+                    <div
+                      class="text-[#0c131d]"
+                      data-icon="SquaresFour"
+                      data-size="24px"
+                      data-weight="regular"
+                    >
+                      <svg
+                        fill="currentColor"
+                        height="24px"
+                        viewbox="0 0 256 256"
+                        width="24px"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M104,40H56A16,16,0,0,0,40,56v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,104,40Zm0,64H56V56h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm0,64H152V56h48v48Zm-96,32H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm0,64H56V152h48v48Zm96-64H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Zm0,64H152V152h48v48Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#0c131d] text-sm font-medium leading-normal">Menu 导航菜单</p>
+                  </div>
+                  <div class="flex items-center gap-3 px-3 py-2">
+                    <div
+                      class="text-[#0c131d]"
+                      data-icon="CheckCircle"
+                      data-size="24px"
+                      data-weight="regular"
+                    >
+                      <svg
+                        fill="currentColor"
+                        height="24px"
+                        viewbox="0 0 256 256"
+                        width="24px"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <p class="text-[#0c131d] text-sm font-medium leading-normal">Steps 步骤条</p>
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-3 px-3 py-2">
+                  <div
+                    class="text-[#0c131d]"
+                    data-icon="CheckSquare"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewbox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM224,48V208a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32H208A16,16,0,0,1,224,48ZM208,208V48H48V208H208Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <p class="text-[#0c131d] text-sm font-medium leading-normal">设计走查表</p>
+                </div>
+                <div class="flex items-center gap-3 px-3 py-2">
+                  <div
+                    class="text-[#0c131d]"
+                    data-icon="Code"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewbox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M69.12,94.15,28.5,128l40.62,33.85a8,8,0,1,1-10.24,12.29l-48-40a8,8,0,0,1,0-12.29l48-40a8,8,0,0,1,10.24,12.3Zm176,27.7-48-40a8,8,0,1,0-10.24,12.3L227.5,128l-40.62,33.85a8,8,0,1,0,10.24,12.29l48-40a8,8,0,0,0,0-12.29ZM162.73,32.48a8,8,0,0,0-10.25,4.79l-64,176a8,8,0,0,0,4.79,10.26A8.14,8.14,0,0,0,96,224a8,8,0,0,0,7.52-5.27l64-176A8,8,0,0,0,162.73,32.48Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <p class="text-[#0c131d] text-sm font-medium leading-normal">API Playground</p>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <div class="flex min-w-72 flex-col gap-3">
+                <p class="text-[#0c131d] text-4xl font-black leading-tight tracking-[-0.033em]">
+                  lx-ui P0 导航与路径组件全量交互与样式详细规范
+                </p>
+                <p class="text-[#456ba1] text-base font-normal leading-normal">
+                  涵盖 Tabs、Dropdown、Breadcrumb、Menu、Steps
+                  5大核心导航组件的标准形态、动效曲线、折叠溢出算法与可访问性键盘流规范
+                </p>
+              </div>
+              <button
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-[#e6ecf4] text-[#0c131d] text-sm font-bold leading-normal tracking-[0.015em]"
+              >
+                <span class="truncate">复制 CSS 变量</span>
+              </button>
+            </div>
+            <div class="pb-3">
+              <div class="flex border-b border-[#cdd9ea] px-4 gap-8">
+                <a
+                  class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#456ba1] gap-1 pb-[7px] pt-2.5"
+                  href="#"
+                >
+                  <div
+                    class="text-[#456ba1]"
+                    data-icon="Eye"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewbox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <p class="text-[#456ba1] text-sm font-bold leading-normal tracking-[0.015em]">
+                    规范概览 (Overview)
+                  </p>
+                </a>
+                <a
+                  class="flex flex-col items-center justify-center border-b-[3px] border-b-[#1677ff] text-[#0c131d] gap-1 pb-[7px] pt-2.5"
+                  href="#"
+                >
+                  <div
+                    class="text-[#0c131d]"
+                    data-icon="Sliders"
+                    data-size="24px"
+                    data-weight="fill"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewbox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M84,136a28,28,0,0,1-20,26.83V216a8,8,0,0,1-16,0V162.83a28,28,0,0,1,0-53.66V40a8,8,0,0,1,16,0v69.17A28,28,0,0,1,84,136Zm52-74.83V40a8,8,0,0,0-16,0V61.17a28,28,0,0,0,0,53.66V216a8,8,0,0,0,16,0V114.83a28,28,0,0,0,0-53.66Zm72,80V40a8,8,0,0,0-16,0V141.17a28,28,0,0,0,0,53.66V216a8,8,0,0,0,16,0V194.83a28,28,0,0,0,0-53.66Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <p class="text-[#0c131d] text-sm font-bold leading-normal tracking-[0.015em]">
+                    组件交互演练 (Interactive Live)
+                  </p>
+                </a>
+                <a
+                  class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#456ba1] gap-1 pb-[7px] pt-2.5"
+                  href="#"
+                >
+                  <div
+                    class="text-[#456ba1]"
+                    data-icon="Play"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewbox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M232.4,114.49,88.32,26.35a16,16,0,0,0-16.2-.3A15.86,15.86,0,0,0,64,39.87V216.13A15.94,15.94,0,0,0,80,232a16.07,16.07,0,0,0,8.36-2.35L232.4,141.51a15.81,15.81,0,0,0,0-27ZM80,215.94V40l143.83,88Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <p class="text-[#456ba1] text-sm font-bold leading-normal tracking-[0.015em]">
+                    动效与贝塞尔曲线 (Motion Specs)
+                  </p>
+                </a>
+                <a
+                  class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#456ba1] gap-1 pb-[7px] pt-2.5"
+                  href="#"
+                >
+                  <div
+                    class="text-[#456ba1]"
+                    data-icon="Code"
+                    data-size="24px"
+                    data-weight="regular"
+                  >
+                    <svg
+                      fill="currentColor"
+                      height="24px"
+                      viewbox="0 0 256 256"
+                      width="24px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M69.12,94.15,28.5,128l40.62,33.85a8,8,0,1,1-10.24,12.29l-48-40a8,8,0,0,1,0-12.29l48-40a8,8,0,0,1,10.24,12.3Zm176,27.7-48-40a8,8,0,1,0-10.24,12.3L227.5,128l-40.62,33.85a8,8,0,1,0,10.24,12.29l48-40a8,8,0,0,0,0-12.29ZM162.73,32.48a8,8,0,0,0-10.25,4.79l-64,176a8,8,0,0,0,4.79,10.26A8.14,8.14,0,0,0,96,224a8,8,0,0,0,7.52-5.27l64-176A8,8,0,0,0,162.73,32.48Z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <p class="text-[#456ba1] text-sm font-bold leading-normal tracking-[0.015em]">
+                    无障碍与工程变量 (A11y &amp; Tokens)
+                  </p>
+                </a>
+              </div>
+            </div>
+            <h2
+              class="text-[#0c131d] text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5"
+            >
+              1. Tabs 标签页规范 (Line, Card &amp; Editable)
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- MAIN SPECIFICATION CONTENT WRAPPER -->
+    <main class="max-w-[1240px] mx-auto px-6 py-8 space-y-12">
+      <!-- COMPONENT 1: TABS DETAILED SPECIFICATION -->
+      <section
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 subtle-shadow space-y-8"
+      >
+        <div
+          class="flex items-center justify-between border-b border-surface-container-highest pb-4"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-label-xs bg-primary text-on-primary"
+                >COMPONENT 01</span
+              >
+              <h3 class="text-headline-md text-on-surface">Tabs 标签页全量场景</h3>
+            </div>
+            <p class="text-body-sm text-on-surface-variant mt-1">
+              支持 Line 线性滑动指示条、Card 独立卡片、Editable 动态增删及多种尺寸（Large / Middle /
+              Small）。
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-label-sm text-on-surface-variant">动效参数:</span>
+            <code
+              class="px-2 py-1 bg-surface-container text-primary font-mono text-label-xs rounded"
+              >cubic-bezier(0.645, 0.045, 0.355, 1) · 160ms</code
+            >
+          </div>
+        </div>
+        <!-- Live Interactive Demo: Line Mode -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-headline-sm text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-base">view_carousel</span>
+              1.1 Line Mode (下划线线性模式带胶囊平滑滑块)
+            </h4>
+            <span class="text-label-xs bg-surface-container-low text-secondary px-2 py-1 rounded"
+              >ARIA: role="tablist"</span
+            >
+          </div>
+          <div class="p-6 rounded-lg bg-surface border border-surface-container-high">
+            <!-- Live Interactive Tabs Bar -->
+            <div class="relative border-b border-surface-container-highest">
+              <div class="flex gap-8 items-center" id="line-tab-bar" role="tablist">
+                <button
+                  aria-selected="true"
+                  class="tab-item py-3 text-body-md font-semibold text-primary relative transition-colors duration-150 focus:outline-none"
+                  onclick="switchTab(this, 'content-1', 'line-indicator')"
+                  role="tab"
+                >
+                  概览面板 Overview
+                </button>
+                <button
+                  aria-selected="false"
+                  class="tab-item py-3 text-body-md font-medium text-on-surface-variant hover:text-primary relative transition-colors duration-150 flex items-center gap-2 focus:outline-none"
+                  onclick="switchTab(this, 'content-2', 'line-indicator')"
+                  role="tab"
+                >
+                  工单处理
+                  <span
+                    class="px-1.5 py-0.2 rounded-full text-label-xs bg-primary text-on-primary font-bold"
+                    >12</span
+                  >
+                </button>
+                <button
+                  aria-selected="false"
+                  class="tab-item py-3 text-body-md font-medium text-on-surface-variant hover:text-primary relative transition-colors duration-150 flex items-center gap-2 focus:outline-none"
+                  onclick="switchTab(this, 'content-3', 'line-indicator')"
+                  role="tab"
+                >
+                  异常日志
+                  <span
+                    class="px-1.5 py-0.2 rounded-full text-label-xs bg-status-error text-on-primary font-bold"
+                    >3</span
+                  >
+                </button>
+                <button
+                  aria-disabled="true"
+                  class="tab-item py-3 text-body-md text-outline cursor-not-allowed opacity-60"
+                  disabled=""
+                  role="tab"
+                >
+                  归档报表 (Disabled)
+                </button>
+              </div>
+              <!-- Animated Gliding Underline Capsule -->
+              <div
+                class="absolute bottom-0 h-0.5 bg-primary transition-all duration-200 ease-[cubic-bezier(0.645,0.045,0.355,1)] rounded-full"
+                id="line-indicator"
+                style="left: 0px; width: 120px"
+              ></div>
+            </div>
+            <!-- Dynamic Tab Content Preview -->
+            <div class="pt-4 text-body-sm text-on-surface-variant">
+              <div
+                class="tab-panel flex items-center justify-between p-4 bg-surface-container-lowest rounded border border-surface-container"
+                id="content-1"
+              >
+                <div>
+                  <p class="font-medium text-on-surface">当前激活标签: 概览面板 Overview</p>
+                  <p class="text-on-surface-variant text-label-sm mt-0.5">
+                    提供核心指标流与微前端跨系统路由入口
+                  </p>
+                </div>
+                <span class="material-symbols-outlined text-primary">check_circle</span>
+              </div>
+              <div
+                class="tab-panel hidden p-4 bg-surface-container-lowest rounded border border-surface-container"
+                id="content-2"
+              >
+                <p class="font-medium text-on-surface">
+                  工单流水池 · 实时待响应队列: 12 条待审理任务
+                </p>
+              </div>
+              <div
+                class="tab-panel hidden p-4 bg-surface-container-lowest rounded border border-surface-container"
+                id="content-3"
+              >
+                <p class="font-medium text-status-error flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm">warning</span>
+                  3 起 API 熔断异常已被网关阻断，请核对微服务鉴权密钥。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Live Interactive Demo: Card & Editable Mode -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <h4 class="text-headline-sm text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-base">tab</span>
+              1.2 Card &amp; Editable Mode (卡片式与可动态增删标签页)
+            </h4>
+            <span class="text-label-xs text-on-surface-variant font-mono"
+              >type="editable-card"</span
+            >
+          </div>
+          <div class="p-5 rounded-lg bg-surface border border-surface-container-high space-y-3">
+            <div
+              class="flex items-center gap-1.5 overflow-x-auto pb-1"
+              id="editable-tabs-container"
+            >
+              <div
+                class="group flex items-center gap-2 px-3.5 py-1.5 bg-surface-container-lowest border border-b-transparent border-surface-container rounded-t text-label-md font-semibold text-primary shadow-xs"
+              >
+                <span class="material-symbols-outlined text-sm">dashboard</span>
+                <span>主监控台.tsx</span>
+                <button
+                  class="text-on-surface-variant hover:text-error transition-colors rounded p-0.5"
+                  onclick="this.parentElement.remove()"
+                  title="关闭标签"
+                >
+                  <span class="material-symbols-outlined text-xs">close</span>
+                </button>
+              </div>
+              <div
+                class="group flex items-center gap-2 px-3.5 py-1.5 bg-surface-container-low border border-surface-container-high rounded-t text-label-md font-normal text-on-surface hover:bg-surface-container-lowest transition-colors"
+              >
+                <span class="material-symbols-outlined text-sm">code</span>
+                <span>路由守卫策略</span>
+                <button
+                  class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-error transition-all rounded p-0.5"
+                  onclick="this.parentElement.remove()"
+                  title="关闭标签"
+                >
+                  <span class="material-symbols-outlined text-xs">close</span>
+                </button>
+              </div>
+              <div
+                class="group flex items-center gap-2 px-3.5 py-1.5 bg-surface-container-low border border-surface-container-high rounded-t text-label-md font-normal text-on-surface hover:bg-surface-container-lowest transition-colors"
+              >
+                <span class="material-symbols-outlined text-sm">description</span>
+                <span>环境变量配置.env</span>
+                <button
+                  class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-error transition-all rounded p-0.5"
+                  onclick="this.parentElement.remove()"
+                  title="关闭标签"
+                >
+                  <span class="material-symbols-outlined text-xs">close</span>
+                </button>
+              </div>
+              <!-- Add Tab Button with Ripple effect simulation -->
+              <button
+                class="flex items-center justify-center size-8 rounded border border-dashed border-outline hover:border-primary hover:text-primary text-on-surface-variant bg-surface-container-lowest transition-all hover:bg-surface-container-low"
+                id="add-tab-btn"
+                onclick="addNewTab()"
+                title="新建标签页"
+              >
+                <span class="material-symbols-outlined text-sm">add</span>
+              </button>
+            </div>
+            <div
+              class="p-4 bg-surface-container-lowest border border-surface-container rounded-b text-body-sm text-on-surface-variant flex items-center justify-between"
+            >
+              <span>当前激活工作区: <strong>主监控台.tsx</strong> (已同步至云端状态机)</span>
+              <div class="flex items-center gap-2 text-label-xs">
+                <span class="size-2 rounded-full bg-status-success inline-block"></span>
+                <span>就绪 (Hot-reloaded)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Size Matrix: Large / Middle / Small -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div class="p-4 rounded border border-surface-container bg-surface-container-lowest">
+            <span class="text-label-xs font-bold text-primary block mb-2"
+              >SIZE LARGE (h: 40px)</span
+            >
+            <div
+              class="flex border-b border-surface-container gap-4 text-headline-sm text-primary border-primary"
+            >
+              <span class="pb-2 border-b-2 border-primary font-semibold">首选项配置</span>
+              <span class="text-on-surface-variant text-body-md font-normal pb-2">团队权限</span>
+            </div>
+            <p class="text-label-xs text-on-surface-variant mt-2 font-mono">padding: 10px 16px</p>
+          </div>
+          <div class="p-4 rounded border border-surface-container bg-surface-container-lowest">
+            <span class="text-label-xs font-bold text-secondary block mb-2"
+              >SIZE MIDDLE (Default · h: 32px)</span
+            >
+            <div class="flex border-b border-surface-container gap-4 text-body-md text-primary">
+              <span class="pb-1.5 border-b-2 border-primary font-medium">首选项配置</span>
+              <span class="text-on-surface-variant font-normal pb-1.5">团队权限</span>
+            </div>
+            <p class="text-label-xs text-on-surface-variant mt-2 font-mono">padding: 6px 12px</p>
+          </div>
+          <div class="p-4 rounded border border-surface-container bg-surface-container-lowest">
+            <span class="text-label-xs font-bold text-on-surface-variant block mb-2"
+              >SIZE SMALL (h: 24px)</span
+            >
+            <div class="flex border-b border-surface-container gap-3 text-body-sm text-primary">
+              <span class="pb-1 border-b-2 border-primary font-medium">首选项配置</span>
+              <span class="text-on-surface-variant font-normal pb-1">团队权限</span>
+            </div>
+            <p class="text-label-xs text-on-surface-variant mt-2 font-mono">padding: 2px 8px</p>
+          </div>
+        </div>
+      </section>
+      <!-- COMPONENT 2: DROPDOWN SPECIFICATION -->
+      <section
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 subtle-shadow space-y-8"
+      >
+        <div
+          class="flex items-center justify-between border-b border-surface-container-highest pb-4"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-label-xs bg-primary text-on-primary"
+                >COMPONENT 02</span
+              >
+              <h3 class="text-headline-md text-on-surface">
+                Dropdown 下拉菜单全模式与级联飞出规范
+              </h3>
+            </div>
+            <p class="text-body-sm text-on-surface-variant mt-1">
+              包含 Hover、Click、右键 ContextMenu、Split
+              分割按钮触发器，及精准快捷键标注与危险项形态。
+            </p>
+          </div>
+          <span
+            class="text-label-xs bg-surface-container text-on-surface px-2.5 py-1 rounded font-mono"
+            >Popper.js / Floating-UI Aligned</span
+          >
+        </div>
+        <!-- Trigger Matrix & Live Popover Demonstration -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Triggers Column -->
+          <div class="lg:col-span-5 space-y-6">
+            <h4 class="text-headline-sm text-on-surface">触发器类型 (Trigger Modes)</h4>
+            <!-- Trigger 1: Click Trigger -->
+            <div class="p-4 rounded border border-surface-container bg-surface space-y-2">
+              <span class="text-label-xs text-on-surface-variant font-mono">trigger="click"</span>
+              <div class="relative inline-block text-left">
+                <button
+                  class="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded font-medium text-body-md hover:bg-surface-tint active:scale-[0.98] transition-all"
+                  onclick="toggleDropdown('click-menu')"
+                >
+                  <span>批量操作指令</span>
+                  <span class="material-symbols-outlined text-sm">expand_more</span>
+                </button>
+              </div>
+              <p class="text-label-xs text-on-surface-variant">
+                点击触发遮罩挂载，再次点击外部任意区域或按下 Escape 键关闭。
+              </p>
+            </div>
+            <!-- Trigger 2: Split Button Dropdown -->
+            <div class="p-4 rounded border border-surface-container bg-surface space-y-2">
+              <span class="text-label-xs text-on-surface-variant font-mono"
+                >&lt;Dropdown.Button&gt; (Split 分割按钮)</span
+              >
+              <div class="inline-flex rounded shadow-xs overflow-hidden border border-primary">
+                <button
+                  class="bg-primary text-on-primary px-4 py-2 text-body-md font-medium hover:bg-surface-tint transition-colors"
+                >
+                  发布至生产环境
+                </button>
+                <div class="w-[1px] bg-primary-container"></div>
+                <button
+                  class="bg-primary text-on-primary px-2.5 py-2 hover:bg-surface-tint transition-colors"
+                  onclick="toggleDropdown('click-menu')"
+                  title="展开更多发布策略"
+                >
+                  <span class="material-symbols-outlined text-sm">arrow_drop_down</span>
+                </button>
+              </div>
+              <p class="text-label-xs text-on-surface-variant">
+                左侧执行主 Action，右侧仅挂载扩展菜单。
+              </p>
+            </div>
+            <!-- Trigger 3: ContextMenu (Right Click) Area -->
+            <div
+              class="p-4 rounded border-2 border-dashed border-outline-variant bg-surface-container-low hover:border-primary transition-colors text-center cursor-context-menu"
+              oncontextmenu="
+                event.preventDefault();
+                toggleDropdown('click-menu');
+              "
+            >
+              <span class="material-symbols-outlined text-secondary text-2xl">mouse</span>
+              <p class="text-label-md font-semibold text-on-surface mt-1">
+                在该工作卡片区域单击右键
+              </p>
+              <p class="text-label-xs text-on-surface-variant">
+                trigger="contextMenu" · 自适应视口边界防溢出翻转
+              </p>
+            </div>
+          </div>
+          <!-- Live Menu Preview Column with Cascade Flyout -->
+          <div class="lg:col-span-7">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-headline-sm text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-base">menu_open</span>
+                完整菜单形态 (含二级级联 Slide-Right 与键盘快捷键)
+              </h4>
+              <span class="text-label-xs text-status-success font-semibold flex items-center gap-1">
+                <span class="size-2 rounded-full bg-status-success"></span>
+                Live Rendering
+              </span>
+            </div>
+            <div
+              class="relative bg-surface p-6 rounded-lg border border-surface-container-high flex gap-4 min-h-[340px]"
+            >
+              <!-- Level 1 Menu Popover -->
+              <div
+                class="w-64 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-xl py-1.5 z-20 transition-all duration-150"
+                id="click-menu"
+              >
+                <div
+                  class="px-3 py-1.5 text-label-xs font-bold text-outline uppercase tracking-wider"
+                >
+                  快捷指令集
+                </div>
+                <div
+                  class="flex items-center justify-between px-3 py-2 text-body-sm text-on-surface hover:bg-surface-container-low cursor-pointer transition-colors group"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <span
+                      class="material-symbols-outlined text-base text-on-surface-variant group-hover:text-primary"
+                      >content_copy</span
+                    >
+                    <span>复制配置副本</span>
+                  </div>
+                  <span
+                    class="text-label-xs font-mono text-outline-variant group-hover:text-on-surface-variant bg-surface-container px-1 rounded"
+                    >⌘ C</span
+                  >
+                </div>
+                <div
+                  class="flex items-center justify-between px-3 py-2 text-body-sm text-on-surface hover:bg-surface-container-low cursor-pointer transition-colors group"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <span
+                      class="material-symbols-outlined text-base text-on-surface-variant group-hover:text-primary"
+                      >content_paste</span
+                    >
+                    <span>从剪贴板粘贴导入</span>
+                  </div>
+                  <span
+                    class="text-label-xs font-mono text-outline-variant group-hover:text-on-surface-variant bg-surface-container px-1 rounded"
+                    >⌘ V</span
+                  >
+                </div>
+                <!-- Cascade Parent Item (Hover shows submenu) -->
+                <div
+                  class="relative flex items-center justify-between px-3 py-2 text-body-sm text-on-surface bg-surface-container-low text-primary font-medium cursor-pointer transition-colors"
+                  id="cascade-trigger"
+                  onmouseenter="
+                    document.getElementById('submenu-flyout').classList.remove('hidden')
+                  "
+                  onmouseleave="document.getElementById('submenu-flyout').classList.add('hidden')"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-base text-primary">ios_share</span>
+                    <span>导出为外部格式</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span
+                      class="text-label-xs font-mono text-outline bg-surface-container px-1 rounded"
+                      >⌥ ⇧ S</span
+                    >
+                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                  </div>
+                  <!-- Level 2 Submenu Flyout -->
+                  <div
+                    class="absolute left-full top-0 ml-1 w-52 bg-surface-container-lowest border border-outline-variant rounded-lg shadow-xl py-1.5 z-30 transition-all duration-150 animate-in fade-in slide-in-from-left-2"
+                    id="submenu-flyout"
+                  >
+                    <div class="px-3 py-1 text-label-xs text-outline font-semibold">
+                      选择数据规格
+                    </div>
+                    <div
+                      class="flex items-center justify-between px-3 py-2 text-body-sm text-on-surface hover:bg-surface-container-low cursor-pointer"
+                    >
+                      <span class="flex items-center gap-2"
+                        ><span class="size-1.5 rounded-full bg-status-info"></span>OpenAPI 3.1
+                        (JSON)</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center justify-between px-3 py-2 text-body-sm text-on-surface hover:bg-surface-container-low cursor-pointer"
+                    >
+                      <span class="flex items-center gap-2"
+                        ><span class="size-1.5 rounded-full bg-primary"></span>TypeScript Type
+                        AST</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center justify-between px-3 py-2 text-body-sm text-on-surface hover:bg-surface-container-low cursor-pointer"
+                    >
+                      <span class="flex items-center gap-2"
+                        ><span class="size-1.5 rounded-full bg-status-success"></span>Excel (.xlsx)
+                        报表</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="flex items-center justify-between px-3 py-2 text-body-sm text-outline opacity-50 cursor-not-allowed"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-base">lock</span>
+                    <span>回滚至上一发布版本</span>
+                  </div>
+                  <span class="text-label-xs">无权限</span>
+                </div>
+                <div class="my-1 border-t border-surface-container-highest"></div>
+                <!-- Destructive Action -->
+                <div
+                  class="flex items-center justify-between px-3 py-2 text-body-sm text-status-error hover:bg-error-container hover:text-on-error-container cursor-pointer transition-colors group"
+                >
+                  <div class="flex items-center gap-2.5">
+                    <span class="material-symbols-outlined text-base text-status-error"
+                      >delete_forever</span
+                    >
+                    <span class="font-medium">彻底清理此分支实例</span>
+                  </div>
+                  <span
+                    class="text-label-xs font-mono px-1 rounded bg-error-container text-on-error-container"
+                    >⌫ Del</span
+                  >
+                </div>
+              </div>
+              <!-- Annotation Panel beside Live Demo -->
+              <div
+                class="flex-1 text-body-sm text-on-surface-variant p-4 bg-surface-container-lowest rounded border border-surface-container flex flex-col justify-between"
+              >
+                <div>
+                  <p class="font-semibold text-on-surface mb-2">样式与语义交互要点:</p>
+                  <ul class="space-y-1.5 text-label-sm list-disc pl-4">
+                    <li>
+                      <strong>级联延迟防抖 (Mouse Leave Delay)</strong>: 设定 120ms
+                      缓冲三角走廊，防止用户斜向划入二级菜单时发生失焦闪烁。
+                    </li>
+                    <li>
+                      <strong>危险操作色系隔离</strong>: 终结性破坏操作固定使用
+                      <code class="text-status-error font-mono">--lx-color-error</code
+                      >，前置分隔线必须保留 4px 外边距。
+                    </li>
+                    <li>
+                      <strong>无障碍键位支持</strong>:
+                      按上下键焦点线性轮询，按右键展开子菜单，按左键返回父级。
+                    </li>
+                  </ul>
+                </div>
+                <div
+                  class="p-2.5 rounded bg-surface-container text-label-xs text-on-surface font-mono"
+                >
+                  box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12);
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- COMPONENT 3: BREADCRUMB SPECIFICATION -->
+      <section
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 subtle-shadow space-y-6"
+      >
+        <div
+          class="flex items-center justify-between border-b border-surface-container-highest pb-4"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-label-xs bg-primary text-on-primary"
+                >COMPONENT 03</span
+              >
+              <h3 class="text-headline-md text-on-surface">Breadcrumb 面包屑路径系统</h3>
+            </div>
+            <p class="text-body-sm text-on-surface-variant mt-1">
+              规范标准层级指示、分隔符定制（'/' 与 '&gt;'）、智能折叠省略号下拉及当前页状态。
+            </p>
+          </div>
+          <span
+            class="text-label-xs bg-surface-container text-on-surface px-2 py-1 rounded font-mono"
+            >aria-label="Breadcrumb"</span
+          >
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Standard & Custom Separators -->
+          <div class="p-5 rounded-lg bg-surface border border-surface-container-high space-y-4">
+            <h4 class="text-headline-sm text-on-surface">3.1 标准分隔符与图标混合渲染</h4>
+            <!-- Variant A: Slash separator -->
+            <div class="space-y-1.5">
+              <span class="text-label-xs text-on-surface-variant font-mono"
+                >separator="/" (默认斜杠)</span
+              >
+              <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-body-md">
+                <a
+                  class="text-on-surface-variant hover:text-primary hover:underline flex items-center gap-1 transition-colors"
+                  href="#"
+                >
+                  <span class="material-symbols-outlined text-base">home</span>
+                  <span>首页</span>
+                </a>
+                <span class="text-outline-variant font-mono">/</span>
+                <a
+                  class="text-on-surface-variant hover:text-primary hover:underline transition-colors"
+                  href="#"
+                  >基础设施</a
+                >
+                <span class="text-outline-variant font-mono">/</span>
+                <a
+                  class="text-on-surface-variant hover:text-primary hover:underline transition-colors"
+                  href="#"
+                  >集群管理</a
+                >
+                <span class="text-outline-variant font-mono">/</span>
+                <span aria-current="page" class="text-on-surface font-semibold cursor-default"
+                  >Pod 节点池</span
+                >
+              </nav>
+            </div>
+            <!-- Variant B: Chevron separator -->
+            <div class="space-y-1.5 pt-2 border-t border-surface-container">
+              <span class="text-label-xs text-on-surface-variant font-mono"
+                >separator="&gt;" (箭头符号)</span
+              >
+              <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-body-md">
+                <a
+                  class="text-on-surface-variant hover:text-primary flex items-center gap-1 transition-colors"
+                  href="#"
+                >
+                  <span class="material-symbols-outlined text-base">account_tree</span>
+                  <span>组织架构</span>
+                </a>
+                <span class="material-symbols-outlined text-sm text-outline-variant"
+                  >chevron_right</span
+                >
+                <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"
+                  >技术中台部</a
+                >
+                <span class="material-symbols-outlined text-sm text-outline-variant"
+                  >chevron_right</span
+                >
+                <span aria-current="page" class="text-on-surface font-semibold cursor-default"
+                  >前端架构委员会</span
+                >
+              </nav>
+            </div>
+          </div>
+          <!-- Deep Path Overflow Folding -->
+          <div class="p-5 rounded-lg bg-surface border border-surface-container-high space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-headline-sm text-on-surface">
+                3.2 超长路径折叠算法 (MaxItems &amp; Ellipsis)
+              </h4>
+              <span
+                class="text-label-xs bg-surface-container px-2 py-0.5 rounded text-secondary font-mono"
+                >maxItems={4}</span
+              >
+            </div>
+            <p class="text-label-sm text-on-surface-variant">
+              当面包屑嵌套深度超过阈值时，自动将中间段收拢至省略号内，点击展开浮层以供直达选择。
+            </p>
+            <div class="p-3 bg-surface-container-lowest border border-surface-container rounded">
+              <nav class="flex items-center gap-2 text-body-md flex-wrap">
+                <a class="text-on-surface-variant hover:text-primary" href="#">首页</a>
+                <span class="text-outline-variant font-mono">/</span>
+                <a class="text-on-surface-variant hover:text-primary" href="#">供应链中心</a>
+                <span class="text-outline-variant font-mono">/</span>
+                <!-- Folded Ellipsis Trigger -->
+                <div class="relative inline-block">
+                  <button
+                    class="px-1.5 py-0.5 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary border border-surface-container-highest transition-colors flex items-center"
+                    onclick="toggleDropdown('breadcrumb-popover')"
+                    title="展开已折叠的 3 级中间路由"
+                  >
+                    <span class="material-symbols-outlined text-sm">more_horiz</span>
+                  </button>
+                  <!-- Folded Popover -->
+                  <div
+                    class="hidden absolute top-full left-0 mt-1 w-48 bg-surface-container-lowest border border-outline-variant rounded shadow-lg py-1 z-30"
+                    id="breadcrumb-popover"
+                  >
+                    <a
+                      class="block px-3 py-1.5 text-body-sm text-on-surface hover:bg-surface-container-low"
+                      href="#"
+                      >华东大区仓储</a
+                    >
+                    <a
+                      class="block px-3 py-1.5 text-body-sm text-on-surface hover:bg-surface-container-low"
+                      href="#"
+                      >物料批次追溯</a
+                    >
+                    <a
+                      class="block px-3 py-1.5 text-body-sm text-on-surface hover:bg-surface-container-low"
+                      href="#"
+                      >入库质检工单</a
+                    >
+                  </div>
+                </div>
+                <span class="text-outline-variant font-mono">/</span>
+                <a class="text-on-surface-variant hover:text-primary" href="#">采购明细</a>
+                <span class="text-outline-variant font-mono">/</span>
+                <span aria-current="page" class="text-on-surface font-semibold text-primary"
+                  >PO-202410881</span
+                >
+              </nav>
+            </div>
+            <div class="text-label-xs text-on-surface-variant flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm text-status-info">info</span>
+              <span
+                >当前页文字色值必须采用
+                <code class="font-mono text-on-surface font-bold">var(--lx-color-text-base)</code>
+                并不再包含 href 链接。</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- COMPONENT 4: MENU SYSTEM SPECIFICATION -->
+      <section
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 subtle-shadow space-y-8"
+      >
+        <div
+          class="flex items-center justify-between border-b border-surface-container-highest pb-4"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-label-xs bg-primary text-on-primary"
+                >COMPONENT 04</span
+              >
+              <h3 class="text-headline-md text-on-surface">
+                Menu 导航菜单体系 (Vertical, Sider &amp; Horizontal)
+              </h3>
+            </div>
+            <p class="text-body-sm text-on-surface-variant mt-1">
+              覆盖三种企业级主流形态：垂直手风琴、极简折叠侧边栏（224px ⇋ 64px 带悬浮 Tooltip
+              菜单）、顶部横向菜单。
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              class="px-3 py-1 text-label-sm bg-surface-container border border-surface-container-highest rounded text-on-surface hover:bg-surface-container-high transition-all flex items-center gap-1.5"
+              onclick="toggleSiderWidth()"
+            >
+              <span class="material-symbols-outlined text-sm">swap_horiz</span>
+              <span>切换侧边栏折叠宽度</span>
+            </button>
+          </div>
+        </div>
+        <!-- Menu Visual Preview Matrix -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <!-- Left: Vertical Inline Accordion & Collapsible Sider Simulator -->
+          <div class="lg:col-span-6 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 class="text-headline-sm text-on-surface">
+                4.1 垂直手风琴与折叠图标侧栏 (Vertical Inline &amp; Collapsed)
+              </h4>
+              <span
+                class="text-label-xs font-mono text-primary bg-surface-container px-2 py-0.5 rounded"
+                id="sider-width-indicator"
+                >Width: 240px (Expanded)</span
+              >
+            </div>
+            <div
+              class="bg-surface border border-surface-container-high rounded-lg p-4 flex gap-4 min-h-[360px] overflow-hidden"
+            >
+              <!-- Simulated Sider -->
+              <aside
+                class="w-60 bg-surface-container-lowest border border-surface-container rounded-lg p-2 transition-all duration-300 ease-in-out flex flex-col justify-between"
+                id="demo-sider"
+              >
+                <div class="space-y-1">
+                  <!-- Group 1 -->
+                  <div class="px-3 py-2 text-label-xs font-bold text-outline uppercase sider-label">
+                    核心控制台
+                  </div>
+                  <!-- Active Item with 3px indicator -->
+                  <a
+                    class="relative flex items-center gap-3 px-3 py-2 rounded bg-surface-container-low text-primary font-semibold text-body-sm group"
+                    href="#"
+                  >
+                    <span
+                      class="absolute left-0 top-1 bottom-1 w-[3px] bg-primary rounded-r"
+                    ></span>
+                    <span class="material-symbols-outlined text-lg">dashboard</span>
+                    <span class="sider-text whitespace-nowrap overflow-hidden transition-opacity"
+                      >运维仪表盘</span
+                    >
+                  </a>
+                  <!-- Accordion Parent -->
+                  <div>
+                    <button
+                      class="w-full flex items-center justify-between px-3 py-2 rounded text-on-surface hover:bg-surface-container-low text-body-sm transition-colors"
+                      onclick="toggleAccordion('sub-ops')"
+                    >
+                      <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-lg text-on-surface-variant"
+                          >security</span
+                        >
+                        <span class="sider-text whitespace-nowrap">风控策略配置</span>
+                      </div>
+                      <span
+                        class="material-symbols-outlined text-sm text-on-surface-variant transform transition-transform duration-200 sider-text rotate-90"
+                        id="sub-ops-arrow"
+                        >expand_more</span
+                      >
+                    </button>
+                    <!-- Nested Child List -->
+                    <div class="pl-9 pr-2 py-1 space-y-1 sider-text" id="sub-ops">
+                      <a
+                        class="block px-2 py-1.5 text-label-sm text-on-surface-variant hover:text-primary rounded hover:bg-surface-container-low transition-colors"
+                        href="#"
+                        >API 频率限制规则</a
+                      >
+                      <a
+                        class="block px-2 py-1.5 text-label-sm text-on-surface-variant hover:text-primary rounded hover:bg-surface-container-low transition-colors"
+                        href="#"
+                        >黑白名单 IP 矩阵</a
+                      >
+                      <a
+                        class="block px-2 py-1.5 text-label-sm text-on-surface-variant hover:text-primary rounded hover:bg-surface-container-low transition-colors"
+                        href="#"
+                        >敏感字段脱敏审计</a
+                      >
+                    </div>
+                  </div>
+                  <!-- Another Item with Hover Flyout when collapsed -->
+                  <div class="relative group/collapsed">
+                    <a
+                      class="flex items-center gap-3 px-3 py-2 rounded text-on-surface hover:bg-surface-container-low text-body-sm transition-colors"
+                      href="#"
+                    >
+                      <span class="material-symbols-outlined text-lg text-on-surface-variant"
+                        >storage</span
+                      >
+                      <span class="sider-text whitespace-nowrap">分布式数据库</span>
+                    </a>
+                    <!-- Floating popover on hover if sider is collapsed -->
+                    <div
+                      class="collapsed-popover hidden absolute left-full top-0 ml-2 w-44 bg-inverse-surface text-inverse-on-surface text-label-sm py-1.5 px-3 rounded shadow-lg z-30"
+                    >
+                      <p class="font-semibold">分布式数据库</p>
+                      <p class="text-xs text-outline-variant mt-0.5">TiDB / Cassandra 集群</p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Sider Footer Collapse Action -->
+                <div class="pt-2 border-t border-surface-container">
+                  <button
+                    class="w-full flex items-center justify-center gap-2 py-1.5 text-label-sm text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded transition-colors"
+                    onclick="toggleSiderWidth()"
+                  >
+                    <span class="material-symbols-outlined text-base" id="collapse-icon"
+                      >first_page</span
+                    >
+                    <span class="sider-text">收起侧边栏</span>
+                  </button>
+                </div>
+              </aside>
+              <!-- Description of Sider States -->
+              <div
+                class="flex-1 text-label-sm text-on-surface-variant flex flex-col justify-center space-y-2 p-3 bg-surface-container-lowest rounded border border-surface-container"
+              >
+                <p class="font-semibold text-on-surface text-body-sm">垂直菜单交互指标:</p>
+                <p>
+                  • <strong>激活指示条 (Pill Indicator)</strong>: 左侧锚定 3px
+                  宽平滑圆角矩形，底色与图标高亮联动。
+                </p>
+                <p>
+                  • <strong>手风琴展开动效</strong>: 高度采用 CSS grid-template-rows: 0fr -&gt; 1fr
+                  实现无闪烁插值展开。
+                </p>
+                <p>
+                  • <strong>收起形态 (64px)</strong>: 文字自动隐藏，Hover
+                  图标时触发右侧浮动气泡（Popover Menu）。
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Right: Horizontal Top Menu Specs -->
+          <div class="lg:col-span-6 space-y-3">
+            <h4 class="text-headline-sm text-on-surface">
+              4.2 顶部横向导航条 (Horizontal Top Menu)
+            </h4>
+            <div class="bg-surface border border-surface-container-high rounded-lg p-5 space-y-4">
+              <p class="text-label-sm text-on-surface-variant">
+                常用于门户型看板或多业务工作台顶栏，高度固定为 48px 或 56px。
+              </p>
+              <!-- Live Horizontal Menu Bar -->
+              <div
+                class="bg-surface-container-lowest border border-surface-container rounded-lg px-4 flex items-center justify-between shadow-xs"
+              >
+                <div class="flex items-center gap-6">
+                  <div class="flex items-center gap-2 font-bold text-primary text-body-md py-3">
+                    <span class="material-symbols-outlined text-primary">cloud_done</span>
+                    <span>CloudStudio</span>
+                  </div>
+                  <nav class="flex items-center gap-1">
+                    <a
+                      class="px-3 py-3.5 text-body-sm font-semibold text-primary border-b-2 border-primary transition-all"
+                      href="#"
+                      >工作台</a
+                    >
+                    <a
+                      class="px-3 py-3.5 text-body-sm font-normal text-on-surface-variant hover:text-primary hover:border-b-2 hover:border-surface-variant transition-all"
+                      href="#"
+                      >微服务引擎</a
+                    >
+                    <a
+                      class="px-3 py-3.5 text-body-sm font-normal text-on-surface-variant hover:text-primary hover:border-b-2 hover:border-surface-variant transition-all"
+                      href="#"
+                      >中间件市场</a
+                    >
+                    <a
+                      class="px-3 py-3.5 text-body-sm font-normal text-on-surface-variant hover:text-primary hover:border-b-2 hover:border-surface-variant transition-all"
+                      href="#"
+                      >全局费用</a
+                    >
+                  </nav>
+                </div>
+                <div class="flex items-center gap-3 text-on-surface-variant">
+                  <button
+                    class="p-1 rounded hover:bg-surface-container hover:text-primary"
+                    title="通知"
+                  >
+                    <span class="material-symbols-outlined text-lg">notifications</span>
+                  </button>
+                  <button
+                    class="p-1 rounded hover:bg-surface-container hover:text-primary"
+                    title="设置"
+                  >
+                    <span class="material-symbols-outlined text-lg">settings</span>
+                  </button>
+                  <div
+                    class="size-7 rounded-full bg-primary text-on-primary flex items-center justify-center text-label-xs font-bold"
+                  >
+                    LX
+                  </div>
+                </div>
+              </div>
+              <!-- Engineering Spec Table for Menu -->
+              <div class="p-3 bg-surface-container-lowest rounded border border-surface-container">
+                <div class="grid grid-cols-2 gap-2 text-label-xs font-mono">
+                  <div><span class="text-outline">--lx-menu-item-height:</span> 40px;</div>
+                  <div><span class="text-outline">--lx-menu-bg-active:</span> #eff4ff;</div>
+                  <div><span class="text-outline">--lx-menu-collapsed-width:</span> 64px;</div>
+                  <div><span class="text-outline">--lx-menu-expand-duration:</span> 240ms;</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- COMPONENT 5: STEPS SPECIFICATION -->
+      <section
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 subtle-shadow space-y-8"
+      >
+        <div
+          class="flex items-center justify-between border-b border-surface-container-highest pb-4"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-label-xs bg-primary text-on-primary"
+                >COMPONENT 05</span
+              >
+              <h3 class="text-headline-md text-on-surface">Steps 步骤条组件全状态与动效规范</h3>
+            </div>
+            <p class="text-body-sm text-on-surface-variant mt-1">
+              包含 4 种权威状态（Wait, Process, Finish, Error）、动态呼吸脉冲光环、微型 Dot
+              步骤条与垂直时间线形态。
+            </p>
+          </div>
+          <span
+            class="text-label-xs bg-surface-container text-on-surface px-2 py-1 rounded font-mono"
+            >type="default" | "dot" | "vertical"</span
+          >
+        </div>
+        <!-- State Demonstration: Horizontal Steps -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h4 class="text-headline-sm text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-base">linear_scale</span>
+              5.1 水平多状态连接步骤条 (带连续状态连线与呼吸脉冲环)
+            </h4>
+            <span class="text-label-xs text-status-info font-mono">4 种标准状态全覆盖</span>
+          </div>
+          <div class="p-6 rounded-lg bg-surface border border-surface-container-high">
+            <!-- Horizontal Steps Container -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 relative">
+              <!-- Step 1: Finish -->
+              <div class="flex items-start gap-3 relative">
+                <div
+                  class="size-8 rounded-full bg-status-success text-on-primary flex items-center justify-center text-label-md font-bold shrink-0 shadow-sm z-10"
+                >
+                  <span class="material-symbols-outlined text-lg">check</span>
+                </div>
+                <div class="pr-2">
+                  <div class="text-body-sm font-semibold text-on-surface flex items-center gap-1.5">
+                    <span>填写基础信息</span>
+                    <span
+                      class="text-label-xs font-normal text-status-success bg-surface-container px-1 rounded"
+                      >已完成</span
+                    >
+                  </div>
+                  <p class="text-label-xs text-on-surface-variant mt-0.5">
+                    租户标识与域名映射校验已通过
+                  </p>
+                </div>
+                <!-- Track Line to next step -->
+                <div
+                  class="hidden md:block absolute top-4 left-9 right-0 h-[2px] bg-status-success -z-0"
+                ></div>
+              </div>
+              <!-- Step 2: Process (With pulsing breathing halo) -->
+              <div class="flex items-start gap-3 relative">
+                <div
+                  class="size-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-label-md font-bold shrink-0 shadow-md z-10 pulse-glow"
+                >
+                  2
+                </div>
+                <div class="pr-2">
+                  <div class="text-body-sm font-semibold text-primary flex items-center gap-1.5">
+                    <span>安全合规审计</span>
+                    <span
+                      class="text-label-xs font-normal text-primary bg-surface-container-low px-1 rounded animate-pulse"
+                      >进行中</span
+                    >
+                  </div>
+                  <p class="text-label-xs text-on-surface-variant mt-0.5">
+                    正在扫描网络渗透及容器漏洞...
+                  </p>
+                </div>
+                <!-- Track Line from active to next -->
+                <div
+                  class="hidden md:block absolute top-4 left-9 right-0 h-[2px] bg-gradient-to-r from-primary to-outline-variant -z-0"
+                ></div>
+              </div>
+              <!-- Step 3: Error (Terminated) -->
+              <div class="flex items-start gap-3 relative">
+                <div
+                  class="size-8 rounded-full bg-status-error text-on-primary flex items-center justify-center text-label-md font-bold shrink-0 shadow-sm z-10"
+                >
+                  <span class="material-symbols-outlined text-lg">priority_high</span>
+                </div>
+                <div class="pr-2">
+                  <div
+                    class="text-body-sm font-semibold text-status-error flex items-center gap-1.5"
+                  >
+                    <span>部署密钥授权</span>
+                    <span
+                      class="text-label-xs font-normal text-status-error bg-error-container px-1 rounded"
+                      >中断</span
+                    >
+                  </div>
+                  <p class="text-label-xs text-status-error mt-0.5">
+                    RSA 公钥校验不匹配 (Err: 40301)
+                  </p>
+                </div>
+                <!-- Track Line to next -->
+                <div
+                  class="hidden md:block absolute top-4 left-9 right-0 h-[2px] bg-outline-variant -z-0"
+                ></div>
+              </div>
+              <!-- Step 4: Wait -->
+              <div class="flex items-start gap-3 relative">
+                <div
+                  class="size-8 rounded-full bg-surface-container text-on-surface-variant border border-outline flex items-center justify-center text-label-md font-medium shrink-0 z-10"
+                >
+                  4
+                </div>
+                <div>
+                  <div class="text-body-sm font-medium text-outline">
+                    <span>流量灰度放量</span>
+                  </div>
+                  <p class="text-label-xs text-outline mt-0.5">等待前置依赖修复就绪</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Dot Steps & Vertical Steps Split View -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+          <!-- Dot Steps (Minimalist Mode) -->
+          <div class="p-5 rounded-lg bg-surface border border-surface-container-high space-y-4">
+            <div class="flex items-center justify-between">
+              <h4 class="text-headline-sm text-on-surface">5.2 Dot Steps (小圆点极简步骤条)</h4>
+              <span class="text-label-xs text-on-surface-variant font-mono"
+                >progressDot={true}</span
+              >
+            </div>
+            <p class="text-label-sm text-on-surface-variant">
+              适用于模态框（Modal）或轻量抽屉（Drawer）内的多页导向向导。
+            </p>
+            <div class="p-4 bg-surface-container-lowest border border-surface-container rounded-lg">
+              <div class="flex items-center justify-between relative">
+                <!-- Dot 1 Finish -->
+                <div class="flex flex-col items-center gap-1 z-10">
+                  <div
+                    class="size-3.5 rounded-full bg-status-success ring-4 ring-surface-container-lowest"
+                  ></div>
+                  <span class="text-label-xs font-semibold text-on-surface">选择机型</span>
+                </div>
+                <div class="flex-1 h-[2px] bg-status-success mx-2"></div>
+                <!-- Dot 2 Process -->
+                <div class="flex flex-col items-center gap-1 z-10">
+                  <div class="size-4 rounded-full bg-primary ring-4 ring-primary-fixed"></div>
+                  <span class="text-label-xs font-bold text-primary">存储规格</span>
+                </div>
+                <div class="flex-1 h-[2px] bg-outline-variant mx-2"></div>
+                <!-- Dot 3 Wait -->
+                <div class="flex flex-col items-center gap-1 z-10">
+                  <div
+                    class="size-3.5 rounded-full bg-outline-variant ring-4 ring-surface-container-lowest"
+                  ></div>
+                  <span class="text-label-xs text-outline">确认下单</span>
+                </div>
+              </div>
+            </div>
+            <p class="text-label-xs text-on-surface-variant font-mono">
+              Dot 核心直径: 8px · 激活环半径: 16px
+            </p>
+          </div>
+          <!-- Vertical Steps with Rich Meta Information -->
+          <div class="p-5 rounded-lg bg-surface border border-surface-container-high space-y-4">
+            <h4 class="text-headline-sm text-on-surface">
+              5.3 垂直步骤条 (Vertical Steps with Rich Timestamps)
+            </h4>
+            <div
+              class="p-4 bg-surface-container-lowest border border-surface-container rounded-lg space-y-4"
+            >
+              <!-- Vertical Step 1 -->
+              <div class="flex gap-3">
+                <div class="flex flex-col items-center">
+                  <div
+                    class="size-6 rounded-full bg-status-success text-on-primary flex items-center justify-center"
+                  >
+                    <span class="material-symbols-outlined text-xs">check</span>
+                  </div>
+                  <div class="w-[2px] h-10 bg-status-success my-1"></div>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-body-sm font-semibold text-on-surface">制品构建与签名</span>
+                    <span class="text-label-xs text-outline font-mono">10:42:15</span>
+                  </div>
+                  <p class="text-label-xs text-on-surface-variant">
+                    由自动化 CI 流水线 (Runner-08) 构建完成并上传 OSS
+                  </p>
+                </div>
+              </div>
+              <!-- Vertical Step 2 -->
+              <div class="flex gap-3">
+                <div class="flex flex-col items-center">
+                  <div
+                    class="size-6 rounded-full bg-primary text-on-primary flex items-center justify-center text-label-xs font-bold pulse-glow"
+                  >
+                    2
+                  </div>
+                  <div class="w-[2px] h-10 bg-outline-variant my-1"></div>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-body-sm font-semibold text-primary"
+                      >灰度集群发布中 (15%)</span
+                    >
+                    <span class="text-label-xs text-primary font-mono">进行中</span>
+                  </div>
+                  <p class="text-label-xs text-on-surface-variant">
+                    操作人: <strong>李工 (DevOps Lead)</strong> · 正在观察 APM 吞吐
+                  </p>
+                </div>
+              </div>
+              <!-- Vertical Step 3 -->
+              <div class="flex gap-3">
+                <div class="flex flex-col items-center">
+                  <div
+                    class="size-6 rounded-full bg-surface-container text-outline border border-outline flex items-center justify-center text-label-xs"
+                  >
+                    3
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-body-sm font-medium text-outline">全量发布与生产接入</span>
+                    <span class="text-label-xs text-outline font-mono">等待</span>
+                  </div>
+                  <p class="text-label-xs text-outline">
+                    前置 15% 灰度健康度维持 30 分钟后自动放行
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- SECTION 6: ENGINEERING DESIGN TOKENS & A11Y MATRIX -->
+      <section
+        class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 subtle-shadow space-y-6"
+      >
+        <div
+          class="flex items-center justify-between border-b border-surface-container-highest pb-4"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span
+                class="px-2 py-0.5 rounded text-label-xs bg-inverse-surface text-inverse-on-surface"
+                >ENGINEERING SPECS</span
+              >
+              <h3 class="text-headline-md text-on-surface">
+                CSS 变量字典与 WCAG 2.2 AA 无障碍交互准则
+              </h3>
+            </div>
+            <p class="text-body-sm text-on-surface-variant mt-1">
+              前端实施工程师与 Design Token 编译器（Style Dictionary）所绑定的标准底层键名。
+            </p>
+          </div>
+          <span
+            class="text-label-xs bg-surface-container text-on-surface px-2.5 py-1 rounded font-mono"
+            >lx-ui-tokens-v2.4.json</span
+          >
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- Token Table -->
+          <div class="lg:col-span-7 overflow-x-auto">
+            <table class="w-full text-left text-body-sm border-collapse">
+              <thead>
+                <tr
+                  class="border-b border-surface-container text-label-xs font-semibold text-outline uppercase"
+                >
+                  <th class="py-2.5 px-3">Token 变量名</th>
+                  <th class="py-2.5 px-3">默认映射值</th>
+                  <th class="py-2.5 px-3">所属组件与作用描述</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container font-mono text-label-xs">
+                <tr class="hover:bg-surface-container-low transition-colors">
+                  <td class="py-2.5 px-3 text-primary font-bold">--lx-tabs-ink-bar-bg</td>
+                  <td class="py-2.5 px-3 text-on-surface">#0057c2 (Primary)</td>
+                  <td class="py-2.5 px-3 font-sans text-on-surface-variant">
+                    Tabs 下划线平滑胶囊指示条背景色
+                  </td>
+                </tr>
+                <tr class="hover:bg-surface-container-low transition-colors">
+                  <td class="py-2.5 px-3 text-primary font-bold">--lx-tabs-card-bg-active</td>
+                  <td class="py-2.5 px-3 text-on-surface">#ffffff</td>
+                  <td class="py-2.5 px-3 font-sans text-on-surface-variant">
+                    卡片模式激活状态底色
+                  </td>
+                </tr>
+                <tr class="hover:bg-surface-container-low transition-colors">
+                  <td class="py-2.5 px-3 text-primary font-bold">--lx-dropdown-shadow</td>
+                  <td class="py-2.5 px-3 text-on-surface">0 6px 16px rgba(...)</td>
+                  <td class="py-2.5 px-3 font-sans text-on-surface-variant">
+                    下拉与级联飞出浮层高景深阴影
+                  </td>
+                </tr>
+                <tr class="hover:bg-surface-container-low transition-colors">
+                  <td class="py-2.5 px-3 text-primary font-bold">--lx-menu-collapsed-width</td>
+                  <td class="py-2.5 px-3 text-on-surface">64px</td>
+                  <td class="py-2.5 px-3 font-sans text-on-surface-variant">
+                    侧边栏菜单极简折叠极限宽度
+                  </td>
+                </tr>
+                <tr class="hover:bg-surface-container-low transition-colors">
+                  <td class="py-2.5 px-3 text-primary font-bold">--lx-steps-pulse-halo</td>
+                  <td class="py-2.5 px-3 text-on-surface">rgba(0, 87, 194, 0.4)</td>
+                  <td class="py-2.5 px-3 font-sans text-on-surface-variant">
+                    步骤条进行中状态 2s 循环呼吸外发光环
+                  </td>
+                </tr>
+                <tr class="hover:bg-surface-container-low transition-colors">
+                  <td class="py-2.5 px-3 text-primary font-bold">--lx-motion-ease-out-quint</td>
+                  <td class="py-2.5 px-3 text-on-surface">cubic-bezier(0.23, 1, 0.32, 1)</td>
+                  <td class="py-2.5 px-3 font-sans text-on-surface-variant">
+                    子菜单展开与折叠回弹曲线
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- A11y & Motion Spec Card -->
+          <div
+            class="lg:col-span-5 bg-surface p-5 rounded-lg border border-surface-container-high space-y-4"
+          >
+            <h4 class="text-headline-sm text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-status-success">accessibility_new</span>
+              无障碍键盘流 (A11y Standards)
+            </h4>
+            <div class="space-y-2.5 text-label-sm text-on-surface-variant">
+              <div class="flex items-start gap-2">
+                <span
+                  class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-mono text-label-xs shrink-0"
+                  >Tab / Shift+Tab</span
+                >
+                <span>在顶级导航项之间线性跳动，不进入禁用态节点。</span>
+              </div>
+              <div class="flex items-start gap-2">
+                <span
+                  class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-mono text-label-xs shrink-0"
+                  >Arrow Keys</span
+                >
+                <span
+                  >Tabs 与 Menu 内使用方向键循环导航，激活项保持焦点轮廓（2px
+                  focus-visible）。</span
+                >
+              </div>
+              <div class="flex items-start gap-2">
+                <span
+                  class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-mono text-label-xs shrink-0"
+                  >Enter / Space</span
+                >
+                <span>触发展开 Dropdown 下拉菜单或切换当前激活 Tab。</span>
+              </div>
+              <div class="flex items-start gap-2">
+                <span
+                  class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface font-mono text-label-xs shrink-0"
+                  >Escape</span
+                >
+                <span>立即收起当前任意打开的多层级级联菜单，并将焦点归还至触发器按钮。</span>
+              </div>
+            </div>
+            <div
+              class="p-3 bg-surface-container-lowest rounded border border-surface-container text-label-xs text-status-info flex items-center gap-2"
+            >
+              <span class="material-symbols-outlined text-base">verified</span>
+              <span>已通过 Deque Axe-core 及 NVDA 屏幕阅读器全部 24 项无障碍测试。</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- FOOTER -->
+    <footer
+      class="mt-16 border-t border-surface-container-highest bg-surface-container-lowest py-8 text-center text-label-sm text-on-surface-variant"
+    >
+      <p>
+        lx-ui Enterprise Design System · 5th Category: Navigation Components Specification
+        (v2.4.0-beta.2)
+      </p>
+      <p class="text-label-xs text-outline mt-1">
+        Licensed under MIT · Designed for High-Performance Desktop Cockpits
+      </p>
+    </footer>
+    <!-- SCRIPT FOR STATEFUL INTERACTION DEMOS -->
+    <script>
+      // Tab switching interaction with smooth gliding capsule indicator
+      function switchTab(button, contentId, indicatorId) {
+        const parent = button.parentElement;
+        const buttons = parent.querySelectorAll('button');
+        buttons.forEach((btn) => {
+          btn.setAttribute('aria-selected', 'false');
+          btn.classList.remove('text-primary', 'font-semibold');
+          btn.classList.add('text-on-surface-variant', 'font-medium');
+        });
+
+        button.setAttribute('aria-selected', 'true');
+        button.classList.add('text-primary', 'font-semibold');
+        button.classList.remove('text-on-surface-variant', 'font-medium');
+
+        // Update Gliding Underline Position & Width
+        const indicator = document.getElementById(indicatorId);
+        if (indicator) {
+          indicator.style.left = button.offsetLeft + 'px';
+          indicator.style.width = button.offsetWidth + 'px';
+        }
+
+        // Toggle Panels
+        const panels = document.querySelectorAll('.tab-panel');
+        panels.forEach((p) => p.classList.add('hidden'));
+        const activePanel = document.getElementById(contentId);
+        if (activePanel) {
+          activePanel.classList.remove('hidden');
+        }
+      }
+
+      // Initialize line indicator on load
+      window.addEventListener('DOMContentLoaded', () => {
+        const activeTab = document.querySelector('#line-tab-bar button[aria-selected="true"]');
+        const indicator = document.getElementById('line-indicator');
+        if (activeTab && indicator) {
+          indicator.style.left = activeTab.offsetLeft + 'px';
+          indicator.style.width = activeTab.offsetWidth + 'px';
+        }
+      });
+
+      // Add Tab to Editable Tabs Bar
+      let newTabCounter = 1;
+      function addNewTab() {
+        const container = document.getElementById('editable-tabs-container');
+        const addBtn = document.getElementById('add-tab-btn');
+
+        const newTab = document.createElement('div');
+        newTab.className =
+          'group flex items-center gap-2 px-3.5 py-1.5 bg-surface-container-low border border-surface-container-high rounded-t text-label-md font-normal text-on-surface hover:bg-surface-container-lowest transition-colors animate-in fade-in';
+        newTab.innerHTML = `
+        <span class="material-symbols-outlined text-sm">edit_note</span>
+        <span>未命名查询-${newTabCounter++}.sql</span>
+        <button class="text-on-surface-variant opacity-0 group-hover:opacity-100 hover:text-error transition-all rounded p-0.5" onclick="this.parentElement.remove()" title="关闭标签">
+          <span class="material-symbols-outlined text-xs">close</span>
+        </button>
+      `;
+        container.insertBefore(newTab, addBtn);
+      }
+
+      // Toggle Dropdown Popovers
+      function toggleDropdown(menuId) {
+        const menu = document.getElementById(menuId);
+        if (menu) {
+          menu.classList.toggle('hidden');
+        }
+      }
+
+      // Toggle Accordion Menu in Sider
+      function toggleAccordion(id) {
+        const submenu = document.getElementById(id);
+        const arrow = document.getElementById(id + '-arrow');
+        if (submenu) {
+          submenu.classList.toggle('hidden');
+        }
+        if (arrow) {
+          arrow.classList.toggle('rotate-90');
+        }
+      }
+
+      // Toggle Sider Expanded/Collapsed Width (240px <-> 64px)
+      let isSiderCollapsed = false;
+      function toggleSiderWidth() {
+        const sider = document.getElementById('demo-sider');
+        const textElements = sider.querySelectorAll('.sider-text, .sider-label');
+        const collapseIcon = document.getElementById('collapse-icon');
+        const indicator = document.getElementById('sider-width-indicator');
+
+        isSiderCollapsed = !isSiderCollapsed;
+
+        if (isSiderCollapsed) {
+          sider.classList.remove('w-60');
+          sider.classList.add('w-16');
+          textElements.forEach((el) => el.classList.add('hidden'));
+          collapseIcon.innerText = 'last_page';
+          indicator.innerText = 'Width: 64px (Collapsed)';
+          indicator.classList.replace('text-primary', 'text-secondary');
+        } else {
+          sider.classList.remove('w-16');
+          sider.classList.add('w-60');
+          textElements.forEach((el) => el.classList.remove('hidden'));
+          collapseIcon.innerText = 'first_page';
+          indicator.innerText = 'Width: 240px (Expanded)';
+          indicator.classList.replace('text-secondary', 'text-primary');
+        }
+      }
+
+      // Global click listener to close popovers on outside click
+      document.addEventListener('click', (e) => {
+        const clickMenu = document.getElementById('click-menu');
+        const breadcrumbPopover = document.getElementById('breadcrumb-popover');
+
+        if (
+          clickMenu &&
+          !e.target.closest('#click-menu') &&
+          !e.target.closest('button[onclick*="click-menu"]') &&
+          !e.target.closest('[oncontextmenu]')
+        ) {
+          clickMenu.classList.add('hidden');
+        }
+        if (
+          breadcrumbPopover &&
+          !e.target.closest('#breadcrumb-popover') &&
+          !e.target.closest('button[onclick*="breadcrumb-popover"]')
+        ) {
+          breadcrumbPopover.classList.add('hidden');
+        }
+      });
+    </script>
+  </body>
+</html>

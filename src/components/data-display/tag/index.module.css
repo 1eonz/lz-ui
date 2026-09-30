@@ -1,0 +1,53 @@
+.root {
+  vertical-align: middle;
+  margin-inline-end: 0;
+  padding: var(--lx-space-xs) 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.checkable {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--lx-space-xl);
+  padding: var(--lx-space-xs) var(--lx-space-md);
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  color: var(--lx-color-text-secondary);
+  background: var(--lx-color-ambient, var(--lx-color-bg-container));
+  font: inherit;
+  font-size: 12px;
+  line-height: 16px;
+  cursor: pointer;
+  transition: background-color var(--lx-motion-duration), color var(--lx-motion-duration);
+}
+
+.checkable:hover:not(:disabled) {
+  color: var(--lx-color-primary-text);
+  background: var(--lx-color-primary-bg);
+}
+
+.checkable.checked {
+  color: var(--lx-color-on-primary);
+  background: var(--lx-color-primary);
+}
+
+.checkable:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+.checkable:disabled {
+  color: var(--lx-color-text-disabled);
+  background: var(--lx-color-bg-container);
+  border-color: var(--lx-color-border-secondary);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checkable {
+    transition: none;
+  }
+}

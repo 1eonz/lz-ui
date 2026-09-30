@@ -1,0 +1,4 @@
+.root {
+  --ant-skeleton-color: var(--lx-color-border-secondary);
+  --ant-skeleton-to-color: var(--lx-color-surface);
+}

@@ -1,0 +1,50 @@
+.root {
+  color: var(--lx-color-primary);
+}
+
+.root .arc {
+  --indicator-size: var(--lx-spin-size-default, 24px);
+  display: inline-block;
+  box-sizing: border-box;
+  inline-size: var(--indicator-size);
+  block-size: var(--indicator-size);
+  /* Three transparent sides leave one clear arc; no icon/CDN/global default. */
+  border: 2px solid transparent;
+  border-block-start-color: currentColor;
+  border-radius: 50%;
+  animation: rotate var(--lx-motion-spin-duration, 800ms) linear infinite;
+}
+
+.root .arc.small {
+  --indicator-size: var(--lx-spin-size-small, 16px);
+}
+
+.root .arc.large {
+  --indicator-size: var(--lx-spin-size-large, 36px);
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Custom indicators and native container transitions are included; this
+   * remains local and does not depend on ConfigProvider's prefixCls. */
+  .root,
+  .root *,
+  .root::before,
+  .root::after,
+  .root *::before,
+  .root *::after,
+  .region,
+  .region *,
+  .region::before,
+  .region::after,
+  .region *::before,
+  .region *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

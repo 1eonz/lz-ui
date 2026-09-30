@@ -1,0 +1,2700 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>lx-ui P1 进阶企业级扩展组件全量交互与样式详细规范 (Advanced Enterprise Suite)</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Noto+Sans+SC:wght@400;500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'on-surface': '#0b1c30',
+              background: '#f8f9ff',
+              'on-error-container': '#93000a',
+              'surface-variant': '#d3e4fe',
+              'outline-variant': '#c1c6d7',
+              'on-primary-container': '#fefcff',
+              'theme-green': '#16A34A',
+              'on-surface-variant': '#414755',
+              'status-success': '#16A34A',
+              'inverse-surface': '#213145',
+              'secondary-fixed-dim': '#6cd3f7',
+              'tertiary-fixed-dim': '#ffb695',
+              'primary-fixed': '#d9e2ff',
+              'on-error': '#ffffff',
+              'on-secondary-fixed': '#001f28',
+              'inverse-on-surface': '#eaf1ff',
+              'surface-container-low': '#eff4ff',
+              'surface-tint': '#0059c7',
+              'on-primary-fixed': '#001a43',
+              'surface-container-lowest': '#ffffff',
+              'theme-orange': '#F97316',
+              'on-secondary-fixed-variant': '#004e61',
+              'status-warning': '#F59E0B',
+              'tertiary-fixed': '#ffdbcc',
+              'on-tertiary': '#ffffff',
+              'theme-rose': '#E11D48',
+              'surface-container': '#e5eeff',
+              'on-secondary': '#ffffff',
+              secondary: '#006780',
+              'theme-cyan': '#0891B2',
+              tertiary: '#9e3d00',
+              primary: '#0057c2',
+              'on-secondary-container': '#006077',
+              error: '#ba1a1a',
+              'on-tertiary-container': '#fffbff',
+              'surface-dim': '#cbdbf5',
+              'primary-container': '#006ef2',
+              'secondary-container': '#76dcff',
+              'on-primary': '#ffffff',
+              'on-background': '#0b1c30',
+              outline: '#727786',
+              'theme-purple': '#7C3AED',
+              'surface-container-highest': '#d3e4fe',
+              'on-tertiary-fixed-variant': '#7c2e00',
+              'primary-fixed-dim': '#afc6ff',
+              surface: '#f8f9ff',
+              'status-info': '#2563EB',
+              'on-tertiary-fixed': '#351000',
+              'surface-bright': '#f8f9ff',
+              'inverse-primary': '#afc6ff',
+              'secondary-fixed': '#b7eaff',
+              'surface-container-high': '#dce9ff',
+              'error-container': '#ffdad6',
+              'tertiary-container': '#c64f00',
+              'on-primary-fixed-variant': '#004398',
+              'status-error': '#DC2626',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            fontFamily: {
+              'headline-md': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'headline-xl': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'label-md': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'body-lg': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'label-sm': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'label-xs': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'body-md': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'headline-sm': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'body-sm': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              'headline-lg': ['Inter', 'Noto Sans SC', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 1;
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #eff4ff;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #727786;
+        border-radius: 4px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #0057c2;
+      }
+      .tabular-numbers {
+        font-variant-numeric: tabular-nums;
+      }
+    </style>
+  </head>
+  <body class="bg-background text-on-surface antialiased font-body-md min-h-screen">
+    <!-- TOP IMMUTABLE SHARED APP BAR & SUB-HEADER -->
+    <div
+      class="relative flex h-auto w-full flex-col bg-slate-50 group/design-root overflow-x-hidden border-b border-surface-container"
+      style="font-family: Inter, 'Noto Sans SC', sans-serif"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="px-6 lg:px-16 flex flex-1 justify-center py-3">
+          <div class="layout-content-container flex flex-col w-full max-w-[1440px] flex-1">
+            <header
+              class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e6ecf4] pb-3"
+            >
+              <div class="flex items-center gap-6">
+                <div class="flex items-center gap-3 text-[#0c131d]">
+                  <div class="size-6 text-primary flex items-center justify-center">
+                    <svg
+                      class="w-full h-full"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        clip-rule="evenodd"
+                        d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
+                        fill="currentColor"
+                        fill-rule="evenodd"
+                      ></path>
+                    </svg>
+                  </div>
+                  <h2 class="text-[#0c131d] text-lg font-bold leading-tight tracking-[-0.015em]">
+                    lx-ui Enterprise Design System
+                  </h2>
+                </div>
+                <label class="flex flex-col min-w-48 !h-9 max-w-72">
+                  <div
+                    class="flex w-full flex-1 items-stretch rounded-lg h-full border border-surface-container bg-[#e6ecf4]"
+                  >
+                    <div
+                      class="text-[#456ba1] flex items-center justify-center pl-3"
+                      data-icon="magnifying_glass"
+                    >
+                      <span class="material-symbols-outlined text-[18px]">search</span>
+                    </div>
+                    <input
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#0c131d] focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-[#456ba1] px-3 text-sm"
+                      placeholder="快速检索组件与规范..."
+                      value=""
+                    />
+                  </div>
+                </label>
+              </div>
+              <div class="flex flex-1 justify-end items-center gap-6">
+                <nav class="hidden md:flex items-center gap-6">
+                  <a
+                    class="text-[#0c131d] text-sm font-medium hover:text-primary transition-colors"
+                    href="#"
+                    >Design Tokens</a
+                  >
+                  <a
+                    class="text-[#0c131d] text-sm font-medium hover:text-primary transition-colors"
+                    href="#"
+                    >Standard Components</a
+                  >
+                  <a
+                    class="text-primary font-semibold text-sm border-b-2 border-primary py-1"
+                    href="#"
+                    >Advanced Suite (P1)</a
+                  >
+                  <a
+                    class="text-[#0c131d] text-sm font-medium hover:text-primary transition-colors"
+                    href="#"
+                    >Engineering Specs</a
+                  >
+                  <a
+                    class="text-[#0c131d] text-sm font-medium hover:text-primary transition-colors"
+                    href="#"
+                    >Accessibility</a
+                  >
+                </nav>
+                <div class="flex gap-2">
+                  <button
+                    class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-9 px-4 bg-primary text-slate-50 text-sm font-medium shadow-sm hover:bg-primary-container transition-all"
+                  >
+                    <span class="truncate">Deploy Spec</span>
+                  </button>
+                  <button
+                    class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-9 px-4 bg-[#e6ecf4] text-[#0c131d] text-sm font-medium hover:bg-surface-variant transition-all"
+                  >
+                    <span class="truncate">Export JSON Tokens</span>
+                  </button>
+                </div>
+                <div
+                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 ring-2 ring-primary/20"
+                  data-alt="Corporate UI lead avatar image with soft studio lighting and modern aesthetic"
+                  style="
+                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD5AF95dN7BRTX5mqmunfe_Agc1R1lUIopSPzi5MpDagwhfJZdGaZEL-ryNwEVrmA_hppbh4wYjaqlnuVQBilkkgw-1tQNCynrH1fZ61OUj8oHNRfb0CVz9uNbhquyrNaeh41CIvYblE4sW5i-WDF9Ww_AHJ4h0Fw4P9TnvA_BMPst2sgzZk7z-QKZmD-D6pInHBDD1pGnngnA-B_TV7Ut_3ZfjZ0cal0kr-O2gmk4ajErBt2frP_0XXg');
+                  "
+                ></div>
+              </div>
+            </header>
+            <!-- META BADGES & HERO SECTION -->
+            <div class="flex gap-2 pt-4 flex-wrap">
+              <span
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-surface-container text-primary border border-primary/20"
+              >
+                <span class="size-1.5 rounded-full bg-primary animate-pulse"></span>
+                ENTERPRISE P1 SUITE
+              </span>
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#e6ecf4] text-on-surface-variant"
+                >HIGH-FREQUENCY BUSINESS EXTENSIONS</span
+              >
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-theme-green/10 text-status-success border border-status-success/20"
+                >WCAG 2.2 AA COMPLIANT</span
+              >
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-surface-container text-[#0c131d]"
+                >11 ADVANCED EXTENSIONS</span
+              >
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-surface-container text-secondary"
+                >TSX DEFINITIONS READY</span
+              >
+            </div>
+            <div class="flex flex-wrap justify-between items-start gap-4 py-4">
+              <div class="flex max-w-4xl flex-col gap-2">
+                <h1 class="text-on-surface text-2xl lg:text-3xl font-extrabold tracking-tight">
+                  lx-ui P1 进阶企业级扩展组件全量交互与样式详细规范
+                </h1>
+                <p class="text-on-surface-variant text-sm md:text-base leading-relaxed">
+                  解决超大体量数据吞吐、高密度复合编辑、跨部门协同选择、深层穿透级联与大文件批量资产流转等企业中后台复杂链路痛点，提供真实业务场景与毫秒级微动效规范。
+                </p>
+              </div>
+              <div class="flex items-center gap-3">
+                <button
+                  class="flex items-center gap-2 cursor-pointer rounded-lg h-9 px-4 bg-surface-container-high hover:bg-surface-variant text-primary font-medium text-xs border border-outline-variant/30 transition-all"
+                >
+                  <span class="material-symbols-outlined text-[16px]">terminal</span>
+                  <span class="">npm i @lx-ui/enterprise-p1</span>
+                </button>
+              </div>
+            </div>
+            <!-- QUICK ANCHOR TABS -->
+            <div
+              class="flex gap-2 overflow-x-auto py-2 custom-scrollbar border-t border-surface-container"
+            >
+              <a
+                class="whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-medium bg-primary text-on-primary shadow-sm hover:opacity-95"
+                href="#sec-01"
+                >01. VirtualTable &amp; EditableTable</a
+              >
+              <a
+                class="whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-medium bg-surface-container hover:bg-surface-variant text-on-surface"
+                href="#sec-02"
+                >02. DataToolbar &amp; FilterPanel</a
+              >
+              <a
+                class="whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-medium bg-surface-container hover:bg-surface-variant text-on-surface"
+                href="#sec-03"
+                >03. Department &amp; UserPicker</a
+              >
+              <a
+                class="whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-medium bg-surface-container hover:bg-surface-variant text-on-surface"
+                href="#sec-04"
+                >04. CascaderPanel &amp; 拖拽排序</a
+              >
+              <a
+                class="whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-medium bg-surface-container hover:bg-surface-variant text-on-surface"
+                href="#sec-05"
+                >05. 批量导入 &amp; 文件预览</a
+              >
+              <a
+                class="whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-medium bg-surface-container hover:bg-surface-variant text-on-surface"
+                href="#sec-06"
+                >06. 统计看板卡片 &amp; 动效/Token规范</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- MAIN WRAPPER -->
+    <main class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-12 py-8 space-y-12">
+      <!-- ========================================== -->
+      <!-- SECTION 01: VirtualTable & EditableTable  -->
+      <!-- ========================================== -->
+      <section
+        class="scroll-mt-12 bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-6 shadow-sm space-y-6"
+        id="sec-01"
+      >
+        <div
+          class="flex flex-wrap items-center justify-between border-b border-surface-container pb-4 gap-4"
+        >
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold px-2 py-0.5 rounded bg-primary/10 text-primary"
+                >01 / SPEC</span
+              >
+              <h2 class="text-xl font-bold tracking-tight text-on-surface">
+                大数据高频操作 —— VirtualTable 与 EditableTable
+              </h2>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-1">
+              应对超十万级数据高频并发渲染与生产制造级高密度表格数据交互场景
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-on-surface-variant bg-surface-container px-3 py-1 rounded"
+              >DOM Nodes: 9+5(Overscan)</span
+            >
+            <span
+              class="text-xs font-mono text-status-success bg-theme-green/10 px-3 py-1 rounded font-semibold"
+              >Memory: 31.4 MB (恒定)</span
+            >
+          </div>
+        </div>
+        <!-- VirtualTable Showcase -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">dataset</span>
+              <h3 class="text-sm font-bold text-on-surface">
+                VirtualTable: 全球海运集装箱提单调度池 (100,000+ Records)
+              </h3>
+            </div>
+            <div
+              class="text-xs font-mono text-primary bg-primary-fixed/40 px-2 py-0.5 rounded border border-primary/20"
+            >
+              Viewport: 360px | RowHeight: 40px | Overscan: 5 | Damping: Smooth
+            </div>
+          </div>
+          <!-- Table Container -->
+          <div
+            class="relative border border-outline-variant/50 rounded-lg bg-surface-container-lowest shadow-sm"
+          >
+            <!-- Floating Status Tag & Column Settings Anchor -->
+            <div class="absolute right-4 top-2 z-30 flex items-center gap-2">
+              <div
+                class="bg-inverse-surface/90 text-inverse-on-surface px-2.5 py-1 rounded-md text-[11px] font-mono shadow-md backdrop-blur flex items-center gap-1.5"
+              >
+                <span class="size-1.5 rounded-full bg-secondary-fixed animate-ping"></span>
+                Rendering 1,240 - 1,254 of 102,400 Rows (Buffer: +5)
+              </div>
+              <div class="relative group">
+                <button
+                  class="flex items-center gap-1 px-2 py-1 bg-surface-container-lowest border border-primary/40 text-primary text-xs font-medium rounded shadow-xs hover:bg-primary/5 transition-all"
+                  title="自定义列配置与排序"
+                >
+                  <span class="material-symbols-outlined text-[15px]">tune</span>
+                  <span class="">列设置</span>
+                  <span class="size-1.5 rounded-full bg-error"></span>
+                </button>
+                <!-- Column Settings Popover Preview -->
+                <div
+                  class="absolute right-0 top-8 z-40 w-80 bg-surface-container-lowest border border-outline-variant/50 rounded-lg shadow-xl p-3 space-y-2.5 hidden group-hover:block hover:block"
+                >
+                  <div
+                    class="flex items-center justify-between pb-1.5 border-b border-surface-container"
+                  >
+                    <div class="flex items-center gap-1.5">
+                      <span class="material-symbols-outlined text-[16px] text-primary"
+                        >view_column</span
+                      >
+                      <span class="text-xs font-bold text-on-surface"
+                        >表格列配置与重排 (Column Config)</span
+                      >
+                    </div>
+                    <span
+                      class="text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded font-mono"
+                      >6/7 显隐</span
+                    >
+                  </div>
+                  <p class="text-[10px] text-outline leading-tight">
+                    拖拽抓手调整列顺序，点击钉子图标切换固定在左右侧。
+                  </p>
+                  <div class="space-y-1 max-h-52 overflow-y-auto custom-scrollbar pr-1 text-xs">
+                    <!-- Pinned Left Item -->
+                    <div
+                      class="flex items-center justify-between p-1.5 bg-surface-container-low rounded border border-outline-variant/30"
+                    >
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[14px] text-outline"
+                          >push_pin</span
+                        >
+                        <input
+                          type="checkbox"
+                          checked=""
+                          disabled=""
+                          class="rounded border-outline size-3.5 text-primary opacity-60"
+                        />
+                        <span class="font-medium text-[11px] text-on-surface">序号与多选</span>
+                      </div>
+                      <span class="text-[10px] font-mono px-1 bg-primary/10 text-primary rounded"
+                        >左固定 (Fixed Left)</span
+                      >
+                    </div>
+                    <!-- Reorderable Items -->
+                    <div
+                      class="flex items-center justify-between p-1.5 bg-surface-container-lowest hover:bg-surface-container-low rounded border border-outline-variant/20 cursor-grab"
+                    >
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[14px] text-outline"
+                          >drag_indicator</span
+                        >
+                        <input
+                          type="checkbox"
+                          checked=""
+                          class="rounded border-outline size-3.5 text-primary"
+                        />
+                        <span class="text-[11px] text-on-surface">集装箱编号 / 提单号</span>
+                      </div>
+                      <button class="text-outline hover:text-primary" title="固定到左侧">
+                        <span class="material-symbols-outlined text-[14px]">dock_to_left</span>
+                      </button>
+                    </div>
+                    <div
+                      class="flex items-center justify-between p-1.5 bg-surface-container-lowest hover:bg-surface-container-low rounded border border-outline-variant/20 cursor-grab"
+                    >
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[14px] text-outline"
+                          >drag_indicator</span
+                        >
+                        <input
+                          type="checkbox"
+                          checked=""
+                          class="rounded border-outline size-3.5 text-primary"
+                        />
+                        <span class="text-[11px] text-on-surface">航运代码 / 目的港</span>
+                      </div>
+                      <button class="text-outline hover:text-primary">
+                        <span class="material-symbols-outlined text-[14px]">dock_to_left</span>
+                      </button>
+                    </div>
+                    <div
+                      class="flex items-center justify-between p-1.5 bg-surface-container-lowest hover:bg-surface-container-low rounded border border-outline-variant/20 cursor-grab"
+                    >
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[14px] text-outline"
+                          >drag_indicator</span
+                        >
+                        <input
+                          type="checkbox"
+                          checked=""
+                          class="rounded border-outline size-3.5 text-primary"
+                        />
+                        <span class="text-[11px] text-on-surface">冷链监控 (°C)</span>
+                      </div>
+                      <button class="text-outline hover:text-primary">
+                        <span class="material-symbols-outlined text-[14px]">dock_to_left</span>
+                      </button>
+                    </div>
+                    <div
+                      class="flex items-center justify-between p-1.5 bg-surface-container-lowest hover:bg-surface-container-low rounded border border-outline-variant/20 cursor-grab"
+                    >
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[14px] text-outline"
+                          >drag_indicator</span
+                        >
+                        <input
+                          type="checkbox"
+                          checked=""
+                          class="rounded border-outline size-3.5 text-primary"
+                        />
+                        <span class="text-[11px] text-on-surface">清关状态</span>
+                      </div>
+                      <button class="text-outline hover:text-primary">
+                        <span class="material-symbols-outlined text-[14px]">dock_to_left</span>
+                      </button>
+                    </div>
+                    <div
+                      class="flex items-center justify-between p-1.5 bg-surface-container-lowest hover:bg-surface-container-low rounded border border-outline-variant/20 cursor-grab"
+                    >
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[14px] text-outline"
+                          >drag_indicator</span
+                        >
+                        <input
+                          type="checkbox"
+                          checked=""
+                          class="rounded border-outline size-3.5 text-primary"
+                        />
+                        <span class="text-[11px] text-on-surface">海运费总额</span>
+                      </div>
+                      <button class="text-outline hover:text-primary">
+                        <span class="material-symbols-outlined text-[14px]">dock_to_left</span>
+                      </button>
+                    </div>
+                    <!-- Pinned Right Item -->
+                    <div
+                      class="flex items-center justify-between p-1.5 bg-surface-container-low rounded border border-outline-variant/30"
+                    >
+                      <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[14px] text-outline"
+                          >push_pin</span
+                        >
+                        <input
+                          type="checkbox"
+                          checked=""
+                          disabled=""
+                          class="rounded border-outline size-3.5 text-primary opacity-60"
+                        />
+                        <span class="font-medium text-[11px] text-on-surface"
+                          >操作列与列快捷配置</span
+                        >
+                      </div>
+                      <span
+                        class="text-[10px] font-mono px-1 bg-secondary/10 text-secondary rounded"
+                        >右固定 (Fixed Right)</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center justify-between pt-2 border-t border-surface-container"
+                  >
+                    <button class="text-[11px] text-outline hover:text-on-surface">恢复默认</button>
+                    <div class="flex items-center gap-1.5">
+                      <button
+                        class="px-2 py-0.5 rounded text-[11px] bg-surface-container text-on-surface hover:bg-surface-variant"
+                      >
+                        取消
+                      </button>
+                      <button
+                        class="px-2.5 py-0.5 rounded text-[11px] bg-primary text-on-primary font-medium hover:bg-primary-container shadow-2xs"
+                      >
+                        应用
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Horizontal Scrollable Table Wrapper -->
+            <div class="overflow-x-auto custom-scrollbar w-full">
+              <div class="min-w-[1040px]">
+                <!-- Fixed / Sticky Enhanced Table Header -->
+                <div
+                  class="bg-surface-container-high text-on-surface-variant text-xs font-semibold grid grid-cols-12 border-b border-outline-variant/40 select-none items-center h-[42px]"
+                >
+                  <!-- Column 1: Left Pinned (序号 & Checkbox) -->
+                  <div
+                    class="col-span-1 sticky left-0 z-20 bg-surface-container-high h-full px-3 flex items-center justify-between border-r border-outline-variant/40 shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)]"
+                  >
+                    <div class="flex items-center gap-1.5">
+                      <input
+                        class="rounded border-outline text-primary focus:ring-0 size-3.5"
+                        type="checkbox"
+                      />
+                      <span class="font-medium">序号</span>
+                    </div>
+                    <span
+                      class="material-symbols-outlined text-[13px] text-outline cursor-pointer hover:text-primary"
+                      title="固定在左侧"
+                      >push_pin</span
+                    >
+                  </div>
+
+                  <!-- Column 2: 集装箱编号 (With Sort & Filter) -->
+                  <div
+                    class="col-span-2 px-3 flex items-center justify-between group hover:bg-surface-variant/40 h-full border-r border-outline-variant/20 transition-colors"
+                  >
+                    <span class="truncate">集装箱 / 提单号</span>
+                    <div class="flex items-center gap-0.5 text-outline">
+                      <button
+                        class="flex flex-col text-[10px] leading-[8px] hover:text-primary"
+                        title="排序: 升序/降序"
+                      >
+                        <span class="material-symbols-outlined text-[12px] text-primary"
+                          >arrow_drop_up</span
+                        >
+                        <span class="material-symbols-outlined text-[12px] -mt-1 text-outline/50"
+                          >arrow_drop_down</span
+                        >
+                      </button>
+                      <button class="hover:text-primary" title="快速过滤">
+                        <span class="material-symbols-outlined text-[13px]">filter_alt</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Column 3: 航运代码 / 目的港 (With Sort & Filter) -->
+                  <div
+                    class="col-span-2 px-3 flex items-center justify-between group hover:bg-surface-variant/40 h-full border-r border-outline-variant/20 transition-colors"
+                  >
+                    <span class="truncate">航运代码 / 目的港</span>
+                    <div class="flex items-center gap-0.5 text-outline">
+                      <button
+                        class="flex flex-col text-[10px] leading-[8px] hover:text-primary"
+                        title="排序"
+                      >
+                        <span class="material-symbols-outlined text-[12px] text-outline/50"
+                          >arrow_drop_up</span
+                        >
+                        <span class="material-symbols-outlined text-[12px] -mt-1 text-outline/50"
+                          >arrow_drop_down</span
+                        >
+                      </button>
+                      <button class="hover:text-primary" title="航线筛选">
+                        <span class="material-symbols-outlined text-[13px]">filter_alt</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Column 4: 冷链监控 (With Filter & Sort) -->
+                  <div
+                    class="col-span-2 px-3 flex items-center justify-between group hover:bg-surface-variant/40 h-full border-r border-outline-variant/20 transition-colors"
+                  >
+                    <span class="truncate">冷链监控 (°C)</span>
+                    <div class="flex items-center gap-0.5 text-outline">
+                      <button
+                        class="flex flex-col text-[10px] leading-[8px] hover:text-primary"
+                        title="温度排序"
+                      >
+                        <span class="material-symbols-outlined text-[12px] text-outline/50"
+                          >arrow_drop_up</span
+                        >
+                        <span class="material-symbols-outlined text-[12px] -mt-1 text-outline/50"
+                          >arrow_drop_down</span
+                        >
+                      </button>
+                      <button class="text-primary hover:opacity-80" title="温度区间过滤 (已激活)">
+                        <span class="material-symbols-outlined text-[13px]">filter_alt</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Column 5: 清关状态 (With Status Filter) -->
+                  <div
+                    class="col-span-2 px-3 flex items-center justify-between group hover:bg-surface-variant/40 h-full border-r border-outline-variant/20 transition-colors"
+                  >
+                    <span class="truncate">清关状态</span>
+                    <div class="flex items-center gap-0.5 text-outline">
+                      <button class="hover:text-primary" title="状态多选过滤">
+                        <span class="material-symbols-outlined text-[13px]">filter_alt</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Column 6: 海运费 (With Sort) -->
+                  <div
+                    class="col-span-1 px-3 flex items-center justify-end gap-1 group hover:bg-surface-variant/40 h-full border-r border-outline-variant/20 transition-colors"
+                  >
+                    <span class="truncate">海运费</span>
+                    <button
+                      class="flex flex-col text-[10px] leading-[8px] hover:text-primary"
+                      title="金额排序: 降序"
+                    >
+                      <span class="material-symbols-outlined text-[12px] text-outline/50"
+                        >arrow_drop_up</span
+                      >
+                      <span class="material-symbols-outlined text-[12px] -mt-1 text-primary"
+                        >arrow_drop_down</span
+                      >
+                    </button>
+                  </div>
+
+                  <!-- Column 7: Right Pinned (操作 & 快捷设置) -->
+                  <div
+                    class="col-span-2 sticky right-0 z-20 bg-surface-container-high h-full px-3 flex items-center justify-between border-l border-outline-variant/40 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)]"
+                  >
+                    <div class="flex items-center gap-1 font-semibold text-on-surface-variant">
+                      <span class="material-symbols-outlined text-[13px] text-secondary"
+                        >push_pin</span
+                      >
+                      <span class="">操作</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <button
+                        class="p-1 rounded hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors"
+                        title="自定义列配置 (展开面板)"
+                      >
+                        <span class="material-symbols-outlined text-[16px]">settings</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Virtual Viewport Rows with Synced Sticky Left and Right -->
+                <div
+                  class="h-[360px] overflow-y-auto custom-scrollbar divide-y divide-surface-container text-xs relative"
+                >
+                  <!-- Row 1 -->
+                  <div
+                    class="grid grid-cols-12 h-[40px] items-center hover:bg-surface-container-low transition-colors bg-surface-container-lowest group"
+                  >
+                    <div
+                      class="col-span-1 sticky left-0 z-10 bg-surface-container-lowest group-hover:bg-surface-container-low h-full px-3 flex items-center border-r border-outline-variant/30 shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors"
+                    >
+                      <input
+                        class="rounded border-outline text-primary focus:ring-0 size-3.5"
+                        type="checkbox"
+                      />
+                      <span class="ml-2 font-mono text-on-surface-variant font-medium">1,240</span>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 font-mono font-medium text-primary flex items-center gap-1 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="truncate">MSKU-982144</span>
+                      <span
+                        class="material-symbols-outlined text-[14px] text-outline hover:text-primary cursor-pointer"
+                        >content_copy</span
+                      >
+                    </div>
+                    <div
+                      class="col-span-2 px-3 text-on-surface truncate border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      COSCO-PAC / 鹿特丹 (NLRTM)
+                    </div>
+                    <div
+                      class="col-span-2 px-3 flex items-center gap-2 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="font-mono text-theme-cyan font-medium tabular-numbers"
+                        >-18.4°C</span
+                      >
+                      <div
+                        class="w-16 h-2.5 bg-surface-container-high rounded-full overflow-hidden flex items-center"
+                      >
+                        <div class="h-full bg-theme-cyan w-3/4"></div>
+                      </div>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-theme-green/10 text-status-success"
+                      >
+                        <span class="size-1.5 rounded-full bg-status-success"></span>已放行 (Auto)
+                      </span>
+                    </div>
+                    <div
+                      class="col-span-1 px-3 text-right font-mono font-semibold tabular-numbers text-on-surface border-r border-outline-variant/10 h-full flex items-center justify-end"
+                    >
+                      $ 4,820
+                    </div>
+                    <div
+                      class="col-span-2 sticky right-0 z-10 bg-surface-container-lowest group-hover:bg-surface-container-low h-full px-3 flex items-center justify-between border-l border-outline-variant/30 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors text-primary"
+                    >
+                      <div class="flex items-center gap-2.5">
+                        <button
+                          class="hover:text-primary-container flex items-center gap-0.5 text-[11px]"
+                        >
+                          <span class="material-symbols-outlined text-[15px]">visibility</span>详情
+                        </button>
+                        <button
+                          class="hover:text-primary-container flex items-center gap-0.5 text-[11px]"
+                        >
+                          <span class="material-symbols-outlined text-[15px]">edit</span>调度
+                        </button>
+                      </div>
+                      <button class="text-outline hover:text-on-surface">
+                        <span class="material-symbols-outlined text-[15px]">more_vert</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Row 2 -->
+                  <div
+                    class="grid grid-cols-12 h-[40px] items-center hover:bg-surface-container-low transition-colors bg-surface-container-lowest group"
+                  >
+                    <div
+                      class="col-span-1 sticky left-0 z-10 bg-surface-container-lowest group-hover:bg-surface-container-low h-full px-3 flex items-center border-r border-outline-variant/30 shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors"
+                    >
+                      <input
+                        class="rounded border-outline text-primary focus:ring-0 size-3.5"
+                        type="checkbox"
+                      />
+                      <span class="ml-2 font-mono text-on-surface-variant font-medium">1,241</span>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 font-mono font-medium text-primary flex items-center gap-1 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="truncate">CMAU-110294</span>
+                      <span
+                        class="material-symbols-outlined text-[14px] text-outline hover:text-primary cursor-pointer"
+                        >content_copy</span
+                      >
+                    </div>
+                    <div
+                      class="col-span-2 px-3 text-on-surface truncate border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      MAERSK-GL / 汉堡 (DEHAM)
+                    </div>
+                    <div
+                      class="col-span-2 px-3 flex items-center gap-2 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="font-mono text-status-warning font-medium tabular-numbers"
+                        >-4.1°C</span
+                      >
+                      <div
+                        class="w-16 h-2.5 bg-surface-container-high rounded-full overflow-hidden flex items-center"
+                      >
+                        <div class="h-full bg-status-warning w-1/2"></div>
+                      </div>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-status-warning/10 text-status-warning"
+                      >
+                        <span class="size-1.5 rounded-full bg-status-warning"></span>海关查验中
+                      </span>
+                    </div>
+                    <div
+                      class="col-span-1 px-3 text-right font-mono font-semibold tabular-numbers text-on-surface border-r border-outline-variant/10 h-full flex items-center justify-end"
+                    >
+                      $ 5,310
+                    </div>
+                    <div
+                      class="col-span-2 sticky right-0 z-10 bg-surface-container-lowest group-hover:bg-surface-container-low h-full px-3 flex items-center justify-between border-l border-outline-variant/30 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors text-primary"
+                    >
+                      <div class="flex items-center gap-2.5">
+                        <button
+                          class="hover:text-primary-container flex items-center gap-0.5 text-[11px]"
+                        >
+                          <span class="material-symbols-outlined text-[15px]">visibility</span>详情
+                        </button>
+                        <button
+                          class="hover:text-primary-container flex items-center gap-0.5 text-[11px]"
+                        >
+                          <span class="material-symbols-outlined text-[15px]">edit</span>调度
+                        </button>
+                      </div>
+                      <button class="text-outline hover:text-on-surface">
+                        <span class="material-symbols-outlined text-[15px]">more_vert</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Row 3: Alert Overheated -->
+                  <div
+                    class="grid grid-cols-12 h-[40px] items-center bg-error-container/20 hover:bg-error-container/30 transition-colors group"
+                  >
+                    <div
+                      class="col-span-1 sticky left-0 z-10 bg-[#fde8e8] group-hover:bg-[#fbd5d5] h-full px-3 flex items-center border-r border-outline-variant/30 shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors"
+                    >
+                      <input
+                        class="rounded border-outline text-primary focus:ring-0 size-3.5"
+                        type="checkbox"
+                      />
+                      <span class="ml-2 font-mono text-error font-medium">1,242</span>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 font-mono font-medium text-error flex items-center gap-1 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="truncate">TEMU-772910</span>
+                      <span class="material-symbols-outlined text-[14px] text-error">warning</span>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 text-on-surface truncate border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      ONE-LINE / 长滩港 (USLGB)
+                    </div>
+                    <div
+                      class="col-span-2 px-3 flex items-center gap-2 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="font-mono text-error font-bold tabular-numbers"
+                        >+2.8°C (超温)</span
+                      >
+                      <div
+                        class="w-16 h-2.5 bg-surface-container-high rounded-full overflow-hidden flex items-center"
+                      >
+                        <div class="h-full bg-error w-4/5"></div>
+                      </div>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-error/10 text-error"
+                      >
+                        <span class="size-1.5 rounded-full bg-error"></span>异常暂扣
+                      </span>
+                    </div>
+                    <div
+                      class="col-span-1 px-3 text-right font-mono font-semibold tabular-numbers text-on-surface border-r border-outline-variant/10 h-full flex items-center justify-end"
+                    >
+                      $ 6,190
+                    </div>
+                    <div
+                      class="col-span-2 sticky right-0 z-10 bg-[#fde8e8] group-hover:bg-[#fbd5d5] h-full px-3 flex items-center justify-between border-l border-outline-variant/30 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors text-error"
+                    >
+                      <div class="flex items-center gap-2.5">
+                        <button
+                          class="hover:opacity-80 flex items-center gap-0.5 text-[11px] font-semibold"
+                        >
+                          <span class="material-symbols-outlined text-[15px]">build</span>消警干预
+                        </button>
+                        <button class="hover:opacity-80 flex items-center gap-0.5 text-[11px]">
+                          <span class="material-symbols-outlined text-[15px]">visibility</span>详情
+                        </button>
+                      </div>
+                      <button class="text-error hover:opacity-80">
+                        <span class="material-symbols-outlined text-[15px]">more_vert</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Row 4 -->
+                  <div
+                    class="grid grid-cols-12 h-[40px] items-center hover:bg-surface-container-low transition-colors bg-surface-container-lowest group"
+                  >
+                    <div
+                      class="col-span-1 sticky left-0 z-10 bg-surface-container-lowest group-hover:bg-surface-container-low h-full px-3 flex items-center border-r border-outline-variant/30 shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors"
+                    >
+                      <input
+                        class="rounded border-outline text-primary focus:ring-0 size-3.5"
+                        type="checkbox"
+                      />
+                      <span class="ml-2 font-mono text-on-surface-variant font-medium">1,243</span>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 font-mono font-medium text-primary flex items-center gap-1 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="truncate">EGLV-449102</span>
+                      <span
+                        class="material-symbols-outlined text-[14px] text-outline hover:text-primary cursor-pointer"
+                        >content_copy</span
+                      >
+                    </div>
+                    <div
+                      class="col-span-2 px-3 text-on-surface truncate border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      EVERGREEN / 新加坡 (SGSIN)
+                    </div>
+                    <div
+                      class="col-span-2 px-3 flex items-center gap-2 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="font-mono text-theme-cyan font-medium tabular-numbers"
+                        >-22.0°C</span
+                      >
+                      <div
+                        class="w-16 h-2.5 bg-surface-container-high rounded-full overflow-hidden flex items-center"
+                      >
+                        <div class="h-full bg-theme-cyan w-full"></div>
+                      </div>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-theme-green/10 text-status-success"
+                      >
+                        <span class="size-1.5 rounded-full bg-status-success"></span>已放行
+                      </span>
+                    </div>
+                    <div
+                      class="col-span-1 px-3 text-right font-mono font-semibold tabular-numbers text-on-surface border-r border-outline-variant/10 h-full flex items-center justify-end"
+                    >
+                      $ 2,940
+                    </div>
+                    <div
+                      class="col-span-2 sticky right-0 z-10 bg-surface-container-lowest group-hover:bg-surface-container-low h-full px-3 flex items-center justify-between border-l border-outline-variant/30 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors text-primary"
+                    >
+                      <div class="flex items-center gap-2.5">
+                        <button
+                          class="hover:text-primary-container flex items-center gap-0.5 text-[11px]"
+                        >
+                          <span class="material-symbols-outlined text-[15px]">visibility</span>详情
+                        </button>
+                        <button
+                          class="hover:text-primary-container flex items-center gap-0.5 text-[11px]"
+                        >
+                          <span class="material-symbols-outlined text-[15px]">edit</span>调度
+                        </button>
+                      </div>
+                      <button class="text-outline hover:text-on-surface">
+                        <span class="material-symbols-outlined text-[15px]">more_vert</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Row 5 -->
+                  <div
+                    class="grid grid-cols-12 h-[40px] items-center hover:bg-surface-container-low transition-colors bg-surface-container-lowest group"
+                  >
+                    <div
+                      class="col-span-1 sticky left-0 z-10 bg-surface-container-lowest group-hover:bg-surface-container-low h-full px-3 flex items-center border-r border-outline-variant/30 shadow-[4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors"
+                    >
+                      <input
+                        class="rounded border-outline text-primary focus:ring-0 size-3.5"
+                        type="checkbox"
+                      />
+                      <span class="ml-2 font-mono text-on-surface-variant font-medium">1,244</span>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 font-mono font-medium text-primary flex items-center gap-1 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="truncate">HLCU-883100</span>
+                      <span
+                        class="material-symbols-outlined text-[14px] text-outline hover:text-primary cursor-pointer"
+                        >content_copy</span
+                      >
+                    </div>
+                    <div
+                      class="col-span-2 px-3 text-on-surface truncate border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      HAPAG-LLOYD / 迪拜 (AEJEA)
+                    </div>
+                    <div
+                      class="col-span-2 px-3 flex items-center gap-2 border-r border-outline-variant/10 h-full"
+                    >
+                      <span class="font-mono text-theme-cyan font-medium tabular-numbers"
+                        >-19.5°C</span
+                      >
+                      <div
+                        class="w-16 h-2.5 bg-surface-container-high rounded-full overflow-hidden flex items-center"
+                      >
+                        <div class="h-full bg-theme-cyan w-4/5"></div>
+                      </div>
+                    </div>
+                    <div
+                      class="col-span-2 px-3 border-r border-outline-variant/10 h-full flex items-center"
+                    >
+                      <span
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-surface-variant text-primary"
+                      >
+                        <span class="size-1.5 rounded-full bg-primary"></span>申报复核
+                      </span>
+                    </div>
+                    <div
+                      class="col-span-1 px-3 text-right font-mono font-semibold tabular-numbers text-on-surface border-r border-outline-variant/10 h-full flex items-center justify-end"
+                    >
+                      $ 4,120
+                    </div>
+                    <div
+                      class="col-span-2 sticky right-0 z-10 bg-surface-container-lowest group-hover:bg-surface-container-low h-full px-3 flex items-center justify-between border-l border-outline-variant/30 shadow-[-4px_0_6px_-2px_rgba(0,0,0,0.06)] transition-colors text-primary"
+                    >
+                      <div class="flex items-center gap-2.5">
+                        <button
+                          class="hover:text-primary-container flex items-center gap-0.5 text-[11px]"
+                        >
+                          <span class="material-symbols-outlined text-[15px]">visibility</span>详情
+                        </button>
+                        <button
+                          class="hover:text-primary-container flex items-center gap-0.5 text-[11px]"
+                        >
+                          <span class="material-symbols-outlined text-[15px]">edit</span>调度
+                        </button>
+                      </div>
+                      <button class="text-outline hover:text-on-surface">
+                        <span class="material-symbols-outlined text-[15px]">more_vert</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- EditableTable Showcase -->
+        <div class="space-y-4 pt-4 border-t border-surface-container">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">table_edit</span>
+              <h3 class="text-sm font-bold text-on-surface">
+                EditableTable: 企业采购 BOM 成本分解与物料明细配额 (3 种编辑交互模式)
+              </h3>
+            </div>
+            <span class="text-xs text-on-surface-variant"
+              >支持 Tab 快速跳列、实时行内公式响应与失焦校验</span
+            >
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <!-- Mode A: Row-based Mode -->
+            <div
+              class="p-3.5 border border-outline-variant/50 rounded-lg bg-surface-container-low/60 space-y-2"
+            >
+              <div
+                class="flex items-center justify-between pb-1 border-b border-outline-variant/30"
+              >
+                <span class="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                  <span class="size-2 rounded-full bg-primary"></span>模式 A. 行级批量编辑
+                  (Row-based)
+                </span>
+                <span class="text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded font-mono"
+                  >Editing #Row-02</span
+                >
+              </div>
+              <p class="text-[11px] text-on-surface-variant leading-relaxed">
+                激活后该行所有字段变为输入组件，并在操作列收束为“保存/取消”。
+              </p>
+              <div
+                class="bg-surface-container-lowest p-2 rounded border border-primary/30 space-y-1.5 shadow-xs"
+              >
+                <div class="text-[11px] text-outline font-mono">物料编码: BOM-88029-A</div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="text-[10px] text-on-surface-variant">采购单价 ($)</label>
+                    <input
+                      class="w-full text-xs font-mono py-1 px-1.5 border border-primary rounded bg-surface focus:ring-1 focus:ring-primary"
+                      type="text"
+                      value="148.50"
+                    />
+                  </div>
+                  <div>
+                    <label class="text-[10px] text-on-surface-variant">配额数量 (Pcs)</label>
+                    <input
+                      class="w-full text-xs font-mono py-1 px-1.5 border border-primary rounded bg-surface focus:ring-1 focus:ring-primary"
+                      type="number"
+                      value="450"
+                    />
+                  </div>
+                </div>
+                <div class="flex items-center justify-end gap-1.5 pt-1">
+                  <button
+                    class="px-2 py-0.5 rounded text-[11px] bg-primary text-on-primary font-medium hover:bg-primary-container"
+                  >
+                    保存
+                  </button>
+                  <button
+                    class="px-2 py-0.5 rounded text-[11px] bg-surface-container text-on-surface hover:bg-surface-variant"
+                  >
+                    取消
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Mode B: Cell-by-Cell Mode -->
+            <div
+              class="p-3.5 border border-outline-variant/50 rounded-lg bg-surface-container-low/60 space-y-2"
+            >
+              <div
+                class="flex items-center justify-between pb-1 border-b border-outline-variant/30"
+              >
+                <span class="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                  <span class="size-2 rounded-full bg-secondary"></span>模式 B. 即点即改
+                  (Cell-by-Cell)
+                </span>
+                <span
+                  class="text-[10px] text-secondary bg-secondary/10 px-1.5 py-0.5 rounded font-mono"
+                  >Tab/Enter Listen</span
+                >
+              </div>
+              <p class="text-[11px] text-on-surface-variant leading-relaxed">
+                单击单元格激活 2px 高亮蓝色焦点边框，按 Tab 键自动跳转下一列。
+              </p>
+              <div
+                class="bg-surface-container-lowest p-2 rounded border border-outline-variant/30 space-y-1.5"
+              >
+                <div class="flex items-center justify-between text-xs">
+                  <span class="text-on-surface-variant text-[11px]">供应商认证:</span>
+                  <span class="text-on-surface font-medium">台积电半导体 (TSMC)</span>
+                </div>
+                <div class="relative">
+                  <div class="text-[10px] text-on-surface-variant mb-0.5">损耗容差率:</div>
+                  <div
+                    class="flex items-center border-2 border-primary rounded px-2 py-1 bg-surface shadow-xs"
+                  >
+                    <input
+                      class="w-full text-xs font-mono p-0 border-none focus:ring-0 bg-transparent text-primary font-bold"
+                      type="text"
+                      value="0.045%"
+                    />
+                    <span class="material-symbols-outlined text-[14px] text-primary"
+                      >keyboard_return</span
+                    >
+                  </div>
+                  <div class="text-[10px] text-outline mt-1 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-[12px]">info</span>
+                    按回车直接固化持久层
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Mode C: Calculated & Validation -->
+            <div
+              class="p-3.5 border border-outline-variant/50 rounded-lg bg-surface-container-low/60 space-y-2"
+            >
+              <div
+                class="flex items-center justify-between pb-1 border-b border-outline-variant/30"
+              >
+                <span class="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                  <span class="size-2 rounded-full bg-theme-green"></span>模式 C. 级联动态计算与报错
+                </span>
+                <span
+                  class="text-[10px] text-theme-green bg-theme-green/10 px-1.5 py-0.5 rounded font-mono"
+                  >150ms Formula Glow</span
+                >
+              </div>
+              <p class="text-[11px] text-on-surface-variant leading-relaxed">
+                单价×数量联动税额，错误时闪烁提示且弹出轻量气泡卡片。
+              </p>
+              <div
+                class="bg-surface-container-lowest p-2 rounded border border-error/50 relative space-y-1"
+              >
+                <div class="flex justify-between items-center text-xs">
+                  <span class="text-on-surface-variant text-[11px]">小计(含税13%):</span>
+                  <span
+                    class="font-mono font-bold text-status-success bg-theme-green/10 px-1.5 py-0.5 rounded tabular-numbers transition-all"
+                    >¥ 75,526.50</span
+                  >
+                </div>
+                <div>
+                  <label class="text-[10px] text-error font-medium">必填批次交付期:</label>
+                  <div
+                    class="flex items-center border border-error bg-error-container/20 rounded px-2 py-1"
+                  >
+                    <input
+                      class="w-full text-xs text-error font-mono p-0 border-none focus:ring-0 bg-transparent"
+                      placeholder="请选择计划交期..."
+                      type="text"
+                    />
+                    <span class="material-symbols-outlined text-[14px] text-error">error</span>
+                  </div>
+                  <div class="text-[10px] text-error mt-0.5 font-medium">
+                    错误: 交期不能为空且须晚于 T+30 窗口
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ========================================== -->
+      <!-- SECTION 02: DataToolbar & FilterPanel      -->
+      <!-- ========================================== -->
+      <section
+        class="scroll-mt-12 bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-6 shadow-sm space-y-6"
+        id="sec-02"
+      >
+        <div class="border-b border-surface-container pb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-primary/10 text-primary"
+              >02 / SPEC</span
+            >
+            <h2 class="text-xl font-bold tracking-tight text-on-surface">
+              检索与数据控制台 —— DataToolbar 与 FilterPanel
+            </h2>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-1">
+            左右流式复合控制台集成、视图无缝切换与多层级条件构建器 (Query Builder)
+          </p>
+        </div>
+        <!-- DataToolbar Prototype -->
+        <div
+          class="p-3 bg-surface-container-low border border-outline-variant/40 rounded-lg flex flex-wrap items-center justify-between gap-3"
+        >
+          <!-- Left: Quick Search & View Switcher -->
+          <div class="flex items-center gap-3 flex-wrap">
+            <!-- Search with field dropdown -->
+            <div
+              class="flex items-stretch rounded-md bg-surface-container-lowest border border-outline-variant/50 h-9"
+            >
+              <button
+                class="flex items-center gap-1 px-2.5 text-xs text-on-surface-variant hover:text-on-surface border-r border-outline-variant/40 font-medium"
+              >
+                <span class="">提单号/货主</span>
+                <span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+              </button>
+              <div class="flex items-center px-2 text-outline">
+                <span class="material-symbols-outlined text-[18px]">search</span>
+              </div>
+              <input
+                class="border-none text-xs bg-transparent focus:ring-0 w-44 placeholder:text-outline text-on-surface"
+                placeholder="输入关键字搜索..."
+                type="text"
+              />
+            </div>
+            <!-- View Switcher Capsule -->
+            <div
+              class="flex items-center bg-surface-container-high p-0.5 rounded-md border border-outline-variant/30 text-xs"
+            >
+              <button
+                class="flex items-center gap-1 px-2.5 py-1 rounded bg-surface-container-lowest text-primary font-semibold shadow-xs"
+              >
+                <span class="material-symbols-outlined text-[16px]">table_chart</span>
+                <span class="">表格</span>
+              </button>
+              <button
+                class="flex items-center gap-1 px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface font-medium"
+              >
+                <span class="material-symbols-outlined text-[16px]">view_kanban</span>
+                <span class="">看板</span>
+              </button>
+              <button
+                class="flex items-center gap-1 px-2.5 py-1 rounded text-on-surface-variant hover:text-on-surface font-medium"
+              >
+                <span class="material-symbols-outlined text-[16px]">waterfall_chart</span>
+                <span class="">甘特图</span>
+              </button>
+            </div>
+          </div>
+          <!-- Right: Control Buttons -->
+          <div class="flex items-center gap-2">
+            <!-- Density -->
+            <button
+              class="h-9 px-2.5 rounded bg-surface-container-lowest border border-outline-variant/40 text-on-surface hover:bg-surface-container text-xs flex items-center gap-1"
+              title="切换表格显示密度"
+            >
+              <span class="material-symbols-outlined text-[16px]">density_medium</span>
+              <span class="hidden sm:inline">密度</span>
+            </button>
+            <!-- Column Setting -->
+            <button
+              class="h-9 px-2.5 rounded bg-surface-container-lowest border border-outline-variant/40 text-on-surface hover:bg-surface-container text-xs flex items-center gap-1"
+              title="列显隐与列排序"
+            >
+              <span class="material-symbols-outlined text-[16px]">settings</span>
+              <span class="hidden sm:inline">列配置</span>
+            </button>
+            <!-- Filter Trigger with Badge -->
+            <button
+              class="h-9 px-3 rounded bg-primary-fixed/60 border border-primary/30 text-primary font-medium text-xs flex items-center gap-1.5 shadow-xs"
+            >
+              <span class="material-symbols-outlined text-[16px]">filter_alt</span>
+              <span class="">高级筛选</span>
+              <span
+                class="size-4.5 rounded-full bg-primary text-on-primary text-[10px] font-bold flex items-center justify-center"
+                >3</span
+              >
+            </button>
+            <!-- Refresh -->
+            <button
+              class="size-9 rounded bg-surface-container-lowest border border-outline-variant/40 text-on-surface hover:bg-surface-container flex items-center justify-center"
+            >
+              <span class="material-symbols-outlined text-[18px] text-outline hover:text-primary"
+                >refresh</span
+              >
+            </button>
+            <!-- Primary CTA -->
+            <button
+              class="h-9 px-4 rounded bg-primary text-on-primary font-medium text-xs flex items-center gap-1.5 shadow hover:bg-primary-container"
+            >
+              <span class="material-symbols-outlined text-[16px]">send</span>
+              <span class="">批量下发采购</span>
+            </button>
+          </div>
+        </div>
+        <!-- FilterPanel Drawer / Inline Expanded Prototype -->
+        <div
+          class="border border-primary/30 rounded-xl bg-surface-container-lowest shadow-sm p-4 space-y-4"
+        >
+          <div class="flex items-center justify-between pb-3 border-b border-surface-container">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">tune</span>
+              <span class="text-sm font-bold text-on-surface"
+                >高级筛选面板 (FilterPanel Query Builder)</span
+              >
+              <span class="text-xs bg-surface-container text-on-surface-variant px-2 py-0.5 rounded"
+                >多维抽屉模型</span
+              >
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="text-xs text-outline hover:text-on-surface">还原默认</button>
+              <span class="text-outline">|</span>
+              <button class="text-xs text-primary font-medium">配置逻辑规则集</button>
+            </div>
+          </div>
+          <!-- Filter Rule Rows (Query Builder) -->
+          <div class="space-y-3">
+            <!-- Logic Gate Indicator -->
+            <div class="flex items-center gap-2">
+              <span
+                class="text-[11px] font-semibold text-on-surface-variant uppercase tracking-wider"
+                >逻辑门操作符:</span
+              >
+              <div
+                class="inline-flex rounded-md p-0.5 bg-surface-container-high border border-outline-variant/30 text-xs"
+              >
+                <button class="px-2.5 py-0.5 rounded bg-primary text-on-primary font-semibold">
+                  且 (AND)
+                </button>
+                <button
+                  class="px-2.5 py-0.5 rounded text-on-surface-variant font-medium hover:text-on-surface"
+                >
+                  或 (OR)
+                </button>
+              </div>
+              <span class="text-xs text-outline">符合以下所有配置条件的记录将被展示</span>
+            </div>
+            <!-- Rule 1: Category & Cascader -->
+            <div
+              class="flex flex-wrap items-center gap-2 p-2 bg-surface-container-low rounded-lg border border-outline-variant/30 text-xs"
+            >
+              <span class="font-mono text-outline w-5 text-center">01</span>
+              <select
+                class="rounded border-outline-variant bg-surface-container-lowest text-xs py-1 px-2 text-on-surface"
+              >
+                <option>归属关区 (Cascader)</option>
+                <option>合同总金额</option>
+                <option>装运风险等级</option>
+              </select>
+              <select
+                class="rounded border-outline-variant bg-surface-container-lowest text-xs py-1 px-2 text-on-surface"
+              >
+                <option>属于 (In)</option>
+                <option>不属于 (Not In)</option>
+                <option>精确等于 (=)</option>
+              </select>
+              <div
+                class="flex items-center gap-1 bg-surface-container-lowest px-2 py-1 rounded border border-outline-variant/40 flex-1 max-w-sm"
+              >
+                <span class="bg-surface-container px-1.5 py-0.5 rounded text-[11px] text-on-surface"
+                  >中国华南 &gt; 盐田港区</span
+                >
+                <span class="material-symbols-outlined text-[14px] text-outline">expand_more</span>
+              </div>
+              <button class="text-outline hover:text-error ml-auto">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            </div>
+            <!-- Rule 2: Amount Range Slider -->
+            <div
+              class="flex flex-wrap items-center gap-2 p-2 bg-surface-container-low rounded-lg border border-outline-variant/30 text-xs"
+            >
+              <span class="font-mono text-outline w-5 text-center">02</span>
+              <select
+                class="rounded border-outline-variant bg-surface-container-lowest text-xs py-1 px-2 text-on-surface"
+              >
+                <option>交易结算金额 ($)</option>
+              </select>
+              <select
+                class="rounded border-outline-variant bg-surface-container-lowest text-xs py-1 px-2 text-on-surface"
+              >
+                <option>介于范围之间 (Between)</option>
+              </select>
+              <div class="flex items-center gap-2 flex-1 max-w-sm">
+                <input
+                  class="w-24 text-xs font-mono py-1 px-2 border border-outline-variant/50 rounded bg-surface-container-lowest text-right"
+                  type="text"
+                  value="1,000"
+                />
+                <span class="text-outline">至</span>
+                <input
+                  class="w-24 text-xs font-mono py-1 px-2 border border-outline-variant/50 rounded bg-surface-container-lowest text-right"
+                  type="text"
+                  value="50,000"
+                />
+                <div class="flex-1 h-1.5 bg-surface-container-high rounded-full relative mx-2">
+                  <div class="absolute left-1/4 right-1/4 h-full bg-primary rounded-full"></div>
+                  <div
+                    class="size-3 bg-primary rounded-full absolute left-1/4 -top-0.5 ring-2 ring-surface-container-lowest"
+                  ></div>
+                  <div
+                    class="size-3 bg-primary rounded-full absolute right-1/4 -top-0.5 ring-2 ring-surface-container-lowest"
+                  ></div>
+                </div>
+              </div>
+              <button class="text-outline hover:text-error ml-auto">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            </div>
+            <!-- Rule 3: Checkbox Multi Tags -->
+            <div
+              class="flex flex-wrap items-center gap-2 p-2 bg-surface-container-low rounded-lg border border-outline-variant/30 text-xs"
+            >
+              <span class="font-mono text-outline w-5 text-center">03</span>
+              <select
+                class="rounded border-outline-variant bg-surface-container-lowest text-xs py-1 px-2 text-on-surface"
+              >
+                <option>风险标签 (Checkbox Group)</option>
+              </select>
+              <select
+                class="rounded border-outline-variant bg-surface-container-lowest text-xs py-1 px-2 text-on-surface"
+              >
+                <option>包含任一 (Contains Any)</option>
+              </select>
+              <div class="flex items-center gap-3 flex-wrap">
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    checked=""
+                    class="rounded border-outline text-primary focus:ring-0 size-3.5"
+                    type="checkbox"
+                  />
+                  <span class="text-status-error font-medium">冷链超温</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    checked=""
+                    class="rounded border-outline text-primary focus:ring-0 size-3.5"
+                    type="checkbox"
+                  />
+                  <span class="text-status-warning font-medium">单据待补齐</span>
+                </label>
+                <label class="flex items-center gap-1.5 cursor-pointer">
+                  <input
+                    class="rounded border-outline text-primary focus:ring-0 size-3.5"
+                    type="checkbox"
+                  />
+                  <span class="text-on-surface-variant">外汇超限额</span>
+                </label>
+              </div>
+              <button class="text-outline hover:text-error ml-auto">
+                <span class="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            </div>
+          </div>
+          <!-- Filter Bottom Action Bar -->
+          <div
+            class="flex flex-wrap items-center justify-between pt-3 border-t border-surface-container gap-3"
+          >
+            <!-- Active Tags -->
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="text-[11px] text-outline">已选 4 项条件:</span>
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-primary-fixed text-on-primary-fixed border border-primary/20"
+              >
+                关区: 盐田港
+                <span class="material-symbols-outlined text-[12px] cursor-pointer hover:text-error"
+                  >close</span
+                >
+              </span>
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-primary-fixed text-on-primary-fixed border border-primary/20"
+              >
+                金额: $1k - $50k
+                <span class="material-symbols-outlined text-[12px] cursor-pointer hover:text-error"
+                  >close</span
+                >
+              </span>
+              <span
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] bg-primary-fixed text-on-primary-fixed border border-primary/20"
+              >
+                异常: 冷链超温
+                <span class="material-symbols-outlined text-[12px] cursor-pointer hover:text-error"
+                  >close</span
+                >
+              </span>
+            </div>
+            <!-- Bottom CTA Buttons -->
+            <div class="flex items-center gap-2">
+              <button
+                class="px-3 py-1.5 text-xs text-on-surface-variant hover:text-on-surface font-medium"
+              >
+                重置清空全部
+              </button>
+              <button
+                class="px-3 py-1.5 text-xs text-primary border border-primary/30 rounded-md font-medium hover:bg-primary/5"
+              >
+                保存为常用视图
+              </button>
+              <button
+                class="px-4 py-1.5 text-xs bg-primary text-on-primary font-medium rounded-md shadow-sm hover:bg-primary-container flex items-center gap-1"
+              >
+                <span class="">立即应用筛选</span>
+                <span class="text-[10px] opacity-75">(240ms 收起)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ========================================== -->
+      <!-- SECTION 03: Department & UserPicker        -->
+      <!-- ========================================== -->
+      <section
+        class="scroll-mt-12 bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-6 shadow-sm space-y-6"
+        id="sec-03"
+      >
+        <div class="border-b border-surface-container pb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-primary/10 text-primary"
+              >03 / SPEC</span
+            >
+            <h2 class="text-xl font-bold tracking-tight text-on-surface">
+              组织人事与权限流转 —— DepartmentPicker 与 UserPicker
+            </h2>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-1">
+            支持无限极部门树穿透引导、人员穿梭转移 (Transfer Model) 与工作流“会签/或签”顺序重排
+          </p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- 1. DepartmentPicker Component -->
+          <div
+            class="border border-outline-variant/50 rounded-xl p-4 bg-surface-container-low/40 space-y-3"
+          >
+            <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">account_tree</span>
+                <h3 class="text-sm font-bold text-on-surface">
+                  DepartmentPicker: 无限极部门架构树
+                </h3>
+              </div>
+              <label
+                class="flex items-center gap-1.5 text-xs text-on-surface-variant cursor-pointer"
+              >
+                <input
+                  checked=""
+                  class="rounded border-outline text-primary size-3"
+                  type="checkbox"
+                />
+                <span class="">包含子部门所有层级</span>
+              </label>
+            </div>
+            <!-- Search Filter -->
+            <div class="relative">
+              <input
+                class="w-full text-xs rounded-md border border-outline-variant/40 bg-surface-container-lowest pl-8 pr-3 py-1.5 placeholder:text-outline"
+                placeholder="搜索部门代码、组织名称或拼音..."
+                type="text"
+              />
+              <span
+                class="material-symbols-outlined text-[16px] text-outline absolute left-2.5 top-2"
+                >search</span
+              >
+            </div>
+            <!-- Tree & Details Layout -->
+            <div
+              class="grid grid-cols-12 gap-3 h-64 border border-outline-variant/40 rounded-lg bg-surface-container-lowest overflow-hidden"
+            >
+              <!-- Left Tree (Col 7) -->
+              <div
+                class="col-span-7 p-2 overflow-y-auto custom-scrollbar border-r border-outline-variant/30 text-xs space-y-1"
+              >
+                <!-- Node 1 -->
+                <div
+                  class="flex items-center gap-1 py-1 px-1.5 rounded hover:bg-surface-container text-on-surface"
+                >
+                  <span class="material-symbols-outlined text-[16px] text-outline"
+                    >arrow_drop_down</span
+                  >
+                  <span class="material-symbols-outlined text-[16px] text-primary">domain</span>
+                  <span class="font-medium">集团全球总部 (HQ)</span>
+                </div>
+                <!-- Node 2 (Branch) -->
+                <div class="ml-4 pl-2 border-l border-outline-variant/40 space-y-1">
+                  <div
+                    class="flex items-center gap-1 py-1 px-1.5 rounded bg-primary/10 text-primary font-semibold"
+                  >
+                    <span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+                    <span class="material-symbols-outlined text-[16px]">folder_open</span>
+                    <span class="">全球供应链事业部 (SCM)</span>
+                    <span class="ml-auto text-[10px] bg-primary text-on-primary px-1.5 rounded-full"
+                      >42人</span
+                    >
+                  </div>
+                  <!-- Node 3 (Sub-branch) -->
+                  <div class="ml-4 pl-2 border-l border-outline-variant/40 space-y-1">
+                    <div
+                      class="flex items-center gap-1 py-0.5 px-1.5 rounded text-on-surface-variant hover:bg-surface-container"
+                    >
+                      <span class="material-symbols-outlined text-[16px] text-outline"
+                        >arrow_right</span
+                      >
+                      <span class="material-symbols-outlined text-[16px] text-outline">folder</span>
+                      <span class="">跨境海运调度中心</span>
+                    </div>
+                    <div
+                      class="flex items-center gap-1 py-0.5 px-1.5 rounded text-on-surface-variant hover:bg-surface-container"
+                    >
+                      <span class="material-symbols-outlined text-[16px] text-outline"
+                        >arrow_right</span
+                      >
+                      <span class="material-symbols-outlined text-[16px] text-outline">folder</span>
+                      <span class="">保税仓储与关务组</span>
+                    </div>
+                  </div>
+                  <div
+                    class="flex items-center gap-1 py-0.5 px-1.5 rounded text-on-surface-variant hover:bg-surface-container"
+                  >
+                    <span class="material-symbols-outlined text-[16px] text-outline"
+                      >arrow_right</span
+                    >
+                    <span class="material-symbols-outlined text-[16px] text-outline">folder</span>
+                    <span class="">数字科技与算法创新院</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Right Info Panel (Col 5) -->
+              <div
+                class="col-span-5 p-3 bg-surface-container-low/40 flex flex-col justify-between text-xs"
+              >
+                <div class="space-y-2">
+                  <div class="text-[11px] font-bold text-on-surface-variant">已选部门链路:</div>
+                  <div
+                    class="text-[11px] text-primary font-mono bg-surface-container-lowest p-2 rounded border border-outline-variant/30 leading-snug"
+                  >
+                    集团总部 &gt; 全球供应链事业部 &gt; 跨境海运调度中心
+                  </div>
+                  <div class="text-[11px] text-on-surface space-y-1">
+                    <div class="flex justify-between">
+                      <span class="text-outline">部门负责人:</span>
+                      <span class="font-medium">林晓风 (VP)</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-outline">总在册编制:</span>
+                      <span class="font-mono font-bold">128 人</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-outline">成本中心代码:</span>
+                      <span class="font-mono">CC-8820-SCM</span>
+                    </div>
+                  </div>
+                </div>
+                <button
+                  class="w-full py-1.5 bg-primary text-on-primary rounded text-xs font-medium hover:bg-primary-container"
+                >
+                  确认为当前责任部门
+                </button>
+              </div>
+            </div>
+          </div>
+          <!-- 2. UserPicker Component (Transfer Model) -->
+          <div
+            class="border border-outline-variant/50 rounded-xl p-4 bg-surface-container-low/40 space-y-3"
+          >
+            <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">badge</span>
+                <h3 class="text-sm font-bold text-on-surface">
+                  UserPicker: 企业员工与多级审批人穿梭选择器
+                </h3>
+              </div>
+              <span class="text-xs text-primary font-mono font-medium">已配置 3 级节点</span>
+            </div>
+            <!-- Transfer Model Prototype -->
+            <div class="grid grid-cols-12 gap-2 h-64">
+              <!-- Source List (Col 5) -->
+              <div
+                class="col-span-5 border border-outline-variant/40 rounded-lg bg-surface-container-lowest p-2 flex flex-col"
+              >
+                <div
+                  class="text-[11px] font-semibold text-on-surface-variant pb-1 mb-1 border-b border-outline-variant/30 flex justify-between"
+                >
+                  <span class="">待选人员 (按部门检索)</span>
+                  <span class="text-outline">共 18 人</span>
+                </div>
+                <div class="overflow-y-auto custom-scrollbar flex-1 space-y-1 text-xs">
+                  <!-- User Item 1 -->
+                  <div
+                    class="p-1.5 rounded hover:bg-surface-container flex items-center justify-between cursor-pointer border border-transparent hover:border-primary/20"
+                  >
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[10px]"
+                      >
+                        张
+                      </div>
+                      <div>
+                        <div class="font-medium text-on-surface leading-tight">
+                          张若昀 <span class="text-[10px] text-outline font-mono">P7</span>
+                        </div>
+                        <div class="text-[10px] text-outline">供应链关务专家</div>
+                      </div>
+                    </div>
+                    <input
+                      checked=""
+                      class="rounded border-outline text-primary size-3.5"
+                      type="checkbox"
+                    />
+                  </div>
+                  <!-- User Item 2 -->
+                  <div
+                    class="p-1.5 rounded hover:bg-surface-container flex items-center justify-between cursor-pointer border border-transparent hover:border-primary/20"
+                  >
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="size-6 rounded-full bg-secondary/10 text-secondary flex items-center justify-center font-bold text-[10px]"
+                      >
+                        陈
+                      </div>
+                      <div>
+                        <div class="font-medium text-on-surface leading-tight">
+                          陈思诚 <span class="text-[10px] text-outline font-mono">P8</span>
+                        </div>
+                        <div class="text-[10px] text-outline">集装箱集港总调度</div>
+                      </div>
+                    </div>
+                    <input class="rounded border-outline text-primary size-3.5" type="checkbox" />
+                  </div>
+                  <!-- User Item 3 -->
+                  <div
+                    class="p-1.5 rounded hover:bg-surface-container flex items-center justify-between cursor-pointer border border-transparent hover:border-primary/20"
+                  >
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="size-6 rounded-full bg-theme-orange/10 text-theme-orange flex items-center justify-center font-bold text-[10px]"
+                      >
+                        王
+                      </div>
+                      <div>
+                        <div class="font-medium text-on-surface leading-tight">
+                          王静 <span class="text-[10px] text-outline font-mono">M1</span>
+                        </div>
+                        <div class="text-[10px] text-outline">关务合规法务总监</div>
+                      </div>
+                    </div>
+                    <input
+                      checked=""
+                      class="rounded border-outline text-primary size-3.5"
+                      type="checkbox"
+                    />
+                  </div>
+                </div>
+              </div>
+              <!-- Transfer Buttons (Col 2) -->
+              <div class="col-span-2 flex flex-col items-center justify-center gap-2">
+                <button
+                  class="size-8 rounded-full bg-primary text-on-primary hover:bg-primary-container flex items-center justify-center shadow-xs transition-transform active:scale-95"
+                  title="添加至审批流"
+                >
+                  <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+                </button>
+                <button
+                  class="size-8 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-transform active:scale-95"
+                  title="自右侧移除"
+                >
+                  <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                </button>
+              </div>
+              <!-- Target Ordered List (Col 5) -->
+              <div
+                class="col-span-5 border border-primary/30 rounded-lg bg-surface-container-lowest p-2 flex flex-col"
+              >
+                <div
+                  class="text-[11px] font-semibold text-primary pb-1 mb-1 border-b border-outline-variant/30 flex justify-between items-center"
+                >
+                  <span class="">审批序列 (可拖拽调序)</span>
+                  <span class="text-[10px] bg-primary/10 text-primary px-1.5 rounded"
+                    >会签模式</span
+                  >
+                </div>
+                <div class="overflow-y-auto custom-scrollbar flex-1 space-y-1.5 text-xs">
+                  <!-- Seq Item 1 -->
+                  <div
+                    class="p-1.5 rounded bg-surface-container-low border border-outline-variant/40 flex items-center gap-2 cursor-grab"
+                  >
+                    <span class="material-symbols-outlined text-[14px] text-outline"
+                      >drag_indicator</span
+                    >
+                    <span
+                      class="size-4 rounded-full bg-primary text-on-primary text-[10px] font-mono flex items-center justify-center"
+                      >1</span
+                    >
+                    <div class="flex-1 truncate">
+                      <div class="font-semibold text-on-surface truncate">张若昀 (关务初核)</div>
+                    </div>
+                    <span class="text-[10px] text-on-surface-variant font-mono">必须</span>
+                  </div>
+                  <!-- Seq Item 2 -->
+                  <div
+                    class="p-1.5 rounded bg-surface-container-low border border-outline-variant/40 flex items-center gap-2 cursor-grab"
+                  >
+                    <span class="material-symbols-outlined text-[14px] text-outline"
+                      >drag_indicator</span
+                    >
+                    <span
+                      class="size-4 rounded-full bg-primary text-on-primary text-[10px] font-mono flex items-center justify-center"
+                      >2</span
+                    >
+                    <div class="flex-1 truncate">
+                      <div class="font-semibold text-on-surface truncate">王静 (合规复核)</div>
+                    </div>
+                    <span class="text-[10px] text-on-surface-variant font-mono">会签</span>
+                  </div>
+                  <!-- Seq Item 3 -->
+                  <div
+                    class="p-1.5 rounded bg-primary-fixed/30 border border-primary/40 flex items-center gap-2 cursor-grab"
+                  >
+                    <span class="material-symbols-outlined text-[14px] text-primary"
+                      >drag_indicator</span
+                    >
+                    <span
+                      class="size-4 rounded-full bg-primary text-on-primary text-[10px] font-mono flex items-center justify-center"
+                      >3</span
+                    >
+                    <div class="flex-1 truncate">
+                      <div class="font-semibold text-primary truncate">李总 (财务决算)</div>
+                    </div>
+                    <span class="text-[10px] text-primary font-mono">终审</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ========================================== -->
+      <!-- SECTION 04: CascaderPanel & DragDropSort   -->
+      <!-- ========================================== -->
+      <section
+        class="scroll-mt-12 bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-6 shadow-sm space-y-6"
+        id="sec-04"
+      >
+        <div class="border-b border-surface-container pb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-primary/10 text-primary"
+              >04 / SPEC</span
+            >
+            <h2 class="text-xl font-bold tracking-tight text-on-surface">
+              深度级联与空间重排 —— CascaderPanel 与 拖拽排序 (Drag &amp; Drop)
+            </h2>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-1">
+            3 级连续平铺级联矩阵与 6 点凸点抓手、落点高亮指示线 (180ms 弹性过渡动效)
+          </p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <!-- CascaderPanel (Col 7) -->
+          <div
+            class="lg:col-span-7 border border-outline-variant/50 rounded-xl p-4 bg-surface-container-low/40 space-y-3"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">view_column</span>
+                <h3 class="text-sm font-bold text-on-surface">
+                  CascaderPanel: 亚太海关保税储位 3 级连续平铺视窗
+                </h3>
+              </div>
+              <span class="text-xs text-outline">Multi-Select Supported</span>
+            </div>
+            <!-- 3-Column Cascader -->
+            <div
+              class="grid grid-cols-3 border border-outline-variant/40 rounded-lg bg-surface-container-lowest h-60 overflow-hidden divide-x divide-outline-variant/30 text-xs"
+            >
+              <!-- Column 1: Ports -->
+              <div class="overflow-y-auto custom-scrollbar p-1.5 space-y-1">
+                <div class="px-2 py-1 text-[10px] font-bold text-outline uppercase tracking-wider">
+                  Level 1: 关区枢纽
+                </div>
+                <div
+                  class="p-2 rounded bg-primary text-on-primary font-medium flex items-center justify-between shadow-xs"
+                >
+                  <span class="">中国·深圳盐田港</span>
+                  <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                </div>
+                <div
+                  class="p-2 rounded hover:bg-surface-container text-on-surface flex items-center justify-between"
+                >
+                  <span class="">中国·上海洋山深水</span>
+                  <span class="material-symbols-outlined text-[14px] text-outline"
+                    >chevron_right</span
+                  >
+                </div>
+                <div
+                  class="p-2 rounded hover:bg-surface-container text-on-surface flex items-center justify-between"
+                >
+                  <span class="">新加坡港 (PSA)</span>
+                  <span class="material-symbols-outlined text-[14px] text-outline"
+                    >chevron_right</span
+                  >
+                </div>
+                <div
+                  class="p-2 rounded hover:bg-surface-container text-on-surface flex items-center justify-between"
+                >
+                  <span class="">荷兰·鹿特丹港</span>
+                  <span class="material-symbols-outlined text-[14px] text-outline"
+                    >chevron_right</span
+                  >
+                </div>
+              </div>
+              <!-- Column 2: Hub Warehouses -->
+              <div
+                class="overflow-y-auto custom-scrollbar p-1.5 space-y-1 bg-surface-container-low/20"
+              >
+                <div class="px-2 py-1 text-[10px] font-bold text-outline uppercase tracking-wider">
+                  Level 2: 监管仓储
+                </div>
+                <div
+                  class="p-2 rounded bg-primary text-on-primary font-medium flex items-center justify-between shadow-xs"
+                >
+                  <span class="">A3 冷链自动化立库</span>
+                  <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+                </div>
+                <div
+                  class="p-2 rounded hover:bg-surface-container text-on-surface flex items-center justify-between"
+                >
+                  <span class="">B1 危险化学品专仓</span>
+                  <span class="material-symbols-outlined text-[14px] text-outline"
+                    >chevron_right</span
+                  >
+                </div>
+                <div
+                  class="p-2 rounded hover:bg-surface-container text-on-surface flex items-center justify-between"
+                >
+                  <span class="">C2 跨境电商集拼仓</span>
+                  <span class="material-symbols-outlined text-[14px] text-outline"
+                    >chevron_right</span
+                  >
+                </div>
+              </div>
+              <!-- Column 3: Storage Slot Units -->
+              <div class="overflow-y-auto custom-scrollbar p-1.5 space-y-1">
+                <div class="px-2 py-1 text-[10px] font-bold text-outline uppercase tracking-wider">
+                  Level 3: 专属储位
+                </div>
+                <label
+                  class="p-2 rounded hover:bg-surface-container flex items-center gap-2 cursor-pointer bg-primary-fixed/30 text-on-primary-fixed"
+                >
+                  <input
+                    checked=""
+                    class="rounded border-outline text-primary size-3.5"
+                    type="checkbox"
+                  />
+                  <span class="font-medium">#BAY-01-A (恒温)</span>
+                </label>
+                <label
+                  class="p-2 rounded hover:bg-surface-container flex items-center gap-2 cursor-pointer"
+                >
+                  <input
+                    checked=""
+                    class="rounded border-outline text-primary size-3.5"
+                    type="checkbox"
+                  />
+                  <span class="font-medium text-on-surface">#BAY-01-B (深冷)</span>
+                </label>
+                <label
+                  class="p-2 rounded hover:bg-surface-container flex items-center gap-2 cursor-pointer"
+                >
+                  <input class="rounded border-outline text-primary size-3.5" type="checkbox" />
+                  <span class="text-on-surface-variant">#BAY-02-A (预留)</span>
+                </label>
+                <label
+                  class="p-2 rounded hover:bg-surface-container flex items-center gap-2 cursor-pointer"
+                >
+                  <input class="rounded border-outline text-primary size-3.5" type="checkbox" />
+                  <span class="text-on-surface-variant">#BAY-02-B (清空)</span>
+                </label>
+              </div>
+            </div>
+            <!-- Bottom Full Path Output -->
+            <div
+              class="text-xs bg-surface-container-lowest p-2.5 rounded-lg border border-outline-variant/40 flex items-center justify-between"
+            >
+              <span class="text-outline">当前选定存储路径:</span>
+              <span class="font-mono text-primary font-semibold"
+                >深圳盐田港 / A3冷链自动化立库 / [#BAY-01-A, #BAY-01-B]</span
+              >
+            </div>
+          </div>
+          <!-- Drag & Drop Sortable (Col 5) -->
+          <div
+            class="lg:col-span-5 border border-outline-variant/50 rounded-xl p-4 bg-surface-container-low/40 space-y-3"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">drag_pan</span>
+                <h3 class="text-sm font-bold text-on-surface">拖拽排序: 工作台金刚区自定义</h3>
+              </div>
+              <span
+                class="text-[11px] text-status-success font-medium bg-theme-green/10 px-2 py-0.5 rounded"
+                >180ms cubic-bezier</span
+              >
+            </div>
+            <!-- Sortable Interactive Sandbox -->
+            <div class="space-y-2 text-xs">
+              <!-- Item 1 (Static) -->
+              <div
+                class="flex items-center gap-3 p-2.5 bg-surface-container-lowest border border-outline-variant/40 rounded-lg shadow-2xs"
+              >
+                <span
+                  class="material-symbols-outlined text-outline cursor-grab hover:text-on-surface"
+                  >drag_handle</span
+                >
+                <div
+                  class="size-7 rounded bg-primary/10 text-primary flex items-center justify-center font-bold"
+                >
+                  <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold text-on-surface">集装箱提单快速预录</div>
+                  <div class="text-[11px] text-outline">高频业务快捷通道</div>
+                </div>
+                <span class="material-symbols-outlined text-outline text-[16px]">push_pin</span>
+              </div>
+              <!-- Drop Indicator Line (Highlighted) -->
+              <div class="relative py-1 flex items-center">
+                <div class="size-2 rounded-full bg-primary absolute -left-1"></div>
+                <div class="w-full h-0.5 bg-primary shadow-xs"></div>
+                <div class="size-2 rounded-full bg-primary absolute -right-1"></div>
+              </div>
+              <!-- Item 2 (Active Dragging State: Raised + Opacity 85% + Deep Shadow) -->
+              <div
+                class="flex items-center gap-3 p-2.5 bg-surface-container-lowest border-2 border-primary rounded-lg shadow-lg opacity-90 -translate-y-1 cursor-grabbing"
+              >
+                <span class="material-symbols-outlined text-primary">drag_handle</span>
+                <div
+                  class="size-7 rounded bg-theme-orange/10 text-theme-orange flex items-center justify-center font-bold"
+                >
+                  <span class="material-symbols-outlined text-[18px]">calculate</span>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold text-primary">滞箱费与滞港费智能试算器</div>
+                  <div class="text-[11px] text-primary/80 font-mono">
+                    State: Active Dragging (Elevated +4px)
+                  </div>
+                </div>
+                <span class="material-symbols-outlined text-primary text-[16px]">open_with</span>
+              </div>
+              <!-- Item 3 (Static) -->
+              <div
+                class="flex items-center gap-3 p-2.5 bg-surface-container-lowest border border-outline-variant/40 rounded-lg shadow-2xs"
+              >
+                <span
+                  class="material-symbols-outlined text-outline cursor-grab hover:text-on-surface"
+                  >drag_handle</span
+                >
+                <div
+                  class="size-7 rounded bg-secondary/10 text-secondary flex items-center justify-center font-bold"
+                >
+                  <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                </div>
+                <div class="flex-1">
+                  <div class="font-semibold text-on-surface">出口退税单证池与发票开具</div>
+                  <div class="text-[11px] text-outline">财务资金流转核心</div>
+                </div>
+                <span class="material-symbols-outlined text-outline text-[16px]">more_vert</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ========================================== -->
+      <!-- SECTION 05: BatchImport & FilePreview      -->
+      <!-- ========================================== -->
+      <section
+        class="scroll-mt-12 bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-6 shadow-sm space-y-6"
+        id="sec-05"
+      >
+        <div class="border-b border-surface-container pb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-primary/10 text-primary"
+              >05 / SPEC</span
+            >
+            <h2 class="text-xl font-bold tracking-tight text-on-surface">
+              资产与数据流转 —— 批量导入 (BatchImport) 与 文件预览 (FilePreview)
+            </h2>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-1">
+            4 步向导式容错清洗流水线与多格式高保真凭证全屏/抽屉级预览引擎
+          </p>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- BatchImport Modal / Workflow -->
+          <div
+            class="border border-outline-variant/50 rounded-xl p-4 bg-surface-container-low/40 space-y-4"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">upload_file</span>
+                <h3 class="text-sm font-bold text-on-surface">
+                  BatchImport: 4 步导入工作流与前置清洗
+                </h3>
+              </div>
+              <button
+                class="text-xs text-primary font-medium flex items-center gap-1 hover:underline"
+              >
+                <span class="material-symbols-outlined text-[14px]">download</span>
+                <span class="">下载标准 XLSX 模板</span>
+              </button>
+            </div>
+            <!-- Step Wizard Tracker -->
+            <div class="grid grid-cols-4 gap-2 text-center text-xs">
+              <div
+                class="py-1.5 px-1 rounded bg-theme-green/10 text-status-success font-semibold border border-status-success/30 flex items-center justify-center gap-1"
+              >
+                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                <span class="truncate">01. 模板下载</span>
+              </div>
+              <div
+                class="py-1.5 px-1 rounded bg-theme-green/10 text-status-success font-semibold border border-status-success/30 flex items-center justify-center gap-1"
+              >
+                <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                <span class="truncate">02. 上传文件</span>
+              </div>
+              <div
+                class="py-1.5 px-1 rounded bg-primary text-on-primary font-bold shadow-xs flex items-center justify-center gap-1"
+              >
+                <span class="size-2 rounded-full bg-white animate-pulse"></span>
+                <span class="truncate">03. 解析校验</span>
+              </div>
+              <div
+                class="py-1.5 px-1 rounded bg-surface-container text-outline flex items-center justify-center gap-1"
+              >
+                <span class="truncate">04. 确认入库</span>
+              </div>
+            </div>
+            <!-- Progress Track -->
+            <div
+              class="bg-surface-container-lowest p-3 rounded-lg border border-outline-variant/40 space-y-2"
+            >
+              <div class="flex justify-between items-center text-xs">
+                <span class="font-medium text-on-surface flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-primary text-[16px]">sync</span>
+                  正在执行服务端数据合规清洗: 1,200 / 1,200 笔已处理
+                </span>
+                <span class="font-mono text-primary font-bold">65% (剩余 2.4s)</span>
+              </div>
+              <div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+                <div class="bg-primary h-full w-[65%] rounded-full transition-all"></div>
+              </div>
+              <!-- Error Banner -->
+              <div
+                class="p-2 rounded bg-error-container/30 border border-error/30 text-xs flex items-center justify-between text-error"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px]">error</span>
+                  <span class="">校验拦截: 发现 3 条记录格式异常 (已定位至单元格)</span>
+                </div>
+                <button class="font-semibold underline text-error hover:opacity-80">
+                  导出异常报错单
+                </button>
+              </div>
+            </div>
+            <!-- Error Details Mini Table -->
+            <div
+              class="border border-outline-variant/40 rounded-lg overflow-hidden bg-surface-container-lowest text-xs"
+            >
+              <div
+                class="bg-surface-container-high px-3 py-1.5 font-semibold text-on-surface-variant grid grid-cols-12"
+              >
+                <div class="col-span-2">Excel 行号</div>
+                <div class="col-span-4">字段名称</div>
+                <div class="col-span-6">异常原因描述</div>
+              </div>
+              <div class="divide-y divide-surface-container">
+                <div class="px-3 py-1.5 grid grid-cols-12 items-center bg-error-container/10">
+                  <div class="col-span-2 font-mono font-bold text-error">Row #14</div>
+                  <div class="col-span-4 font-mono text-on-surface">hs_code</div>
+                  <div class="col-span-6 text-error">HS编码必须为8或10位纯数字</div>
+                </div>
+                <div class="px-3 py-1.5 grid grid-cols-12 items-center bg-error-container/10">
+                  <div class="col-span-2 font-mono font-bold text-error">Row #29</div>
+                  <div class="col-span-4 font-mono text-on-surface">eta_arrival_date</div>
+                  <div class="col-span-6 text-error">到港时间格式非法 (要求 YYYY-MM-DD)</div>
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-end gap-2 pt-1">
+              <button
+                class="px-3 py-1.5 rounded text-xs bg-surface-container text-on-surface hover:bg-surface-variant font-medium"
+              >
+                放弃本次导入
+              </button>
+              <button
+                class="px-4 py-1.5 rounded text-xs bg-primary text-on-primary hover:bg-primary-container font-medium shadow-xs"
+              >
+                忽略异常并导入有效数据 (1,197 笔)
+              </button>
+            </div>
+          </div>
+          <!-- FilePreview Viewer -->
+          <div
+            class="border border-outline-variant/50 rounded-xl p-4 bg-surface-container-low/40 space-y-3"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[20px]">preview</span>
+                <h3 class="text-sm font-bold text-on-surface">
+                  FilePreview: PDF 发票与双语合同凭证预览
+                </h3>
+              </div>
+              <span class="text-xs font-mono text-outline">INV-2024-GLOBAL-9981.pdf</span>
+            </div>
+            <!-- Viewer Control Bar -->
+            <div
+              class="flex items-center justify-between p-2 rounded-lg bg-surface-container-lowest border border-outline-variant/40 text-xs flex-wrap gap-2"
+            >
+              <!-- Zoom & Fit -->
+              <div class="flex items-center gap-1">
+                <button
+                  class="size-7 rounded hover:bg-surface-container flex items-center justify-center text-outline hover:text-on-surface"
+                >
+                  <span class="material-symbols-outlined text-[16px]">remove</span>
+                </button>
+                <span class="font-mono px-1 font-medium">100%</span>
+                <button
+                  class="size-7 rounded hover:bg-surface-container flex items-center justify-center text-outline hover:text-on-surface"
+                >
+                  <span class="material-symbols-outlined text-[16px]">add</span>
+                </button>
+                <button
+                  class="px-2 py-1 rounded hover:bg-surface-container text-outline text-[11px]"
+                >
+                  自适应宽度
+                </button>
+              </div>
+              <!-- Page Navigation -->
+              <div class="flex items-center gap-1.5">
+                <button
+                  class="size-7 rounded hover:bg-surface-container flex items-center justify-center text-outline"
+                >
+                  <span class="material-symbols-outlined text-[16px]">first_page</span>
+                </button>
+                <span class="font-mono text-on-surface">Page <strong>2</strong> of 14</span>
+                <button
+                  class="size-7 rounded hover:bg-surface-container flex items-center justify-center text-outline"
+                >
+                  <span class="material-symbols-outlined text-[16px]">last_page</span>
+                </button>
+              </div>
+              <!-- Action buttons -->
+              <div class="flex items-center gap-1">
+                <button
+                  class="size-7 rounded hover:bg-surface-container flex items-center justify-center text-outline hover:text-on-surface"
+                  title="旋转 90°"
+                >
+                  <span class="material-symbols-outlined text-[16px]">rotate_right</span>
+                </button>
+                <button
+                  class="size-7 rounded hover:bg-surface-container flex items-center justify-center text-primary"
+                  title="下载凭证"
+                >
+                  <span class="material-symbols-outlined text-[16px]">download</span>
+                </button>
+                <button
+                  class="size-7 rounded hover:bg-surface-container flex items-center justify-center text-outline hover:text-on-surface"
+                  title="打印"
+                >
+                  <span class="material-symbols-outlined text-[16px]">print</span>
+                </button>
+              </div>
+            </div>
+            <!-- Document Canvas Simulator -->
+            <div
+              class="h-64 border border-outline-variant/40 rounded-lg bg-surface-container-high/40 p-4 overflow-y-auto custom-scrollbar flex justify-center"
+            >
+              <div
+                class="w-full max-w-sm bg-white shadow-md rounded p-4 text-[10px] text-slate-800 space-y-2 border border-slate-200"
+              >
+                <div class="flex justify-between border-b pb-2 border-slate-300">
+                  <div>
+                    <div class="font-bold text-xs text-primary">COMMERCIAL INVOICE</div>
+                    <div class="text-[9px] text-slate-500">国际商务海运凭单 (副本)</div>
+                  </div>
+                  <div class="text-right font-mono">
+                    <div class="">NO: 2024-MSK-00192</div>
+                    <div class="text-[9px] text-slate-400">DATE: 2024-11-20</div>
+                  </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-[9px] border-b pb-2 border-slate-200">
+                  <div>
+                    <span class="text-slate-400">Consignee:</span>
+                    <div class="font-medium">Rotterdam Logistics Port BV</div>
+                  </div>
+                  <div>
+                    <span class="text-slate-400">Carrier:</span>
+                    <div class="font-medium">COSCO Shipping Co., Ltd</div>
+                  </div>
+                </div>
+                <div class="space-y-1 font-mono text-[9px]">
+                  <div
+                    class="flex justify-between font-bold text-slate-600 border-b border-slate-100 pb-0.5"
+                  >
+                    <span class="">ITEM DESCRIPTION</span>
+                    <span class="">TOTAL (USD)</span>
+                  </div>
+                  <div class="flex justify-between text-slate-700">
+                    <span class="">40HQ CONTAINER REFRIGERATED</span>
+                    <span class="">$ 4,820.00</span>
+                  </div>
+                  <div class="flex justify-between text-slate-700">
+                    <span class="">TERMINAL HANDLING CHARGE (THC)</span>
+                    <span class="">$ 310.00</span>
+                  </div>
+                </div>
+                <div class="pt-2 text-right border-t border-slate-300">
+                  <span class="text-slate-500 mr-2">TOTAL AMOUNT DUE:</span>
+                  <span class="font-mono font-bold text-xs text-primary">$ 5,130.00</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- ========================================== -->
+      <!-- SECTION 06: MetricDashboardCard & Tokens   -->
+      <!-- ========================================== -->
+      <section
+        class="scroll-mt-12 bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-6 shadow-sm space-y-6"
+        id="sec-06"
+      >
+        <div class="border-b border-surface-container pb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold px-2 py-0.5 rounded bg-primary/10 text-primary"
+              >06 / SPEC</span
+            >
+            <h2 class="text-xl font-bold tracking-tight text-on-surface">
+              数据决策看板 —— 统计看板卡片 与 动效/Token 映射总表
+            </h2>
+          </div>
+          <p class="text-xs text-on-surface-variant mt-1">
+            4 种企业经营看板高维度卡片设计与生产工程级 CSS 变量、缓动矩阵及 WCAG 2.2 AA 合规保障
+          </p>
+        </div>
+        <!-- 4 High-Density Metric Dashboard Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Card 1: Revenue Metric with SVG Area Chart -->
+          <div
+            class="p-4 rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-2xs space-y-3 hover:border-primary/40 transition-all"
+          >
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-on-surface-variant font-medium">核心营收总额 (ARR)</span>
+              <span class="material-symbols-outlined text-[18px] text-primary"
+                >monetization_on</span
+              >
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span
+                class="text-2xl font-black font-mono tracking-tight tabular-numbers text-on-surface"
+                >¥ 84,291,400</span
+              >
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="inline-flex items-center font-bold text-status-success font-mono">
+                <span class="material-symbols-outlined text-[14px]">arrow_upward</span> +18.4%
+              </span>
+              <span class="text-outline text-[11px]">环比上月 +$2.1M</span>
+            </div>
+            <!-- Sparkline Area SVG -->
+            <div class="h-10 w-full pt-1">
+              <svg
+                class="w-full h-full overflow-visible"
+                preserveAspectRatio="none"
+                viewBox="0 0 100 24"
+              >
+                <defs>
+                  <linearGradient id="primaryAreaGrad" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#0057c2" stop-opacity="0.3"></stop>
+                    <stop offset="100%" stop-color="#0057c2" stop-opacity="0.0"></stop>
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M0,20 Q15,18 30,12 T60,10 T85,4 L100,2 L100,24 L0,24 Z"
+                  fill="url(#primaryAreaGrad)"
+                ></path>
+                <path
+                  d="M0,20 Q15,18 30,12 T60,10 T85,4 L100,2"
+                  fill="none"
+                  stroke="#0057c2"
+                  stroke-linecap="round"
+                  stroke-width="2"
+                ></path>
+              </svg>
+            </div>
+          </div>
+          <!-- Card 2: Funnel Conversion Metric -->
+          <div
+            class="p-4 rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-2xs space-y-3 hover:border-primary/40 transition-all"
+          >
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-on-surface-variant font-medium">订单全链路转化漏斗</span>
+              <span class="material-symbols-outlined text-[18px] text-secondary">filter_alt</span>
+            </div>
+            <div class="flex items-baseline gap-2">
+              <span
+                class="text-2xl font-black font-mono tracking-tight tabular-numbers text-on-surface"
+                >68.4%</span
+              >
+              <span class="text-xs text-status-success font-mono font-semibold">综合达标</span>
+            </div>
+            <!-- Step Bars -->
+            <div class="space-y-1.5 pt-1 text-[10px]">
+              <div>
+                <div class="flex justify-between mb-0.5 text-on-surface-variant font-mono">
+                  <span class="">需求立项 &gt; 招标</span>
+                  <span class="">94.2%</span>
+                </div>
+                <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+                  <div class="bg-primary h-full w-[94%]"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-0.5 text-on-surface-variant font-mono">
+                  <span class="">签约 &gt; 履约交付</span>
+                  <span class="">72.6%</span>
+                </div>
+                <div class="h-1.5 bg-surface-container rounded-full overflow-hidden">
+                  <div class="bg-secondary h-full w-[72%]"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Card 3: SLA Alert Radial Gauge -->
+          <div
+            class="p-4 rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-2xs space-y-3 hover:border-primary/40 transition-all"
+          >
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-on-surface-variant font-medium">履约 SLA 预警与响应</span>
+              <span
+                class="flex items-center gap-1 text-[11px] font-mono text-status-error font-semibold"
+              >
+                <span class="size-2 rounded-full bg-error animate-ping"></span>2 项临期
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div>
+                <span
+                  class="text-2xl font-black font-mono tracking-tight tabular-numbers text-on-surface"
+                  >99.18%</span
+                >
+                <div class="text-[11px] text-outline mt-0.5">标称 SLA: &gt;= 99.00%</div>
+              </div>
+              <!-- Radial Circular Progress Mini -->
+              <div class="relative size-12 flex items-center justify-center">
+                <svg class="w-full h-full -rotate-90" viewBox="0 0 36 36">
+                  <path
+                    class="text-surface-container"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3.5"
+                  ></path>
+                  <path
+                    class="text-primary"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-dasharray="99.2, 100"
+                    stroke-linecap="round"
+                    stroke-width="3.5"
+                  ></path>
+                </svg>
+                <span class="material-symbols-outlined text-[16px] text-primary absolute"
+                  >verified</span
+                >
+              </div>
+            </div>
+            <div
+              class="text-[11px] text-on-surface-variant bg-surface-container-low p-1.5 rounded flex items-center gap-1"
+            >
+              <span class="material-symbols-outlined text-[14px] text-status-warning"
+                >schedule</span
+              >
+              <span class="">平均客诉响应时长: <strong>14.2 分钟</strong></span>
+            </div>
+          </div>
+          <!-- Card 4: Real-time Transaction Stream -->
+          <div
+            class="p-4 rounded-xl border border-outline-variant/40 bg-surface-container-lowest shadow-2xs space-y-2 hover:border-primary/40 transition-all"
+          >
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-on-surface-variant font-medium">实时跨境清算流水</span>
+              <span class="material-symbols-outlined text-[18px] text-theme-cyan"
+                >receipt_long</span
+              >
+            </div>
+            <!-- Ticker Mini Feed -->
+            <div class="space-y-1.5 text-xs">
+              <div
+                class="flex items-center justify-between p-1 rounded bg-surface-container-low text-[11px]"
+              >
+                <span class="font-mono text-primary truncate max-w-[100px]">TX-99812</span>
+                <span class="font-mono font-semibold tabular-numbers text-on-surface"
+                  >+$12,400</span
+                >
+                <span class="text-[10px] text-outline">1s 前</span>
+              </div>
+              <div
+                class="flex items-center justify-between p-1 rounded bg-surface-container-low text-[11px]"
+              >
+                <span class="font-mono text-primary truncate max-w-[100px]">TX-99811</span>
+                <span class="font-mono font-semibold tabular-numbers text-on-surface">+$8,950</span>
+                <span class="text-[10px] text-outline">4s 前</span>
+              </div>
+              <div
+                class="flex items-center justify-between p-1 rounded bg-surface-container-low text-[11px]"
+              >
+                <span class="font-mono text-primary truncate max-w-[100px]">TX-99810</span>
+                <span class="font-mono font-semibold tabular-numbers text-on-surface"
+                  >+$41,200</span
+                >
+                <span class="text-[10px] text-outline">9s 前</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Engineering Tokens & Motion Specs Matrix -->
+        <div
+          class="border border-outline-variant/50 rounded-xl overflow-hidden bg-surface-container-lowest space-y-0"
+        >
+          <div
+            class="bg-surface-container-high px-4 py-3 border-b border-outline-variant/40 flex items-center justify-between"
+          >
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-[20px]">code</span>
+              <h3 class="text-sm font-bold text-on-surface">
+                Engineering Tokens &amp; Motion Specifications
+              </h3>
+            </div>
+            <span class="text-xs text-outline font-mono">lx-ui-enterprise-tokens.json</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr
+                  class="bg-surface-container-low text-on-surface-variant font-semibold border-b border-outline-variant/30"
+                >
+                  <th class="py-2.5 px-4">Token CSS Variable</th>
+                  <th class="py-2.5 px-4">默认数值 / 规范定义</th>
+                  <th class="py-2.5 px-4">动效时长 / 缓动曲线 (Bezier)</th>
+                  <th class="py-2.5 px-4">WCAG 2.2 AA 无障碍保障说明</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-surface-container font-mono text-[12px]">
+                <tr class="hover:bg-surface-container-low/40">
+                  <td class="py-2.5 px-4 font-bold text-primary">--lx-virtual-row-height</td>
+                  <td class="py-2.5 px-4 text-on-surface">40px (紧凑) / 48px (默认)</td>
+                  <td class="py-2.5 px-4 text-on-surface-variant">0ms (视口无损绝对定位)</td>
+                  <td class="py-2.5 px-4 font-body-md text-on-surface-variant">
+                    支持键盘上下箭头行级巡检导航
+                  </td>
+                </tr>
+                <tr class="hover:bg-surface-container-low/40">
+                  <td class="py-2.5 px-4 font-bold text-primary">--lx-cell-edit-border-focus</td>
+                  <td class="py-2.5 px-4 text-on-surface">2px solid #0057c2</td>
+                  <td class="py-2.5 px-4 text-on-surface-variant">120ms ease-out</td>
+                  <td class="py-2.5 px-4 font-body-md text-on-surface-variant">
+                    高对比度焦点环: 对比度 &gt; 4.8:1
+                  </td>
+                </tr>
+                <tr class="hover:bg-surface-container-low/40">
+                  <td class="py-2.5 px-4 font-bold text-primary">--lx-drag-handle-elevation</td>
+                  <td class="py-2.5 px-4 text-on-surface">0 10px 25px -5px rgba(0,0,0,0.15)</td>
+                  <td class="py-2.5 px-4 text-on-surface-variant">
+                    180ms cubic-bezier(0.2, 0, 0, 1)
+                  </td>
+                  <td class="py-2.5 px-4 font-body-md text-on-surface-variant">
+                    提供标准 ARIA-grabbed 状态宣告
+                  </td>
+                </tr>
+                <tr class="hover:bg-surface-container-low/40">
+                  <td class="py-2.5 px-4 font-bold text-primary">--lx-filter-drawer-transition</td>
+                  <td class="py-2.5 px-4 text-on-surface">translateX(0) / opacity 1</td>
+                  <td class="py-2.5 px-4 text-on-surface-variant">
+                    240ms cubic-bezier(0.0, 0, 0.2, 1)
+                  </td>
+                  <td class="py-2.5 px-4 font-body-md text-on-surface-variant">
+                    抽屉展开时锁住背景焦点陷阱 (Focus Trap)
+                  </td>
+                </tr>
+                <tr class="hover:bg-surface-container-low/40">
+                  <td class="py-2.5 px-4 font-bold text-primary">--lx-batch-import-progress</td>
+                  <td class="py-2.5 px-4 text-on-surface">
+                    linear-gradient(90deg, #0057c2, #76dcff)
+                  </td>
+                  <td class="py-2.5 px-4 text-on-surface-variant">
+                    300ms cubic-bezier(0.4, 0, 0.2, 1)
+                  </td>
+                  <td class="py-2.5 px-4 font-body-md text-on-surface-variant">
+                    动态进度条附带文本实时 aria-valuenow 读报
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+      <!-- FOOTER META -->
+      <footer
+        class="pt-6 pb-12 border-t border-surface-container flex flex-wrap items-center justify-between text-xs text-on-surface-variant gap-4"
+      >
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-on-surface">lx-ui Enterprise Design System</span>
+          <span class="">•</span>
+          <span class="">Version 4.2.0-p1-enterprise-rc3</span>
+          <span class="">•</span>
+          <span class="text-status-success font-semibold"
+            >All Tests Passed (100% TSX Typing Coverage)</span
+          >
+        </div>
+        <div class="flex items-center gap-4">
+          <a class="hover:text-primary transition-colors" href="#">组件演练沙盒 (Storybook)</a>
+          <a class="hover:text-primary transition-colors" href="#">Figma 变量库与 UI Kit</a>
+          <a class="hover:text-primary transition-colors" href="#">无障碍审查报告</a>
+          <a class="hover:text-primary transition-colors" href="#">返回顶部 ↑</a>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>

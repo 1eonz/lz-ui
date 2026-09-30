@@ -1,0 +1,1664 @@
+<!doctype html>
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>lx-ui P0 反馈组件全量交互与样式详细规范</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'secondary-container': '#76dcff',
+              'on-secondary': '#ffffff',
+              'inverse-surface': '#213145',
+              'primary-fixed': '#d9e2ff',
+              'tertiary-fixed-dim': '#ffb695',
+              'on-tertiary-container': '#fffbff',
+              'outline-variant': '#c1c6d7',
+              'surface-bright': '#f8f9ff',
+              'inverse-primary': '#afc6ff',
+              'surface-tint': '#0059c7',
+              tertiary: '#9e3d00',
+              'on-secondary-fixed-variant': '#004e61',
+              'secondary-fixed-dim': '#6cd3f7',
+              'on-secondary-fixed': '#001f28',
+              primary: '#0057c2',
+              'surface-container': '#e5eeff',
+              'surface-container-high': '#dce9ff',
+              error: '#ba1a1a',
+              'on-error': '#ffffff',
+              'on-surface': '#0b1c30',
+              'status-error': '#DC2626',
+              'on-primary-container': '#fefcff',
+              'on-background': '#0b1c30',
+              'status-success': '#16A34A',
+              background: '#f8f9ff',
+              'on-primary': '#ffffff',
+              'surface-variant': '#d3e4fe',
+              'theme-cyan': '#0891B2',
+              'status-info': '#2563EB',
+              'on-primary-fixed': '#001a43',
+              'on-tertiary-fixed-variant': '#7c2e00',
+              'tertiary-container': '#c64f00',
+              'on-error-container': '#93000a',
+              'primary-fixed-dim': '#afc6ff',
+              surface: '#f8f9ff',
+              'theme-rose': '#E11D48',
+              'on-tertiary': '#ffffff',
+              'primary-container': '#006ef2',
+              'surface-dim': '#cbdbf5',
+              'on-primary-fixed-variant': '#004398',
+              'theme-orange': '#F97316',
+              'surface-container-highest': '#d3e4fe',
+              'theme-green': '#16A34A',
+              'on-surface-variant': '#414755',
+              'surface-container-low': '#eff4ff',
+              'theme-purple': '#7C3AED',
+              secondary: '#006780',
+              'surface-container-lowest': '#ffffff',
+              'status-warning': '#F59E0B',
+              'inverse-on-surface': '#eaf1ff',
+              'error-container': '#ffdad6',
+              outline: '#727786',
+              'on-tertiary-fixed': '#351000',
+              'secondary-fixed': '#b7eaff',
+              'on-secondary-container': '#006077',
+              'tertiary-fixed': '#ffdbcc',
+            },
+            borderRadius: {
+              DEFAULT: '0.125rem',
+              lg: '0.25rem',
+              xl: '0.5rem',
+              full: '0.75rem',
+            },
+            spacing: {
+              'space-sm': '0.5rem',
+              'space-lg': '1rem',
+              'space-xs': '0.25rem',
+              gutter: '1rem',
+              'space-xl': '1.5rem',
+              margin: '1.5rem',
+              'space-md': '0.75rem',
+            },
+            fontFamily: {
+              'body-sm': ['Inter', 'sans-serif'],
+              'label-md': ['Inter', 'sans-serif'],
+              'headline-sm': ['Inter', 'sans-serif'],
+              'label-xs': ['Inter', 'sans-serif'],
+              'headline-md': ['Inter', 'sans-serif'],
+              'headline-xl': ['Inter', 'sans-serif'],
+              'headline-lg': ['Inter', 'sans-serif'],
+              'label-sm': ['Inter', 'sans-serif'],
+              'body-md': ['Inter', 'sans-serif'],
+              'body-lg': ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        line-height: 1;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      @keyframes spinLinear {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .animate-spin-custom {
+        animation: spinLinear 0.8s linear infinite;
+      }
+      @keyframes progressStripes {
+        0% {
+          background-position: 0 0;
+        }
+        100% {
+          background-position: 30px 0;
+        }
+      }
+      .stripe-animated {
+        background-size: 30px 30px;
+        background-image: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.25) 25%,
+          transparent 25%,
+          transparent 50%,
+          rgba(255, 255, 255, 0.25) 50%,
+          rgba(255, 255, 255, 0.25) 75%,
+          transparent 75%,
+          transparent
+        );
+        animation: progressStripes 1.2s linear infinite;
+      }
+      @keyframes pulseSoft {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.65;
+        }
+      }
+      .token-pill {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background text-on-surface antialiased selection:bg-surface-variant selection:text-primary"
+  >
+    <!-- Shared TopNavBar Component -->
+    <div
+      class="relative flex h-auto min-h-screen w-full flex-col bg-slate-50 group/design-root overflow-x-hidden"
+      style="font-family: Inter, 'Noto Sans', sans-serif"
+    >
+      <div class="layout-container flex h-full grow flex-col">
+        <div class="px-40 flex flex-1 justify-center py-5">
+          <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+            <header
+              class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e6ecf4] px-10 py-3"
+            >
+              <div class="flex items-center gap-8">
+                <div class="flex items-center gap-4 text-[#0c131d]">
+                  <div class="size-4">
+                    <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z"
+                        fill="currentColor"
+                      ></path>
+                    </svg>
+                  </div>
+                  <h2 class="text-[#0c131d] text-lg font-bold leading-tight tracking-[-0.015em]">
+                    lx-ui Design System
+                  </h2>
+                </div>
+                <label class="flex flex-col min-w-40 !h-10 max-w-64">
+                  <div class="flex w-full flex-1 items-stretch rounded h-full">
+                    <div
+                      class="text-[#456ba1] flex border-none bg-[#e6ecf4] items-center justify-center pl-4 rounded-l border-r-0"
+                      data-icon="MagnifyingGlass"
+                      data-size="24px"
+                      data-weight="regular"
+                    >
+                      <svg
+                        fill="currentColor"
+                        height="24px"
+                        viewbox="0 0 256 256"
+                        width="24px"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                        ></path>
+                      </svg>
+                    </div>
+                    <input
+                      class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded text-[#0c131d] focus:outline-0 focus:ring-0 border-none bg-[#e6ecf4] focus:border-none h-full placeholder:text-[#456ba1] px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal"
+                      placeholder="Search"
+                      value=""
+                    />
+                  </div>
+                </label>
+              </div>
+              <div class="flex flex-1 justify-end gap-8">
+                <div class="flex items-center gap-9">
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#">Overview</a>
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#"
+                    >Components</a
+                  >
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#">Tokens</a>
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#"
+                    >Accessibility</a
+                  >
+                  <a class="text-[#0c131d] text-sm font-medium leading-normal" href="#">Motion</a>
+                </div>
+                <div class="flex gap-2">
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-[#1677ff] text-slate-50 text-sm font-bold leading-normal tracking-[0.015em]"
+                  >
+                    <span class="truncate">Export Spec</span>
+                  </button>
+                  <button
+                    class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-[#e6ecf4] text-[#0c131d] text-sm font-bold leading-normal tracking-[0.015em]"
+                  >
+                    <span class="truncate">v2.4.0-stable</span>
+                  </button>
+                </div>
+                <div
+                  class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                  style="
+                    background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDn8fjbRvbpav9y7VU_SqG-ZrZcp_cBdlc4G4LVRhLcGwi1FgyDfzL3jYt5wB6nEd_myvTK76dnRgI7G-lJa_CuKcePPsf4lJxn6YaqsePfGiqGhAEYzN14vyW-ARb88qZr221uWPjnAXt9U2NGSUHS_3UapgoS2v3d--UrH3cpjhF-3cDPAABg7XNpFiqAURRyFwIZUyoTgecdLI8zQfhnZioq_RgzHov4eVu7NF6ul0F237725Y_g4w');
+                  "
+                ></div>
+              </div>
+            </header>
+            <div class="flex flex-wrap gap-2 p-4">
+              <a class="text-[#456ba1] text-base font-medium leading-normal" href="#"
+                >Design System</a
+              >
+              <span class="text-[#456ba1] text-base font-medium leading-normal">/</span>
+              <a class="text-[#456ba1] text-base font-medium leading-normal" href="#">Components</a>
+              <span class="text-[#456ba1] text-base font-medium leading-normal">/</span>
+              <span class="text-[#0c131d] text-base font-medium leading-normal"
+                >Feedback 反馈体系 (P0)</span
+              >
+            </div>
+            <div class="flex flex-wrap justify-between gap-3 p-4">
+              <div class="flex min-w-72 flex-col gap-3">
+                <p class="text-[#0c131d] text-4xl font-black leading-tight tracking-[-0.033em]">
+                  P0 反馈组件全量交互与样式详细规范
+                </p>
+                <p class="text-[#456ba1] text-base font-normal leading-normal">
+                  涵盖
+                  Alert、Message、Notification、Modal、Drawer、Popconfirm、Tooltip、Popover、Spin 与
+                  Progress 共 10 项核心反馈设计标准与工程参数契约。
+                </p>
+              </div>
+              <button
+                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-[#e6ecf4] text-[#0c131d] text-sm font-bold leading-normal tracking-[0.015em]"
+              >
+                <span class="truncate">下载 Token JSON</span>
+              </button>
+            </div>
+            <div class="flex gap-3 p-3 overflow-x-hidden">
+              <div
+                class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded bg-[#e6ecf4] pl-4 pr-4"
+              >
+                <p class="text-[#0c131d] text-sm font-medium leading-normal">All 10 Feedback</p>
+              </div>
+              <div
+                class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded bg-[#e6ecf4] pl-4 pr-4"
+              >
+                <p class="text-[#0c131d] text-sm font-medium leading-normal">Semantic Tones</p>
+              </div>
+              <div
+                class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded bg-[#e6ecf4] pl-4 pr-4"
+              >
+                <p class="text-[#0c131d] text-sm font-medium leading-normal">Motion Curves</p>
+              </div>
+              <div
+                class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded bg-[#e6ecf4] pl-4 pr-4"
+              >
+                <p class="text-[#0c131d] text-sm font-medium leading-normal">WCAG 2.2 AA</p>
+              </div>
+              <div
+                class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded bg-[#e6ecf4] pl-4 pr-4"
+              >
+                <p class="text-[#0c131d] text-sm font-medium leading-normal">Tokens (--lx-*)</p>
+              </div>
+              <div
+                class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded bg-[#e6ecf4] pl-4 pr-4"
+              >
+                <p class="text-[#0c131d] text-sm font-medium leading-normal">Layering &amp; Mask</p>
+              </div>
+              <div
+                class="flex h-8 shrink-0 items-center justify-center gap-x-2 rounded bg-[#e6ecf4] pl-4 pr-4"
+              >
+                <p class="text-[#0c131d] text-sm font-medium leading-normal">Interactive States</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-4 p-4">
+              <div
+                class="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[#cdd9ea]"
+              >
+                <p class="text-[#0c131d] text-base font-medium leading-normal">
+                  Feedback Components
+                </p>
+                <p class="text-[#0c131d] tracking-light text-2xl font-bold leading-tight">
+                  10 Items
+                </p>
+                <p class="text-[#07883b] text-base font-medium leading-normal">+2 updated</p>
+              </div>
+              <div
+                class="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[#cdd9ea]"
+              >
+                <p class="text-[#0c131d] text-base font-medium leading-normal">WCAG Compliance</p>
+                <p class="text-[#0c131d] tracking-light text-2xl font-bold leading-tight">
+                  Level AA
+                </p>
+                <p class="text-[#456ba1] text-base font-medium leading-normal">100%</p>
+              </div>
+              <div
+                class="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[#cdd9ea]"
+              >
+                <p class="text-[#0c131d] text-base font-medium leading-normal">Motion Token</p>
+                <p class="text-[#0c131d] tracking-light text-2xl font-bold leading-tight">
+                  240ms cubic-bezier
+                </p>
+                <p class="text-[#456ba1] text-base font-medium leading-normal">0 dropped</p>
+              </div>
+              <div
+                class="flex min-w-[158px] flex-1 flex-col gap-2 rounded p-6 border border-[#cdd9ea]"
+              >
+                <p class="text-[#0c131d] text-base font-medium leading-normal">CSS Variables</p>
+                <p class="text-[#0c131d] tracking-light text-2xl font-bold leading-tight">
+                  48 Tokens
+                </p>
+                <p class="text-[#07883b] text-base font-medium leading-normal">+12 new</p>
+              </div>
+            </div>
+            <!-- ========================================================================= -->
+            <!-- DETAILED SPECIFICATION WORKSPACE (10 FEEDBACK COMPONENTS SPEC CANVAS)      -->
+            <!-- ========================================================================= -->
+            <main class="w-full flex flex-col gap-8 pb-20 pt-4">
+              <!-- Spec Meta Anchor Bar -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-sm"
+              >
+                <div class="flex items-center gap-3">
+                  <span
+                    class="inline-flex items-center px-2.5 py-1 rounded bg-surface-container text-primary font-mono text-xs font-semibold"
+                  >
+                    RFC-2024-FDBK-01
+                  </span>
+                  <span class="text-xs text-on-surface-variant font-medium"
+                    >Design Tokens v2.4.0 • 严格遵循 Material / lx-tokens 空间对齐与对比度标定</span
+                  >
+                </div>
+                <div class="flex items-center gap-2">
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-xs text-on-surface font-mono"
+                  >
+                    <span class="size-2 rounded-full bg-status-success"></span> WCAG 2.2 AA Verified
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-surface-container text-xs text-on-surface font-mono"
+                  >
+                    <span class="size-2 rounded-full bg-primary"></span> 8px Grid Matrix
+                  </span>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- 01. Alert 警告提示                                                       -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-6"
+                id="alert-spec"
+              >
+                <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="size-7 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                      >01</span
+                    >
+                    <div>
+                      <h3 class="text-headline-sm font-semibold text-on-surface">Alert 警告提示</h3>
+                      <p class="text-body-sm text-on-surface-variant">
+                        当某个页面或区域需要向用户提示关键信息时，提供静态、吸顶或行内的四态通知卡片。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="token-pill bg-surface-container text-primary px-2 py-0.5 rounded"
+                      >--lx-alert-exit: 160ms ease-out</span
+                    >
+                    <span
+                      class="token-pill bg-surface-container text-on-surface-variant px-2 py-0.5 rounded"
+                      >role="alert"</span
+                    >
+                  </div>
+                </div>
+                <!-- 4 Semantic Tones Showcase -->
+                <div class="space-y-3">
+                  <div
+                    class="text-label-sm font-semibold text-on-surface-variant uppercase tracking-wider"
+                  >
+                    Semantic 4 Tones (Success / Info / Warning / Error)
+                  </div>
+                  <!-- Info Alert -->
+                  <div
+                    class="p-4 rounded-lg bg-surface-container-low border border-status-info/30 flex items-start justify-between gap-3"
+                    role="alert"
+                  >
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-status-info mt-0.5 text-xl"
+                        >info</span
+                      >
+                      <div>
+                        <h4 class="text-sm font-semibold text-on-surface">
+                          更新预告：lx-ui 3.0 正式版即将发布
+                        </h4>
+                        <p class="text-xs text-on-surface-variant mt-0.5">
+                          当前组件库已开启深色模式与原生无障碍读屏器支持，建议企业端接入最新版本。
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <button class="text-xs text-primary font-medium hover:underline">
+                        查看日志
+                      </button>
+                      <button
+                        aria-label="关闭"
+                        class="text-on-surface-variant hover:text-on-surface"
+                      >
+                        <span class="material-symbols-outlined text-base">close</span>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Success Alert -->
+                  <div
+                    class="p-4 rounded-lg bg-[#f0fdf4] border border-status-success/30 flex items-start justify-between gap-3"
+                    role="status"
+                  >
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-status-success mt-0.5 text-xl"
+                        >check_circle</span
+                      >
+                      <div>
+                        <h4 class="text-sm font-semibold text-on-surface">结算报表同步完成</h4>
+                        <p class="text-xs text-on-surface-variant mt-0.5">
+                          全量 14,289 条交易记录已归档至主数据库，哈希指纹检验值正常通过。
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <button class="text-xs text-status-success font-medium hover:underline">
+                        导出 CSV
+                      </button>
+                      <button
+                        aria-label="关闭"
+                        class="text-on-surface-variant hover:text-on-surface"
+                      >
+                        <span class="material-symbols-outlined text-base">close</span>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Warning Alert -->
+                  <div
+                    class="p-4 rounded-lg bg-[#fffbeb] border border-status-warning/40 flex items-start justify-between gap-3"
+                    role="alert"
+                  >
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-status-warning mt-0.5 text-xl"
+                        >warning</span
+                      >
+                      <div>
+                        <h4 class="text-sm font-semibold text-on-surface">
+                          SSL 证书即将于 7 天后到期
+                        </h4>
+                        <p class="text-xs text-on-surface-variant mt-0.5">
+                          生产网关 *.corp.internal 证书将在下周二凌晨 04:00 失效，请及时部署新密钥。
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <button class="text-xs text-status-warning font-medium hover:underline">
+                        立即续期
+                      </button>
+                      <button
+                        aria-label="关闭"
+                        class="text-on-surface-variant hover:text-on-surface"
+                      >
+                        <span class="material-symbols-outlined text-base">close</span>
+                      </button>
+                    </div>
+                  </div>
+                  <!-- Error Alert -->
+                  <div
+                    class="p-4 rounded-lg bg-error-container/40 border border-status-error/40 flex items-start justify-between gap-3"
+                    role="alert"
+                  >
+                    <div class="flex items-start gap-3">
+                      <span class="material-symbols-outlined text-status-error mt-0.5 text-xl"
+                        >error</span
+                      >
+                      <div>
+                        <h4 class="text-sm font-semibold text-error">集群节点 #04 响应超时</h4>
+                        <p class="text-xs text-on-surface-variant mt-0.5">
+                          负载均衡器已熔断该实例，系统正在执行自动隔离及镜像迁移 (ErrCode: 504_GW)。
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                      <button class="text-xs text-status-error font-medium hover:underline">
+                        诊断报告
+                      </button>
+                      <button
+                        aria-label="关闭"
+                        class="text-on-surface-variant hover:text-on-surface"
+                      >
+                        <span class="material-symbols-outlined text-base">close</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Banner Mode Notice & Engineering Specs -->
+                <div class="pt-2 border-t border-outline-variant space-y-3">
+                  <div
+                    class="text-label-sm font-semibold text-on-surface-variant uppercase tracking-wider"
+                  >
+                    Banner Mode (顶部通栏无圆角) &amp; Fold-up 折叠动效
+                  </div>
+                  <div
+                    class="w-full bg-surface-container px-4 py-2.5 border-y border-outline-variant flex items-center justify-between text-xs"
+                  >
+                    <div class="flex items-center gap-2 text-on-surface">
+                      <span class="material-symbols-outlined text-primary text-base">campaign</span>
+                      <span class="font-medium"
+                        >系统例行维护公告：本周日 02:00 - 06:00
+                        将进行网络链路割接，控制台服务可能发生 10 秒瞬断。</span
+                      >
+                    </div>
+                    <button
+                      class="text-on-surface-variant hover:text-on-surface flex items-center gap-1 font-mono text-[11px]"
+                    >
+                      [160ms fold-up]
+                      <span class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                  </div>
+                  <div
+                    class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs bg-surface-container-low p-3 rounded-lg font-mono"
+                  >
+                    <div>
+                      <span class="text-on-surface-variant">Icon Switch:</span>
+                      <code class="text-primary">showIcon={true|false}</code>
+                    </div>
+                    <div>
+                      <span class="text-on-surface-variant">Exit Transition:</span>
+                      <code class="text-primary">max-height 160ms ease-out</code>
+                    </div>
+                    <div>
+                      <span class="text-on-surface-variant">ARIA Live:</span>
+                      <code class="text-primary">aria-live="polite"</code>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- 02. Message 全局轻提示                                                   -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-6"
+                id="message-spec"
+              >
+                <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="size-7 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                      >02</span
+                    >
+                    <div>
+                      <h3 class="text-headline-sm font-semibold text-on-surface">
+                        Message 全局轻提示
+                      </h3>
+                      <p class="text-body-sm text-on-surface-variant">
+                        顶部居中微浮层通知，用于即时反馈操作结果；支持自动延时关闭、悬浮暂停和平滑入场。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="token-pill bg-surface-container text-primary px-2 py-0.5 rounded"
+                      >top: 24px • z-index: 1010</span
+                    >
+                    <span
+                      class="token-pill bg-surface-container text-on-surface-variant px-2 py-0.5 rounded"
+                      >duration: 3000ms</span
+                    >
+                  </div>
+                </div>
+                <!-- Message Canvas Sandbox -->
+                <div
+                  class="relative bg-surface-container-low rounded-lg p-6 border border-outline-variant flex flex-col items-center gap-3 overflow-hidden min-h-[220px]"
+                >
+                  <div class="absolute top-2 left-3 text-[11px] font-mono text-outline">
+                    TOP-CENTER CANVAS VIEWPORT
+                  </div>
+                  <!-- Message: Success -->
+                  <div
+                    class="inline-flex items-center gap-2.5 px-4 py-2 rounded-lg bg-surface-container-lowest shadow-md border border-outline-variant text-xs text-on-surface transition-transform hover:-translate-y-0.5 cursor-pointer"
+                  >
+                    <span class="material-symbols-outlined text-status-success text-base"
+                      >check_circle</span
+                    >
+                    <span class="font-medium">配置已成功推送到 12 个生产节点</span>
+                    <span class="token-pill text-[10px] text-outline font-mono">1.8s</span>
+                  </div>
+                  <!-- Message: Info -->
+                  <div
+                    class="inline-flex items-center gap-2.5 px-4 py-2 rounded-lg bg-surface-container-lowest shadow-md border border-outline-variant text-xs text-on-surface"
+                  >
+                    <span class="material-symbols-outlined text-status-info text-base">info</span>
+                    <span class="font-medium">检测到有 3 份草稿已保存在本地缓存</span>
+                  </div>
+                  <!-- Message: Warning -->
+                  <div
+                    class="inline-flex items-center gap-2.5 px-4 py-2 rounded-lg bg-surface-container-lowest shadow-md border border-outline-variant text-xs text-on-surface"
+                  >
+                    <span class="material-symbols-outlined text-status-warning text-base"
+                      >warning</span
+                    >
+                    <span class="font-medium">当前查询耗时较长 (已执行 4.2s)，请耐心等待</span>
+                  </div>
+                  <!-- Message: Loading with Progress Bar & Hover Pause -->
+                  <div
+                    class="relative inline-flex items-center gap-2.5 px-4 py-2 rounded-lg bg-surface-container-lowest shadow-lg border border-primary/40 text-xs text-on-surface overflow-hidden"
+                  >
+                    <span
+                      class="material-symbols-outlined animate-spin-custom text-primary text-base"
+                      >sync</span
+                    >
+                    <span class="font-medium">正在生成安全审计哈希凭证...</span>
+                    <span
+                      class="text-[10px] font-mono text-primary bg-surface-container px-1.5 py-0.5 rounded"
+                      >Hover paused</span
+                    >
+                    <!-- 3000ms duration countdown visual line -->
+                    <div
+                      class="absolute bottom-0 left-0 h-0.5 bg-primary w-2/3 transition-all duration-300"
+                    ></div>
+                  </div>
+                </div>
+                <!-- Parameter Specifications -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
+                  <div class="bg-surface-container p-3 rounded">
+                    <span class="font-semibold block text-on-surface">Entrance Curve:</span>
+                    <code class="font-mono text-primary text-[11px]"
+                      >180ms cubic-bezier(0.16, 1, 0.3, 1)</code
+                    >
+                  </div>
+                  <div class="bg-surface-container p-3 rounded">
+                    <span class="font-semibold block text-on-surface">Exit Curve:</span>
+                    <code class="font-mono text-primary text-[11px]">160ms ease-in</code>
+                  </div>
+                  <div class="bg-surface-container p-3 rounded">
+                    <span class="font-semibold block text-on-surface">Hover Feature:</span>
+                    <span class="text-on-surface-variant">悬浮阻断倒计时 (clearTimeout)</span>
+                  </div>
+                  <div class="bg-surface-container p-3 rounded">
+                    <span class="font-semibold block text-on-surface">Shadow Spec:</span>
+                    <span class="text-on-surface-variant">0 6px 16px -8px rgba(0,0,0,0.08)</span>
+                  </div>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- 03. Notification 通知提醒框                                              -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-6"
+                id="notification-spec"
+              >
+                <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="size-7 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                      >03</span
+                    >
+                    <div>
+                      <h3 class="text-headline-sm font-semibold text-on-surface">
+                        Notification 通知提醒框
+                      </h3>
+                      <p class="text-body-sm text-on-surface-variant">
+                        位于屏幕右上角的复杂多行卡片通知，支持操作按钮、时间戳以及卡片层叠与出入栈管理。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="token-pill bg-surface-container text-primary px-2 py-0.5 rounded"
+                      >placement: topRight (24px, 24px)</span
+                    >
+                    <span
+                      class="token-pill bg-surface-container text-on-surface-variant px-2 py-0.5 rounded"
+                      >width: 384px</span
+                    >
+                  </div>
+                </div>
+                <!-- Notification Visual Sandbox -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <!-- Full Feature Notification Card -->
+                  <div
+                    class="relative bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-lg flex flex-col gap-3"
+                  >
+                    <div class="flex items-start justify-between">
+                      <div class="flex items-start gap-3">
+                        <div
+                          class="size-8 rounded-lg bg-surface-container flex items-center justify-center shrink-0 text-primary"
+                        >
+                          <span class="material-symbols-outlined text-lg"
+                            >security_update_good</span
+                          >
+                        </div>
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <span class="text-sm font-semibold text-on-surface"
+                              >版本发布成功通知</span
+                            >
+                            <span
+                              class="px-1.5 py-0.2 rounded bg-surface-container text-[10px] font-mono text-status-success font-medium"
+                              >SUCCESS</span
+                            >
+                          </div>
+                          <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                            项目“金融微服务集群
+                            v2.4.0”已全量发布至海外可用区，已为您自动触发冒烟巡检脚本并归档变更申请单。
+                          </p>
+                        </div>
+                      </div>
+                      <button class="text-outline hover:text-on-surface -mr-1 -mt-1 p-1">
+                        <span class="material-symbols-outlined text-base">close</span>
+                      </button>
+                    </div>
+                    <div
+                      class="flex items-center justify-between pt-2 border-t border-surface-container"
+                    >
+                      <span class="text-[11px] font-mono text-outline"
+                        >10:42:18 · 4.5s 后自动关闭</span
+                      >
+                      <div class="flex items-center gap-2">
+                        <button
+                          class="px-2.5 py-1 rounded text-xs text-on-surface-variant hover:bg-surface-container"
+                        >
+                          忽略
+                        </button>
+                        <button
+                          class="px-3 py-1 rounded text-xs bg-primary text-on-primary font-medium hover:bg-primary-container"
+                        >
+                          前往查看
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Duration Progress Line -->
+                    <div class="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+                      <div class="bg-primary h-full w-3/4"></div>
+                    </div>
+                  </div>
+                  <!-- Notification Variants & Stack Notation -->
+                  <div class="flex flex-col gap-2.5 justify-center">
+                    <!-- Error Variant Mini Card -->
+                    <div
+                      class="p-3 bg-surface-container-low border-l-4 border-l-status-error border-outline-variant border rounded-r-lg flex items-center justify-between text-xs"
+                    >
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-status-error text-base"
+                          >cloud_off</span
+                        >
+                        <div>
+                          <span class="font-semibold text-on-surface">API 网关连接降级 (4/12)</span>
+                          <span class="text-outline block text-[11px]"
+                            >亚太东京机房时延超过 850ms</span
+                          >
+                        </div>
+                      </div>
+                      <span class="font-mono text-outline text-[11px]">刚刚</span>
+                    </div>
+                    <!-- Warning Variant Mini Card -->
+                    <div
+                      class="p-3 bg-surface-container-low border-l-4 border-l-status-warning border-outline-variant border rounded-r-lg flex items-center justify-between text-xs"
+                    >
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-status-warning text-base"
+                          >database</span
+                        >
+                        <div>
+                          <span class="font-semibold text-on-surface"
+                            >存储池配额预警 (&gt;88%)</span
+                          >
+                          <span class="text-outline block text-[11px]"
+                            >只读缓存实例需在 24 小时内扩容</span
+                          >
+                        </div>
+                      </div>
+                      <span class="font-mono text-outline text-[11px]">3分钟前</span>
+                    </div>
+                    <!-- Stack Queue Blueprint -->
+                    <div
+                      class="p-2.5 bg-surface-container rounded border border-outline-variant text-[11px] text-on-surface-variant flex items-center justify-between font-mono"
+                    >
+                      <span>Max Stack: 3 Notifications</span>
+                      <span>Shift Queue: FIFO</span>
+                      <span>Offset: Y = index * 8px + 16px</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- 04. Modal 对话框 / 弹窗                                                 -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-6"
+                id="modal-spec"
+              >
+                <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="size-7 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                      >04</span
+                    >
+                    <div>
+                      <h3 class="text-headline-sm font-semibold text-on-surface">
+                        Modal 对话框 (模态弹窗)
+                      </h3>
+                      <p class="text-body-sm text-on-surface-variant">
+                        承载重要且需要聚焦的任务；具备蒙层遮罩、Esc 关闭、Focus Trap (焦点捕获)
+                        与中心缩放入场。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="token-pill bg-surface-container text-primary px-2 py-0.5 rounded"
+                      >backdrop-blur: 4px</span
+                    >
+                    <span
+                      class="token-pill bg-surface-container text-on-surface-variant px-2 py-0.5 rounded"
+                      >z-index: 1000</span
+                    >
+                  </div>
+                </div>
+                <!-- Realistic Rendered Modal Backdrop Mockup -->
+                <div
+                  class="relative w-full rounded-xl bg-slate-900/60 p-6 md:p-10 flex items-center justify-center overflow-hidden border border-outline-variant"
+                  style="backdrop-filter: blur(4px)"
+                >
+                  <!-- Focus Trap & Accessibility Flag -->
+                  <div class="absolute top-3 left-4 flex items-center gap-2">
+                    <span
+                      class="px-2 py-0.5 bg-surface-container-lowest/90 text-on-surface rounded text-[11px] font-mono"
+                    >
+                      aria-modal="true" • tabIndex="-1"
+                    </span>
+                    <span
+                      class="px-2 py-0.5 bg-surface-container-lowest/90 text-on-surface rounded text-[11px] font-mono"
+                    >
+                      Esc key: enabled
+                    </span>
+                  </div>
+                  <!-- Modal Dialog Window -->
+                  <div
+                    class="w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-2xl border border-outline-variant flex flex-col overflow-hidden animate-[scaleUp_240ms_cubic-bezier(0.16,1,0.3,1)]"
+                  >
+                    <!-- Header -->
+                    <div
+                      class="px-6 py-4 border-b border-outline-variant flex items-center justify-between"
+                    >
+                      <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-xl">tune</span>
+                        <h4 class="text-sm font-bold text-on-surface">调整实例资源限额配额</h4>
+                      </div>
+                      <button class="text-outline hover:text-on-surface rounded p-1">
+                        <span class="material-symbols-outlined text-base">close</span>
+                      </button>
+                    </div>
+                    <!-- Body -->
+                    <div class="p-6 space-y-4 text-xs text-on-surface">
+                      <p class="text-on-surface-variant leading-relaxed">
+                        修改限额将即刻作用于生产 Pod 节点调度，系统将发起无损平滑灰度滚动更新。
+                      </p>
+                      <div
+                        class="space-y-3 bg-surface-container-low p-3.5 rounded-lg border border-outline-variant"
+                      >
+                        <div>
+                          <label class="block font-medium mb-1 text-on-surface"
+                            >CPU Core 限制 (vCPU)</label
+                          >
+                          <div class="flex items-center gap-3">
+                            <input
+                              class="w-full accent-primary"
+                              max="32"
+                              min="2"
+                              type="range"
+                              value="8"
+                            />
+                            <span class="font-mono font-bold text-primary w-12 text-right"
+                              >8 Cores</span
+                            >
+                          </div>
+                        </div>
+                        <div>
+                          <label class="block font-medium mb-1 text-on-surface"
+                            >内存分配 (RAM GB)</label
+                          >
+                          <div class="flex items-center gap-3">
+                            <input
+                              class="w-full accent-primary"
+                              max="64"
+                              min="4"
+                              type="range"
+                              value="16"
+                            />
+                            <span class="font-mono font-bold text-primary w-12 text-right"
+                              >16 GB</span
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-2 text-[11px] text-outline">
+                        <span class="material-symbols-outlined text-sm">lock</span>
+                        <span>系统已开启只读事务保障，操作人将记录于审计日志中。</span>
+                      </div>
+                    </div>
+                    <!-- Footer -->
+                    <div
+                      class="px-6 py-3.5 bg-surface-container-low border-t border-outline-variant flex items-center justify-end gap-2.5"
+                    >
+                      <button
+                        class="px-3.5 py-1.5 rounded-lg border border-outline text-xs text-on-surface font-medium hover:bg-surface-container"
+                      >
+                        取消 (Cancel)
+                      </button>
+                      <button
+                        class="px-4 py-1.5 rounded-lg bg-primary text-on-primary text-xs font-semibold hover:bg-primary-container flex items-center gap-1.5"
+                      >
+                        <span class="material-symbols-outlined text-sm">check</span>
+                        <span>确认变更 (Confirm)</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!-- Confirm.danger Variant -->
+                <div
+                  class="border border-status-error/30 rounded-lg p-4 bg-error-container/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                >
+                  <div class="flex items-start gap-3">
+                    <span class="material-symbols-outlined text-status-error text-2xl"
+                      >warning</span
+                    >
+                    <div>
+                      <h5 class="text-xs font-bold text-on-surface">
+                        Destructive Modal (Modal.danger 危险操作确认)
+                      </h5>
+                      <p class="text-[11px] text-on-surface-variant">
+                        此操作将永久销毁私有集群数据库快照，所有未同步 binlog 将不可逆清除。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2 shrink-0">
+                    <button
+                      class="px-3 py-1.5 rounded border border-outline text-xs font-medium bg-surface-container-lowest"
+                    >
+                      放弃
+                    </button>
+                    <button
+                      class="px-3 py-1.5 rounded bg-status-error text-on-error text-xs font-semibold hover:bg-red-700"
+                    >
+                      强制删除
+                    </button>
+                  </div>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- 05. Drawer 抽屉                                                         -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-6"
+                id="drawer-spec"
+              >
+                <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="size-7 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                      >05</span
+                    >
+                    <div>
+                      <h3 class="text-headline-sm font-semibold text-on-surface">Drawer 抽屉</h3>
+                      <p class="text-body-sm text-on-surface-variant">
+                        从屏幕边缘滑出的浮层面板，通常用于较长表单填写、系统侧边详情查看及多级下钻。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="token-pill bg-surface-container text-primary px-2 py-0.5 rounded"
+                      >width: 480px / 720px</span
+                    >
+                    <span
+                      class="token-pill bg-surface-container text-on-surface-variant px-2 py-0.5 rounded"
+                      >slide: 280ms cubic-bezier(0.16, 1, 0.3, 1)</span
+                    >
+                  </div>
+                </div>
+                <!-- Drawer Canvas Simulation -->
+                <div
+                  class="relative w-full rounded-xl bg-surface-container-low border border-outline-variant overflow-hidden min-h-[380px] flex justify-end"
+                >
+                  <!-- Background page mockup content -->
+                  <div
+                    class="absolute inset-0 p-6 flex flex-col gap-3 pointer-events-none opacity-40"
+                  >
+                    <div class="h-6 bg-outline-variant/50 rounded w-1/3"></div>
+                    <div class="h-4 bg-outline-variant/30 rounded w-2/3"></div>
+                    <div class="h-32 bg-outline-variant/20 rounded w-full mt-4"></div>
+                  </div>
+                  <!-- Backdrop Mask -->
+                  <div class="absolute inset-0 bg-slate-900/30 backdrop-blur-sm"></div>
+                  <!-- Multi-layer Drawer Indication: Secondary pushed layer -->
+                  <div
+                    class="absolute right-[460px] top-4 bottom-4 w-12 bg-surface-dim rounded-l-lg border-y border-l border-outline-variant opacity-70 hidden md:block"
+                  >
+                    <div
+                      class="[writing-mode:vertical-rl] text-[10px] font-mono text-outline p-2 tracking-widest uppercase"
+                    >
+                      Parent Drawer (-100px)
+                    </div>
+                  </div>
+                  <!-- Active Drawer (480px) -->
+                  <div
+                    class="relative w-full max-w-[480px] bg-surface-container-lowest h-full shadow-2xl border-l border-outline-variant flex flex-col z-10"
+                  >
+                    <!-- Sticky Header -->
+                    <div
+                      class="sticky top-0 bg-surface-container-lowest/95 backdrop-blur px-6 py-4 border-b border-outline-variant flex items-center justify-between"
+                    >
+                      <div>
+                        <h4 class="text-sm font-bold text-on-surface">工单详情 #TK-89410</h4>
+                        <span class="text-[11px] text-outline font-mono"
+                          >创建于 2024-11-18 14:22:01</span
+                        >
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <button class="p-1 rounded text-outline hover:text-on-surface">
+                          <span class="material-symbols-outlined text-base">open_in_new</span>
+                        </button>
+                        <button class="p-1 rounded text-outline hover:text-on-surface">
+                          <span class="material-symbols-outlined text-base">close</span>
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Scrollable Content Body -->
+                    <div class="p-6 overflow-y-auto space-y-4 text-xs flex-1">
+                      <div>
+                        <span class="font-semibold text-on-surface block mb-1"
+                          >工单类型与优先级</span
+                        >
+                        <div class="flex gap-2">
+                          <span
+                            class="px-2 py-0.5 rounded bg-surface-container text-primary font-medium"
+                            >线上异常事件</span
+                          >
+                          <span
+                            class="px-2 py-0.5 rounded bg-error-container text-status-error font-medium"
+                            >P0 - 最高紧急</span
+                          >
+                        </div>
+                      </div>
+                      <div class="border-t border-outline-variant pt-3">
+                        <span class="font-semibold text-on-surface block mb-1"
+                          >事件说明与复现链路</span
+                        >
+                        <p class="text-on-surface-variant leading-relaxed">
+                          跨境网关对新加坡链路进行健康检查时，TCP握手发生偶发性超时重传，重试队列积压超过2000条。
+                        </p>
+                      </div>
+                      <div class="border-t border-outline-variant pt-3 space-y-2">
+                        <span class="font-semibold text-on-surface block">执行人流转</span>
+                        <div
+                          class="flex items-center gap-2 p-2 rounded bg-surface-container-low border border-outline-variant"
+                        >
+                          <div
+                            class="size-7 rounded-full bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                          >
+                            李
+                          </div>
+                          <div>
+                            <p class="font-medium text-on-surface">李工 (主值班工程师)</p>
+                            <p class="text-[10px] text-outline">运维保障中心 · 网络基础组</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Sticky Footer Toolbar -->
+                    <div
+                      class="sticky bottom-0 bg-surface-container-low px-6 py-3 border-t border-outline-variant flex items-center justify-between"
+                    >
+                      <button class="text-xs text-on-surface-variant hover:text-on-surface">
+                        存为预设
+                      </button>
+                      <div class="flex items-center gap-2">
+                        <button
+                          class="px-3 py-1.5 rounded border border-outline text-xs text-on-surface font-medium hover:bg-surface-container"
+                        >
+                          取消
+                        </button>
+                        <button
+                          class="px-4 py-1.5 rounded bg-primary text-on-primary text-xs font-semibold hover:bg-primary-container"
+                        >
+                          派发处置
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- 06. Popconfirm 气泡确认框                                                -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-6"
+                id="popconfirm-spec"
+              >
+                <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="size-7 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                      >06</span
+                    >
+                    <div>
+                      <h3 class="text-headline-sm font-semibold text-on-surface">
+                        Popconfirm 气泡确认框
+                      </h3>
+                      <p class="text-body-sm text-on-surface-variant">
+                        目标元素就近触发确认，比全屏模态更轻量，防止误触敏感或不可逆行为。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="token-pill bg-surface-container text-primary px-2 py-0.5 rounded"
+                      >micro-animation: 120ms pop scale</span
+                    >
+                    <span
+                      class="token-pill bg-surface-container text-on-surface-variant px-2 py-0.5 rounded"
+                      >arrow-size: 8px</span
+                    >
+                  </div>
+                </div>
+                <!-- Popconfirm Interactive Demo Card -->
+                <div
+                  class="bg-surface-container-low p-8 rounded-lg border border-outline-variant flex flex-col items-center justify-center gap-6 relative"
+                >
+                  <!-- Popconfirm Balloon Mockup -->
+                  <div
+                    class="relative bg-surface-container-lowest border border-outline-variant rounded-lg p-4 shadow-xl max-w-sm flex flex-col gap-3"
+                  >
+                    <div class="flex items-start gap-2.5">
+                      <span class="material-symbols-outlined text-status-warning text-lg mt-0.5"
+                        >help</span
+                      >
+                      <div>
+                        <h5 class="text-xs font-semibold text-on-surface">确认归档此结算工单？</h5>
+                        <p class="text-[11px] text-on-surface-variant mt-1 leading-normal">
+                          确定要将该结算工单归档并撤销当前审批流吗？此操作将立即释放锁定的授信额度。
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-end gap-2 pt-1">
+                      <button
+                        class="px-2.5 py-1 rounded border border-outline text-[11px] text-on-surface hover:bg-surface-container"
+                      >
+                        取消
+                      </button>
+                      <button
+                        class="px-3 py-1 rounded bg-status-error text-on-error text-[11px] font-medium hover:bg-red-700"
+                      >
+                        确定归档
+                      </button>
+                    </div>
+                    <!-- Downward Arrow pointing to trigger button -->
+                    <div
+                      class="absolute -bottom-2 left-1/2 -translate-x-1/2 size-3.5 bg-surface-container-lowest border-b border-r border-outline-variant rotate-45"
+                    ></div>
+                  </div>
+                  <!-- Trigger Anchor Button -->
+                  <div>
+                    <button
+                      class="px-4 py-2 rounded-lg bg-surface-container border border-outline-variant text-xs font-semibold text-status-error hover:bg-error-container/30 flex items-center gap-1.5"
+                    >
+                      <span class="material-symbols-outlined text-sm">archive</span>
+                      <span>归档并撤销工单 (Target Anchor)</span>
+                    </button>
+                  </div>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- 07 & 08. Tooltip 文字提示 & Popover 气泡卡片                            -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-6"
+                id="tooltip-popover-spec"
+              >
+                <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="size-7 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                      >07/08</span
+                    >
+                    <div>
+                      <h3 class="text-headline-sm font-semibold text-on-surface">
+                        Tooltip 文字提示 &amp; Popover 气泡卡片
+                      </h3>
+                      <p class="text-body-sm text-on-surface-variant">
+                        从简短字符解释到富交互信息卡片，覆盖 12 方位矩阵布局契约。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="token-pill bg-surface-container text-primary px-2 py-0.5 rounded"
+                      >12 Matrix Placements</span
+                    >
+                    <span
+                      class="token-pill bg-surface-container text-on-surface-variant px-2 py-0.5 rounded"
+                      >colorBgSpotlight: #1f2937</span
+                    >
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <!-- Tooltip Showcase -->
+                  <div
+                    class="bg-surface-container-low p-5 rounded-lg border border-outline-variant flex flex-col gap-4"
+                  >
+                    <span
+                      class="text-label-sm font-semibold text-on-surface-variant uppercase tracking-wider"
+                      >07. Tooltip (Dark &amp; Light 样式)</span
+                    >
+                    <div class="flex flex-wrap items-center gap-6 justify-center py-4">
+                      <!-- Dark Tooltip -->
+                      <div class="relative flex flex-col items-center">
+                        <div
+                          class="px-2.5 py-1 rounded bg-[#1f2937] text-white text-[11px] shadow font-medium"
+                        >
+                          Top Placement 暗色提示
+                          <div
+                            class="absolute -bottom-1 left-1/2 -translate-x-1/2 size-2 bg-[#1f2937] rotate-45"
+                          ></div>
+                        </div>
+                        <button
+                          class="mt-3 px-3 py-1.5 rounded bg-surface-container-lowest border border-outline-variant text-xs text-on-surface"
+                        >
+                          悬停 Hover (Dark)
+                        </button>
+                      </div>
+                      <!-- Light Tooltip -->
+                      <div class="relative flex flex-col items-center">
+                        <div
+                          class="px-2.5 py-1 rounded bg-surface-container-lowest text-on-surface text-[11px] shadow-md border border-outline-variant font-medium"
+                        >
+                          TopRight Placement 亮色模式
+                          <div
+                            class="absolute -bottom-1 right-4 size-2 bg-surface-container-lowest border-b border-r border-outline-variant rotate-45"
+                          ></div>
+                        </div>
+                        <button
+                          class="mt-3 px-3 py-1.5 rounded bg-surface-container-lowest border border-outline-variant text-xs text-on-surface"
+                        >
+                          悬停 Hover (Light)
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      class="p-3 bg-surface-container rounded text-[11px] text-on-surface-variant font-mono"
+                    >
+                      Matrix 方位：topLeft | top | topRight | bottomLeft | bottom | bottomRight |
+                      leftTop | left | leftBottom | rightTop | right | rightBottom
+                    </div>
+                  </div>
+                  <!-- Popover Showcase -->
+                  <div
+                    class="bg-surface-container-low p-5 rounded-lg border border-outline-variant flex flex-col gap-4"
+                  >
+                    <span
+                      class="text-label-sm font-semibold text-on-surface-variant uppercase tracking-wider"
+                      >08. Popover (富内容气泡卡片)</span
+                    >
+                    <div class="flex items-center justify-center py-2">
+                      <!-- Popover Card -->
+                      <div
+                        class="relative w-72 bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-xl"
+                      >
+                        <div
+                          class="flex items-center justify-between border-b border-surface-container pb-2 mb-2"
+                        >
+                          <span class="text-xs font-bold text-on-surface"
+                            >Redis 集群主库健康度</span
+                          >
+                          <span class="size-2 rounded-full bg-status-success animate-pulse"></span>
+                        </div>
+                        <p class="text-[11px] text-on-surface-variant leading-relaxed">
+                          当前 QPS: <code class="font-mono text-primary font-bold">42,810</code
+                          ><br />
+                          命中率: 99.4% · 内存占用: 18.2 / 32 GB
+                        </p>
+                        <div
+                          class="flex items-center justify-between pt-3 mt-2 border-t border-surface-container"
+                        >
+                          <a class="text-[11px] text-primary hover:underline" href="#"
+                            >指标监控看板 →</a
+                          >
+                          <button
+                            class="px-2 py-0.5 rounded bg-surface-container text-[10px] text-on-surface"
+                          >
+                            查看大图
+                          </button>
+                        </div>
+                        <!-- Left Arrow -->
+                        <div
+                          class="absolute -left-1.5 top-8 size-3 bg-surface-container-lowest border-b border-l border-outline-variant rotate-45"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- 09. Spin 加载中                                                         -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-6"
+                id="spin-spec"
+              >
+                <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="size-7 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                      >09</span
+                    >
+                    <div>
+                      <h3 class="text-headline-sm font-semibold text-on-surface">Spin 加载中</h3>
+                      <p class="text-body-sm text-on-surface-variant">
+                        用于页面和区块的加载中状态；包含 3
+                        种尺度规范、延时防闪烁机制及容器内遮罩提示。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="token-pill bg-surface-container text-primary px-2 py-0.5 rounded"
+                      >rotation: 800ms linear infinite</span
+                    >
+                    <span
+                      class="token-pill bg-surface-container text-on-surface-variant px-2 py-0.5 rounded"
+                      >delay: 300ms default</span
+                    >
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <!-- 3 Scales -->
+                  <div
+                    class="bg-surface-container-low p-4 rounded-lg border border-outline-variant flex flex-col items-center justify-center gap-4"
+                  >
+                    <span class="text-xs font-semibold text-on-surface-variant"
+                      >三档尺寸标定 (Small / Middle / Large)</span
+                    >
+                    <div class="flex items-center gap-6">
+                      <div class="flex flex-col items-center gap-1">
+                        <span
+                          class="material-symbols-outlined text-primary text-base animate-spin-custom"
+                          >progress_activity</span
+                        >
+                        <span class="text-[10px] font-mono text-outline">16px (sm)</span>
+                      </div>
+                      <div class="flex flex-col items-center gap-1">
+                        <span
+                          class="material-symbols-outlined text-primary text-2xl animate-spin-custom"
+                          >progress_activity</span
+                        >
+                        <span class="text-[10px] font-mono text-outline">24px (md)</span>
+                      </div>
+                      <div class="flex flex-col items-center gap-1">
+                        <span
+                          class="material-symbols-outlined text-primary text-4xl animate-spin-custom"
+                          >progress_activity</span
+                        >
+                        <span class="text-[10px] font-mono text-outline">36px (lg)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Container Embedded Mask -->
+                  <div
+                    class="relative bg-surface-container-low p-4 rounded-lg border border-outline-variant overflow-hidden md:col-span-2 min-h-[140px] flex items-center justify-center"
+                  >
+                    <!-- Content underneath -->
+                    <div class="space-y-2 w-full opacity-30 select-none">
+                      <div class="h-4 bg-outline-variant rounded w-3/4"></div>
+                      <div class="h-4 bg-outline-variant rounded w-1/2"></div>
+                      <div class="h-4 bg-outline-variant rounded w-5/6"></div>
+                    </div>
+                    <!-- Mask and Spinner -->
+                    <div
+                      class="absolute inset-0 bg-surface-container-lowest/80 backdrop-blur-xs flex flex-col items-center justify-center gap-2"
+                    >
+                      <span
+                        class="material-symbols-outlined text-primary text-3xl animate-spin-custom"
+                        >progress_activity</span
+                      >
+                      <span class="text-xs font-semibold text-on-surface"
+                        >数据解析中，请稍候...</span
+                      >
+                      <span class="text-[10px] font-mono text-outline"
+                        >delay=300ms (防止 100ms 内微加载闪烁)</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- 10. Progress 进度条                                                     -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-6"
+                id="progress-spec"
+              >
+                <div class="flex items-center justify-between border-b border-outline-variant pb-3">
+                  <div class="flex items-center gap-3">
+                    <span
+                      class="size-7 rounded bg-primary text-on-primary flex items-center justify-center font-bold text-xs"
+                      >10</span
+                    >
+                    <div>
+                      <h3 class="text-headline-sm font-semibold text-on-surface">
+                        Progress 进度条
+                      </h3>
+                      <p class="text-body-sm text-on-surface-variant">
+                        展示操作的当前进度与执行状态；包含线条进度、渐变流光动效、仪表圆环及多阶段分段进度。
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="token-pill bg-surface-container text-primary px-2 py-0.5 rounded"
+                      >Line / Circle / Dashboard / Steps</span
+                    >
+                  </div>
+                </div>
+                <!-- Line & Multi-color Gradient Progress -->
+                <div class="space-y-4">
+                  <!-- Standard Bar -->
+                  <div>
+                    <div class="flex items-center justify-between text-xs mb-1">
+                      <span class="text-on-surface font-medium">标准线条进度 (Standard Line)</span>
+                      <span class="font-mono font-semibold text-on-surface">65%</span>
+                    </div>
+                    <div class="w-full bg-surface-container h-2.5 rounded-full overflow-hidden">
+                      <div
+                        class="bg-primary h-full rounded-full transition-all duration-300"
+                        style="width: 65%"
+                      ></div>
+                    </div>
+                  </div>
+                  <!-- Animated Shimmer Stripe (Active) -->
+                  <div>
+                    <div class="flex items-center justify-between text-xs mb-1">
+                      <span class="text-on-surface font-medium"
+                        >活跃波浪条纹 (Active Animated Stripe)</span
+                      >
+                      <span class="font-mono font-semibold text-primary">82% (Syncing)</span>
+                    </div>
+                    <div class="w-full bg-surface-container h-2.5 rounded-full overflow-hidden">
+                      <div
+                        class="bg-primary stripe-animated h-full rounded-full"
+                        style="width: 82%"
+                      ></div>
+                    </div>
+                  </div>
+                  <!-- Exception State -->
+                  <div>
+                    <div class="flex items-center justify-between text-xs mb-1">
+                      <span class="text-on-surface font-medium"
+                        >异常阻断 (Error Exception State)</span
+                      >
+                      <span
+                        class="font-mono font-semibold text-status-error flex items-center gap-1"
+                      >
+                        <span class="material-symbols-outlined text-xs">cancel</span> 45%
+                        (Interrupted)
+                      </span>
+                    </div>
+                    <div class="w-full bg-surface-container h-2.5 rounded-full overflow-hidden">
+                      <div class="bg-status-error h-full rounded-full" style="width: 45%"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Circle / Dashboard & Segmented Step Progress -->
+                <div
+                  class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-outline-variant"
+                >
+                  <!-- Circle / Gauge Mockup -->
+                  <div
+                    class="bg-surface-container-low p-5 rounded-lg border border-outline-variant flex items-center justify-around"
+                  >
+                    <div class="flex flex-col items-center">
+                      <div
+                        class="relative size-24 rounded-full flex items-center justify-center"
+                        style="background: conic-gradient(#0057c2 0% 75%, #e5eeff 75% 100%)"
+                      >
+                        <div
+                          class="size-20 rounded-full bg-surface-container-lowest flex items-center justify-center font-mono font-bold text-sm text-primary"
+                        >
+                          75%
+                        </div>
+                      </div>
+                      <span class="text-xs text-on-surface-variant mt-2 font-medium"
+                        >Circle Progress</span
+                      >
+                    </div>
+                    <div class="flex flex-col items-center">
+                      <div
+                        class="relative size-24 rounded-full flex items-center justify-center"
+                        style="background: conic-gradient(#16a34a 0% 100%, #e5eeff 100%)"
+                      >
+                        <div
+                          class="size-20 rounded-full bg-surface-container-lowest flex items-center justify-center text-status-success"
+                        >
+                          <span class="material-symbols-outlined text-2xl">check</span>
+                        </div>
+                      </div>
+                      <span class="text-xs text-on-surface-variant mt-2 font-medium"
+                        >100% Success</span
+                      >
+                    </div>
+                  </div>
+                  <!-- Segmented Multi-step Progress -->
+                  <div
+                    class="bg-surface-container-low p-5 rounded-lg border border-outline-variant flex flex-col justify-center gap-3"
+                  >
+                    <div class="flex items-center justify-between text-xs">
+                      <span class="font-medium text-on-surface">Step Progress (多阶段步骤条)</span>
+                      <span class="font-mono text-outline">Phase 3 of 5</span>
+                    </div>
+                    <div class="grid grid-cols-5 gap-1.5 h-2.5">
+                      <div class="bg-status-success rounded"></div>
+                      <div class="bg-status-success rounded"></div>
+                      <div class="bg-primary stripe-animated rounded"></div>
+                      <div class="bg-surface-container rounded"></div>
+                      <div class="bg-surface-container rounded"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] font-mono text-outline">
+                      <span>01 初始化</span>
+                      <span>02 校验</span>
+                      <span class="text-primary font-bold">03 部署中</span>
+                      <span>04 冒烟</span>
+                      <span>05 就绪</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- ========================================================================= -->
+              <!-- Engineering Annotation & Accessibility Matrix                            -->
+              <!-- ========================================================================= -->
+              <section
+                class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col gap-4"
+              >
+                <h3 class="text-headline-sm font-semibold text-on-surface flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary">accessibility_new</span>
+                  <span>工程契约与 WCAG 2.2 AA 规范总览</span>
+                </h3>
+                <div class="overflow-x-auto">
+                  <table class="w-full text-left text-xs border border-outline-variant rounded-lg">
+                    <thead
+                      class="bg-surface-container text-on-surface uppercase font-mono text-[11px]"
+                    >
+                      <tr>
+                        <th class="p-3 border-b border-outline-variant">Component</th>
+                        <th class="p-3 border-b border-outline-variant">ARIA Role</th>
+                        <th class="p-3 border-b border-outline-variant">Aria-Live</th>
+                        <th class="p-3 border-b border-outline-variant">Motion Cubic Curve</th>
+                        <th class="p-3 border-b border-outline-variant">Key CSS Variables</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-outline-variant font-mono text-[11px]">
+                      <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 font-semibold text-on-surface">Alert</td>
+                        <td class="p-3">role="alert"</td>
+                        <td class="p-3 text-status-info">polite / assertive</td>
+                        <td class="p-3">160ms ease-out</td>
+                        <td class="p-3 text-primary">--lx-alert-bg, --lx-alert-border</td>
+                      </tr>
+                      <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 font-semibold text-on-surface">Message</td>
+                        <td class="p-3">role="status"</td>
+                        <td class="p-3 text-status-info">polite</td>
+                        <td class="p-3">180ms cubic-bezier(0.16, 1, 0.3, 1)</td>
+                        <td class="p-3 text-primary">--lx-msg-duration: 3000ms</td>
+                      </tr>
+                      <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 font-semibold text-on-surface">Notification</td>
+                        <td class="p-3">role="status"</td>
+                        <td class="p-3 text-status-info">polite</td>
+                        <td class="p-3">240ms ease-out</td>
+                        <td class="p-3 text-primary">--lx-notif-width: 384px</td>
+                      </tr>
+                      <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 font-semibold text-on-surface">Modal</td>
+                        <td class="p-3">role="dialog" aria-modal="true"</td>
+                        <td class="p-3 text-outline">none (Focus Trap)</td>
+                        <td class="p-3">240ms scale(0.95 → 1.0)</td>
+                        <td class="p-3 text-primary">--lx-modal-mask: rgba(0,0,0,0.45)</td>
+                      </tr>
+                      <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 font-semibold text-on-surface">Drawer</td>
+                        <td class="p-3">role="complementary"</td>
+                        <td class="p-3 text-outline">none</td>
+                        <td class="p-3">280ms cubic-bezier(0.16, 1, 0.3, 1)</td>
+                        <td class="p-3 text-primary">--lx-drawer-push: -100px</td>
+                      </tr>
+                      <tr class="hover:bg-surface-container-low">
+                        <td class="p-3 font-semibold text-on-surface">Popconfirm</td>
+                        <td class="p-3">role="alertdialog"</td>
+                        <td class="p-3 text-status-info">assertive</td>
+                        <td class="p-3">120ms pop scale</td>
+                        <td class="p-3 text-primary">--lx-popconfirm-arrow: 8px</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </main>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

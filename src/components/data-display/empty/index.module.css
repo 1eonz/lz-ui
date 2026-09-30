@@ -1,0 +1,8 @@
+.root {
+  color: var(--lx-color-text-secondary);
+  padding-block: var(--lx-space-xl);
+}
+
+.small {
+  padding-block: var(--lx-space-lg);
+}

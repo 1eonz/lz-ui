@@ -1,0 +1,10 @@
+.root {
+  transition-duration: var(--lx-motion-duration);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+    animation: none;
+  }
+}
