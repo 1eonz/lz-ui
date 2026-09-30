@@ -1,5 +1,14 @@
 # Impeccable 审查记录：DynamicForm 与 Dumi 文档页
 
+## 2026-10-01：General 与其余 Form 详细文档
+
+- 本批覆盖 General 五页、基础 Form 八页与 DynamicForm，共新增 39 个独立运行示例；已有 31 个组件页具备样式展示、使用方法、参数、事件及实例边界。
+- Impeccable 4.1.3，Read 模式；独立 A `/root/input_docs_impeccable_a` 与 B `/root/feedback_2a_sol61_review` 均使用 GPT-6.1-SOL xhigh。A 修复前 Nielsen 29/40，B 五维源码评分 16/20，分数不随主代理推测的改善抬高。
+- B 命令：`node C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs --json src/components/general src/components/form docs/demos`。原始结果 `[]`、退出码 0，只代表零确定性规则命中。完整独立评分、角色分析和问题记录见 `.impeccable/critique/2026-09-30T18-17-22Z__src-components-form-dynamic-form-index-md.md`。
+- 按评审返工：custom renderer 完整转发 Form 的 ARIA 属性；数量错误关联说明；Select 提供可控制失败、同步锁、卸载清理和重试保留值；Ghost 使用公开 style 修正 hover 对比；尺寸、图标、部门和审批文字明确。
+- B 最终限定静态 GO，无未关闭代码 P1/P2；93 个示例源码类型检查通过，Divider 回归 4/4，Ghost 的 156 组 token 对比最低 4.799:1。全量 37 文件 / 264 项测试、lint、scaffold、库与文档构建通过；打包预检 502 文件、压缩 134100 字节、解包 644841 字节，无示例/测试混入。
+- 浏览器 localhost 访问被安全策略拒绝，未换入口绕过。没有当前真实截图或布局、主题、键盘、缩放、日期、文件选择、Clipboard、reduced motion 的通过证据；该 P1 缺证继续开放。静态复审及提交不称为完整视觉交付。
+
 ## 2026-10-01：Input 文档与本批设计一致性返工
 
 方法为双独立代理：A `/root/input_docs_impeccable_a` 做设计与阅读体验评审，B `/root/feedback_2a_sol61_review` 做检测器、技术审计及代码复审。均为 GPT-6.1-SOL xhigh；实施返工使用 medium。Impeccable 4.1.3 的 context 在本会话只运行一次，后续按 audit/critique/polish 执行。

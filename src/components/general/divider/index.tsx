@@ -36,13 +36,16 @@ export const Divider = forwardRef<HTMLElement, DividerProps>(function Divider(
   }
   if (children == null)
     return <hr {...props} ref={ref as React.Ref<HTMLHRElement>} className={classes} />;
+  // 显式名称属于宿主；仅无名称时引用内部可见标题，避免覆盖外部 aria-labelledby。
   return (
     <div
       {...props}
       ref={ref as React.Ref<HTMLDivElement>}
       role="separator"
       aria-orientation="horizontal"
-      aria-labelledby={!hasExplicitName ? generatedLabelId : undefined}
+      aria-labelledby={
+        props['aria-labelledby'] ?? (!hasExplicitName ? generatedLabelId : undefined)
+      }
       className={classes}
     >
       <span id={!hasExplicitName ? generatedLabelId : undefined} className={styles.label}>

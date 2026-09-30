@@ -1,10 +1,63 @@
-# DynamicForm
+---
+title: DynamicForm 动态表单
+group: Form
+demo:
+  defaultShowCode: false
+---
+
+# DynamicForm 动态表单
 
 `DynamicForm` 根据字段数组生成后台录入表单，适合 ERP/CRM 的新建和编辑场景。它负责字段渲染、条件显示、验证和提交值整理；请求、权限、路由和字典来源由业务项目传入。传入的 `children` 会在字段之后渲染，适合放置保存、取消和次要操作。
 
 当前版本组合 lx-ui 的 Input、TextArea、InputNumber、Select、DatePicker、DateRangePicker、Checkbox、Switch、Radio、Upload 和 FormItem。Radio、Upload 保留 Ant Design 5 的公开 Props、事件和 ref 合约；焦点轮廓由实际控件通过公开主题 token 绘制，Upload 包装层不额外画框。Upload 默认仅本地选择文件；视觉和可访问性验收状态以 [UI 设计门禁](/ui-design-gate) 为准。
 
-## 客户录入示例
+## 使用方法
+
+```tsx pure
+import { Button, DynamicForm, LxConfigProvider } from 'lx-ui';
+import type { FieldSchema } from 'lx-ui';
+import 'lx-ui/style.css';
+
+const schema: readonly FieldSchema[] = [
+  { key: 'name', name: 'name', type: 'text', label: '客户名称', required: true },
+];
+
+export default function CustomerForm() {
+  return (
+    <LxConfigProvider>
+      <DynamicForm schema={schema}>
+        <Button htmlType="submit" type="primary">
+          保存客户
+        </Button>
+      </DynamicForm>
+    </LxConfigProvider>
+  );
+}
+```
+
+DynamicForm 已包含 Form 上下文，不能再嵌套原生 form。业务请求在 `onFinish` 处理；必填和其它规则通过后才调用。数组来自 JSON 时仍须由宿主检查字段种类和值路径，函数和 ReactNode 不可序列化。
+
+## 最小字段与提交、重置
+
+<code src="../../../../docs/demos/dynamic-doc-basic.tsx"></code>
+
+## 受控值与嵌套路径回填
+
+<code src="../../../../docs/demos/dynamic-doc-controlled.tsx"></code>
+
+## 条件字段与提交过滤
+
+<code src="../../../../docs/demos/dynamic-doc-conditional.tsx"></code>
+
+## 局部注册表与自定义字段
+
+<code src="../../../../docs/demos/dynamic-doc-custom.tsx"></code>
+
+## 异步选项与失败重试
+
+<code src="../../../../docs/demos/dynamic-doc-options.tsx"></code>
+
+## 完整客户录入示例
 
 <code src="../../../../docs/demos/dynamic-form.tsx"></code>
 
@@ -74,3 +127,48 @@ Select 可提供 `loadOptions(query, values, signal)`。搜索输入会合并 20
 | `preserve` / `omitHidden` | `boolean`                           | `true` / `false` | 隐藏值在 store 中的保留与提交策略           |
 | `compact`                 | `boolean`                           | `false`          | 缩小字段间距；控件密度由主题控制            |
 | `rendererRegistry`        | `FormRendererRegistry`              | 默认 registry    | 局部自定义字段注册                          |
+
+| 补充属性            | 类型                                     | 默认值           | 说明                                                         |
+| ------------------- | ---------------------------------------- | ---------------- | ------------------------------------------------------------ |
+| `children`          | `ReactNode`                              | —                | 字段后的操作区，提交按钮显式 `htmlType="submit"`             |
+| `layout`            | `'horizontal' \| 'vertical' \| 'inline'` | `'vertical'`     | AntD 表单布局；长字段优先纵向                                |
+| `disabled`          | `boolean`                                | `false`          | 禁用实际字段及自定义渲染上下文；自定义操作按钮需自己同步禁用 |
+| `onUnknownRenderer` | `(field: FieldSchema) => ReactNode`      | 显示未知字段错误 | 未找到注册项时的回退，不自动生成输入                         |
+
+## 字段通用参数
+
+| 参数                   | 类型                                                       | 默认值         | 说明                                                                           |
+| ---------------------- | ---------------------------------------------------------- | -------------- | ------------------------------------------------------------------------------ |
+| `key`                  | `string`                                                   | 必填           | 稳定渲染身份，与值路径独立                                                     |
+| `name`                 | `string \| number \| readonly (string \| number)[]`        | 必填           | 值路径；禁止空路径和原型属性片段                                               |
+| `type`                 | `DynamicFieldType`                                         | 必填           | text/textarea/number/select/checkbox/radio/date/dateRange/switch/upload/custom |
+| `label / help / extra` | `ReactNode`                                                | —              | 标签、帮助/错误说明、补充说明；可访问字段提供可见标签                          |
+| `required / rules`     | `boolean / DynamicRule[]`                                  | `false / —`    | 简化必填与规则；required 不重复已有 required 规则                              |
+| `hidden / visible`     | `boolean / boolean \| ((values) => boolean)`               | `false / true` | hidden 优先；visible 为同步纯函数                                              |
+| `disabled / readOnly`  | `boolean \| ((values) => boolean)`                         | `false`        | 动态状态；缺少只读能力的控件改为禁用交互                                       |
+| `preserve`             | `boolean`                                                  | 表单级值       | 隐藏时的存储策略，与 omitHidden 提交策略分离                                   |
+| `dependencies`         | `DynamicNamePath[]`                                        | —              | 依赖值变化时重新校验，须提供正确路径                                           |
+| `inputProps`           | 相应 AntD 公开控件属性                                     | —              | 按type区分；Form注入的值、id、禁用与只读协议优先                               |
+| `options`              | `DynamicFieldOption[]`                                     | —              | select/radio选项；radio必填，提交value而非label                                |
+| `loadOptions`          | `(query, values, signal) => Promise<DynamicFieldOption[]>` | —              | select加载器，200ms搜索防抖及过期响应保护                                      |
+| `renderer / render`    | `string / CustomRenderer`                                  | —              | custom字段名称或一次性渲染，显式render优先                                     |
+| `uploadLabel`          | `ReactNode`                                                | `'选择文件'`   | upload触发按钮文字                                                             |
+
+## 事件与实例方法
+
+| 成员               | 签名或用法                                          | 触发与边界                                                                  |
+| ------------------ | --------------------------------------------------- | --------------------------------------------------------------------------- |
+| `onChange`         | `(changed, all) => void`                            | 用户编辑；程序化回填不触发。受控宿主更新all                                 |
+| `onFinish`         | `(values) => void \| Promise<void>`                 | 校验成功；omitHidden开启时只包含可见字段；不托管提交锁或异常提示            |
+| `onFinishFailed`   | AntD `FormProps['onFinishFailed']`                  | 校验失败；不会调用onFinish                                                  |
+| `ref.submit()`     | `ref.current?.submit()`                             | 命令式提交并执行校验，不等于绕过规则                                        |
+| `ref.reset()`      | `ref.current?.reset()`                              | 恢复当前初值；受控宿主还需同步外部快照                                      |
+| `ref.form`         | `FormInstance<DynamicFormValues>`                   | 挂载后读取；如setFieldsValue/validateFields/scrollToField，行为遵循宿主AntD |
+| `registerRenderer` | `(name, renderer) => void`                          | 显式写默认全局注册表；多应用优先局部registry，没有自动清理协议              |
+| `resolveRenderer`  | `(name?, registry?) => CustomRenderer \| undefined` | 按名称读取；未找到返回undefined                                             |
+
+Ref 在卸载后为空；不要把命令式form访问当作受控状态同步方案。多个演示提供不同name以隔离label/id，实际同页表单也应提供唯一name。
+
+## 扩展与性能
+
+缓存稳定schema和局部registry引用；联动函数只读快照，不发请求。大量动态字段应按业务分组/分步，当前没有数组增删、虚拟化或表达式引擎。保存JSON时将Dayjs和文件转换为服务端字段格式，renderer名称可序列化但函数不能。异步选项及校验需响应AbortSignal，业务层仍独立校验权限与最终提交值。

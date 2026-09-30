@@ -1,6 +1,6 @@
 .root {
   min-inline-size: 0;
-  min-block-size: var(--lx-control-height);
+  /* 公开 InputNumber token 已按密度派生尺寸，不用统一最小高度覆盖 small。 */
   border-radius: var(--lx-radius-control);
   transition-duration: var(--lx-motion-duration);
 }

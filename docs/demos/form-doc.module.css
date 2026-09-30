@@ -1,0 +1,21 @@
+.control {
+  inline-size: min(100%, 320px);
+}
+
+.range {
+  min-inline-size: 0;
+  padding: var(--lx-space-md);
+  border: 1px solid var(--lx-color-border);
+}
+
+.rangeLabels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--lx-space-md);
+  margin-block-end: var(--lx-space-sm);
+}
+
+.rangeControl {
+  inline-size: 100%;
+  min-inline-size: 0;
+}

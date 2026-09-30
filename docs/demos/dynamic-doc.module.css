@@ -1,0 +1,10 @@
+.output {
+  margin: 0;
+  padding: var(--lx-space-md);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--lx-color-text);
+  background: var(--lx-color-surface);
+  font-family: monospace;
+  font-size: var(--lx-font-size-caption);
+}

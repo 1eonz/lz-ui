@@ -1,6 +1,6 @@
 .root {
   min-inline-size: 0;
-  min-block-size: var(--lx-control-height);
+  /* 尺寸由公开主题 token 和显式/继承 size 决定，避免覆盖宿主的小尺寸。 */
   transition-duration: var(--lx-motion-duration);
 }
 

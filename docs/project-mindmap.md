@@ -162,6 +162,14 @@ mindmap
         GPT-6.1-SOL xhigh review
         修改后独立复审
         代码与视觉分开验收
+      单组件文档
+        独立可运行场景
+        源码按需展开
+        Props默认值与事件
+        ref方法与边界
+        文档源码严格类型检查
+        Dumi路由构建
+        浏览器证据单独验收
       build
         ESM/CJS
         d.ts

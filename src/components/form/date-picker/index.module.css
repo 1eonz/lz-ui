@@ -1,6 +1,6 @@
 .root {
   min-inline-size: 0;
-  min-block-size: var(--lx-control-height);
+  /* 公开 DatePicker token 与 size 决定高度，范围选择器沿用同一尺寸协议。 */
   border-radius: var(--lx-radius-control);
   transition-duration: var(--lx-motion-duration);
 }
