@@ -91,7 +91,7 @@ mindmap
           Spin
           Progress
         2B 非交互提示
-          Tooltip（已实现，待浏览器验收）
+          Tooltip（代码已交付，完整视觉矩阵待补）
           hover/focus
           aria-describedby 合并
         锚定交互弹层（架构待定）
