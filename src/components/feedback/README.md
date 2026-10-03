@@ -1,3 +1,3 @@
 # Feedback
 
-预留给 Modal、Drawer、Message、Notification、Spin、Progress 等反馈组件。
+反馈组件包括 Alert、Spin、Progress 和 Tooltip；Modal、Drawer、Message、Notification 等尚未进入实现批次。

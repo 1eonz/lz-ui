@@ -11,10 +11,11 @@
 - Card 移除多余包装层，ref、className 和 style 统一归属 AntD 真实根节点；AvatarGroup 的 style 改为归属 lx-ui 容器，与 className/ref 一致。依赖旧包装 DOM 或内部 style 归属的宿主需调整。
 - Pagination 修复隐藏/恢复及非受控页大小变化时的 ref 同步，避免 ref 指向已脱离文档的节点。
 - Ant Design peer 下限从 `>=5` 收敛到 `>=5.24`，与当前公开 ref/API 契约及开发依赖基线一致。早期 5.x 宿主需升级，验证状态见 `docs/compatibility.md`。
-- 子代理实施与独立复审统一使用 GPT-6.1-SOL medium / xhigh；组件实际演示、设计映射和浏览器验证分别记录，静态 GO 不代表完整视觉验收。
+- 后续子代理实施与独立复审统一使用 `gpt-6-luna max`；组件实际演示、设计映射和浏览器验证分别记录，静态 GO 不代表完整视觉验收。
 
 ## Unreleased
 
+- 新增 `Tooltip` 反馈组件及可运行的方位、主题和受控示例。默认兼容鼠标与键盘焦点，使用 AntD 5.24+ 公共 API/ref，并保留触发元素原有 `aria-describedby`；Popover/Popconfirm 的交互式内容等待锚定对话框能力评审后再实现。
 - 新增 2A Feedback：Alert、Spin、Progress，透传 Ant Design 5 公开 API，明确 aria-busy、确定进度、关闭焦点和 reduced-motion 边界；不内置请求、重试、全局消息或伪进度。
 
 - 新增 1B Tree：透传 AntD 5 公开树节点、受控展开/选择/勾选、异步加载、虚拟化和高度协议；保持稳定 key 与宿主请求边界，不生成节点 key、不包装布局、不依赖 rc-tree 私有类型。

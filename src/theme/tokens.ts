@@ -21,6 +21,12 @@ export const paletteSeeds: Record<LxPalettePreset, readonly [string, string]> = 
   'cheese-distant-cyan': ['#e7c86a', '#5d7e7a'],
 };
 
+/** Tooltip 的实色基准来自 Stitch；固定前景避免亮色主色影响深色提示的可读性。 */
+export const feedbackTooltipTokens = {
+  spotlightBackground: '#1f2937',
+  spotlightText: '#ffffff',
+} as const;
+
 type LxCssProperties = CSSProperties & Record<`--lx-${string}`, string>;
 const fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif';
 // 固定规格集中于此，CSS 与 AntD 公开 token 共用数值。组件属性仍可指定
@@ -318,6 +324,8 @@ export function resolveLxTokens(options: {
     colorLinkHover: primaryHover,
     colorLinkActive: primaryActive,
     colorTextLightSolid: onPrimary,
+    // AntD 5 将 spotlight 作为 Tooltip 样式消费的公共别名；lx-ui Tooltip 另显式传色，确保宿主覆盖范围清晰。
+    colorBgSpotlight: feedbackTooltipTokens.spotlightBackground,
     colorText: text,
     colorTextSecondary: textSecondary,
     colorTextTertiary: tertiaryText,

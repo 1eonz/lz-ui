@@ -1,0 +1,5 @@
+/*
+ * Tooltip 的箭头、表面和文字由 AntD CSS-in-JS 依据 ConfigProvider token 生成。
+ * AntD 默认把 portal 挂到 document.body，而 --lx-* 变量位于 LxConfigProvider 的 DOM 子树；
+ * 此处不覆盖 portal 样式，避免局部变量离开 Provider 子树后失效。
+ */

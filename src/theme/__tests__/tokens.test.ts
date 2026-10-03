@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse } from 'postcss';
 import { describe, expect, it } from 'vitest';
-import { brandSeeds, paletteSeeds, resolveLxTokens } from '../tokens';
+import { brandSeeds, feedbackTooltipTokens, paletteSeeds, resolveLxTokens } from '../tokens';
 import type { LxColorPreset, LxPalettePreset } from '../types';
 
 const defaults = {
@@ -29,6 +29,27 @@ const contrast = (a: string, b: string) => {
 };
 
 describe('resolved theme tokens', () => {
+  it('在所有主题配色、外观和明暗模式下保持 Tooltip 对比度', () => {
+    expect(feedbackTooltipTokens.spotlightBackground).toBe('#1f2937');
+    expect(feedbackTooltipTokens.spotlightText).toBe('#ffffff');
+    expect(
+      contrast(feedbackTooltipTokens.spotlightText, feedbackTooltipTokens.spotlightBackground),
+    ).toBeGreaterThanOrEqual(4.5);
+    for (const mode of ['light', 'dark'] as const) {
+      for (const appearance of ['business', 'soft', 'glass'] as const) {
+        for (const palette of palettes) {
+          const { token } = resolveLxTokens({ ...defaults, ...palette, mode, appearance });
+          const spotlightBackground = token.colorBgSpotlight;
+          expect(spotlightBackground).toBe(feedbackTooltipTokens.spotlightBackground);
+          if (!spotlightBackground) continue;
+          expect(
+            contrast(feedbackTooltipTokens.spotlightText, spotlightBackground),
+          ).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    }
+  });
+
   it.each(['comfortable', 'compact'] as const)('shares explicit sizes at %s density', (density) => {
     const { css, components } = resolveLxTokens({ ...defaults, density });
     const compact = density === 'compact';

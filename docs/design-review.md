@@ -141,3 +141,11 @@ type DynamicField = {
 旧项目的 `antd@4`、React 16、Less 全局样式、Moment、整包 AntD 转出、重复的 `lxtable`/`lxtable-new` 和业务请求耦合不直接移植。lx-ui 会保留职责拆分和场景命名，改用 Ant Design 5 公共 API、CSS Variables、CSS Modules、按需入口、可选虚拟化和宿主注入的请求协议。这样能吸收成熟经验，同时避免把旧项目的版本和包体负担带进新库。
 
 首批实现顺序因此调整为：`LxConfigProvider` 与 token runtime -> Button/Input/Select/InputNumber/DatePicker 等基础控件 -> FormItem -> DynamicForm -> SearchForm/QuickField -> ProTable。DynamicForm 不再自带一套独立视觉控件，而是通过基础控件出口组合。
+
+<a id="tooltip-anchor-dialog-decision"></a>
+
+## 8. Tooltip 与锚定交互弹层决策
+
+- `Tooltip` 是非交互描述，使用 AntD 5 公共 Tooltip/ref，默认 hover + focus，并在打开期间把子元素及组件的描述 ID 与 Tooltip 自身 ID 合并；关闭时只保留当前 props 的宿主描述，避免缓存已过期字段说明。
+- `Popover`/`Popconfirm` 的 Stitch 静态画面可以作为视觉输入，但包含可操作内容时，不能直接套用 Tooltip 的 `role="tooltip"`/`aria-describedby` 模式。首版先完成 Tooltip；交互式 Popover/Popconfirm 等到可访问的锚定对话框能力就绪后再实现。
+- 锚定对话框能力需作为独立架构批次评审：公开 DOM 契约、dialog 角色与锚点状态、Tab/Escape、焦点进出与恢复、外部关闭、嵌套容器、SSR 和边缘定位；不依赖 AntD 私有 DOM，也不在运行时修改 role。该批次完成前，不开放 Popover/Popconfirm 的 scaffold 与主包出口。

@@ -85,13 +85,21 @@ mindmap
         Empty/Skeleton（已公开）
       Feedback
         Alert
-        Modal/Drawer
-        Message/Notification
         Spin/Progress
         2A 区域反馈
           Alert
           Spin
           Progress
+        2B 非交互提示
+          Tooltip（已实现，待浏览器验收）
+          hover/focus
+          aria-describedby 合并
+        锚定交互弹层（架构待定）
+          可访问的锚定对话框能力
+          Popover（依赖就绪后）
+          Popconfirm（依赖就绪后）
+        Modal/Drawer
+        Message/Notification
       Navigation
         Tabs/Menu
         Breadcrumb
@@ -158,8 +166,8 @@ mindmap
         axe 规划中
         视觉回归规划中
       独立复审
-        GPT-6.1-SOL medium 实施
-        GPT-6.1-SOL xhigh review
+        GPT-6-LUNA max 实施
+        GPT-6-LUNA max 独立复审
         修改后独立复审
         代码与视觉分开验收
       单组件文档

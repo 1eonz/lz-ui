@@ -110,3 +110,5 @@ export { Spin } from './components/feedback/spin';
 export type { SpinProps } from './components/feedback/spin';
 export { Progress } from './components/feedback/progress';
 export type { ProgressProps, ProgressRef } from './components/feedback/progress';
+export { Tooltip } from './components/feedback/tooltip';
+export type { TooltipPlacement, TooltipProps, TooltipRef } from './components/feedback/tooltip';

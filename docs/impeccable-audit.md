@@ -212,3 +212,37 @@ A 组 Nielsen 得分 **26/40（Acceptable）**。主要问题是三个预览选�
 - 构建后浏览器证据：1280px 下 `scrollWidth === clientWidth === 1265`，390px 下 `scrollWidth === clientWidth === 390`；默认 `details.open === false`；名称 placeholder 正常存在；控制台无新增错误。
 - 修复后目标 detector 原始输出仍为 `[]`、退出码 0。该结果只说明静态规则未命中；URL detector 仍因环境没有 Puppeteer 而不可用。
 - 本轮 P1 已按真实交互路径复测，未覆盖范围仍包括全部 13 套配色、React 19、Safari/Edge、系统级 reduced-motion 截图、屏幕阅读器、200%/400% 缩放和 standalone UMD。
+
+## 2026-10-03：Tooltip 交付复审与 P2 收口
+
+> 目标：`src/components/feedback/tooltip`、三个 Tooltip Dumi demo 和 Feedback 设计输入。设计依据：`design.md`、`docs/design-review.md`、`UI/P0 基础组件-Feedback/code.html`。实施与返工使用 `gpt-6.1-sol` medium，独立复审使用 `gpt-6.1-sol` xhigh。
+
+### 审查方法
+
+- 按 `docs/impeccable-workflow.md` 执行 context、craft floor、audit、critique、polish 和独立 code review；检测命令为 `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json src/components/feedback/tooltip docs/demos/feedback-tooltip-basic.tsx docs/demos/feedback-tooltip-controlled.tsx docs/demos/feedback-tooltip-placements.tsx`。
+- detector 原始结果为 `[]`、退出码 0；这只表示确定性规则没有命中，不作为视觉或无障碍通过依据。
+- 第一轮独立复审发现兼容显隐文档缺口；返工补充 `visible`、`defaultVisible`、`onVisibleChange` 的优先级和迁移示例，并将 API 拆成常用、定位渲染、兼容弃用三组。
+- 第二轮复审提出并关闭 3 个 P2：`classNames`/`styles` 类型说明精确化、demo 显示真实 `aria-describedby` 合并值、明确受控到非受控动态切换边界。第二轮复审未发现 P0/P1/P2 代码问题。
+
+### 技术评分与浏览器证据
+
+| 维度       |      分数 | 依据                                                                                                               |
+| ---------- | --------: | ------------------------------------------------------------------------------------------------------------------ |
+| 无障碍     |       3/4 | 默认 hover + focus；宿主描述 ID 与 Tooltip ID 打开时合并、关闭后恢复；原生按钮焦点路径通过。屏幕阅读器输出未实测。 |
+| 性能       |       3/4 | 无新增依赖；MutationObserver 只用于文档 demo 的可见证据，不进入库组件。未做真实 Core Web Vitals。                  |
+| 主题       |       3/4 | Stitch 深色表面与白字、亮色例外和 token 测试通过；暗色、compact 和全主题矩阵未在浏览器逐项截图。                   |
+| 响应式     |       3/4 | 默认桌面和 360×800 窄屏无横向溢出，边缘 Tooltip 实际自动调整；约 930px、320px 和全 12 方位逐项交互未完成。         |
+| 实现完整性 |       4/4 | 主出口、类型、公开 ref、ARIA 合并、3 个可运行 demo、文档 API、测试和 scaffold 齐全。                               |
+| **合计**   | **16/20** | **静态与已覆盖浏览器范围 GO；完整视觉矩阵保留未验收项。**                                                          |
+
+浏览器实际验证路径为 `http://localhost:8000/components/feedback/tooltip`（Dumi 忽略 `--port 8002`，实际监听 8000）。默认桌面与 360×800 下页面无横向滚动；基础 Tooltip 打开后 `aria-describedby` 为 `sync-field-description sync-form-description sync-status-tooltip`，焦点离开后恢复宿主描述；受控 demo 能打开并只有一个可见 `role=tooltip`；右边缘触点在窄屏下可见并自动调整。浏览器控制台没有新增 warning/error。
+
+### 工程门禁
+
+- `npm run check`：40 个测试文件、276 项测试通过；保留 AntD 弃用提示和 jsdom `getComputedStyle` 噪声。新增 Tooltip SSR 与 StrictMode 回归覆盖。
+- `npm run build:lib` 与 `npm run build:docs` 通过，三个 Tooltip demo 路由生成。
+- `npm run check:scaffold`、`npm run typecheck`、`npm run typecheck:docs`、`npm run lint`、`npm run format:check` 和 Tooltip/token 定向 97 项测试通过；独立复审最终未发现 P0/P1/P2 代码问题。
+
+### 未覆盖范围
+
+当前环境未提供稳定的 930px/320px viewport override、暗色和 compact 浏览器矩阵、200%/400% 缩放、系统级 reduced-motion、屏幕阅读器、Safari/Edge、React 19 消费 smoke 和全 12 方位逐项交互证据；这些保持为后续视觉验收任务，不写成已通过。

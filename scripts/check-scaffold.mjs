@@ -52,6 +52,7 @@ const approvedComponents = new Set([
   'feedback/alert',
   'feedback/spin',
   'feedback/progress',
+  'feedback/tooltip',
 ]);
 
 /**
