@@ -1,23 +1,33 @@
+import { useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { usePrefersColor, useSiteData } from 'dumi';
 import '../../src/style.css';
 import { LxConfigProvider, RadioGroup, Select, Switch, useLxTheme } from 'lx-ui';
 import type { LxAppearance, LxColorPreset, LxPalettePreset } from 'lx-ui';
 import styles from './data-display-demo.module.css';
 
-/**
- * 主题仅作用于当前示例，禁用持久化以免覆盖文档站设置。
- * Provider 的 theme 是初值；运行时切换使用 setTheme 保持示例状态。
- */
+/** 让示例跟随文档站明暗模式；示例内的其他主题选择仍彼此隔离且不持久化。 */
 export function DataDisplayDemoFrame({ children }: { children: ReactNode }) {
+  const [preferredColor] = usePrefersColor();
+  const { themeConfig } = useSiteData();
+  const fallbackMode = themeConfig.prefersColor.default === 'dark' ? 'dark' : 'light';
+  const docsMode = preferredColor ?? fallbackMode;
+
   return (
-    <LxConfigProvider theme={{ mode: 'light', persist: false }}>
-      <DemoSurface>{children}</DemoSurface>
+    <LxConfigProvider theme={{ mode: docsMode, persist: false }}>
+      <DemoSurface docsMode={docsMode}>{children}</DemoSurface>
     </LxConfigProvider>
   );
 }
 
-function DemoSurface({ children }: { children: ReactNode }) {
+function DemoSurface({ children, docsMode }: { children: ReactNode; docsMode: 'light' | 'dark' }) {
   const { theme, resolvedMode, setTheme } = useLxTheme();
+
+  useEffect(() => {
+    // 文档明暗变化时同步示例；局部切换在文档模式不变时继续保持独立。
+    setTheme({ mode: docsMode });
+  }, [docsMode, setTheme]);
+
   return (
     <div className={styles.surface}>
       <details className={styles.themeSettings}>

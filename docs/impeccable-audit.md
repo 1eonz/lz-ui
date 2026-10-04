@@ -374,3 +374,60 @@ A 组 Nielsen 得分 **26/40（Acceptable）**。主要问题是三个预览选�
 - `http://localhost:8000/components/feedback/tooltip` 完成整页重载后，当前页面 H1 为“Tooltip”，默认视口无页面级横向溢出，8 个原生诊断 `<details>` 均默认关闭；重载后的 console warning/error 为空。重载前日志中的 FormatJS 缺失翻译及 Webpack 模块解析错误来自旧会话，不能当作当前页面状态；补丁已重放后重新加载确认当前无新增错误。
 
 本轮没有验证 React 19 renderer 实际 detach、屏幕阅读器输出、200%/400% 放大、系统 reduced-motion、Safari/Edge、全部主题外观组合或 Tooltip 全方位逐项截图。Assessment A/B 的边界和这些缺口均不构成整个 Tooltip 或 2B-1 全组件矩阵完成的结论。
+
+## 2026-10-04：Input 文档收尾与 Dumi 单实例恢复
+
+> 目标：`src/components/form/input/index.md`、六个 Input 文档 demo、共享 demo 容器和 Dumi 文档壳。设计依据：现有 Input API、`design.md`、P0 Form 设计输入与项目文档规范。Impeccable 4.1.3，Read 模式；评审代理使用 `gpt-6-luna` max。
+
+### 独立评审与范围
+
+- Assessment A：`/root/input_critique_a` 独立检查文档结构、业务用例和键盘边界，源码评估 Nielsen **31/40（Good）**。代理隔离环境两次均没有浏览器 surface，因此不把它的内容评分写成截图验收。A 最初将 AntD 清除按钮不在 Tab 顺序列作 P2；复核后确认文档已给出聚焦文本框、Ctrl/Command+A、Backspace/Delete 的完整替代路径，且不在 Tab 顺序是 AntD 的既定行为，故该项不构成已证实的 WCAG 键盘阻断，不作为未关闭 P2。
+- Assessment B：`/root/input_critique_b` 对 9 个 markup 文件独立运行确定性扫描，范围为 Input Markdown、6 个 demo、清除图标及共享 demo 容器；原始 JSON 为 `[]`、退出码 0、规则命中 0。CSS 不在扫描范围内。代理隔离环境无法创建浏览器标签，未声称有 overlay、响应式或控制台检查结果。
+- 主代理另用 Codex In-app Browser 检查实际 Dumi 页面、交互与审查链接。以上来源分开记录；检测器的空数组只表示确定性规则未命中，不表示 Impeccable 整体通过。
+
+### 体验与技术评分
+
+| 维度                       |      分数 | 依据                                                                                  |
+| -------------------------- | --------: | ------------------------------------------------------------------------------------- |
+| Nielsen UX（Assessment A） |     31/40 | 文档以客户、合同和采购场景组织；可运行示例先于最小用法，长参数表仍有扫读成本。        |
+| 无障碍                     |       3/4 | 字段名称、错误说明、清除按钮的键盘替代路径和正文标题齐全；未实际测试屏幕阅读器。      |
+| 性能                       |       3/4 | 无新增运行时依赖，示例状态局部更新；未采集 Core Web Vitals。                          |
+| 主题                       |       3/4 | 示例跟随 Dumi 明暗模式，局部主题设置不持久化；未逐一验证全部风格、配色和密度。        |
+| 响应式                     |       3/4 | 主代理检查桌面、平板和窄屏页面无根级横向溢出；未覆盖 200%/400% 缩放和真实粗指针硬件。 |
+| 实现完整性                 |       4/4 | 页面有六个可运行 demo、完整 Input/TextArea API、事件与 ref 说明及可达的审查记录链接。 |
+| **技术合计**               | **16/20** | 仅评本批文档与已观察范围，不代表整个组件库。                                          |
+
+### 主代理浏览器证据
+
+- `http://localhost:8000/components/form/input` 的实际页面标题和正文 H1 均为“Input 输入框”；基础受控示例和六个 demo 在可访问性树中渲染，第一条交互示例位于最小代码用法之前。
+- 桌面 1280×720 首屏可见 Input 示例；930px 平板宽度下 Dumi 搜索输入跟随 205px 容器收缩，文档根和 body 均没有水平溢出；390px 和 320px 宽度下分别记录为 375/375 与 305/305 的可视宽度/滚动宽度。窄屏截图中组件宽度留在页面内容区内。
+- 基础受控输入通过浏览器键盘路径验证：聚焦后设置测试值，按 Ctrl+A 和 Backspace，值与旁边状态都变为“未填写”；随后恢复默认“杭州云栖科技”，没有留下 demo 状态改动。合同简称与 TextArea 的同一键盘路径也写在各自 demo 旁。
+- 审查链接实际打开 `/impeccable-audit`，页面正文和目录均成功呈现。Input 页面截图为 Dumi 深色外观；浏览器 console 未见本轮新增 warning/error。全套主题矩阵、系统级 reduced motion、屏幕阅读器和高倍缩放未验收。
+
+### 8000 模块解析故障
+
+- 复现背景为同一工作区同时运行多个 Dumi 开发实例；它们共用 `.dumi/tmp` 生成目录。用户报告 8000 出现 `Can't resolve '@@/dumi/meta/runtime.ts'`，而另一个端口页面可打开。检查时发现只有 Dumi 8000 实例存活，`.dumi/tmp/dumi/meta/runtime.ts` 已重新生成；在单实例状态下主页、Input、Tooltip 和审查记录路由均返回 200，浏览器 Input 页面也正常渲染。
+- 已停止重复实例并保留单个 8000 服务，未修改 Dumi 生成文件。`docs/project-rules.md` 已补充单实例规则：排查 `@@/dumi/meta/runtime.ts` 时先检查生成文件和进程数量、停止重复实例，再启动一个 Dumi 服务并验证目标路由。当前 8001 未运行；不要把已停止的端口描述成可用。
+
+### 工程门禁与问题状态
+
+- `npm run check` 通过：Prettier、TypeScript、97 个 Dumi 示例源码类型检查、ESLint、42 个测试文件 / 302 项测试。现有 AntD 弃用提示和 jsdom 不支持伪元素 `getComputedStyle` 的测试噪声仍会输出；不影响退出码。
+- `npm run check:scaffold`、`npm run build:lib`、`npm run build:docs` 均通过；Dumi 构建期间输出 Node `localStorage` experimental warning，但 Webpack 成功、退出码为 0，六个 Input demo 路由已生成。
+- `npm pack --dry-run --json` 通过：522 个文件，143,693 B 压缩、680,976 B 解包；文件清单未包含 tests 或文档 demo。
+- 构建前停止 8000 开发进程以避免共享 `.dumi/tmp`；生产构建通过后只重启一个 8000 实例并复测目标路由。
+- P2 目录过长、首屏先显示静态代码、键盘清空说明缺失、平板搜索框溢出、审查记录无链接均已在本批处理并复测。Input API 表仍有 17 行，作为阅读成本观察保留；目前没有未关闭的 P0/P1/P2。
+
+### 2026-10-04：Input 粗指针清除目标复审
+
+- 目标：`src/components/form/input/index.tsx`、`index.module.css`、Input 单元测试和 API 文档。目的：修复粗指针设备下 AntD 清除按钮仍为约 12px 的触控可用性问题。
+- Impeccable 4.1.3 确定性扫描命令：
+
+  `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json src/components/form/input/index.tsx src/components/form/input/index.md docs/demos/input-basic.tsx docs/demos/input-size.tsx docs/demos/input-states.tsx docs/demos/input-affixes.tsx docs/demos/input-textarea.tsx docs/demos/input-ref.tsx docs/demos/input-clear-icon.tsx`
+
+  原始结果为 `[]`，退出码为 `0`。该结果只说明确定性规则未命中，不替代实际页面审查。
+
+- 方案：通过 AntD 公开的 `allowClear.clearIcon` 插槽包裹本地标记，CSS 只扩大该标记，不选择 rc-input 的内部 DOM，也不会影响宿主 suffix 中的其他按钮。触控设备下按钮和输入根节点使用 `--lx-control-target-touch-min`，默认 44px；清除图标依赖新增的 `@ant-design/icons` peer dependency，保持图标包外置。
+- 独立 code review：`gpt-6.1-sol` 中度复审未发现 P0/P1/P2；极高复审指出并关闭了内部 DOM 选择器、Context suffix 类覆盖、测试父节点耦合、reduced-motion 和默认值类型边界。测试补充了 Input/TextArea 的 `input`、`textarea`、`suffix`、`count` 类名转发和公开 clearIcon 标记；文档补充 Input/TextArea 的 `bigint` 受控值与准确的 defaultValue 类型。
+- 浏览器验证：Dumi `http://localhost:8000/components/form/input` 单实例运行；默认桌面清除按钮为约 12×12，开启 CDP 粗指针模拟并设置 390×844 后，清除按钮为 44×44，suffix 为 44×44，输入根节点为 245×62；页面正常渲染。页面未产生本轮新增 console error/warn。
+- 工程验证：本批文件已运行 Prettier；Input 类型检查和 5 项组件测试通过；完整工程门禁与库/文档构建在提交前重新执行。未覆盖真实硬件屏幕阅读器、Safari/Edge 和全主题矩阵。
+- 状态：本批新增 P2 已关闭；保留真实硬件和完整主题矩阵作为后续发布验收范围。

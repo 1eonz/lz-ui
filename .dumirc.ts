@@ -17,10 +17,8 @@ export default defineConfig({
   // Dumi 开发服务器要求绝对根路径；静态部署再切换成相对路径。
   publicPath: isProduction ? './' : '/',
   ...(isProduction ? { runtimePublicPath: {} } : {}),
-  locales: [
-    { id: 'zh-CN', name: '中文' },
-    { id: 'en-US', name: 'English' },
-  ],
+  // 仅公开已有完整文档路由的语言，避免语言切换跳转到未翻译页面。
+  locales: [{ id: 'zh-CN', name: '中文' }],
   themeConfig: {
     logo: '/logo.svg',
     nav: [

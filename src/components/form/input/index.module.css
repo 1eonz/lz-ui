@@ -4,8 +4,28 @@
   transition-duration: var(--lx-motion-duration);
 }
 
+/* 粗指针设备保留紧凑桌面密度，同时把实际输入根节点扩展为触控尺寸。 */
+@media (any-pointer: coarse) {
+  .root {
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+
+  /* 清除图标通过 AntD 公开 clearIcon 插槽注入标记，只扩大自身，不影响 suffix 里的其他按钮。 */
+  .clearMarker {
+    display: inline-grid;
+    min-inline-size: var(--lx-control-target-touch-min);
+    min-block-size: var(--lx-control-target-touch-min);
+    place-items: center;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .root {
+    transition: none;
+  }
+
+  /* 清除按钮由 AntD 渲染但属于本组件根节点，统一关闭颜色过渡以尊重系统设置。 */
+  .root :global(button) {
     transition: none;
   }
 }

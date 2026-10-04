@@ -1,7 +1,30 @@
+import { CloseCircleFilled } from '@ant-design/icons';
 import { Input as AntInput } from 'antd';
-import { forwardRef } from 'react';
+import { forwardRef, type ReactNode } from 'react';
 import styles from './index.module.css';
 import type { InputProps, InputRef, TextAreaProps, TextAreaRef } from './types';
+
+/**
+ * 通过 AntD 公开的 clearIcon 插槽标记清除图标，避免选择 rc-input 的内部 DOM。
+ * 包裹宿主自定义图标后仍保留其名称和视觉内容；默认图标使用 AntD 公共图标包。
+ */
+function withClearTouchTarget(allowClear: InputProps['allowClear']): InputProps['allowClear'] {
+  if (!allowClear) {
+    return allowClear;
+  }
+
+  const clearIcon: ReactNode =
+    typeof allowClear === 'object' && allowClear.clearIcon ? (
+      allowClear.clearIcon
+    ) : (
+      <CloseCircleFilled aria-hidden="true" />
+    );
+
+  return {
+    ...(typeof allowClear === 'object' ? allowClear : {}),
+    clearIcon: <span className={styles.clearMarker}>{clearIcon}</span>,
+  };
+}
 
 /**
  * 单行文本输入，转发 AntD 公开 value/onChange/id 契约。
@@ -11,7 +34,12 @@ import type { InputProps, InputRef, TextAreaProps, TextAreaRef } from './types';
  */
 export const Input = forwardRef<InputRef, InputProps>(function Input({ className, ...props }, ref) {
   return (
-    <AntInput {...props} ref={ref} className={[styles.root, className].filter(Boolean).join(' ')} />
+    <AntInput
+      {...props}
+      allowClear={withClearTouchTarget(props.allowClear)}
+      ref={ref}
+      className={[styles.root, className].filter(Boolean).join(' ')}
+    />
   );
 });
 
@@ -27,6 +55,7 @@ export const TextArea = forwardRef<TextAreaRef, TextAreaProps>(function TextArea
   return (
     <AntInput.TextArea
       {...props}
+      allowClear={withClearTouchTarget(props.allowClear)}
       ref={ref}
       className={[styles.root, className].filter(Boolean).join(' ')}
     />

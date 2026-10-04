@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
 import { Input } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
+import { InputClearIcon } from './input-clear-icon';
 import styles from './input.module.css';
 
 export default function InputBasicDemo() {
@@ -14,7 +15,7 @@ export default function InputBasicDemo() {
           <Input
             id={`${id}-name`}
             value={name}
-            allowClear
+            allowClear={{ clearIcon: <InputClearIcon label="清除客户名称" /> }}
             onChange={(event) => setName(event.target.value)}
             placeholder="请输入客户名称"
           />

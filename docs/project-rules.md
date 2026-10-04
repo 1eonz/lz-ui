@@ -44,6 +44,8 @@ DynamicForm 只能组合公开的表单基础控件。它负责 schema、联动�
 
 ## 3. 架构和依赖方向
 
+- 同一工作区只运行一个 Dumi 开发实例，因为多个实例共用 `.dumi/tmp` 生成目录。出现 `@@/dumi/meta/runtime.ts` 等生成模块无法解析时，先确认对应生成文件存在并停止重复实例，再重启单个 `npm run dev` 服务，通过目标文档路由和浏览器控制台确认恢复。
+
 依赖只能从上到下：
 
 ```text
@@ -150,6 +152,7 @@ component-name/
 ## 8. 文档、测试和验收
 
 - 每个组件文档必须说明用途、不适用场景、基础/受控/非受控示例、主题/密度、loading/empty/error、键盘、Props、ref、边界和性能注意事项。
+- Dumi 的 `locales` 只列出已有完整翻译和对应文档路由的语言；翻译未覆盖时隐藏切换入口，不能生成会落入 404 的语言链接。
 - 测试验证公开行为，不测试私有 state 名称或 AntD 私有 DOM 层级。
 - 新交互至少覆盖默认、受控、disabled、loading、error、empty、keyboard、reduced-motion 相关行为；异步逻辑覆盖竞态和卸载取消。
 - 组件完成前必须通过 `npm run check:scaffold`、`npm run format:check`、`npm run typecheck`、`npm run lint`、`npm test`、`npm run build:lib` 和 `npm run build:docs`。

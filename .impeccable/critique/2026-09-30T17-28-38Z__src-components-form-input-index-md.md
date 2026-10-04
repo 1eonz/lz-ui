@@ -10,6 +10,7 @@ target_fingerprint: 'sha256:abb0d9e5d8e0e063e2281c2ce3cba952a84c2c7790288e447013
 target_path: "F:\\work\\lz-ui\\src\\components\\form\\input\\index.md"
 timestamp: 2026-09-30T17-28-38Z
 slug: src-components-form-input-index-md
+closed: true
 ---
 
 Method: dual-agent (A: /root/input_docs_impeccable_a · B: /root/feedback_2a_sol61_review)

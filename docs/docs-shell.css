@@ -1,5 +1,37 @@
-/* Dumi 桌面导航直到767px仍保持48px项目间距，会在平板尺寸的文档窗口
-   将中文标签挤成纵向文字。 */
+/* 移动端菜单沿用 Dumi 图标按钮，只扩大可操作区域，不改变图标和对齐方向。 */
+@media (max-width: 767px) {
+  .dumi-default-header-menu-btn,
+  .dumi-default-sidebar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
+
+  .dumi-default-doc-layout-mobile-bar {
+    min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
+}
+
+/* 目录链接只给程序化聚焦的标题添加 tabindex="-1"，保留原有 Tab 顺序。 */
+.markdown :is(h2, h3, h4)[tabindex='-1']:focus {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+/* 长组件名与本页目录允许换行，避免 Dumi 固定侧栏宽度下的信息被省略。 */
+.dumi-default-sidebar > .dumi-default-sidebar-group > dd > a,
+.dumi-default-sidebar .dumi-default-toc > li > a {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  overflow: visible;
+  text-overflow: clip;
+  line-height: 1.4;
+}
+
+/* 平板宽度会挤窄 Dumi 导航文字；收窄搜索容器时，内部输入框也要同步收缩。 */
 @media (min-width: 768px) and (max-width: 1024px) {
   :root .dumi-default-navbar > li:not(:last-child) {
     margin-inline-end: 16px;
@@ -8,6 +40,11 @@
   :root .dumi-default-search-bar {
     width: clamp(168px, 22vw, 240px);
     margin-inline-start: 16px;
+  }
+
+  :root .dumi-default-search-bar .dumi-default-search-bar-input {
+    box-sizing: border-box;
+    inline-size: 100%;
   }
 
   .dumi-default-navbar > li > a {

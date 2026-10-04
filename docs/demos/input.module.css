@@ -2,6 +2,42 @@
   display: grid;
   gap: var(--lx-space-xl);
 }
+
+/* 协议占用稳定宽度，地址列可收缩，避免长域名把示例推宽。 */
+.protocolGroup {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr);
+  gap: var(--lx-space-sm);
+  min-inline-size: 0;
+}
+.protocol {
+  inline-size: 116px;
+  --lx-select-control-height: var(--lx-control-height);
+}
+
+/* Select 的公开根 style 设置控件高度，内部选择器按根高度拉伸边框。 */
+@media (any-pointer: coarse) {
+  .protocol {
+    --lx-select-control-height: max(var(--lx-control-height), var(--lx-control-target-touch-min));
+  }
+}
+
+.clearIconLabel {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.address {
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
 .field {
   display: grid;
   gap: var(--lx-space-sm);
