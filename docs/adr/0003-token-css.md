@@ -12,6 +12,8 @@
 
 组件样式使用 CSS Modules，主题和语义 token 使用 CSS Variables，使用 cascade layers 固定覆盖顺序。Ant Design 5 的 token 通过 `ConfigProvider` 映射到同一套语义来源。
 
+组件需要面向不同输入设备或遵循系统动效偏好时，使用公开 CSS token 表达边界。Tag 的关闭目标保持 24px 桌面基准，并在粗指针环境通过 `--lx-control-target-touch-min` 扩展为 44px；`--lx-motion-tag-exit-duration` 默认 120ms，在 reduced-motion 下归零。宿主自定义关闭节点时可复用尺寸 token。
+
 ## 优点
 
 - 运行时主题切换成本低。

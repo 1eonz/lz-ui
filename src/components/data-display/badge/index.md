@@ -3,6 +3,8 @@ title: Badge 徽标
 group: Data Display
 ---
 
+# Badge 徽标
+
 用于未读计数、通知提示或状态说明。徽标本身不是操作按钮。
 
 ## 基础用法：计数与文本状态

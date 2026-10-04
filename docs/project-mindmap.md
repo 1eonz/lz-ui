@@ -166,8 +166,8 @@ mindmap
         axe 规划中
         视觉回归规划中
       独立复审
-        GPT-6-LUNA max 实施
-        GPT-6-LUNA max 独立复审
+        gpt-6-luna max 实施
+        gpt-6-luna max 独立复审
         修改后独立复审
         代码与视觉分开验收
       单组件文档

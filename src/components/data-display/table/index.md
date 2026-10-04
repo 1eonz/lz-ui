@@ -3,6 +3,8 @@ title: Table 表格
 group: Data Display
 ---
 
+# Table 表格
+
 展示带列定义的数据，业务请求、权限和缓存由宿主处理。
 
 ## 基础用法：三列采购数据

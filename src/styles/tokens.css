@@ -34,6 +34,7 @@
     --lx-control-height: 40px;
     --lx-control-height-small: 24px;
     --lx-control-height-large: 48px;
+    --lx-control-target-touch-min: 44px;
     --lx-table-row-height: 48px;
     --lx-table-header-height: 36px;
     --lx-table-font-size: 12px;
@@ -118,6 +119,7 @@
     --lx-motion-duration: 180ms;
     --lx-motion-spin-duration: 800ms;
     --lx-motion-alert-exit-duration: 160ms;
+    --lx-motion-tag-exit-duration: 120ms;
     --lx-focus-ring: #146ce8;
     --lx-glass-surface: var(--lx-panel-surface);
     --lx-glass-backdrop-filter: var(--lx-panel-backdrop-filter);
@@ -160,6 +162,7 @@
       --lx-motion-duration: 0ms !important;
       --lx-motion-spin-duration: 0ms !important;
       --lx-motion-alert-exit-duration: 0ms !important;
+      --lx-motion-tag-exit-duration: 0ms !important;
     }
     [data-lx-appearance='glass'] {
       --lx-panel-surface: var(--lx-panel-surface-base);

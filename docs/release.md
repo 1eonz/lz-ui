@@ -29,3 +29,7 @@
 ## 5. 回滚
 
 发现高风险问题时优先撤回受影响版本的使用入口，发布包含修复的 patch。不要删除已经发布的版本或复用同一个版本号。
+
+## 6. Tag token 迁移记录
+
+Tag 默认关闭按钮沿用 24px 桌面最小尺寸；`--lx-control-target-touch-min` 在粗指针设备默认提供 44px 目标。宿主自定义 `closeIcon` 时，如需匹配触屏目标，可在 `@media (any-pointer: coarse)` 下使用该 token。退出时长由 `--lx-motion-tag-exit-duration` 控制，默认 120ms，系统启用 reduced-motion 时为 0ms。这两项是追加的 CSS token，不改变组件 Props 或依赖；非中文宿主仍需通过 `closable` 的 `aria-label` 提供本地化名称。

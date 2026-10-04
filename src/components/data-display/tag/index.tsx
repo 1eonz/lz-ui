@@ -7,13 +7,20 @@ export const Tag = forwardRef<HTMLSpanElement, TagProps>(function Tag(
   { closeIcon, closable, ...props },
   ref,
 ) {
-  // 通过公开 closeIcon 提供原生键盘按钮，AntD 合并自身关闭回调，
-  // 无需复制关闭状态机。Tag 未消费 AntD 返回的关闭禁用值，因此默认按钮
-  // 显式应用 closable.disabled；自定义节点的键盘、名称和禁用由宿主负责。
+  const closeLabel =
+    typeof closable === 'object' && closable !== null
+      ? (closable['aria-label'] ?? '关闭标签')
+      : '关闭标签';
+  // AntD 的 locale 读取 hook 与 ConfigContext 不属于公开契约，不能依赖其内部实现。
+  // lx-ui 默认提供中文关闭名称；其他语言由宿主通过 closable['aria-label'] 显式设置。
+  // 单实例显式启用关闭时注入原生按钮，并让 AntD 继续管理关闭回调和状态，避免复制其关闭状态机。
+  // 实例 aria-label 优先；默认按钮会优先于 ConfigProvider 的全局 closeIcon；
+  // 需要自定义图标时由当前实例显式传入 closeIcon 或 closable.closeIcon。默认按钮自行应用 closable.disabled；
+  // 自定义节点的键盘、名称和禁用语义由宿主负责。
   const accessibleCloseIcon = (
     <button
       type="button"
-      aria-label="关闭标签"
+      aria-label={closeLabel}
       className={styles.close}
       disabled={typeof closable === 'object' && closable.disabled}
     >

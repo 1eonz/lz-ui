@@ -15,6 +15,7 @@
 
 ## Unreleased
 
+- Tag 公布 `--lx-control-target-touch-min`（粗指针默认 44px，桌面关闭按钮基准 24px）和 `--lx-motion-tag-exit-duration`（默认 120ms，reduced-motion 为 0ms）；自定义关闭节点可复用触屏目标 token。非中文宿主需通过 `closable` 的 `aria-label` 提供本地化关闭名称。
 - 新增 `Tooltip` 反馈组件及可运行的方位、主题和受控示例。默认兼容鼠标与键盘焦点，使用 AntD 5.24+ 公共 API/ref，并保留触发元素原有 `aria-describedby`；Popover/Popconfirm 的交互式内容等待锚定对话框能力评审后再实现。
 - 新增 2A Feedback：Alert、Spin、Progress，透传 Ant Design 5 公开 API，明确 aria-busy、确定进度、关闭焦点和 reduced-motion 边界；不内置请求、重试、全局消息或伪进度。
 

@@ -3,6 +3,8 @@ title: Avatar 头像
 group: Data Display
 ---
 
+# Avatar 头像
+
 用于识别人员、团队或应用，仍需提供可读姓名。
 
 ## 基础用法：尺寸与团队头像

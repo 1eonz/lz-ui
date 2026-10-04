@@ -76,6 +76,8 @@ Status messaging can use the paired semantic variables `--lx-color-success` / `-
 | Skeleton             | 控件圆角 4/6/8，段落行高 12，上间距 16                                    | `blockRadius`、`paragraphLiHeight`、`paragraphMarginTop`、`gradientFromColor` / `gradientToColor`                                                          |
 | Icon / Divider       | 旋转 800ms；标题到边缘 24                                                 | `--lx-motion-spin-duration`、`--lx-divider-title-offset`；Divider 的 native orientationMargin 是比例，不能用 24 冒充                                       |
 
+Tag 默认关闭按钮的桌面最小尺寸为 24px（`--lx-space-xl`）；粗指针设备使用 `--lx-control-target-touch-min`，默认 44px。标签示例退出时长由 `--lx-motion-tag-exit-duration` 控制，默认 120ms，`prefers-reduced-motion: reduce` 时为 0ms。
+
 AntD Table 没有 `rowHeight` 或 `headerHeight` 公开 token。`--lx-table-row-height` 和 `--lx-table-header-height` 是 lx 包装层的 CSS 协议，公开 map 只配置真实存在的 cell token。普通单行内容的行高是基准；多行、展开内容或宿主 render 可增高。Descriptions 的 label/content padding 同样需要公开 semantic styles 消费，不能依赖不存在的 `--ant-*` 变量。
 
 ## 面板材质与回退

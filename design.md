@@ -54,6 +54,8 @@
 
 颜色、字体、间距、圆角、阴影、控件高度、动效时长和层级全部通过 token 管理。组件样式不直接复制主题色值。
 
+Tag 默认关闭按钮以 24px 为桌面最小目标尺寸；粗指针设备通过公开 token `--lx-control-target-touch-min` 扩大至默认 44px。退出动效使用公开 token `--lx-motion-tag-exit-duration`，默认 120ms，并在 reduced-motion 下归零。
+
 ### 3.5 可访问性是首版要求
 
 以 WCAG 2.2 AA 为基线：键盘可用、焦点可见、表单有真实标签、错误信息可感知、颜色不是唯一信号、普通文本对比度至少 4.5:1，交互区域优先达到 44×44 CSS px。
@@ -510,7 +512,7 @@ UMD 分为：
 - `ProTable` 是否内置请求协议，还是只接收 `dataSource` 和 `request` 两种模式。
 - `PageContainer` 是否包含权限按钮、页面级 loading 和离开确认。
 - npm 私库的 registry、包发布权限和版本审批流程。
-- 是否需要英文 locale、RTL 和时区配置的第一批示例。
+- 是否需要英文 locale、RTL 和时区配置的第一批示例；Tag 默认关闭名称保持中文，非中文宿主通过 `closable` 的 `aria-label` 显式提供名称，不读取 AntD 私有 locale 上下文。
 
 ## 16. 当前阶段交付边界
 

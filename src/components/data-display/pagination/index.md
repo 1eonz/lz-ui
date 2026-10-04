@@ -3,6 +3,8 @@ title: Pagination 分页
 group: Data Display
 ---
 
+# Pagination 分页
+
 负责页码导航，数据切片、请求、缓存及 URL 同步由宿主实现。
 
 ## 基础用法：非受控页码

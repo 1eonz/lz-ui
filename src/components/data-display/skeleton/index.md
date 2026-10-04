@@ -3,6 +3,8 @@ title: Skeleton 骨架屏
 group: Data Display
 ---
 
+# Skeleton 骨架屏
+
 用于加载阶段的结构占位，形状应与最终内容接近。
 
 ## 基础用法：头像与段落占位

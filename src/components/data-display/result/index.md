@@ -3,6 +3,8 @@ title: Result 结果反馈
 group: Data Display
 ---
 
+# Result 结果反馈
+
 用于流程完成、失败或整页异常，状态、原因和恢复动作应一致。
 
 ## 基础用法：凭证提交成功

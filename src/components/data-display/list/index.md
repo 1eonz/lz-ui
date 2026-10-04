@@ -3,6 +3,8 @@ title: List 列表
 group: Data Display
 ---
 
+# List 列表
+
 用于事务流和轻量记录；多列排序或复杂单元格应使用 Table。
 
 ## 基础用法：简单采购待办

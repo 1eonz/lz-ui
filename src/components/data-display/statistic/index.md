@@ -3,6 +3,8 @@ title: Statistic 统计数值
 group: Data Display
 ---
 
+# Statistic 统计数值
+
 展示业务指标，不管理请求、轮询或趋势计算。
 
 ## 基础用法：金额与订单数

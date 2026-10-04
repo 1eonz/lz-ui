@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { CheckableTag, Tag } from '..';
 import { describe, expect, it, vi } from 'vitest';
 import { ConfigProvider } from 'antd';
+import enUS from 'antd/locale/en_US';
 describe('Tag', () => {
   it('does not add closing to ordinary or explicitly non-closable labels', () => {
     render(
@@ -12,6 +13,11 @@ describe('Tag', () => {
       </>,
     );
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  it('uses the Chinese close name without a locale provider', () => {
+    render(<Tag closable>客户</Tag>);
+    expect(screen.getByRole('button', { name: '关闭标签' })).toBeInTheDocument();
   });
 
   it('preserves public ConfigProvider defaults with a host accessible close icon', () => {
@@ -32,6 +38,25 @@ describe('Tag', () => {
     );
     expect(screen.getAllByRole('button', { name: '关闭标签' })).toHaveLength(1);
   });
+
+  it('uses the accessible instance default when closable is explicitly enabled', () => {
+    render(
+      <ConfigProvider
+        tag={{
+          closable: true,
+          closeIcon: (
+            <button type="button" aria-label="全局关闭图标">
+              全局图标
+            </button>
+          ),
+        }}
+      >
+        <Tag closable>当前标签</Tag>
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('button', { name: '关闭标签' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '全局关闭图标' })).not.toBeInTheDocument();
+  });
   it('provides a native close button and invokes the public callback once', () => {
     const onClose = vi.fn();
     render(
@@ -44,6 +69,53 @@ describe('Tag', () => {
     expect(close).toHaveAttribute('type', 'button');
     fireEvent.click(close);
     expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses the accessible name from the explicit closable configuration', () => {
+    const onClose = vi.fn();
+    render(
+      <Tag closable={{ 'aria-label': '移除客户标签' }} onClose={onClose}>
+        客户
+      </Tag>,
+    );
+    const close = screen.getByRole('button', { name: '移除客户标签' });
+    fireEvent.click(close);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the Chinese fallback when the AntD locale is English', () => {
+    render(
+      <ConfigProvider locale={enUS}>
+        <Tag closable>Customer</Tag>
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('button', { name: '关闭标签' })).toBeInTheDocument();
+  });
+
+  it('lets a non-Chinese host set a localized close name under the AntD locale provider', () => {
+    render(
+      <ConfigProvider locale={enUS}>
+        <Tag closable={{ 'aria-label': 'Remove customer tag' }}>Customer</Tag>
+      </ConfigProvider>,
+    );
+    expect(screen.getByRole('button', { name: 'Remove customer tag' })).toBeInTheDocument();
+  });
+
+  it('uses a custom close icon declared inside the closable configuration', () => {
+    render(
+      <Tag
+        closable={{
+          closeIcon: (
+            <button type="button" aria-label="移除指定标签">
+              移除
+            </button>
+          ),
+        }}
+      >
+        客户
+      </Tag>,
+    );
+    expect(screen.getByRole('button', { name: '移除指定标签' })).toBeInTheDocument();
   });
 
   it('disables the default close button when the public closable configuration requests it', () => {

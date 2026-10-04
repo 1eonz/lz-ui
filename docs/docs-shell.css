@@ -20,8 +20,80 @@
    此文档专用token使普通尺寸代码文字满足AA对比度要求。 */
 :root[data-prefers-color='light'] {
   --lx-docs-inline-code: #8f3030;
+  --lx-docs-table-sticky-surface: #f7f9fb;
+  --lx-docs-table-sticky-header: #fbfcfd;
+  --lx-docs-table-sticky-border: #e4e9ec;
+}
+
+/* 固定列填充文档外层画布色，遮住横移内容并与内容面形成轻微层次；暗色值按 Dumi 主题单独映射。 */
+:root[data-prefers-color='dark'] {
+  --lx-docs-table-sticky-surface: #050709;
+  --lx-docs-table-sticky-header: #020305;
+  --lx-docs-table-sticky-border: #2a353c;
 }
 
 :root[data-prefers-color='light'] .markdown *:not(pre) code {
   color: var(--lx-docs-inline-code);
+}
+
+/* 组件文档表格统一由外层区域滚动，确保焦点、键盘和触屏行为一致。 */
+.markdown .lx-docs-table {
+  max-inline-size: 100%;
+  overflow-x: auto;
+}
+
+/* Dumi 内层默认滚动会绕开外层焦点；由可聚焦的外层统一接管横向滚动。 */
+.markdown .lx-docs-table .dumi-default-table-content {
+  overflow: visible;
+}
+
+.markdown .lx-docs-table table {
+  inline-size: max-content;
+  min-inline-size: 100%;
+}
+
+.markdown .lx-docs-table:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+/* 固定主 API 表的属性列，并为长类型与说明保留可换行的列宽。 */
+.markdown .lx-tag-api-table table {
+  inline-size: 100%;
+  min-inline-size: 860px;
+  table-layout: fixed;
+}
+
+.markdown .lx-tag-api-table th:first-child,
+.markdown .lx-tag-api-table td:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  inline-size: 96px;
+  min-inline-size: 96px;
+  max-inline-size: 96px;
+  white-space: nowrap;
+  background: var(--lx-docs-table-sticky-surface);
+  box-shadow: 1px 0 0 var(--lx-docs-table-sticky-border);
+}
+
+.markdown .lx-tag-api-table th:first-child {
+  z-index: 2;
+  background: var(--lx-docs-table-sticky-header);
+}
+
+.markdown .lx-tag-api-table th:nth-child(2),
+.markdown .lx-tag-api-table td:nth-child(2) {
+  inline-size: 320px;
+}
+
+.markdown .lx-tag-api-table th:nth-child(3),
+.markdown .lx-tag-api-table td:nth-child(3) {
+  inline-size: 180px;
+}
+
+.markdown .lx-tag-api-table td:nth-child(2) code {
+  white-space: normal;
+  overflow-wrap: anywhere;
 }

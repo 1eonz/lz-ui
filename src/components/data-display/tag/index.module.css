@@ -68,6 +68,11 @@
   outline-offset: 1px;
 }
 
+.close:disabled {
+  color: var(--lx-color-text-disabled);
+  cursor: not-allowed;
+}
+
 .cross {
   position: relative;
   inline-size: var(--lx-space-md);
@@ -88,6 +93,14 @@
 
 .cross::after {
   transform: rotate(-45deg);
+}
+
+@media (any-pointer: coarse) {
+  .checkable,
+  .close {
+    min-inline-size: var(--lx-control-target-touch-min);
+    min-block-size: var(--lx-control-target-touch-min);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,6 +1,6 @@
 # lx-ui 后续实施总计划
 
-更新时间：2026-10-03  
+更新时间：2026-10-04
 适用范围：React 18/19、Ant Design 5、PC 中后台组件库  
 维护人：主代理负责架构、边界、验收和交付；子代理负责在明确边界内实现与复审
 
@@ -156,6 +156,7 @@ flowchart TD
 
 - React 18 和 React 19 消费 smoke，至少覆盖主入口、`lx-ui/antd`、`lx-ui/theme`、CSS 入口和业务入口。
 - SSR renderToString/hydration、StrictMode、按需引入和重复依赖检查。
+- 设计统一国际化协议；Tag 当前默认关闭名称为中文，非中文宿主需逐项传入 `closable['aria-label']`，在开放多语言发布前评估 Provider 级默认名称及多语言读屏验证。
 - ESM/CJS 类型声明、UMD 外置 peer、standalone 直引版本和 gzip/unpacked 包体报告。
 - `npm pack --dry-run` 确认不含 demos、tests、Dumi 临时文件和 UI 设计输入。
 - 私库 registry、版本、CHANGELOG、迁移说明和发布前 `private` 状态评审。
@@ -170,15 +171,15 @@ flowchart TD
 
 ### 实现中
 
-1. 主代理先锁协议，`gpt-6.1-sol` medium 子代理实现机械代码。
+1. 主代理先锁协议，`gpt-6-luna` max 子代理实现代码。
 2. 所有注释和 JSDoc 使用中文；组件目录必须有 `index.tsx`、`index.module.css`、`index.md`、`types.ts` 和测试。
 3. 每个 demo 必须可运行，展示样式、使用方法、Props、事件、ref、边界和恢复路径。
 4. 运行 Impeccable context、audit、critique、polish；`detect []` 只作机械记录。
 
 ### 交付前
 
-1. `gpt-6.1-sol` xhigh 独立 code review 和 UX review。
-2. P0/P1/P2 修复后再次使用 xhigh 复审；模型服务失败要记录，不能虚构结论。
+1. `gpt-6-luna` max 独立 code review 和 UX review。
+2. P0/P1/P2 修复后再次使用同模型与推理强度复审；模型服务失败要记录，不能虚构结论。
 3. 自动格式化本批文件，再运行 scaffold、format、typecheck、demo typecheck、lint、test、lib build、docs build 和包体检查。
 4. 主代理检查 diff、审计记录、未覆盖范围和公开出口。
 5. 提交 Conventional Commit 并普通 push；禁止强推和混入无关改动。
@@ -196,4 +197,4 @@ flowchart TD
 
 ## 六、当前下一步
 
-下一批默认从 **2B-1 Tooltip 与既有组件浏览器矩阵补测** 开始。矩阵完成后进入 **2B-2 锚定对话框原语评审**，评审关闭前不实现 Popover/Popconfirm。若浏览器工具持续不能覆盖完整矩阵，先完成可验证范围并在审计记录中保留缺口，再继续原语架构文档工作。
+**批次 2B-1 仍在进行。** 当前已重新 smoke 全部 32 个公开组件路由；Tag 已完成本轮局部键盘、焦点、主题、缩放视口和文档表格验收，但全组件状态矩阵、读屏、放大和跨浏览器证据仍不完整。后续按 [`browser-acceptance-matrix.md`](./browser-acceptance-matrix.md) 优先补齐 Tooltip、Input、DynamicForm、Table、Upload、Alert、Spin、Progress，再覆盖其余组件。矩阵达到关闭条件后进入 **2B-2 锚定对话框原语评审**；评审关闭前不实现 Popover/Popconfirm。浏览器工具无法覆盖的项目保留为明确缺口，不以源码推断通过。

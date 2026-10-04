@@ -3,6 +3,8 @@ title: Descriptions 描述列表
 group: Data Display
 ---
 
+# Descriptions 描述列表
+
 用于只读键值信息；编辑和校验应使用表单控件。
 
 ## 基础用法：合同键值布局

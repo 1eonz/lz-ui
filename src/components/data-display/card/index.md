@@ -3,6 +3,8 @@ title: Card 卡片
 group: Data Display
 ---
 
+# Card 卡片
+
 承载一组相关信息，避免将完整页面每段都包成卡片或嵌套卡片。
 
 ## 基础用法：采购协议卡片

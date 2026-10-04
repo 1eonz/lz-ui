@@ -9,3 +9,5 @@ package-lock.json
 pnpm-lock.yaml
 yarn.lock
 UI
+# Impeccable 快照的 YAML 指纹由脚本管理，不能由格式器改写引号。
+.impeccable/critique/**
