@@ -1,0 +1,137 @@
+diff --git a/node_modules/dumi/theme-default/builtins/SourceCode/index.js b/node_modules/dumi/theme-default/builtins/SourceCode/index.js
+index 99e06a1..6c28455 100644
+--- a/node_modules/dumi/theme-default/builtins/SourceCode/index.js
++++ b/node_modules/dumi/theme-default/builtins/SourceCode/index.js
+@@ -8,7 +8,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+ import { ReactComponent as IconCheck } from '@ant-design/icons-svg/inline-svg/outlined/check.svg';
+ import { ReactComponent as IconCopy } from '@ant-design/icons-svg/inline-svg/outlined/copy.svg';
+ import classNames from 'classnames';
+-import { useSiteData } from 'dumi';
++import { useIntl, useSiteData } from 'dumi';
+ import Highlight, { defaultProps } from 'prism-react-renderer';
+ import 'prism-themes/themes/prism-one-light.css';
+ import React, { useEffect, useRef, useState } from 'react';
+@@ -40,6 +40,7 @@ var SourceCode = function SourceCode(props) {
+     setText = _useState4[1];
+   var _useSiteData = useSiteData(),
+     themeConfig = _useSiteData.themeConfig;
++  var intl = useIntl();
+   useEffect(function () {
+     var isShell = /shellscript|shell|bash|sh|zsh/.test(lang);
+     if (isShell) {
+@@ -105,7 +106,10 @@ var SourceCode = function SourceCode(props) {
+   }, /*#__PURE__*/React.createElement("button", {
+     type: "button",
+     className: "dumi-default-source-code-copy",
+-    "data-copied": isCopied || undefined
++    "data-copied": isCopied || undefined,
++    "aria-label": intl.locale.startsWith('zh')
++      ? isCopied ? '已复制代码' : '复制代码'
++      : isCopied ? 'Code copied' : 'Copy code'
+   }, isCopied ? /*#__PURE__*/React.createElement(IconCheck, null) : /*#__PURE__*/React.createElement(IconCopy, null))), props.textarea ? /*#__PURE__*/React.createElement("div", {
+     className: "dumi-default-source-code-scroll-container"
+   }, /*#__PURE__*/React.createElement("div", {
+diff --git a/node_modules/dumi/theme-default/locales/en-US.json b/node_modules/dumi/theme-default/locales/en-US.json
+index 7063b49..911ad79 100644
+--- a/node_modules/dumi/theme-default/locales/en-US.json
++++ b/node_modules/dumi/theme-default/locales/en-US.json
+@@ -25,6 +25,8 @@
+   "previewer.actions.codepen": "Open in CodePen (Not implemented)",
+   "previewer.actions.stackblitz": "Open in StackBlitz",
+   "previewer.actions.separate": "Open in separate page",
++  "sourceCode.copy": "Copy code",
++  "sourceCode.copied": "Code copied",
+   "404.title": "PAGE NOT FOUND",
+   "404.back": "Back to homepage",
+   "api.component.name": "Name",
+diff --git a/node_modules/dumi/theme-default/locales/zh-CN.json b/node_modules/dumi/theme-default/locales/zh-CN.json
+index cd70856..69b074b 100644
+--- a/node_modules/dumi/theme-default/locales/zh-CN.json
++++ b/node_modules/dumi/theme-default/locales/zh-CN.json
+@@ -24,6 +24,8 @@
+   "previewer.actions.sketch.guide": "如何粘贴到 SKetch？",
+   "previewer.actions.stackblitz": "在 StackBlitz 中打开",
+   "previewer.actions.separate": "在独立页面中打开",
++  "sourceCode.copy": "复制代码",
++  "sourceCode.copied": "已复制代码",
+   "404.title": "页面未找到",
+   "404.back": "返回首页",
+   "api.component.name": "属性名",
+diff --git a/node_modules/dumi/theme-default/slots/PreviewerActions/index.js b/node_modules/dumi/theme-default/slots/PreviewerActions/index.js
+index 2ab15f6..f36e021 100644
+--- a/node_modules/dumi/theme-default/slots/PreviewerActions/index.js
++++ b/node_modules/dumi/theme-default/slots/PreviewerActions/index.js
+@@ -92,6 +92,9 @@ var PreviewerActions = function PreviewerActions(props) {
+   }, !((_props$disabledAction = props.disabledActions) !== null && _props$disabledAction !== void 0 && _props$disabledAction.includes('CSB')) && /*#__PURE__*/React.createElement("button", {
+     className: "dumi-default-previewer-action-btn",
+     type: "button",
++    "aria-label": intl.formatMessage({
++      id: 'previewer.actions.codesandbox'
++    }),
+     "data-dumi-tooltip": intl.formatMessage({
+       id: 'previewer.actions.codesandbox'
+     }),
+@@ -101,6 +104,9 @@ var PreviewerActions = function PreviewerActions(props) {
+   }, /*#__PURE__*/React.createElement(IconCodeSandbox, null)), !((_props$disabledAction2 = props.disabledActions) !== null && _props$disabledAction2 !== void 0 && _props$disabledAction2.includes('STACKBLITZ')) && /*#__PURE__*/React.createElement("button", {
+     className: "dumi-default-previewer-action-btn",
+     type: "button",
++    "aria-label": intl.formatMessage({
++      id: 'previewer.actions.stackblitz'
++    }),
+     "data-dumi-tooltip": intl.formatMessage({
+       id: 'previewer.actions.stackblitz'
+     }),
+@@ -115,6 +121,9 @@ var PreviewerActions = function PreviewerActions(props) {
+     "data-copied": isCopied || undefined
+   }, isCopied ? /*#__PURE__*/React.createElement(IconCheck, null) : /*#__PURE__*/React.createElement(IconSketch, null), /*#__PURE__*/React.createElement("select", {
+     value: "",
++    "aria-label": intl.formatMessage({
++      id: 'previewer.actions.sketch'
++    }),
+     onChange: function onChange(ev) {
+       var type = ev.target.value;
+       switch (type) {
+@@ -162,6 +171,9 @@ var PreviewerActions = function PreviewerActions(props) {
+     rel: "noreferrer",
+     href: props.demoUrl,
+     className: "dumi-default-previewer-action-btn",
++    "aria-label": intl.formatMessage({
++      id: 'previewer.actions.separate'
++    }),
+     "data-dumi-tooltip": intl.formatMessage({
+       id: 'previewer.actions.separate'
+     })
+@@ -173,6 +185,9 @@ var PreviewerActions = function PreviewerActions(props) {
+         return !prev;
+       });
+     },
++    "aria-label": intl.formatMessage({
++      id: "previewer.actions.code.".concat(showCode ? 'shrink' : 'expand')
++    }),
+     "data-dumi-tooltip": intl.formatMessage({
+       id: "previewer.actions.code.".concat(showCode ? 'shrink' : 'expand')
+     })
+@@ -209,7 +224,10 @@ var PreviewerActions = function PreviewerActions(props) {
+             })
+           }, /*#__PURE__*/React.createElement("button", {
+             type: "button",
+-            className: "dumi-default-previewer-editor-tip-btn"
++            className: "dumi-default-previewer-editor-tip-btn",
++            "aria-label": intl.formatMessage({
++              id: 'previewer.actions.code.editable'
++            })
+           }, /*#__PURE__*/React.createElement(IconEdit, null)))
+         }) : /*#__PURE__*/React.createElement(SourceCode, {
+           lang: lang,
+@@ -223,7 +241,10 @@ var PreviewerActions = function PreviewerActions(props) {
+           }, /*#__PURE__*/React.createElement("button", {
+             type: "button",
+             className: "dumi-default-previewer-editor-tip-btn",
+-            "data-readonly": true
++            "data-readonly": true,
++            "aria-label": intl.formatMessage({
++              id: 'previewer.actions.code.readonly'
++            })
+           }, /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement(IconEdit, null)))
+         }, files[activeKey][1].value.trim())
+       };

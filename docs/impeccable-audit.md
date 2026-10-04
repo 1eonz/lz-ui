@@ -316,3 +316,61 @@ A 组 Nielsen 得分 **26/40（Acceptable）**。主要问题是三个预览选�
 ### 本批验证边界
 
 本节记录 Tag 与文档 H1 的局部通过。没有验证屏幕阅读器实际播报、200%/400% 缩放、Safari/Edge、完整 13 套主题与三种外观、正常退出动画逐帧、真实粗指针硬件或 React 19 消费；2B-1 全组件矩阵仍未关闭。
+
+## 2026-10-04：Tooltip 窄屏文档与 ref 生命周期收口
+
+> 目标：`src/components/feedback/tooltip/index.tsx`、`merged-ref.ts`、Tooltip 测试、Dumi 文档和两个 Tooltip demo。设计依据：`UI/P0 基础组件-Feedback/code.html`、`design.md`、现有主题 token。Impeccable skill 4.1.3；实现与两轮复审使用 `gpt-6-luna` max。
+
+### 双代理审查和 detector
+
+- Assessment A：`/root/tooltip_impeccable_critique` 独立检查 Tooltip 设计和页面，首轮 Nielsen 评分 **33/40（Good）**。优先问题为 API 标识符在 320px 拆行、ARIA 诊断段落默认占据较多空间、两个最长位置标签超出按钮边界 3–5px。三项均由本轮 polish 修复；主代理复测数据见下文。
+- Assessment A 完成最终复核后确认三项问题均已关闭，没有发现新的阻断；评分维持 **33/40（Good）**。该子代理的 IAB 不可用，最终的窄屏判断以主代理记录的 320/390px 实际浏览器数据为依据，不能表述为子代理独立截图验证。
+- Assessment B：`/root/tooltip_impeccable_evidence` 独立执行确定性扫描。命令为：
+
+  `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json src/components/feedback/tooltip/index.tsx src/components/feedback/tooltip/index.md docs/demos/feedback-tooltip-basic.tsx docs/demos/feedback-tooltip-placements.tsx`
+
+  初次原始 JSON 为 `[]`，exit code `0`。B 代理的页面新标签在子代理隔离环境导航超时，未取得页面 overlay 或页面内 `impeccable` console 证据；主代理随后使用 Codex In-app Browser 新建本地 Tooltip 标签，完成人工页面、键盘和 console 复验。最终 markup 复扫原始输出仍为 `[]`、exit code `0`，共扫描 4 个 TSX/Markdown 文件，不包括 CSS。`[]` 只表示确定性规则没有命中；实际布局与交互结论来自下方浏览器记录，不把扫描结果当作 Impeccable 通过结论。
+
+- 交付前独立 code review：`/root/tooltip_final_code_review` 使用 `gpt-6-luna` max 检查完整未提交差异，覆盖 Tooltip、合并 ref、测试、文档、demo、样式和 Dumi 补丁；未发现可复现的 P0–P3 问题。该代理未运行测试或构建，工程门禁由主代理执行并单独记录。
+
+- 第一轮 code review 发现：动态 `title` 变空时受控 open 可能保留空弹层；React 18.3 开发模式不支持 callback ref 返回 cleanup。第二轮独立复审确认两个问题均已关闭，没有新增 P0/P1/P2。
+
+### UX 与技术评分
+
+| 维度                 |      分数 | 当前证据和限制                                                                                                    |
+| -------------------- | --------: | ----------------------------------------------------------------------------------------------------------------- |
+| Nielsen UX（A 首轮） |     33/40 | 首轮发现的窄屏参数断词、冗长诊断和按钮文字越界均已修复；最终 polish 复核应以本节实测为依据。                      |
+| 无障碍               |       3/4 | `title` 动态变空时关闭弹层并移除 Tooltip 描述 ID；宿主描述保留；表格有命名、焦点和键盘滚动。屏幕阅读器未实测。    |
+| 性能                 |       3/4 | 没有新增运行时依赖；ARIA DOM 写入有值比较；未测真实 CWV。                                                         |
+| 主题                 |       3/4 | 延续现有 Tooltip 公共 token 与 Dumi theme 样式；只复查了当前浅色页，完整主题矩阵未做。                            |
+| 响应式               |       4/4 | 320px、390px 页面根无水平溢出；参数表限制在自己的滚动区，方位标签单行并留在按钮内；其他组件矩阵不计入此局部评分。 |
+| 实现完整性           |       3/4 | demo、API、ref 生命周期测试和文档更新齐全；React 19 renderer、屏幕阅读器和缩放矩阵仍待验收。                      |
+| **技术合计**         | **16/20** | 仅评 Tooltip 本批已覆盖范围，不能代表全库或完整 2B-1 通过。                                                       |
+
+### 浏览器复验
+
+- 页面：`http://localhost:8000/components/feedback/tooltip`；Codex In-app Browser 新建标签；DPR 1。320×800 时 `documentElement/body scrollWidth/clientWidth` 为 `305/305`；390×844 为 `375/375`。页面根不横向滚动。
+- 本轮默认浏览器视口为 718×884，页面 H1 为“Tooltip”，`documentElement/body scrollWidth/clientWidth` 均为 `703/703`，页面无水平溢出；8 个原生诊断 `<details>` 默认均关闭。该轮是默认视口抽查，不替代窄屏复测。
+- 320px 下 Tooltip 常用参数 region 可视宽 257px、内容宽 1809px、`tabindex=0`。点击聚焦区域后按 `ArrowRight`，`scrollLeft` 从 0 变为 42px。参数名的 computed `white-space` 为 `nowrap`，抽查的 `children`、`defaultOpen`、`onOpenChange`、`afterOpenChange` 和 `aria-describedby` 均单行。
+- 320px 下 `rightBottom` 与 `bottomRight` 按钮盒宽 149px、内容滚动宽 147px，标签保持单行；390px 下按钮盒宽 106px、内容宽 104px。两个宽度下页面均无根级横向溢出。
+- 基础 demo 中“查看当前 aria-describedby 完整值（不会自动播报）”默认关闭；手动展开后实际值为 `sync-field-description sync-form-description`。该区域是静态检查文本，没有 `role=status` 或 live-region 自动播报。
+- 320px 下左侧触点打开 Tooltip 后自动翻至右侧，弹层矩形为 `x=165–237px`；关闭后根滚动宽恢复与可视内容宽相等。控制台 error/warn 查询为空。
+- ReactDOM 18.3.1 真实 mount/unmount 测试覆盖宿主 callback ref 返回 cleanup 和无 cleanup 两条路径：前者恰执行一次宿主 cleanup，后者收到 `ref(null)`；没有记录 `Unexpected return value from a callback ref`。内部 ref 与对象 ref 均在 detach 后清空。React 19 renderer 未安装，React 19 消费 smoke 保留在 6A。
+
+### 修复状态和未覆盖范围
+
+| 优先级 | 发现                                                   | 状态                                                                                                                              |
+| ------ | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| P2     | 动态 title 变为 `null`/`undefined` 后空 Tooltip 留存   | 已关闭：有效 open 与 `aria-describedby` 使用同一状态，并有回归测试。                                                              |
+| P2     | React 18 callback ref cleanup 造成开发控制台告警       | 已关闭：外层 callback 始终返回 void，在 React 18 `null` detach 中执行暂存 cleanup 或转发 null；真实 18.3.1 mount/unmount 无告警。 |
+| P2     | 窄屏 API 标识断词、ARIA 诊断默认展开、位置按钮标签越界 | 已关闭：`nowrap` + 局部滚动、原生 `<details>`、自适应按钮轨道；320/390px 浏览器复测通过。                                         |
+| P3     | Escape 关闭 Tooltip                                    | 按用户决定延至 2B-2 锚定对话框原语统一设计，本批不实现也不声称通过。                                                              |
+
+### 本轮工程门禁与页面复载
+
+- `npm run check` 通过：Prettier、TypeScript、96 个 Dumi 示例类型检查、ESLint，以及 41 个测试文件 / 299 项测试均通过。保留已知 AntD 属性弃用提示和 jsdom 不支持伪元素 `getComputedStyle` 的测试输出噪声。
+- `npm run check:scaffold`、`npm run build:lib` 和 `npm run build:docs` 均通过。文档构建自动重放固定版本 `dumi@2.4.49` 的补丁，并生成 Tooltip 主文档和三个 demo 路由。
+- `npm pack --dry-run --json`：522 个文件，142,765 B 压缩 / 677,976 B 解包；未发现 `docs`、`docs-dist`、`patches`、`examples`、`tests`、`.dumi` 或 `__tests__` 文件进入包。
+- `http://localhost:8000/components/feedback/tooltip` 完成整页重载后，当前页面 H1 为“Tooltip”，默认视口无页面级横向溢出，8 个原生诊断 `<details>` 均默认关闭；重载后的 console warning/error 为空。重载前日志中的 FormatJS 缺失翻译及 Webpack 模块解析错误来自旧会话，不能当作当前页面状态；补丁已重放后重新加载确认当前无新增错误。
+
+本轮没有验证 React 19 renderer 实际 detach、屏幕阅读器输出、200%/400% 放大、系统 reduced-motion、Safari/Edge、全部主题外观组合或 Tooltip 全方位逐项截图。Assessment A/B 的边界和这些缺口均不构成整个 Tooltip 或 2B-1 全组件矩阵完成的结论。

@@ -6,11 +6,13 @@ import {
   useEffect,
   useId,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import type { TooltipProps, TooltipRef } from './types';
 import { feedbackTooltipTokens } from '../../../theme/tokens';
+import { createMergedRef } from './merged-ref';
 
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
@@ -63,15 +65,9 @@ export const Tooltip = forwardRef<TooltipRef, TooltipProps>(function Tooltip(
       ? (children.props as { 'aria-describedby'?: unknown })['aria-describedby']
       : undefined;
   const hasContent = Boolean(title) || title === 0 || Boolean(overlay);
+  const effectiveOpen = hasContent && mergedOpen;
 
-  const mergedRef = useCallback(
-    (instance: TooltipRef | null) => {
-      innerRef.current = instance;
-      if (typeof ref === 'function') ref(instance);
-      else if (ref) ref.current = instance;
-    },
-    [ref],
-  );
+  const mergedRef = useMemo(() => createMergedRef(innerRef, ref), [innerRef, ref]);
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
       if (!controlled) setInternalOpen(nextOpen);
@@ -91,10 +87,16 @@ export const Tooltip = forwardRef<TooltipRef, TooltipProps>(function Tooltip(
     const describedBy = mergeIdReferences(
       typeof childDescription === 'string' ? childDescription : undefined,
       tooltipDescription,
-      mergedOpen && hasContent ? tooltipId : undefined,
+      effectiveOpen ? tooltipId : undefined,
     );
-    if (describedBy) triggerElement.setAttribute('aria-describedby', describedBy);
-    else triggerElement.removeAttribute('aria-describedby');
+    const currentDescription = triggerElement.getAttribute('aria-describedby');
+    if (describedBy) {
+      if (currentDescription !== describedBy) {
+        triggerElement.setAttribute('aria-describedby', describedBy);
+      }
+    } else if (currentDescription !== null) {
+      triggerElement.removeAttribute('aria-describedby');
+    }
   });
 
   const mergedStyles = {
@@ -106,7 +108,7 @@ export const Tooltip = forwardRef<TooltipRef, TooltipProps>(function Tooltip(
     <AntTooltip
       {...props}
       id={tooltipId}
-      open={mergedOpen}
+      open={effectiveOpen}
       onOpenChange={handleOpenChange}
       trigger={trigger ?? ['hover', 'focus']}
       title={title}

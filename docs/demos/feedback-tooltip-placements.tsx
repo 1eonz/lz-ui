@@ -35,18 +35,10 @@ export default function TooltipPlacementsDemo() {
       <div className={styles.edgeExample}>
         <h3 className={styles.placementHeading}>视口边缘与窄屏</h3>
         <div className={styles.edgeStage}>
-          <Tooltip
-            title="请求位置为 left；靠近左边缘时会自动调整"
-            placement="left"
-            autoAdjustOverflow
-          >
+          <Tooltip title="自动翻转" placement="left" autoAdjustOverflow>
             <Button>左侧触点</Button>
           </Tooltip>
-          <Tooltip
-            title="请求位置为 right；靠近右边缘时会自动调整"
-            placement="right"
-            autoAdjustOverflow
-          >
+          <Tooltip title="自动翻转" placement="right" autoAdjustOverflow>
             <Button>右侧触点</Button>
           </Tooltip>
         </div>

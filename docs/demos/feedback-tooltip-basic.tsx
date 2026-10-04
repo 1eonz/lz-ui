@@ -53,9 +53,15 @@ export default function TooltipBasicDemo() {
         </Tooltip>
       </div>
       <div className={styles.describedExample}>
-        <p className={styles.note} role="status" aria-live="polite">
-          当前触发元素的 <code>aria-describedby</code>：{describedBy}
-        </p>
+        <p className={styles.note}>按钮关联字段与表单说明；打开提示后还会加入 Tooltip ID。</p>
+        <details>
+          <summary className={styles.note}>
+            查看当前 aria-describedby 完整值（不会自动播报）
+          </summary>
+          <p className={styles.note}>
+            触发元素当前的 <code>aria-describedby</code> 为 {describedBy}
+          </p>
+        </details>
         <p className={styles.note} id="sync-field-description">
           字段说明：同步结果只包含当前筛选范围内的客户。
         </p>

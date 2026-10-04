@@ -59,7 +59,27 @@
 | Feedback     | Alert        | `/components/feedback/alert`            | 历史路由 smoke。                                                                                                                                                                                                                                                                                                                                             | 完整矩阵待验收                           |
 | Feedback     | Spin         | `/components/feedback/spin`             | 历史路由 smoke。                                                                                                                                                                                                                                                                                                                                             | 完整矩阵待验收                           |
 | Feedback     | Progress     | `/components/feedback/progress`         | 历史路由 smoke。                                                                                                                                                                                                                                                                                                                                             | 完整矩阵待验收                           |
-| Feedback     | Tooltip      | `/components/feedback/tooltip`          | 已检查桌面和 360px、ARIA 合并/恢复、受控触发和边缘自动调整。                                                                                                                                                                                                                                                                                                 | 局部已验；完整矩阵待验收                 |
+| Feedback     | Tooltip      | `/components/feedback/tooltip`          | 已检查 930/390/360/320px、ARIA 合并/恢复、受控触发、12 个方位焦点触发、左右边缘翻转、窄屏 API 表键盘滚动、Dumi 复制按钮名称、代表性暗色主题及控制台。                                                                                                                                                                                                        | 局部已验；完整矩阵待验收                 |
+
+### 2026-10-04 Tooltip 文档与窄屏打磨复验
+
+- 页面：`http://localhost:8001/components/feedback/tooltip`；浏览器：Codex In-app Browser；DPR 1。通过浏览器 viewport 能力设置 930×800、390×800、360×800、320×800 CSS 视口。各视口 `documentElement.scrollWidth === clientWidth`，分别为 915、375、345、305px；15px 差值来自纵向滚动条，不是横向溢出。
+- 在 320px 下第二个触点换行后仍靠右：右侧触点位于 `152–240px`，请求位置为 `right` 后翻至左侧，提示矩形为 `68–140px`；左侧触点位于 `65–153px`，请求位置为 `left` 后翻至右侧，提示矩形为 `165–237px`。360px 下右侧触点提示翻至左边并位于 `108–180px`，左侧触点提示翻至右边并位于 `165–237px`；390px 下右侧提示位于 `138–210px`，左侧提示位于 `165–237px`。全部实际可见弹层都在视口范围内。示例标题统一为简短的“自动翻转”，避免长提示本身占满窄屏空间。
+- 320px 下 Tooltip 常用参数表的可聚焦 region `clientWidth=257px`、`scrollWidth=760px`，`aria-describedby="tooltip-docs-table-hint"`；聚焦表格后 ArrowRight 将 `scrollLeft` 从 0 移到 40，ArrowLeft 恢复为 0。页面本身没有横向溢出，横向滚动限制在表格区域内。
+- 基础 demo 聚焦后触发元素描述为 `sync-field-description sync-form-description sync-status-tooltip`；Tab 移焦后恢复为 `sync-field-description sync-form-description`。Dumi 代码复制按钮在中文页面有可访问名称“复制代码”；本轮不读取或覆盖系统剪贴板。
+- 930px 页面根 `scrollWidth=clientWidth=915`。控制台 error/warn 查询返回空数组。主题设置曾检查 dark、compact、glass、活力橙组合，Tooltip 表面仍保持深色；随后恢复 light、comfortable、business、海洋蓝及品牌色映射默认值。该抽查不代表 13 套配色或完整主题矩阵通过。
+- Escape 关闭行为按用户决定留给 2B-2 统一评审；本轮不新增 Tooltip 的 Escape 逻辑或声称已验证该行为。屏幕阅读器、200%/400% 放大、系统级 reduced motion、Safari/Edge、React 19 消费和完整主题矩阵仍未覆盖。
+- 复现路径：在上述 URL 将 viewport 设为 320×800，滚动至“视口边缘与窄屏”，分别聚焦两端按钮；在 API 小节聚焦“Tooltip 常用属性参数表”并按左右方向键；在“基础提示”聚焦“客户同步状态”后按 Tab。
+
+### 2026-10-04 Tooltip 窄屏打磨与 ref 生命周期复验
+
+- Impeccable Assessment A 在 320×720 记录了 API 参数名拆行、基础 demo 的 ARIA 诊断占据过多空间、两个最长位置标签贴出按钮边界 3–5px。已按原有 Dumi 视觉结构完成修复：参数名不折断并保留表格区域滚动；动态 `aria-describedby` 完整值收进默认关闭的原生 `<details>`；位置按钮使用能容纳长标签的响应式网格轨道。
+- 主代理在 `http://localhost:8000/components/feedback/tooltip` 新开页面复测，DPR 1，CSS viewport 320×800、390×844。320px 下 `documentElement` 和 `body` 的 `scrollWidth/clientWidth` 均为 `305/305`；390px 下均为 `375/375`。320px 下常用参数表 region 为 `257px` 可视宽度、`1809px` 内容宽度且 `tabindex="0"`；聚焦后按 `ArrowRight`，`scrollLeft` 从 0 变为 42px。
+- 320px 下 `rightBottom` 与 `bottomRight` 按钮均保持 `white-space: nowrap`，各自 `scrollWidth` 小于按钮盒宽；页面截图确认标签未越界。基础 demo 的完整 ID 检查默认折叠；展开后显示当前 `aria-describedby` 值，并明确该段是静态检查、不会自动播报。
+- 320px 下聚焦左边缘触点时 Tooltip 自动翻至右侧，弹层矩形为 `x=165–237px`，位于页面可视内容区内；点击页面标题关闭提示后页面根节点无水平溢出。Dumi 控制台 error/warn 查询为空。
+- Ref 生命周期修复由 ReactDOM 18.3.1 的真实 mount/unmount 测试覆盖：宿主 cleanup 被调用一次、无 cleanup 时向 callback ref 发送 `null`，两条路径都没有 `Unexpected return value from a callback ref` 警告。React 19 renderer 未在当前依赖环境实际安装，React 19 消费 smoke 仍待 6A。
+- Escape 未在本批实现或验证，按用户决定留给 2B-2 锚定对话框原语统一设计。屏幕阅读器、200%/400% 放大、系统 reduced-motion 实测、Safari/Edge、全主题矩阵仍未覆盖。
+- 可复现路径：上述路由将 viewport 设为 320×800；展开“基础提示” demo 的“查看当前 aria-describedby 完整值（不会自动播报）”；滚至“常用属性”聚焦 Tooltip 参数 region 并按 `ArrowRight`；滚至“视口边缘与窄屏”聚焦“左侧触点”。
 
 ## 每个组件的完成条件
 

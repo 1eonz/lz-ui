@@ -14,7 +14,7 @@
 
 .placements {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.5rem), 1fr));
   gap: var(--lx-space-sm);
 }
 
@@ -52,6 +52,11 @@
   padding-block: var(--lx-space-lg);
 }
 
+/* 窄屏换行后仍让第二个触点靠右，实际覆盖视口右边缘的定位路径。 */
+.edgeStage > :last-child {
+  margin-inline-start: auto;
+}
+
 .placementHeading {
   margin: 0;
   color: var(--lx-color-text-secondary);
@@ -61,6 +66,9 @@
 
 .placementButton {
   inline-size: 100%;
+  min-inline-size: 0;
+  padding-inline: var(--lx-space-xs);
+  white-space: nowrap;
 }
 
 .note {
@@ -81,7 +89,7 @@
 }
 
 @media (max-width: 480px) {
-  .placements {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .placementButton {
+    padding-inline: 0;
   }
 }

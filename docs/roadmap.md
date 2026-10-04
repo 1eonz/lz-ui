@@ -20,7 +20,7 @@
 
 ### 当前未闭合项
 
-1. 已实现组件的完整浏览器矩阵还未全部完成。Tooltip 已验证默认桌面、360px 窄屏、ARIA 合并/恢复、受控触发和边缘自动调整；暗色、compact、约 930px、320px、200%/400% 缩放、reduced-motion、屏幕阅读器、全 12 方位和 React 19 消费 smoke 仍需补证据。
+1. 已实现组件的完整浏览器矩阵还未全部完成。Tooltip 已验证 930/390/360/320px、ARIA 合并/恢复、受控触发、12 个方位、左右边缘翻转、窄屏 API 表键盘滚动和一个 dark/compact/glass 主题组合；200%/400% 缩放、系统级 reduced-motion、屏幕阅读器、全主题矩阵和 React 19 消费 smoke 仍需补证据。
 2. Popover 和 Popconfirm 暂不实现。它们需要先有可访问的锚定对话框原语，不能把 Tooltip 的 `role="tooltip"` 语义扩展到可操作内容。
 3. Modal、Drawer、Message、Notification 尚未实现。
 4. Breadcrumb、Steps、Tabs、Dropdown/Menu 尚未实现。
@@ -197,4 +197,4 @@ flowchart TD
 
 ## 六、当前下一步
 
-**批次 2B-1 仍在进行。** 当前已重新 smoke 全部 32 个公开组件路由；Tag 已完成本轮局部键盘、焦点、主题、缩放视口和文档表格验收，但全组件状态矩阵、读屏、放大和跨浏览器证据仍不完整。后续按 [`browser-acceptance-matrix.md`](./browser-acceptance-matrix.md) 优先补齐 Tooltip、Input、DynamicForm、Table、Upload、Alert、Spin、Progress，再覆盖其余组件。矩阵达到关闭条件后进入 **2B-2 锚定对话框原语评审**；评审关闭前不实现 Popover/Popconfirm。浏览器工具无法覆盖的项目保留为明确缺口，不以源码推断通过。
+**批次 2B-1 仍在进行。** 当前已重新 smoke 全部 32 个公开组件路由；Tag 已完成局部键盘、焦点、主题、缩放视口和文档表格验收。Tooltip 已实测 930/390/360/320px、12 个方位、左右边缘自动翻转、窄屏 API 表键盘滚动、ARIA 描述合并/恢复和 Dumi 复制控件名称，代表性暗色/compact/glass 组合已抽查。本轮另完成 320/390px 窄屏文档打磨复验、React 18.3.1 callback ref mount/unmount 回归、空标题关闭弹层与 ARIA 同步；Tooltip 的窄屏阅读 P2 已修复。Escape 行为留给 2B-2 统一评审。屏幕阅读器、200%/400% 放大、系统级 reduced-motion、React 19 消费及全主题矩阵仍未完成。后续按 [`browser-acceptance-matrix.md`](./browser-acceptance-matrix.md) 继续验收其他组件，再覆盖其余状态和跨浏览器证据。矩阵达到关闭条件后进入 **2B-2 锚定对话框原语评审**；评审关闭前不实现 Popover/Popconfirm。浏览器工具无法覆盖的项目保留为明确缺口，不以源码推断通过。
