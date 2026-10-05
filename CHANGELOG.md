@@ -15,6 +15,9 @@
 
 ## Unreleased
 
+- 新增可选组件 token `--lx-tag-height`（默认 26px）并将其用于普通 Tag 最小高度和默认 Table 行内距计算；API 保持兼容，但 Tag/默认 Table 行的视觉高度归一。非虚拟且有效尺寸为默认/large 的 Table 普通行继续为 48/36px，表头修正为 36px；显式或继承的 middle/small 与 virtual 保留 AntD/宿主尺寸责任。主题 scope 可覆盖组件 token，迁移边界见 `docs/compatibility.md`。
+- Table 交互演示增加带可访问名称的本地确定履约进度列、键盘排序与审批状态筛选，使用单一可聚焦区域承接横向滚动；订单编号保持单行，筛选隐藏的已选 key 仍计入选择数并可统一取消，基础示例保持三列。
+
 - DynamicForm 保留 `dependencies` 的 AntD 校验和异步候选刷新语义，不再隐式清值；新增默认关闭的异步 Select `clearOnDependencyChange`，仅用户真实改变已声明依赖时才同步清除旧子值。清理路径会进入 `onChange` 的 `changed` 与 `all`，包含隐藏保留字段；程序化父子回填由宿主原子更新，重置仍恢复初值。异步字段隐藏时取消请求并保留查询，重新显示后刷新；schema 移除时清除查询和选项状态，同 key 替换 `loadOptions` 时用新函数重载原查询。Select 的 Form 事件先于 `inputProps.onChange`，两者保留相同的值和 option 参数。新增多级异步级联可运行示例。
 
 - DynamicForm 的 Select 字段新增 `loadOptionsError(error, query)`，可将异步选项加载拒绝映射为用户可读的字段错误；默认错误文案保持不变，空返回值回退到默认文案。

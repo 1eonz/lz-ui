@@ -64,9 +64,46 @@
 
 /* 固定列填充文档外层画布色，遮住横移内容并与内容面形成轻微层次；暗色值按 Dumi 主题单独映射。 */
 :root[data-prefers-color='dark'] {
+  --lx-docs-text-muted: #a9b3bf;
+  --lx-docs-link-text: #8ab9ff;
   --lx-docs-table-sticky-surface: #050709;
   --lx-docs-table-sticky-header: #020305;
   --lx-docs-table-sticky-border: #2a353c;
+}
+
+:root[data-prefers-color='light'] {
+  --lx-docs-text-muted: #626e79;
+  --lx-docs-link-text: #0059c8;
+}
+
+/* 搜索提示、更新时间和页尾文字是辅助信息；明暗表面分别映射，确保正文尺寸仍满足 AA。 */
+:root[data-prefers-color='light'] .dumi-default-header .dumi-default-search-shortcut,
+:root[data-prefers-color='light'] .dumi-default-content .dumi-default-content-footer time,
+:root[data-prefers-color='light'] .dumi-default-content .dumi-default-content-footer nav small,
+:root[data-prefers-color='light'] .dumi-default-content .dumi-default-footer,
+:root[data-prefers-color='dark'] .dumi-default-header .dumi-default-search-shortcut,
+:root[data-prefers-color='dark'] .dumi-default-content .dumi-default-content-footer time,
+:root[data-prefers-color='dark'] .dumi-default-content .dumi-default-content-footer nav small,
+:root[data-prefers-color='dark'] .dumi-default-content .dumi-default-footer {
+  color: var(--lx-docs-text-muted);
+}
+
+/* 页间目标是可导航的正文链接，使用通过 AA 的文档链接色而不改变组件库品牌主题。 */
+:root[data-prefers-color='light'] .dumi-default-content .dumi-default-content-footer nav > a,
+:root[data-prefers-color='light'] .dumi-default-content .dumi-default-content-footer nav > a:hover,
+:root[data-prefers-color='light']
+  .dumi-default-content
+  .dumi-default-content-footer
+  nav
+  > a:focus-visible,
+:root[data-prefers-color='dark'] .dumi-default-content .dumi-default-content-footer nav > a,
+:root[data-prefers-color='dark'] .dumi-default-content .dumi-default-content-footer nav > a:hover,
+:root[data-prefers-color='dark']
+  .dumi-default-content
+  .dumi-default-content-footer
+  nav
+  > a:focus-visible {
+  color: var(--lx-docs-link-text);
 }
 
 :root[data-prefers-color='light'] .markdown *:not(pre) code {

@@ -4,9 +4,21 @@
 
 /* 行类名来自公开 onRow/onHeaderRow，选择原生单元格而非 AntD 私有层级。
  * 重复局部类名提高明确的覆盖优先级，避免 !important；宿主内联 onCell
- * 样式仍优先。扣除一条边框，使 12/18 的单行内容与 48/36px 行高对齐。 */
+ * 样式仍优先。内距按文字行高、small 控件和语义 Tag 高度中的最大值预留，
+ * 再扣除边框并平分，使默认/large 行内含短内容控件时仍符合 48/36px token，长内容自然增高。
+ * 宿主覆盖高度小于内容时显式限制内距为 0，与 CSS 非负内距的计算行为一致，内容仍自然撑高。 */
 .root .bodyRow.bodyRow > td {
-  padding-block: calc((var(--lx-table-row-height) - var(--lx-table-line-height) - 1px) / 2);
+  padding-block: max(
+    0px,
+    calc(
+      (
+          var(--lx-table-row-height) -
+            max(var(--lx-table-line-height), var(--lx-control-height-small), var(--lx-tag-height)) -
+            1px
+        ) /
+        2
+    )
+  );
   line-height: var(--lx-table-line-height);
 }
 
@@ -16,6 +28,16 @@
 
 .root .headerRow.headerRow > th,
 .root .headerRow.headerRow > td {
-  padding-block: calc((var(--lx-table-header-height) - var(--lx-table-line-height) - 1px) / 2);
+  /* 全选 checkbox 的 24px 控件高于 18px 文字行高，按控件高度分配内距才能保住 36px 表头。 */
+  padding-block: max(
+    0px,
+    calc(
+      (
+          var(--lx-table-header-height) -
+            max(var(--lx-table-line-height), var(--lx-control-height-small)) - 1px
+        ) /
+        2
+    )
+  );
   line-height: var(--lx-table-line-height);
 }

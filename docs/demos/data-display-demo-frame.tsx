@@ -6,8 +6,17 @@ import { LxConfigProvider, RadioGroup, Select, Switch, useLxTheme } from 'lx-ui'
 import type { LxAppearance, LxColorPreset, LxPalettePreset } from 'lx-ui';
 import styles from './data-display-demo.module.css';
 
+interface DataDisplayDemoFrameProps {
+  children: ReactNode;
+  /** 当示例自身提供密度控件时设为 false；默认保留通用主题设置中的开关。 */
+  showDensitySwitch?: boolean;
+}
+
 /** 让示例跟随文档站明暗模式；示例内的其他主题选择仍彼此隔离且不持久化。 */
-export function DataDisplayDemoFrame({ children }: { children: ReactNode }) {
+export function DataDisplayDemoFrame({
+  children,
+  showDensitySwitch = true,
+}: DataDisplayDemoFrameProps) {
   const [preferredColor] = usePrefersColor();
   const { themeConfig } = useSiteData();
   const fallbackMode = themeConfig.prefersColor.default === 'dark' ? 'dark' : 'light';
@@ -15,12 +24,22 @@ export function DataDisplayDemoFrame({ children }: { children: ReactNode }) {
 
   return (
     <LxConfigProvider theme={{ mode: docsMode, persist: false }}>
-      <DemoSurface docsMode={docsMode}>{children}</DemoSurface>
+      <DemoSurface docsMode={docsMode} showDensitySwitch={showDensitySwitch}>
+        {children}
+      </DemoSurface>
     </LxConfigProvider>
   );
 }
 
-function DemoSurface({ children, docsMode }: { children: ReactNode; docsMode: 'light' | 'dark' }) {
+function DemoSurface({
+  children,
+  docsMode,
+  showDensitySwitch,
+}: {
+  children: ReactNode;
+  docsMode: 'light' | 'dark';
+  showDensitySwitch: boolean;
+}) {
   const { theme, resolvedMode, setTheme } = useLxTheme();
 
   useEffect(() => {
@@ -40,13 +59,15 @@ function DemoSurface({ children, docsMode }: { children: ReactNode; docsMode: 'l
             unCheckedChildren="浅色"
             onChange={(dark) => setTheme({ mode: dark ? 'dark' : 'light' })}
           />
-          <Switch
-            aria-label="紧凑密度"
-            checked={theme.density === 'compact'}
-            checkedChildren="紧凑"
-            unCheckedChildren="舒适"
-            onChange={(compact) => setTheme({ density: compact ? 'compact' : 'comfortable' })}
-          />
+          {showDensitySwitch && (
+            <Switch
+              aria-label="紧凑密度"
+              checked={theme.density === 'compact'}
+              checkedChildren="紧凑"
+              unCheckedChildren="舒适"
+              onChange={(compact) => setTheme({ density: compact ? 'compact' : 'comfortable' })}
+            />
+          )}
           <RadioGroup
             aria-label="外观"
             optionType="button"

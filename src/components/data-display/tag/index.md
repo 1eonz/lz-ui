@@ -175,6 +175,20 @@ Tag 的 ref 指向 `HTMLSpanElement`。CheckableTag 的 ref 指向 `HTMLButtonEl
 
 展开示例的“主题设置”可切换 light/dark、comfortable/compact、三种外观、六个品牌色与七套东方配色。品牌色选择会清除东方配色；选择东方配色后由 palettePreset 决定视觉色阶。Provider 禁用持久化，主题操作不重置当前业务状态。
 
+普通 Tag 的最小外框高度由 `--lx-tag-height` 控制，默认 `26px`（含边框）。可在 `LxConfigProvider` 的 `style` 属性中覆盖整个子树，也可在局部祖先 CSS scope 声明同名变量；这只影响 lx-ui Tag 包装层，不会修改 AntD 主题 token：
+
+```tsx
+<LxConfigProvider style={{ '--lx-tag-height': '30px' }}>
+  <Tag>标准标签</Tag>
+</LxConfigProvider>
+```
+
+```css
+.tagScope {
+  --lx-tag-height: 30px;
+}
+```
+
 主题仅改变外观与间距，不改变记录、权限或页码。需要显式尺寸时使用当前组件公开支持的尺寸参数；表格行高使用独立 token。长内容应允许换行，宽表格在容器内滚动。
 
 ## 边界与性能

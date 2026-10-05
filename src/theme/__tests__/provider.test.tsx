@@ -68,6 +68,7 @@ describe('theme runtime', () => {
     expect(scope.dataset.lxMode).toBe('light');
     expect(scope.style.getPropertyValue('--lx-control-height')).toBe('40px');
     expect(scope.style.getPropertyValue('--lx-table-row-height')).toBe('48px');
+    expect(scope.style.getPropertyValue('--lx-tag-height')).toBe('26px');
     expect(JSON.parse(screen.getByTestId('antd-token').textContent ?? '{}')).toMatchObject({
       colorPrimary: scope.style.getPropertyValue('--lx-color-primary'),
       controlHeight: 40,
@@ -81,6 +82,7 @@ describe('theme runtime', () => {
     expect(scope.dataset.lxColor).toBe('pine-amber');
     expect(scope.style.getPropertyValue('--lx-control-height')).toBe('32px');
     expect(scope.style.getPropertyValue('--lx-table-row-height')).toBe('36px');
+    expect(scope.style.getPropertyValue('--lx-tag-height')).toBe('26px');
     expect(JSON.parse(screen.getByTestId('antd-token').textContent ?? '{}')).toMatchObject({
       colorPrimary: scope.style.getPropertyValue('--lx-color-primary'),
       controlHeight: 32,
@@ -113,6 +115,7 @@ describe('theme runtime', () => {
     );
     expect(markup).toContain('data-lx-mode="light"');
     expect(markup).toContain('Content');
+    expect(markup).toContain('--lx-tag-height:26px');
   });
 
   it('clears an oriental palette with null and restores the selected brand color', () => {
@@ -158,6 +161,7 @@ describe('theme runtime', () => {
     expect(markup).toContain('data-lx-mode="light"');
     expect(markup).toContain('data-lx-mode="dark"');
     expect(markup).toContain('data-lx-appearance="glass"');
+    expect(markup).toContain('--lx-tag-height:26px');
     expect(markup).toContain('--lx-panel-radius:12px');
     expect(markup).toContain(`--lx-panel-surface-base:${resolved.surface}`);
     expect(markup).not.toContain('--lx-panel-backdrop-filter:');

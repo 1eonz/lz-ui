@@ -8,6 +8,12 @@
 
 宿主升级时先更新 AntD，再验证日期、表单、弹层、表格和主题。不要用 `--force` 忽略 peer 冲突。`lx-ui/antd` 转出与宿主相同实例，不能被当作另一份独立 AntD 运行时。
 
+## Tag 与 Table 尺寸 token 迁移
+
+本批只增加可选样式扩展点，不改变组件 Props、事件、ref 或 AntD peer 范围。普通 Tag 的最小高度归一为 26px，可通过主题 Provider 的 `style` 或局部 CSS scope 覆盖 `--lx-tag-height`；该 token 只设最小值，较高内容仍可撑开标签。默认/large Table 普通单行维持 comfortable/compact 的 48/36px，表头统一为 36px；这会归一 Tag 和默认 Table 行的视觉高度，使用固定容器高度或依赖旧视觉尺寸的页面应复查。
+
+Table 的默认/large 行高和 36px 表头 token 仅由非虚拟表格使用；有效尺寸按显式 `size` 优先、其次 AntD `ConfigProvider.componentSize` 继承解析。显式或继承的 `middle`/`small` 与 `virtual` 保留 AntD/宿主尺寸责任。宿主可按主题子树覆盖 `--lx-table-row-height`、`--lx-table-header-height` 和 `--lx-tag-height`，无需增加组件属性。Table 受控选择搭配 `preserveSelectedRowKeys` 时，筛选隐藏的 key 仍会计入完整选择数；宿主可提供清除选择动作。
+
 | 组合                     | 验证状态       | 必须包含的证据                              |
 | ------------------------ | -------------- | ------------------------------------------- |
 | React 18 + 当前锁定 AntD | 待本轮全量门禁 | 类型、行为测试、库与文档构建、消费 smoke    |

@@ -1,7 +1,10 @@
 import { createRef } from 'react';
+import { ConfigProvider } from 'antd';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { Table, type LxTableRef } from '..';
+import styles from '../index.module.css';
+import { Tag } from '../../tag';
 
 type Customer = { id: string; name: string; active: boolean };
 
@@ -113,6 +116,90 @@ describe('Table', () => {
 
     expect(screen.getByRole('table')).toBeInTheDocument();
   });
+
+  it.each([
+    ['default', {}, true],
+    ['large', { size: 'large' as const }, true],
+    ['middle', { size: 'middle' as const }, false],
+    ['small', { size: 'small' as const }, false],
+    ['virtual', { virtual: true, scroll: { x: 600, y: 200 } }, false],
+  ])('仅在默认和 large 表格设置 36px 表头样式：%s', (_label, options, styled) => {
+    const { container } = render(
+      <Table<Customer> rowKey="id" dataSource={data} columns={columns} {...options} />,
+    );
+    const header = container.querySelector('thead tr');
+
+    expect(header?.classList.contains(styles.headerRow)).toBe(styled);
+  });
+
+  it.each([
+    ['default', {}, true],
+    ['large', { size: 'large' as const }, true],
+    ['middle', { size: 'middle' as const }, false],
+    ['small', { size: 'small' as const }, false],
+    ['virtual', { virtual: true, scroll: { x: 600, y: 200 } }, false],
+  ])('仅在默认和 large 表格为正文行设置密度样式：%s', (_label, options, styled) => {
+    const { container } = render(
+      <Table<Customer> rowKey="id" dataSource={data} columns={columns} {...options} />,
+    );
+    const row = container.querySelector('tbody tr');
+
+    expect(row?.classList.contains(styles.bodyRow) ?? false).toBe(styled);
+  });
+
+  it.each([
+    ['small', false],
+    ['middle', false],
+  ] as const)('继承 ConfigProvider 的 %s 尺寸时保留宿主行高', (componentSize, styled) => {
+    const { container } = render(
+      <ConfigProvider componentSize={componentSize}>
+        <Table<Customer> rowKey="id" dataSource={data} columns={columns} />
+      </ConfigProvider>,
+    );
+    const header = container.querySelector('thead tr');
+    const row = container.querySelector('tbody tr');
+
+    expect(header?.classList.contains(styles.headerRow)).toBe(styled);
+    expect(row?.classList.contains(styles.bodyRow) ?? false).toBe(styled);
+  });
+
+  it('显式 large 覆盖 ConfigProvider 的 small 尺寸并应用 lx-ui 密度', () => {
+    const { container } = render(
+      <ConfigProvider componentSize="small">
+        <Table<Customer> size="large" rowKey="id" dataSource={data} columns={columns} />
+      </ConfigProvider>,
+    );
+    const header = container.querySelector('thead tr');
+    const row = container.querySelector('tbody tr');
+
+    expect(header).toHaveClass(styles.headerRow);
+    expect(row).toHaveClass(styles.bodyRow);
+  });
+
+  it('状态 Tag 与长文本共存时保留自然增高空间', () => {
+    const longName = '一段较长的客户名称，窄列中应允许内容自然换行';
+    render(
+      <Table<Customer>
+        rowKey="id"
+        dataSource={[{ id: 'c-1', name: longName, active: true }]}
+        columns={[
+          { title: '客户', dataIndex: 'name', key: 'name' },
+          {
+            title: '状态',
+            key: 'status',
+            render: () => <Tag color="success">已启用</Tag>,
+          },
+        ]}
+        pagination={false}
+      />,
+    );
+    const row = screen.getByText(longName).closest('tr');
+
+    expect(row).toHaveClass(styles.bodyRow);
+    expect(row).toContainElement(screen.getByText('已启用'));
+    expect(row?.style.height).toBe('');
+  });
+
   it('preserves host row events, styles and header attributes while adding density classes', () => {
     const onClick = vi.fn();
     render(

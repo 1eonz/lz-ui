@@ -54,7 +54,7 @@
 
 颜色、字体、间距、圆角、阴影、控件高度、动效时长和层级全部通过 token 管理。组件样式不直接复制主题色值。
 
-Tag 默认关闭按钮以 24px 为桌面最小目标尺寸；粗指针设备通过公开 token `--lx-control-target-touch-min` 扩大至默认 44px。退出动效使用公开 token `--lx-motion-tag-exit-duration`，默认 120ms，并在 reduced-motion 下归零。
+普通 Tag 使用默认 26px 最小高度，可通过可选组件 token `--lx-tag-height` 在主题 scope 内扩展或覆盖；内容更高时由内容自然撑开。默认/large Table 行高随 density 为 48/36px；单行表头目标高度为 36px，长表头或长内容允许换行并自然增高，不能为满足固定高度裁切内容；显式 middle/small 与 virtual 表格保留 AntD/宿主尺寸责任。Tag 默认关闭按钮以 24px 为桌面最小目标尺寸；粗指针设备通过公开 token `--lx-control-target-touch-min` 扩大至默认 44px。退出动效使用公开 token `--lx-motion-tag-exit-duration`，默认 120ms，并在 reduced-motion 下归零。
 
 ### 3.5 可访问性是首版要求
 

@@ -1,4 +1,4 @@
-import { Table as AntTable } from 'antd';
+import { ConfigProvider, Table as AntTable } from 'antd';
 import { forwardRef, useCallback, type ForwardedRef, type RefAttributes } from 'react';
 import type { LxTableProps, LxTableRef } from './types';
 import styles from './index.module.css';
@@ -16,31 +16,43 @@ type TableComponent = (<T extends object>(
  * 通过公开 onRow/onHeaderRow 合并局部行类名，消费独立表格密度 token，
  * 不改写 columns 或依赖 AntD 私有 DOM。普通单行默认 48/36px，长内容
  * 可以增高；显式 middle/small 和虚拟行保留 AntD/宿主的尺寸责任。
+ * 通过公开 ConfigProvider.useConfig() 读取宿主的 componentSize；size 显式传入时优先，
+ * 只有解析后的默认尺寸或 large 才附加 lx-ui 行高类，避免覆盖宿主的 small/middle 密度。
  * 宿主的行属性、事件与内联样式最后合并，允许按行扩展和覆盖。
  */
 function TableRender<T extends object>(props: LxTableProps<T>, ref: ForwardedRef<LxTableRef>) {
   const { className, onRow, onHeaderRow, size, virtual, ...tableProps } = props;
+  const { componentSize } = ConfigProvider.useConfig();
+  const effectiveSize = size ?? componentSize;
   const rowProps = useCallback<NonNullable<LxTableProps<T>['onRow']>>(
     (record, index) => {
       const host = onRow?.(record, index);
       return {
         ...host,
-        className: [!virtual && (!size || size === 'large') && styles.bodyRow, host?.className]
+        className: [
+          !virtual && (!effectiveSize || effectiveSize === 'large') && styles.bodyRow,
+          host?.className,
+        ]
           .filter(Boolean)
           .join(' '),
       };
     },
-    [onRow, size, virtual],
+    [effectiveSize, onRow, virtual],
   );
   const headerProps = useCallback<NonNullable<LxTableProps<T>['onHeaderRow']>>(
     (columns, index) => {
       const host = onHeaderRow?.(columns, index);
       return {
         ...host,
-        className: [styles.headerRow, host?.className].filter(Boolean).join(' '),
+        className: [
+          !virtual && (!effectiveSize || effectiveSize === 'large') && styles.headerRow,
+          host?.className,
+        ]
+          .filter(Boolean)
+          .join(' '),
       };
     },
-    [onHeaderRow],
+    [effectiveSize, onHeaderRow, virtual],
   );
   return (
     <AntTable<T>

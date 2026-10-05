@@ -57,6 +57,122 @@
 .scroll {
   min-inline-size: 0;
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.scroll:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+.tableHeading,
+.tableHeadingControls,
+.tableDensity,
+.tableToolbar,
+.tableFilter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-sm);
+}
+
+.tableHeading {
+  justify-content: space-between;
+  margin-block-end: var(--lx-space-sm);
+}
+
+.tableTitle {
+  margin: 0;
+  font-weight: 600;
+}
+
+.tableTitle:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+.exampleStates {
+  color: var(--lx-color-text-secondary);
+}
+
+.exampleStates summary {
+  min-block-size: 24px;
+  cursor: pointer;
+  padding-block: var(--lx-space-xs);
+}
+
+.exampleStates summary:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+.exampleStateControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-sm);
+  padding-block: var(--lx-space-sm);
+}
+
+.tableToolbar {
+  margin-block-end: var(--lx-space-sm);
+}
+
+.tableFilter {
+  gap: var(--lx-space-xs);
+}
+
+.amountCell {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.selectedOrders {
+  margin-block-end: var(--lx-space-sm);
+}
+
+.selectedOrders summary {
+  min-block-size: 24px;
+  padding-block: var(--lx-space-xs);
+  cursor: pointer;
+}
+
+.selectedOrders summary:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+.selectedOrderList {
+  margin-block: var(--lx-space-sm);
+  padding-inline-start: var(--lx-space-lg);
+}
+
+.selectedOrderList li {
+  padding-block: var(--lx-space-xs);
+}
+
+.selectedOrderList .amountCell {
+  display: block;
+}
+
+/* 重复本地类名提高优先级以覆盖 AntD 焦点重置；选择器只依赖本地类和通用属性。 */
+.scroll .sortableHeader.sortableHeader[tabindex='0']:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: -2px;
+}
+
+.vendorCell {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 订单编号是扫描关键字段；单行展示避免短横线触发换行，完整内容仍保留在文本和 title 中。 */
+.orderIdCell {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 /* 为加载、错误和内容状态保留相同的最小展示区域。 */

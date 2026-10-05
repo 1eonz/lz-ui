@@ -171,14 +171,14 @@ flowchart TD
 
 ### 实现中
 
-1. 主代理先锁协议，`gpt-6-luna` max 子代理实现代码。
+1. 主代理先锁协议，`gpt-6-luna` max 子代理在明确边界内实现代码。
 2. 所有注释和 JSDoc 使用中文；组件目录必须有 `index.tsx`、`index.module.css`、`index.md`、`types.ts` 和测试。
 3. 每个 demo 必须可运行，展示样式、使用方法、Props、事件、ref、边界和恢复路径。
 4. 运行 Impeccable context、audit、critique、polish；`detect []` 只作机械记录。
 
 ### 交付前
 
-1. `gpt-6-luna` max 独立 code review 和 UX review。
+1. `gpt-6-luna` max 独立 code review；UX 与证据分别由隔离代理审查。
 2. P0/P1/P2 修复后再次使用 `gpt-6-luna` max 复审；模型服务失败要记录，不能虚构结论。
 3. 自动格式化本批文件，再运行 scaffold、format、typecheck、demo typecheck、lint、test、lib build、docs build 和包体检查。
 4. 主代理检查 diff、审计记录、未覆盖范围和公开出口。
@@ -200,3 +200,5 @@ flowchart TD
 **批次 2B-1 仍在进行。** 当前已重新 smoke 全部 32 个公开组件路由；Tag 已完成局部键盘、焦点、主题、缩放视口和文档表格验收。Tooltip 已实测 930/390/360/320px、12 个方位、左右边缘自动翻转、窄屏 API 表键盘滚动、ARIA 描述合并/恢复和 Dumi 复制控件名称，代表性暗色/compact/glass 主题组合已抽查。本轮已为 Table 文档示例补齐行选择名称，并改用 AntD 5.24 的公开 `columnTitle` 回调为当前页全选复选框命名；Alert 焦点样式已收窄到根节点的关闭按钮，避免覆盖嵌套 action。Upload 的单元测试覆盖本地文件保留、校验、移除和禁用入口，但未验证真实网络上传或浏览器完整矩阵。Dumi 原始斜杠 demo ID 的补丁现有客户端路由回归，并新增路由生成 hook 回归；本地单元测试不替代静态 exporter 与目标服务器验收。DynamicForm 提交异常回调、保留值与重试、异步提交 demo、表单错误聚焦及独立 demo 编码路由已通过本地开发站的既有验证；完整客户示例重试按钮卸载后的焦点修复也已完成。独立 `gpt-6-luna` max 复审因模型服务额度预扣失败而未完成；主代理已完成人工代码和交互复核，此限制记入审查记录。静态托管路由、屏幕阅读器、全主题矩阵及本批完整窄屏视口矩阵仍未完成。上述组件矩阵达到关闭条件后进入 **2B-2 锚定对话框原语评审**；评审关闭前不实现 Popover/Popconfirm。浏览器工具无法覆盖的项目保留为明确缺口，不以源码推断通过。
 
 2026-10-05 续验：DynamicForm 级联与提交恢复已在 `http://localhost:8001/components/form/dynamic-form` 实际演示。已验证选择“西湖区”后改为“华南”会清空城市/区县、禁用区县并播报清理结果；重置回到“华东”。完整客户录入首次提交失败保留值、错误和重试同屏、焦点返回重试按钮；重试成功后聚焦“查看客户”，继续新增清空并聚焦客户名称。页面主题、级联值、客户输入、失败模拟选项均已恢复。DynamicForm 的宽度与主题局部证据不关闭全库 2B-1 矩阵；其他组件的键盘、主题、缩放、读屏和跨浏览器缺口仍按 `browser-acceptance-matrix.md` 继续处理。
+
+2026-10-06 续验：Table 在 1280/930/390/320px、light/dark、comfortable/compact 共 16 组下复验；自动化记录的交互表示例表头均为 36px，基础示例表头在截图中目测为 36px、未单独写入矩阵 JSON。390px 页面根无横向溢出，独立 UX 评审报告的 48px 表头在当前复验未复现。排序、选择/筛选、详情焦点、空/错/加载恢复和键盘横向滚动已有局部浏览器证据；固定列宿主、虚拟化性能、缩放、读屏、Safari/Edge 和全色板仍未验收。文档壳的页头提示与页脚对比度已用当前 light/dark 计算样式复量并达到 AA。Dumi 在移动断点默认隐藏搜索栏、隐藏输入框不能作为可用搜索入口，这项 P2 留给后续文档导航完善；Table 及全库 2B-1 仍未关闭。

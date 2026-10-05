@@ -2,6 +2,7 @@
   vertical-align: middle;
   margin-inline-end: 0;
   padding: var(--lx-space-xs) var(--lx-tag-padding-inline, 10px);
+  min-block-size: var(--lx-tag-height, 26px);
   border-radius: var(--lx-tag-radius, 6px);
   font-size: var(--lx-tag-font-size, 12px);
   line-height: var(--lx-tag-line-height, 16px);

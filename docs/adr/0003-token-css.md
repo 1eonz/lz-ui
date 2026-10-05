@@ -14,6 +14,8 @@
 
 组件需要面向不同输入设备或遵循系统动效偏好时，使用公开 CSS token 表达边界。Tag 的关闭目标保持 24px 桌面基准，并在粗指针环境通过 `--lx-control-target-touch-min` 扩展为 44px；`--lx-motion-tag-exit-duration` 默认 120ms，在 reduced-motion 下归零。宿主自定义关闭节点时可复用尺寸 token。
 
+Tag 的最小高度通过可选组件 token `--lx-tag-height` 暴露，默认 26px；宿主可在 Provider `style` 或局部 CSS scope 覆盖它，内容超过最小值时仍自然增高。Table 通过公开 `ConfigProvider.useConfig()` 按 `size ?? componentSize` 解析尺寸，`--lx-table-row-height` 与 `--lx-table-header-height` 只由非虚拟且解析为默认/large 的表格消费；普通行随 density 为 48/36px，表头为 36px。全选 checkbox 高于文字行高，表头内距按两者较大值计算以满足设计稿；middle/small 与 virtual 表格不应用这组覆盖。内距显式限制下限为 0，与 CSS 非负内距的计算行为一致；过小的宿主高度由内容自然撑开。
+
 ## 优点
 
 - 运行时主题切换成本低。

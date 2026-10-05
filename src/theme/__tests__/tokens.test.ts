@@ -72,6 +72,7 @@ describe('resolved theme tokens', () => {
     });
     expect(css['--lx-table-row-height']).toBe(compact ? '36px' : '48px');
     expect(css['--lx-table-header-height']).toBe('36px');
+    expect(css['--lx-tag-height']).toBe('26px');
     expect(components.Pagination).toMatchObject({
       itemSize: compact ? 32 : 40,
       itemSizeSM: 24,
@@ -89,6 +90,33 @@ describe('resolved theme tokens', () => {
       borderRadius: 8,
     });
     expect(components.Spin).toMatchObject({ dotSizeSM: 16, dotSize: 24, dotSizeLG: 36 });
+  });
+
+  it('uses the highest content token for body cells and checkbox height for table headers', () => {
+    const stylesheet = parse(
+      readFileSync(resolve('src/components/data-display/table/index.module.css'), 'utf8'),
+    );
+    let paddingBlock: string | undefined;
+    let headerPaddingBlock: string | undefined;
+    stylesheet.walkRules('.root .bodyRow.bodyRow > td', (rule) => {
+      rule.walkDecls('padding-block', (declaration) => {
+        paddingBlock = declaration.value;
+      });
+    });
+    stylesheet.walkRules((rule) => {
+      if (!rule.selector.includes('.headerRow.headerRow > th')) return;
+      rule.walkDecls('padding-block', (declaration) => {
+        headerPaddingBlock = declaration.value;
+      });
+    });
+
+    expect(paddingBlock).toContain('max(');
+    expect(paddingBlock).toContain('var(--lx-table-line-height)');
+    expect(paddingBlock).toContain('var(--lx-control-height-small)');
+    expect(paddingBlock).toContain('var(--lx-tag-height)');
+    expect(headerPaddingBlock).toContain('max(');
+    expect(headerPaddingBlock).toContain('var(--lx-table-header-height)');
+    expect(headerPaddingBlock).toContain('var(--lx-control-height-small)');
   });
 
   it('maps approved typography, semantic states and content spacing through public tokens', () => {
@@ -127,6 +155,7 @@ describe('resolved theme tokens', () => {
     expect(css['--lx-statistic-value-font-size']).toBe('28px');
     expect(css['--lx-statistic-value-line-height']).toBe('36px');
     expect(css['--lx-statistic-value-weight']).toBe('700');
+    expect(css['--lx-tag-height']).toBe('26px');
     expect(components.Result).toMatchObject({
       titleFontSize: 16,
       subtitleFontSize: 12,
