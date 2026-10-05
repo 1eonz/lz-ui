@@ -8,6 +8,25 @@ const suppliers = [
   { label: '上海远航科技', value: 'supplier-2' },
 ];
 
+function waitForOptions(signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (signal.aborted) {
+      reject(new DOMException('请求已取消', 'AbortError'));
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      signal.removeEventListener('abort', abort);
+      resolve();
+    }, 750);
+    const abort = () => {
+      clearTimeout(timer);
+      reject(new DOMException('请求已取消', 'AbortError'));
+    };
+    signal.addEventListener('abort', abort, { once: true });
+  });
+}
+
 export default function DynamicOptionsDemo() {
   const id = useId();
   const failOnce = useRef(true);
@@ -20,11 +39,12 @@ export default function DynamicOptionsDemo() {
         type: 'select',
         label: '供应商',
         required: true,
-        extra: '首次检索模拟失败；字段旁的重试会重新执行相同查询。',
         inputProps: { placeholder: '输入杭州或上海检索供应商' },
+        loadOptionsError: (_error, query) =>
+          query ? `暂时无法搜索“${query}”的供应商，请重试。` : '暂时无法加载供应商，请重试。',
         loadOptions: async (query, _values, signal) => {
-          // 演示仅查询本地列表，无计时器或网络请求。真实适配器需将 signal 传给 fetch。
-          if (signal.aborted) throw new DOMException('请求已取消', 'AbortError');
+          // 使用可取消的本地延迟呈现 loading 状态，不依赖网络或不稳定的外部服务。
+          await waitForOptions(signal);
           if (failOnce.current) {
             failOnce.current = false;
             throw new Error('本地演示首次检索失败');
@@ -42,7 +62,11 @@ export default function DynamicOptionsDemo() {
           确认供应商
         </Button>
       </DynamicForm>
-      <p role="status">{saved ? `已选择供应商：${String(saved.supplier)}` : '尚未确认供应商'}</p>
+      <p role="status">
+        {saved
+          ? `已选择供应商：${suppliers.find((supplier) => supplier.value === saved.supplier)?.label ?? '未知供应商'}`
+          : '尚未确认供应商'}
+      </p>
     </DataDisplayDemoFrame>
   );
 }

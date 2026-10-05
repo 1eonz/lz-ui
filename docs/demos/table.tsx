@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
-import type { Key } from 'react';
+import { cloneElement, isValidElement, useRef, useState } from 'react';
+import type { AriaAttributes, Key, ReactElement, ReactNode } from 'react';
+import type { CheckboxProps } from 'antd';
 import { Button, Empty, Result, Table, Tag } from 'lx-ui';
 import type { ButtonRef, LxTableColumns, LxTableProps } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
@@ -11,6 +12,22 @@ interface PurchaseOrder {
   amount: number;
   approved: boolean;
 }
+/** AntD CheckboxProps 不含通用 ARIA 属性；Table 会将名称透传到实际复选框。 */
+type AccessibleCheckboxProps = CheckboxProps & AriaAttributes;
+
+function getOrderCheckboxProps(order: PurchaseOrder): AccessibleCheckboxProps {
+  return { 'aria-label': `选择采购单 ${order.id}` };
+}
+
+function getTitleCheckbox(checkboxNode: ReactNode): ReactNode {
+  if (!isValidElement(checkboxNode)) return checkboxNode;
+
+  // AntD 5.24 的公开标题回调提供原始复选框；克隆只补名称，保留内建选择状态和操作。
+  return cloneElement(checkboxNode as ReactElement<AriaAttributes>, {
+    'aria-label': '选择当前页全部采购单',
+  });
+}
+
 const orders: PurchaseOrder[] = Array.from({ length: 24 }, (_, index) => ({
   id: `PO-2024-${String(1881 + index)}`,
   vendor: [
@@ -138,6 +155,8 @@ export default function TableDemo() {
             rowSelection={{
               selectedRowKeys: selected,
               preserveSelectedRowKeys: true,
+              getCheckboxProps: getOrderCheckboxProps,
+              columnTitle: getTitleCheckbox,
               onChange: setSelected,
             }}
             expandable={{

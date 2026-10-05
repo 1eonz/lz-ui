@@ -30,7 +30,7 @@ export default function AlertInteractionDemo() {
           showIcon
           role="status"
           message={recovered ? '客户同步已恢复' : '客户同步失败，现有数据已保留'}
-          closable
+          closable={{ 'aria-label': '关闭', closeIcon: true }}
           onClose={() => {
             // 必要焦点恢复由关闭意图驱动，不依赖动画生命周期。
             setDetail(false);

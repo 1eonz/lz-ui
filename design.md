@@ -305,13 +305,27 @@ VirtualTable、EditableTable、DataToolbar、FilterPanel、DepartmentPicker、Us
 - 异步内容必须有 loading、empty、error 三类状态；表格和列表不能只显示一个旋转图标。
 - 破坏性操作需要与风险匹配的确认、撤销或恢复路径。
 
-### 8.3 样式覆盖
+### 8.3 DynamicForm 提交协议与迁移
+
+- DynamicForm 负责字段校验和提交值整理，`onFinish` 在 AntD 校验成功回调中同步调用，保留宿主建立 ref 提交锁的时机；不额外排入微任务，也不把 `ref.submit(): void` 改成等待业务请求的 Promise。
+- `onFinish` 的同步抛错与 Promise 拒绝通过 `onFinishError(error, values)` 通知。两个回调使用同一份提交输出，`omitHidden` 的过滤结果一致，失败不清除字段。字段校验失败由 `onFinishFailed` 处理，不进入提交错误通道。
+- 未提供 `onFinishError` 时记录中文 `console.error`；错误回调自身同步抛错或异步拒绝也以日志兜底，防止未处理拒绝。组件卸载后仍捕获提交拒绝并通知宿主，宿主拥有 loading、同步提交锁、取消、过期请求与卸载状态保护。
+- 迁移时保留同步提交代码与校验失败处理；依赖全局未处理拒绝的错误展示改用 `onFinishError`。已有 `onFinish` 内部自行消化失败时不会重复通知。可运行示例 `dynamic-doc-submit.tsx` 演示首次失败、值保留、重试成功与请求生命周期。
+
+#### DynamicForm 依赖与级联值
+
+- `dependencies` 沿用 AntD 的重新校验语义，并驱动异步 Select 按原查询刷新候选；声明依赖本身不清除任何表单值。
+- `clearOnDependencyChange` 仅属于异步 Select，默认关闭。开启后只响应用户交互导致的真实依赖值变化，并在消费者 `onChange` 前同步清除旧子值；同一交互交付的新子值优先保留。
+- 程序化 `setFieldsValue`、受控 `value` 更新和重置不运行级联清理；宿主原子更新程序化父子值，重置恢复初始值。嵌套清理路径明确写入 `changed` 和 `all`，包括隐藏保留字段；`omitHidden` 仍决定提交输出。
+- 依赖刷新会取消旧请求并推进 requestId；不支持取消的旧加载器也不能覆盖新候选。异步字段隐藏时取消请求和防抖计时器、保留查询，重新显示后按原查询刷新；schema 移除时清除查询和选项状态；同 key 替换 `loadOptions` 时以新函数重载原查询。Select 选择值先调用 Form 注入的 `onChange`，再调用 `inputProps.onChange`，最后清理内部查询。可运行的三级级联示例展示默认异步刷新和显式清值策略。
+
+### 8.4 样式覆盖
 
 - 公开优先级从低到高为：主题 token、组件 token、组件 `className`、明确的 CSS 变量覆盖。
 - 不鼓励业务项目依赖 `.ant-*` 或 `.lx-*` 内部结构选择器。
 - 业务定制优先通过 `className`、CSS 变量和 slot 完成，避免 `!important`。
 
-### 8.4 AntD primitive adapter 边界
+### 8.5 AntD primitive adapter 边界
 
 - `Radio`、`Upload`、`Empty` 和 `Skeleton` 首版先作为 lx-ui 的公开增强包装层交付：保留 Ant Design 5 的 Props、事件和公开 ref 语义，在外层补充 lx token、焦点、状态和文档示例。
 - `Upload` 没有 `action` 或 `customRequest` 时只维护本地 `fileList`；宿主明确注入 transport 后才进入上传生命周期。文件权限、进度、重试和服务端 ID 映射属于宿主或后续业务组合，不在 primitive 内创建请求。

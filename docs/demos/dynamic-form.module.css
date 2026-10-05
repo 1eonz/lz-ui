@@ -2,6 +2,43 @@
   max-inline-size: 35rem;
 }
 
+.cascadeValues,
+.cascadeSubmitted {
+  margin-block: var(--lx-space-md) 0;
+  padding: var(--lx-space-sm) var(--lx-space-md);
+  border: 1px solid var(--lx-color-border-secondary);
+  border-radius: var(--lx-radius-control);
+  background: var(--lx-color-bg-container);
+  color: var(--lx-color-text-secondary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cascadeValues {
+  margin-inline: 0;
+}
+
+.cascadeValues figcaption {
+  margin-block-end: var(--lx-space-sm);
+  color: var(--lx-color-text);
+  font-weight: 600;
+}
+
+.cascadeValues pre {
+  margin: 0;
+}
+
+.cascadeSubmitted {
+  border-color: var(--lx-color-success);
+  color: var(--lx-color-success);
+}
+
+.cascadeAnnouncement {
+  min-block-size: 1.5em;
+  margin-block: var(--lx-space-sm) 0;
+  color: var(--lx-color-text-secondary);
+}
+
 .demoOptions {
   margin-block-end: var(--lx-space-lg);
   border-block-end: 1px solid var(--lx-color-border-secondary);
@@ -55,6 +92,25 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--lx-space-sm);
+}
+
+.submissionRecovery {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1 1 100%;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--lx-space-sm);
+  min-width: 0;
+}
+
+.submissionError {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  margin: 0;
+  color: var(--lx-color-error);
+  overflow-wrap: anywhere;
 }
 
 .demoToolbar {
@@ -162,5 +218,9 @@
   .failureToggle {
     align-self: stretch;
     min-block-size: 44px;
+  }
+
+  .submissionRecovery {
+    align-items: flex-start;
   }
 }

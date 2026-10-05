@@ -95,6 +95,11 @@ export interface BaseFieldSchema {
   visible?: boolean | ((values: DynamicFormValues) => boolean);
   required?: boolean;
   rules?: DynamicRule[];
+  /**
+   * 值路径依赖；按 AntD 语义，在依赖字段用户更新时重新校验当前字段。
+   * 异步 Select 也按原查询刷新候选：未设置时监听任意表单值，空数组表示
+   * 只由用户查询触发。此属性本身不会清理任何字段值。
+   */
   dependencies?: DynamicNamePath[];
   /** 禁用阻止编辑，但不会从提交数据中删除该值。 */
   disabled?: boolean | ((values: DynamicFormValues) => boolean);
@@ -103,17 +108,38 @@ export interface BaseFieldSchema {
   /** 此字段隐藏时覆盖表单级值保留策略。 */
   preserve?: boolean;
 }
-type SelectField = BaseFieldSchema & {
+type SelectFieldBase = BaseFieldSchema & {
   type: 'select';
   options?: DynamicFieldOption[];
-  /** 宿主拥有的加载器；即使无法取消，也会忽略过期响应。 */
-  loadOptions?: (
+  /** Select 的公开属性；onChange 按 Form、此回调、异步查询清理的顺序执行，全部完成后仍抛出首个异常。 */
+  inputProps?: SelectProps;
+};
+type AsyncSelectField = SelectFieldBase & {
+  /**
+   * 宿主拥有的远程加载器；接收触发请求时的完整表单快照。表单值变化时，
+   * 未设置 dependencies 会按原查询重新加载；设置路径后只响应这些路径，
+   * 显式空数组表示不因表单值变化自动重载。旧请求即使忽略 AbortSignal 也
+   * 不会覆盖新结果。启用后默认关闭 Select 的本地二次过滤，让服务端按查询
+   * 返回的任意 label/value 组合都能显示；需要本地过滤时可显式开启。
+   */
+  loadOptions: (
     query: string,
     context: DynamicFormValues,
     signal: AbortSignal,
   ) => Promise<DynamicFieldOption[]>;
-  inputProps?: SelectProps;
+  /**
+   * 将选项加载器的拒绝原因转换为面向用户的字段错误；默认不显示原始异常。
+   * 返回 null 或 undefined 时使用通用错误文案。
+   */
+  loadOptionsError?: (error: unknown, query: string) => ReactNode;
+  /**
+   * 用户交互改变已声明的依赖值时，同步清空此字段的旧值；默认关闭。
+   * 只处理真实变化且至少一侧有值的依赖，不影响程序化回填、受控更新或重置；
+   * 同一交互显式提供了新的本字段值时保留该值。
+   */
+  clearOnDependencyChange?: boolean;
 };
+type SelectField = (SelectFieldBase & { loadOptions?: undefined }) | AsyncSelectField;
 /** 可辨识联合 schema；每种字段拥有相应兼容的输入属性。 */
 export type FieldSchema =
   | (BaseFieldSchema & { type: 'text'; placeholder?: string; inputProps?: InputProps })
@@ -145,8 +171,18 @@ export interface DynamicFormProps extends Omit<
   defaultValue?: DynamicFormValues;
   /** 用户编辑时触发，提供变更值补丁和完整存储快照。 */
   onChange?: (changed: DynamicFormValues, all: DynamicFormValues) => void;
-  /** 校验成功后触发；不负责业务请求加载状态。 */
+  /**
+   * 在 AntD 校验成功回调中同步调用，允许宿主立即建立 ref 提交锁。
+   * 返回 Promise 时捕获拒绝，但不托管 loading、取消、过期请求或卸载保护。
+   */
   onFinish?: (values: DynamicFormValues) => void | Promise<void>;
+  /**
+   * onFinish 同步抛错或 Promise 拒绝时调用，values 与该次提交输出相同
+   * （包含 omitHidden 过滤）。不接收字段校验失败，后者使用 onFinishFailed。
+   * 未提供时记录中文 console.error；此回调自身抛错或拒绝也记录日志，
+   * 不产生未处理拒绝。即使表单已卸载仍会通知，宿主需保护状态更新。
+   */
+  onFinishError?: (error: unknown, values: DynamicFormValues) => void | Promise<void>;
   /** 显示表单内加载状态，不卸载字段或移动焦点；宿主负责请求完成和提交锁定。 */
   loading?: boolean;
   empty?: ReactNode;
@@ -166,6 +202,7 @@ export interface DynamicFormProps extends Omit<
 /** 用于提交/重置和 AntD 5 表单集成的命令式接口。 */
 export interface DynamicFormRef {
   form: FormInstance<DynamicFormValues>;
+  /** 启动 AntD 校验，返回 void；不代表提交请求完成，异步结果通过回调处理。 */
   submit: () => void;
   reset: () => void;
 }

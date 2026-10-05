@@ -49,6 +49,12 @@ description 补充恢复步骤；banner 未传 type 时默认为 warning。长�
 | onClose                   | MouseEventHandler&lt;HTMLButtonElement&gt;  | —                       | 用户发起关闭时触发，接收点击事件                         |
 | afterClose                | () =&gt; void                               | —                       | 原生退出动画结束通知，motion off 时不保证触发            |
 
+关闭按钮沿用 Ant Design 默认图标。传入关闭配置对象时，`closeIcon: true` 表示继续使用默认图标，同时可以设置可访问名称：
+
+```tsx
+<Alert message="客户同步失败" closable={{ closeIcon: true, 'aria-label': '关闭客户同步提示' }} />
+```
+
 ### Ref 与事件
 
 ```tsx
@@ -65,7 +71,7 @@ const alertRef = createRef<AlertRef>();
 
 ## 主题、键盘与性能
 
-每个示例有真实明暗、密度和外观控件。Tab 可到 action/关闭按钮，Enter/Space 执行动作；提示根没有额外 tabIndex。必需的焦点恢复用 onClose 或宿主生命周期处理。reduced motion 下保持语义和文字反馈，停止退出过渡；真实浏览器视觉验证尚未完成。
+每个示例有真实明暗、密度和外观控件。Tab 可到 action/关闭按钮，Enter/Space 执行动作；提示根没有额外 tabIndex。必需的焦点恢复用 onClose 或宿主生命周期处理。reduced motion 下关闭提示会立即移除，不依赖 afterClose；本轮已在真实浏览器检查关闭与焦点恢复，完整视觉矩阵仍待验收。
 
 仅渲染消息，不发起请求、不保留缓存、不创建 portal。长文案应拆成主提示和 description；密集列表中不要为每行同时建立紧急 live region。
 

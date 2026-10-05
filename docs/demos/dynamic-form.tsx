@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { usePrefersColor, useSiteData } from 'dumi';
 import '../../src/style.css';
 import { Button, DynamicForm, LxConfigProvider, useLxTheme } from '../../src/index';
-import type { DynamicFormRef, DynamicFormValues, FieldSchema } from '../../src/index';
+import type { ButtonRef, DynamicFormRef, DynamicFormValues, FieldSchema } from '../../src/index';
 import type { LxAppearance, LxDensity, LxThemeMode } from '../../src/theme';
+import { scrollDynamicFormFieldIntoView } from './dynamic-form-utils';
 import styles from './dynamic-form.module.css';
 
 const schema: FieldSchema[] = [
@@ -46,8 +48,15 @@ const schema: FieldSchema[] = [
   },
 ];
 
-function CustomerEntry() {
+function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
+  const id = useId();
   const formRef = useRef<DynamicFormRef>(null);
+  const formScopeRef = useRef<HTMLDivElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+  const focusMovedRef = useRef(false);
+  const retryActionRef = useRef<ButtonRef>(null);
+  const successActionRef = useRef<ButtonRef>(null);
+  const focusNewCustomerRef = useRef(false);
   const [saved, setSaved] = useState<DynamicFormValues | null>(null);
   const [submitState, setSubmitState] = useState<'idle' | 'submitting' | 'error' | 'success'>(
     'idle',
@@ -55,59 +64,152 @@ function CustomerEntry() {
   const [submitError, setSubmitError] = useState('');
   const [savedAction, setSavedAction] = useState('');
   const [simulateFailure, setSimulateFailure] = useState(false);
+  const failureConsumedRef = useRef(false);
   const mountedRef = useRef(true);
-  const submitTimerRef = useRef<number | null>(null);
+  const submitControllerRef = useRef<AbortController | null>(null);
   const submitGenerationRef = useRef(0);
   const submitLockRef = useRef(false);
   const { theme, setTheme } = useLxTheme();
   const submitting = submitState === 'submitting';
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    // 跟随文档模式变化；局部选择在文档模式不变时保持独立，不写入持久化。
+    setTheme({ mode: docsMode });
+  }, [docsMode, setTheme]);
+
+  useEffect(() => {
+    // StrictMode 会重放 effect，setup 必须恢复标志；取消会 settle Promise，
+    // 避免只清理计时器导致请求及 finally 永远悬空。
+    mountedRef.current = true;
+    // 提交期间主动移到其它操作的用户拥有焦点，不被请求完成后的恢复打断。
+    const movedFocus = (event: FocusEvent) => {
+      const form = formScopeRef.current?.querySelector('form');
+      const returnTargetUnmounted =
+        returnFocusRef.current !== null && !returnFocusRef.current.isConnected;
+      const focusStayedInDisabledForm =
+        (submitLockRef.current || returnTargetUnmounted) &&
+        event.target instanceof Node &&
+        form?.contains(event.target);
+      if (
+        !focusStayedInDisabledForm &&
+        event.target !== returnFocusRef.current &&
+        event.target !== document.body
+      ) {
+        focusMovedRef.current = true;
+        returnFocusRef.current = null;
+      }
+    };
+    document.addEventListener('focusin', movedFocus);
+    return () => {
       mountedRef.current = false;
+      document.removeEventListener('focusin', movedFocus);
+      returnFocusRef.current = null;
       submitGenerationRef.current += 1;
-      if (submitTimerRef.current !== null) window.clearTimeout(submitTimerRef.current);
-    },
-    [],
-  );
+      submitControllerRef.current?.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (submitting) return;
+    // 禁用输入可能让原生浏览器焦点落到 BODY；重新启用提交后的原控件时
+    // 恢复键盘落点。若重试按钮被替换，则落到当前状态的有效恢复动作。
+    const target = returnFocusRef.current;
+    returnFocusRef.current = null;
+    if (focusMovedRef.current) return;
+    const active = document.activeElement;
+    const focusStayedInForm =
+      active instanceof Node && formScopeRef.current?.querySelector('form')?.contains(active);
+    if (
+      target?.isConnected &&
+      formScopeRef.current?.contains(target) &&
+      !target.matches(':disabled') &&
+      (active === document.body || active === target || focusStayedInForm)
+    ) {
+      target.focus();
+      return;
+    }
+    if (active === document.body || (target && !target.isConnected && submitState === 'success')) {
+      if (submitState === 'error') retryActionRef.current?.focus();
+      if (submitState === 'success') successActionRef.current?.focus();
+    }
+  }, [submitState, submitting]);
+
+  useEffect(() => {
+    if (!focusNewCustomerRef.current || submitState !== 'idle') return;
+    focusNewCustomerRef.current = false;
+    // “继续新增”会卸载成功区中的当前按钮；重置完成后用公开表单实例
+    // 聚焦首字段，并通过共用滚动策略避开文档吸顶顶栏。
+    // 普通重置不触发此路径，保留重置按钮焦点。
+    if (document.activeElement === document.body) {
+      scrollDynamicFormFieldIntoView(formRef.current?.form, 'name');
+    }
+  }, [submitState]);
 
   async function handleFinish(values: DynamicFormValues) {
     // ref 锁填补 React 渲染提交状态前的同步窗口，同时保护命令式/程序化提交。
     if (submitLockRef.current) return;
     submitLockRef.current = true;
     const generation = ++submitGenerationRef.current;
+    const controller = new AbortController();
+    submitControllerRef.current = controller;
     const shouldUpdate = () => mountedRef.current && submitGenerationRef.current === generation;
+    const active = document.activeElement;
+    returnFocusRef.current =
+      active instanceof HTMLElement &&
+      formScopeRef.current?.contains(active) &&
+      active.closest('form')
+        ? active
+        : null;
+    focusMovedRef.current = false;
     setSaved(null);
     setSavedAction('');
     setSubmitError('');
     setSubmitState('submitting');
     try {
-      await new Promise<void>((resolve) => {
-        submitTimerRef.current = window.setTimeout(resolve, 550);
+      await new Promise<void>((resolve, reject) => {
+        const cancel = () => {
+          window.clearTimeout(timer);
+          controller.signal.removeEventListener('abort', cancel);
+          reject(new DOMException('请求已取消', 'AbortError'));
+        };
+        const timer = window.setTimeout(() => {
+          controller.signal.removeEventListener('abort', cancel);
+          resolve();
+        }, 550);
+        controller.signal.addEventListener('abort', cancel, { once: true });
+        if (controller.signal.aborted) cancel();
       });
       if (!shouldUpdate()) return;
-      if (simulateFailure) {
-        setSubmitError('保存失败：演示请求未完成，已保留当前填写内容。');
+      if (simulateFailure && !failureConsumedRef.current) {
+        // 开关每次开启只消费一次失败；保留开关状态，原位重试即可成功。
+        failureConsumedRef.current = true;
+        setSubmitError('保存失败，已保留当前填写内容；重试保存即可完成。');
         setSubmitState('error');
         return;
       }
       setSaved(values);
       setSubmitState('success');
+    } catch (error) {
+      // 重置或卸载的取消只结束旧请求；真实失败保持既有恢复操作。
+      if (!shouldUpdate() || controller.signal.aborted) return;
+      setSubmitError(error instanceof Error ? error.message : '保存失败，请重试。');
+      setSubmitState('error');
     } finally {
-      if (submitTimerRef.current !== null) {
-        window.clearTimeout(submitTimerRef.current);
-        submitTimerRef.current = null;
+      // 旧请求 finally 不能释放新请求拥有的同步锁。
+      if (submitGenerationRef.current === generation) {
+        submitControllerRef.current = null;
+        submitLockRef.current = false;
       }
-      submitLockRef.current = false;
     }
   }
 
-  function resetForm() {
+  function resetForm(focusNewCustomer = false) {
+    focusNewCustomerRef.current = focusNewCustomer;
+    // 重置是新的用户动作，不把上次提交的焦点恢复到已重置或重建的字段。
+    returnFocusRef.current = null;
     submitGenerationRef.current += 1;
-    if (submitTimerRef.current !== null) {
-      window.clearTimeout(submitTimerRef.current);
-      submitTimerRef.current = null;
-    }
+    submitControllerRef.current?.abort();
+    submitControllerRef.current = null;
     submitLockRef.current = false;
     formRef.current?.reset();
     setSaved(null);
@@ -117,7 +219,7 @@ function CustomerEntry() {
   }
 
   return (
-    <div className={styles.demo}>
+    <div className={styles.demo} ref={formScopeRef}>
       <details className={styles.demoOptions}>
         <summary>
           显示选项
@@ -174,7 +276,10 @@ function CustomerEntry() {
             <input
               type="checkbox"
               checked={simulateFailure}
-              onChange={(event) => setSimulateFailure(event.target.checked)}
+              onChange={(event) => {
+                failureConsumedRef.current = false;
+                setSimulateFailure(event.target.checked);
+              }}
             />
             模拟保存失败（用于演示恢复）
           </label>
@@ -182,6 +287,7 @@ function CustomerEntry() {
       </details>
 
       <DynamicForm
+        name={id}
         ref={formRef}
         schema={schema}
         defaultValue={{ level: 'standard' }}
@@ -189,20 +295,6 @@ function CustomerEntry() {
         compact={theme.density === 'compact'}
         loading={submitting}
         disabled={submitting}
-        error={
-          submitState === 'error' ? (
-            <span>
-              {submitError}{' '}
-              <button
-                className={styles.retryAction}
-                type="button"
-                onClick={() => formRef.current?.submit()}
-              >
-                重试保存
-              </button>
-            </span>
-          ) : undefined
-        }
         onChange={() => {
           if (submitting) return;
           setSaved(null);
@@ -211,12 +303,40 @@ function CustomerEntry() {
           setSubmitState('idle');
         }}
         onFinish={handleFinish}
+        onFinishFailed={({ errorFields, outOfDate }) => {
+          // 当前校验错误使用公开表单实例聚焦；共享滚动策略会为 Dumi 吸顶栏留出空间。
+          if (outOfDate || !errorFields[0]) return;
+          scrollDynamicFormFieldIntoView(formRef.current?.form, errorFields[0].name);
+        }}
       >
         <div className={styles.demoActions}>
-          <Button type="primary" htmlType="submit" loading={submitting} disabled={submitting}>
-            {submitting ? '保存中' : '保存客户'}
-          </Button>
-          <Button htmlType="button" disabled={submitting} onClick={resetForm}>
+          {submitState === 'error' ? (
+            <div className={styles.submissionRecovery}>
+              <p className={styles.submissionError} role="alert">
+                {submitError}
+              </p>
+              <Button
+                key="retry"
+                ref={retryActionRef}
+                type="primary"
+                htmlType="button"
+                onClick={() => formRef.current?.submit()}
+              >
+                重试保存
+              </Button>
+            </div>
+          ) : (
+            <Button
+              key="save"
+              type="primary"
+              htmlType="submit"
+              loading={submitting}
+              disabled={submitting}
+            >
+              {submitting ? '保存中' : '保存客户'}
+            </Button>
+          )}
+          <Button htmlType="button" disabled={submitting} onClick={() => resetForm()}>
             重置
           </Button>
         </div>
@@ -226,10 +346,14 @@ function CustomerEntry() {
         <div className={styles.demoSuccess} role="status" aria-live="polite">
           <p>已保存客户：{String(saved.name || '当前客户')}</p>
           <div className={styles.successActions}>
-            <Button size="small" onClick={() => setSavedAction('已打开客户详情（演示）')}>
+            <Button
+              ref={successActionRef}
+              size="small"
+              onClick={() => setSavedAction('已打开客户详情（演示）')}
+            >
               查看客户
             </Button>
-            <Button size="small" onClick={resetForm}>
+            <Button size="small" onClick={() => resetForm(true)}>
               继续新增
             </Button>
           </div>
@@ -241,9 +365,13 @@ function CustomerEntry() {
 }
 
 export default function DynamicFormDemo() {
+  const [preferredColor] = usePrefersColor();
+  const { themeConfig } = useSiteData();
+  const docsMode =
+    preferredColor ?? (themeConfig.prefersColor.default === 'dark' ? 'dark' : 'light');
   return (
-    <LxConfigProvider>
-      <CustomerEntry />
+    <LxConfigProvider theme={{ mode: docsMode, persist: false }}>
+      <CustomerEntry docsMode={docsMode} />
     </LxConfigProvider>
   );
 }
