@@ -286,7 +286,7 @@ VirtualTable、EditableTable、DataToolbar、FilterPanel、DepartmentPicker、Us
 
 - `Tooltip` 仅用于简短、非交互说明，默认支持 hover 和 focus；不接管子元素的键盘行为、不为静态元素自动制造焦点停靠点。打开时应通过描述 IDREF 暴露提示，关闭后保留宿主已有说明。
 - Tooltip 的默认深色 surface 与文字来自 `UI/P0 基础组件-Feedback/code.html` 的 `#1f2937` / `#ffffff`；主题主色不改变该反差，亮色例外由调用者通过公开 `color`、`styles` 组合覆盖。
-- `Popover` 和 `Popconfirm` 可承载链接、按钮等交互内容，不能复用 Tooltip 的非交互描述语义。两者在公开锚定对话框能力明确前不进入实现；该能力需先定义 dialog 语义、焦点进入/恢复、Escape/外部关闭、锚点状态和 SSR 行为，并且不得依赖 AntD 私有 DOM 或运行时改写原生角色。
+- `Popover` 和 `Popconfirm` 可承载链接、按钮等交互内容，不能复用 Tooltip 的非交互描述语义。它们依赖的 dialog 语义、焦点进入/恢复、Escape/外部关闭、锚点状态、SSR 与依赖边界已记录在 [ADR-0004](docs/adr/0004-anchored-dialog.md)。原语实现等待现有组件的 2B-1 浏览器验收门槛关闭；Popover/Popconfirm 在 2B-3 自身验收完成前不进入公开出口。禁止依赖 AntD 私有 DOM 或运行时改写原生角色。
 
 ## 8. 组件 API 约定
 
