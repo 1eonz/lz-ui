@@ -586,3 +586,13 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 1. 使用 `/impeccable adapt` 补齐 Dumi 文档壳的移动搜索入口并实测搜索结果路径。
 2. 视设计稿决定是否用 `/impeccable bolder` 增强文档壳品牌细节。
 3. 对完成的文档壳改动运行 `/impeccable polish`，核对所有视口、主题、焦点与错误状态。
+
+### 2026-10-06 Dumi 移动搜索代码修复
+
+- **范围：** `docs/docs-shell.css` 与 `patches/dumi+2.4.49.patch`。目标是在 767px 以下显示 Dumi 原生搜索输入框，并保持查询、搜索状态和路由行为由 Dumi 管理；不新增运行时 JavaScript。
+- **Impeccable：** 当前会话执行 `context.mjs --target docs/docs-shell.css` 和一次 `detect.mjs --json docs/docs-shell.css patches/dumi+2.4.49.patch`；detector 原始输出为 `[]`，只代表没有命中确定性规则，不代表视觉或交互通过。CSS 经 Prettier 格式化，PostCSS 解析成功。
+- **静态交互设计：** 搜索输入定位在菜单图标左侧，菜单展开或收起都保留入口；聚焦后展开，失焦时 Dumi 关闭结果，非空查询仍保持可见，清空后收回图标态。Dumi 原生键盘快捷键检查输入矩形，输入现在始终处于可见视口，因此源码路径能够聚焦该输入；这仍是源码推演，尚无真实按键证据。
+- **可访问性与颜色：** Dumi `Input` 的 `aria-label` 复用本地化 placeholder 消息。Dumi `SearchResult` 增加 `role="status"`/polite live region，播报加载、结果数、无结果和方向键当前结果标题；不改原有输入焦点、方向键、Enter、Escape 和路由逻辑。浅色 hover/active 使用 `#004b9b`，静态对比白字 8.47:1；暗色保留 Dumi `#00183a` 背景与 `#ccc` 文字，对比度 10.97:1。计算值未从真实浏览器采样。
+- **独立复审：** 两轮工程复审指出的 P2（hover/active 对比度）已通过浅色专属覆盖修复；复审发现 Dumi 键盘活动结果原先无读屏状态播报，新增 status live region 后由同一独立代理复审至最终 GO。评审发现的 `title` 不存在问题已改用 Dumi 公共类型中的 `pageTitle`。独立 UX 评审为静态 28/40，认可入口和布局，同时提出非空查询缺少清除按钮、窄屏结果标题/摘要截断降低候选区分度（均记为后续 P2）；该评审没有浏览器证据。
+- **工程检查：** `npm run check` 通过（51 个测试文件、412 项测试）；`npm run check:scaffold`、`npm run build:lib`、`npm run build:docs` 与 `git diff --check` 通过；`npm run patch:dumi` 成功对 dumi@2.4.49 应用仓库补丁。测试中存在既有 AntD/jsdom `getComputedStyle(pseudoElt)` 与弃用 API 警告，命令退出码为 0。
+- **验收状态：** 最终补丁下 `npm run check`、`check:scaffold`、`build:lib`、`build:docs`、补丁重放、Prettier、PostCSS 和 `git diff --check` 均通过；独立最终 code review 为 GO。项目规则禁止在浏览器安全策略拒绝后通过其它入口或底层浏览器命令绕过，因此未取得截图、视口测量、无障碍树或实际菜单/搜索操作证据。320/390px、light/dark、Tab/Escape、Ctrl+K、触控、结果点击与路由仍留在浏览器矩阵中；本次不宣称视觉验收通过。文档壳品牌识别偏弱的 P3 仍未处理。
