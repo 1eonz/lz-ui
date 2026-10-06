@@ -101,3 +101,11 @@
 - 截图或可重现的观察步骤、控制台检查状态和未覆盖项。
 
 本轮 Tag 证据与 Impeccable 评审记录见 [`impeccable-audit.md`](./impeccable-audit.md)；计划总览见 [`roadmap.md`](./roadmap.md)。
+
+### 2026-10-06 Dumi 移动搜索补丁收尾
+
+- 独立代码复审发现同一搜索词再次传入 setter 会清掉待执行的 200ms 查询计时器，但不会触发状态变化后的 effect。现已改为同值调用只确保索引加载，不取消原查询；`use-site-search.test.tsx` 新增计时器边界回归，覆盖原查询在重复 setter 后仍恰好派发一次。
+- 同批还修复窄屏清除按钮语义、长标题/摘要截断、方向键误改输入光标、搜索关闭后查询丢失和选择结果后焦点落到旧搜索框等问题。Dumi 搜索相关自动化为 26 项；全项目默认 `npm run check` 通过 54 个测试文件、438 项测试。Vitest worker 限制为 1–4，避免本地高并发导致 DynamicForm demo 测试超时。
+- 独立 `gpt-6-luna max` 复审首轮的 P2 防抖问题和 P3 Dumi 升级清单遗漏已修复，follow-up 为 GO；这一结论只覆盖代码，不代表浏览器界面验收通过。
+- 当前没有可用的视口、键鼠或辅助技术树自动化控制能力；本轮未记录截图、移动菜单、Ctrl+K、触控、Tab/Escape、结果跳转、明暗主题或读屏的真实浏览器观察。以上状态仍需按项目规则在 320/390px 等目标环境复验，不得用 jsdom 或静态检查替代。
+- 最终工程门禁：默认 `npm run check` 通过 54/54 个测试文件和 438/438 项测试，另有 scaffold、库构建、Dumi 生产构建通过。`npm pack --dry-run` 报告 522 个条目、162,924 bytes 压缩、754,772 bytes 解包；docs/tests/UI/.dumi/docs-dist/coverage 禁入检查为 0 条。干净 Dumi 2.4.49 基线在隔离临时目录成功重放补丁。

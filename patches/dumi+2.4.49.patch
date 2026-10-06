@@ -1,5 +1,5 @@
 diff --git a/node_modules/dumi/dist/client/pages/Demo/index.js b/node_modules/dumi/dist/client/pages/Demo/index.js
-index 5002b31..597ad35 100644
+index 5002b31..29592fd 100644
 --- a/node_modules/dumi/dist/client/pages/Demo/index.js
 +++ b/node_modules/dumi/dist/client/pages/Demo/index.js
 @@ -1,14 +1,33 @@
@@ -37,6 +37,133 @@ index 5002b31..597ad35 100644
    var _useRenderer = useRenderer({
        id: id,
        component: demo.component,
+diff --git a/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.d.ts b/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.d.ts
+index 25c5e70..9646afa 100644
+--- a/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.d.ts
++++ b/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.d.ts
+@@ -20,5 +20,7 @@ export declare const useSiteSearch: () => {
+     setKeywords: (val: string) => void;
+     result: ISearchResult;
+     loading: boolean;
++    error: boolean;
+     load: () => Promise<void>;
++    retry: () => void;
+ };
+diff --git a/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.js b/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.js
+index c9a642c..fb1a191 100644
+--- a/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.js
++++ b/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.js
+@@ -20,6 +20,10 @@ if (typeof window !== 'undefined') {
+ }
+ export var useSiteSearch = function useSiteSearch() {
+   var debounceTimer = useRef();
++  var currentSearchId = useRef(0);
++  var postedSearchIds = useRef([]);
++  var keywordsRef = useRef('');
++  var workerFailed = useRef(false);
+   var _useState = useState(false),
+     _useState2 = _slicedToArray(_useState, 2),
+     loading = _useState2[0],
+@@ -33,22 +37,61 @@ export var useSiteSearch = function useSiteSearch() {
+     _useState6 = _slicedToArray(_useState5, 2),
+     result = _useState6[0],
+     setResult = _useState6[1];
++  var _useState7 = useState(false),
++    _useState8 = _slicedToArray(_useState7, 2),
++    error = _useState8[0],
++    setError = _useState8[1];
+   var _useSearchData = useSearchData(),
+     _useSearchData2 = _slicedToArray(_useSearchData, 2),
+     data = _useSearchData2[0],
+     load = _useSearchData2[1];
++  var loadSearchData = useCallback(function () {
++    return Promise.resolve().then(function () {
++      return load();
++    }).catch(function () {
++      setError(true);
++      setLoading(false);
++    });
++  }, [load]);
+   var setter = useCallback(function (val) {
+-    load();
+-    setLoading(true);
++    loadSearchData();
++    if (keywordsRef.current === val) return;
++    currentSearchId.current += 1;
++    keywordsRef.current = val;
++    clearTimeout(debounceTimer.current);
++    debounceTimer.current = undefined;
++    if (val.trim()) {
++      if (workerFailed.current) {
++        setError(true);
++        setLoading(false);
++      } else {
++        setLoading(true);
++      }
++    } else {
++      setResult([]);
++      setLoading(false);
++    }
+     setKeywords(val);
+-  }, []);
++  }, [loadSearchData]);
+   var routes = data === null || data === void 0 ? void 0 : data[0];
+   var demos = data === null || data === void 0 ? void 0 : data[1];
+   useEffect(function () {
+     worker.onmessage = function (e) {
++      if (workerFailed.current) return;
++      var requestId = postedSearchIds.current.shift();
++      if (requestId !== currentSearchId.current || !keywordsRef.current.trim()) return;
++      setError(false);
+       setResult(e.data);
+       setLoading(false);
+     };
++    worker.onerror = function () {
++      workerFailed.current = true;
++      postedSearchIds.current.length = 0;
++      clearTimeout(debounceTimer.current);
++      debounceTimer.current = undefined;
++      setError(true);
++      setLoading(false);
++    };
+   }, []);
+   useEffect(function () {
+     if (!routes || !demos) return;
+@@ -65,8 +108,11 @@ export var useSiteSearch = function useSiteSearch() {
+     if (!routes) return;
+     var str = keywords.trim();
+     if (str) {
++      if (workerFailed.current) return;
+       clearTimeout(debounceTimer.current);
++      var requestId = currentSearchId.current;
+       debounceTimer.current = window.setTimeout(function () {
++        postedSearchIds.current.push(requestId);
+         worker.postMessage({
+           action: 'get-search-result',
+           args: {
+@@ -75,7 +121,10 @@ export var useSiteSearch = function useSiteSearch() {
+         });
+       }, 200);
+     } else {
++      clearTimeout(debounceTimer.current);
++      debounceTimer.current = undefined;
+       setResult([]);
++      setLoading(false);
+     }
+   }, [keywords, routes]);
+   return {
+@@ -83,6 +132,10 @@ export var useSiteSearch = function useSiteSearch() {
+     setKeywords: setter,
+     result: result,
+     loading: loading,
+-    load: load
++    error: error,
++    load: loadSearchData,
++    retry: function retry() {
++      window.location.reload();
++    }
+   };
+ };
 diff --git a/node_modules/dumi/dist/features/routes.js b/node_modules/dumi/dist/features/routes.js
 index d3ff044..4a3b2fc 100644
 --- a/node_modules/dumi/dist/features/routes.js
@@ -52,8 +179,22 @@ index d3ff044..4a3b2fc 100644
        parentId: demoLayoutId,
        file: require.resolve("../client/pages/Demo")
      };
+diff --git a/node_modules/dumi/theme-api.d.ts b/node_modules/dumi/theme-api.d.ts
+index dbb0e02..86e5616 100644
+--- a/node_modules/dumi/theme-api.d.ts
++++ b/node_modules/dumi/theme-api.d.ts
+@@ -301,7 +301,9 @@ export declare const useSiteSearch: () => {
+   setKeywords: (keywords: string) => void;
+   result: ISearchResult;
+   loading: boolean;
++  error: boolean;
+   load: () => Promise<void>;
++  retry: () => void;
+ };
+ export declare const useTabMeta: () =>
+   | NonNullable<IRouteMeta['tabs']>[number]['meta']
 diff --git a/node_modules/dumi/theme-default/builtins/SourceCode/index.js b/node_modules/dumi/theme-default/builtins/SourceCode/index.js
-index 99e06a1..3500200 100644
+index 99e06a1..add0b7f 100644
 --- a/node_modules/dumi/theme-default/builtins/SourceCode/index.js
 +++ b/node_modules/dumi/theme-default/builtins/SourceCode/index.js
 @@ -8,7 +8,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
@@ -86,33 +227,49 @@ index 99e06a1..3500200 100644
      className: "dumi-default-source-code-scroll-container"
    }, /*#__PURE__*/React.createElement("div", {
 diff --git a/node_modules/dumi/theme-default/locales/en-US.json b/node_modules/dumi/theme-default/locales/en-US.json
-index 7063b49..911ad79 100644
+index 7063b49..ef0c709 100644
 --- a/node_modules/dumi/theme-default/locales/en-US.json
 +++ b/node_modules/dumi/theme-default/locales/en-US.json
-@@ -25,6 +25,8 @@
+@@ -25,6 +25,16 @@
    "previewer.actions.codepen": "Open in CodePen (Not implemented)",
    "previewer.actions.stackblitz": "Open in StackBlitz",
    "previewer.actions.separate": "Open in separate page",
 +  "sourceCode.copy": "Copy code",
 +  "sourceCode.copied": "Code copied",
++  "search.clear": "Clear search",
++  "search.dialog": "Site search",
++  "search.start": "Type a keyword to search",
++  "search.results": "Search results",
++  "search.keyboard.help": "Use the up and down arrow keys to browse results, then press Enter to open one.",
++  "search.try.again": "Try a different keyword.",
++  "search.error": "Search data could not be loaded.",
++  "search.reload": "Refresh the page to try again",
    "404.title": "PAGE NOT FOUND",
    "404.back": "Back to homepage",
    "api.component.name": "Name",
 diff --git a/node_modules/dumi/theme-default/locales/zh-CN.json b/node_modules/dumi/theme-default/locales/zh-CN.json
-index cd70856..69b074b 100644
+index cd70856..2c4f7f1 100644
 --- a/node_modules/dumi/theme-default/locales/zh-CN.json
 +++ b/node_modules/dumi/theme-default/locales/zh-CN.json
-@@ -24,6 +24,8 @@
+@@ -24,6 +24,16 @@
    "previewer.actions.sketch.guide": "如何粘贴到 SKetch？",
    "previewer.actions.stackblitz": "在 StackBlitz 中打开",
    "previewer.actions.separate": "在独立页面中打开",
 +  "sourceCode.copy": "复制代码",
 +  "sourceCode.copied": "已复制代码",
++  "search.clear": "清除搜索内容",
++  "search.dialog": "站点搜索",
++  "search.start": "输入关键词开始搜索",
++  "search.results": "搜索结果",
++  "search.keyboard.help": "使用上下方向键浏览结果，按 Enter 打开。",
++  "search.try.again": "请尝试其他关键词。",
++  "search.error": "搜索数据加载失败。",
++  "search.reload": "刷新页面重试",
    "404.title": "页面未找到",
    "404.back": "返回首页",
    "api.component.name": "属性名",
 diff --git a/node_modules/dumi/theme-default/slots/Header/index.js b/node_modules/dumi/theme-default/slots/Header/index.js
-index d2c4d70..37e6dbe 100644
+index d2c4d70..d8b2c5d 100644
 --- a/node_modules/dumi/theme-default/slots/Header/index.js
 +++ b/node_modules/dumi/theme-default/slots/Header/index.js
 @@ -6,7 +6,7 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
@@ -153,7 +310,7 @@ index d2c4d70..37e6dbe 100644
        ev.stopPropagation();
        setShowMenu(function (v) {
 diff --git a/node_modules/dumi/theme-default/slots/PreviewerActions/index.js b/node_modules/dumi/theme-default/slots/PreviewerActions/index.js
-index 2ab15f6..f36e021 100644
+index 2ab15f6..a073b77 100644
 --- a/node_modules/dumi/theme-default/slots/PreviewerActions/index.js
 +++ b/node_modules/dumi/theme-default/slots/PreviewerActions/index.js
 @@ -92,6 +92,9 @@ var PreviewerActions = function PreviewerActions(props) {
@@ -230,57 +387,419 @@ index 2ab15f6..f36e021 100644
            }, /*#__PURE__*/React.createElement("span", null), /*#__PURE__*/React.createElement(IconEdit, null)))
          }, files[activeKey][1].value.trim())
        };
+diff --git a/node_modules/dumi/theme-default/slots/SearchBar/Input.d.ts b/node_modules/dumi/theme-default/slots/SearchBar/Input.d.ts
+index 3225586..276a697 100644
+--- a/node_modules/dumi/theme-default/slots/SearchBar/Input.d.ts
++++ b/node_modules/dumi/theme-default/slots/SearchBar/Input.d.ts
+@@ -2,5 +2,5 @@ import React from 'react';
+ type NativeInputProps = React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+ export declare const Input: React.ForwardRefExoticComponent<{
+     onChange: (keywords: string) => void;
+-} & Pick<NativeInputProps, "onBlur" | "onFocus" | "onMouseEnter"> & React.RefAttributes<HTMLInputElement>>;
++} & Pick<NativeInputProps, "id" | "aria-controls" | "aria-describedby" | "onBlur" | "onFocus" | "onMouseEnter"> & React.RefAttributes<HTMLInputElement>>;
+ export {};
 diff --git a/node_modules/dumi/theme-default/slots/SearchBar/Input.js b/node_modules/dumi/theme-default/slots/SearchBar/Input.js
-index 287dd6d..efb5b8a 100644
+index 287dd6d..1cafdea 100644
 --- a/node_modules/dumi/theme-default/slots/SearchBar/Input.js
 +++ b/node_modules/dumi/theme-default/slots/SearchBar/Input.js
-@@ -37,6 +37,9 @@ export var Input = /*#__PURE__*/forwardRef(function (props, ref) {
+@@ -37,6 +37,12 @@ export var Input = /*#__PURE__*/forwardRef(function (props, ref) {
      placeholder: intl.formatMessage({
        id: 'header.search.placeholder'
      }),
 +    'aria-label': intl.formatMessage({
 +      id: 'header.search.placeholder'
 +    }),
++    id: props.id,
++    'aria-controls': props['aria-controls'],
++    'aria-describedby': props['aria-describedby'],
      ref: nativeInputRef
    });
  });
+\ No newline at end of file
+diff --git a/node_modules/dumi/theme-default/slots/SearchBar/Mask.d.ts b/node_modules/dumi/theme-default/slots/SearchBar/Mask.d.ts
+index 8b12e43..6f6038d 100644
+--- a/node_modules/dumi/theme-default/slots/SearchBar/Mask.d.ts
++++ b/node_modules/dumi/theme-default/slots/SearchBar/Mask.d.ts
+@@ -4,6 +4,7 @@ type MaskProps = {
+     children: ReactNode;
+     onMaskClick?: () => void;
+     onClose?: () => void;
++    dialogLabel?: string;
+ };
+ export declare const Mask: FC<MaskProps>;
+ export {};
+diff --git a/node_modules/dumi/theme-default/slots/SearchBar/Mask.js b/node_modules/dumi/theme-default/slots/SearchBar/Mask.js
+index aa9a4ac..7eed2d6 100644
+--- a/node_modules/dumi/theme-default/slots/SearchBar/Mask.js
++++ b/node_modules/dumi/theme-default/slots/SearchBar/Mask.js
+@@ -1,11 +1,56 @@
+-import React, { useEffect } from 'react';
++import React, { useEffect, useRef } from 'react';
++import { useIntl } from 'dumi';
++var isolateDialogBackground = function isolateDialogBackground(dialog) {
++  var changes = [];
++  var active = dialog;
++  while (active && active !== document.body) {
++    var parent = active.parentElement;
++    if (!parent) break;
++    Array.from(parent.children).forEach(function (sibling) {
++      if (sibling === active || sibling.classList.contains('dumi-default-search-modal-mask')) return;
++      var original = {
++        node: sibling,
++        inert: 'inert' in sibling ? sibling.inert : undefined,
++        inertAttribute: sibling.getAttribute('inert'),
++        ariaHidden: sibling.getAttribute('aria-hidden')
++      };
++      changes.push(original);
++      sibling.setAttribute('inert', '');
++      sibling.setAttribute('aria-hidden', 'true');
++    });
++    active = parent;
++  }
++  return function () {
++    changes.forEach(function (change) {
++      if (change.inert !== undefined) change.node.inert = change.inert;
++      if (change.inertAttribute === null) change.node.removeAttribute('inert');else change.node.setAttribute('inert', change.inertAttribute);
++      if (change.ariaHidden === null) change.node.removeAttribute('aria-hidden');else change.node.setAttribute('aria-hidden', change.ariaHidden);
++    });
++  };
++};
+ export var Mask = function Mask(props) {
++  var intl = useIntl();
++  var dialogRef = useRef(null);
++  var wasVisible = useRef(false);
+   useEffect(function () {
+     if (props.visible) {
+-      document.body.style.overflow = 'hidden';
+-    } else if (document.body.style.overflow) {
++      wasVisible.current = true;
++      var previousBodyOverflow = document.body.style.getPropertyValue('overflow');
++      var previousBodyOverflowPriority = document.body.style.getPropertyPriority('overflow');
++      document.body.style.setProperty('overflow', 'hidden', previousBodyOverflowPriority);
++      var restoreBackground = isolateDialogBackground(dialogRef.current);
++      return function () {
++        if (previousBodyOverflow) {
++          document.body.style.setProperty('overflow', previousBodyOverflow, previousBodyOverflowPriority);
++        } else {
++          document.body.style.removeProperty('overflow');
++        }
++        restoreBackground();
++      };
++    }
++    if (wasVisible.current) {
++      wasVisible.current = false;
+       var _props$onClose;
+-      document.body.style.overflow = '';
+       (_props$onClose = props.onClose) === null || _props$onClose === void 0 || _props$onClose.call(props);
+     }
+   }, [props.visible]);
+@@ -13,8 +58,34 @@ export var Mask = function Mask(props) {
+     className: "dumi-default-search-modal"
+   }, /*#__PURE__*/React.createElement("div", {
+     className: "dumi-default-search-modal-mask",
++    "aria-hidden": "true",
+     onClick: props.onMaskClick
+   }), /*#__PURE__*/React.createElement("div", {
+-    className: "dumi-default-search-modal-content"
++    className: "dumi-default-search-modal-content",
++    ref: dialogRef,
++    role: "dialog",
++    "aria-modal": "true",
++    "aria-label": props.dialogLabel || intl.formatMessage({
++      id: 'search.dialog'
++    }),
++    tabIndex: -1,
++    onKeyDown: function onKeyDown(ev) {
++      if (ev.key !== 'Tab') return;
++      var focusable = ev.currentTarget.querySelectorAll('a[href]:not([hidden]), button:not([disabled]):not([hidden]), input:not([disabled]):not([hidden]), select:not([disabled]):not([hidden]), textarea:not([disabled]):not([hidden]), [tabindex]:not([tabindex="-1"]):not([hidden])');
++      if (!focusable.length) {
++        ev.preventDefault();
++        ev.currentTarget.focus();
++        return;
++      }
++      var first = focusable[0];
++      var last = focusable[focusable.length - 1];
++      if (ev.shiftKey && (document.activeElement === first || !ev.currentTarget.contains(document.activeElement))) {
++        ev.preventDefault();
++        last.focus();
++      } else if (!ev.shiftKey && (document.activeElement === last || !ev.currentTarget.contains(document.activeElement))) {
++        ev.preventDefault();
++        first.focus();
++      }
++    }
+   }, props.children)) : null;
+ };
+\ No newline at end of file
 diff --git a/node_modules/dumi/theme-default/slots/SearchBar/index.js b/node_modules/dumi/theme-default/slots/SearchBar/index.js
-index 6274105..f71a3d7 100644
+index 6274105..b06c724 100644
 --- a/node_modules/dumi/theme-default/slots/SearchBar/index.js
 +++ b/node_modules/dumi/theme-default/slots/SearchBar/index.js
-@@ -110,7 +110,8 @@ var SearchBar = function SearchBar() {
+@@ -8,9 +8,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+ import { ReactComponent as IconArrowDown } from '@ant-design/icons-svg/inline-svg/outlined/arrow-down.svg';
+ import { ReactComponent as IconArrowUp } from '@ant-design/icons-svg/inline-svg/outlined/arrow-up.svg';
+ import { ReactComponent as IconSearch } from '@ant-design/icons-svg/inline-svg/outlined/search.svg';
+-import { useSiteSearch } from 'dumi';
++import { ReactComponent as IconClose } from '@ant-design/icons-svg/inline-svg/outlined/close.svg';
++import { useIntl, useSiteSearch } from 'dumi';
+ import SearchResult from 'dumi/theme/slots/SearchResult';
+-import React, { useEffect, useRef, useState } from 'react';
++import React, { useEffect, useId, useRef, useState } from 'react';
+ import { Input } from "./Input";
+ import { Mask } from "./Mask";
+ import "./index.less";
+@@ -23,6 +24,7 @@ var isInput = function isInput(target) {
+   return ['TEXTAREA', 'INPUT'].includes(target.tagName) || target.contentEditable === 'true';
+ };
+ var SearchBar = function SearchBar() {
++  var intl = useIntl();
+   var _useState = useState(false),
+     _useState2 = _slicedToArray(_useState, 2),
+     focusing = _useState2[0],
+@@ -38,11 +40,62 @@ var SearchBar = function SearchBar() {
+     setKeywords = _useSiteSearch.setKeywords,
+     result = _useSiteSearch.result,
+     loading = _useSiteSearch.loading,
+-    loadSearchData = _useSiteSearch.load;
++    error = _useSiteSearch.error,
++    loadSearchData = _useSiteSearch.load,
++    retrySearch = _useSiteSearch.retry;
++  var searchId = useId();
++  var topbarResultsId = "".concat(searchId, "-topbar-results");
++  var topbarStatusId = "".concat(searchId, "-topbar-status");
++  var topbarInstructionsId = "".concat(searchId, "-topbar-instructions");
++  var modalResultsId = "".concat(searchId, "-modal-results");
++  var modalStatusId = "".concat(searchId, "-modal-status");
++  var modalInstructionsId = "".concat(searchId, "-modal-instructions");
++  var clearKeywords = function clearKeywords(targetRef) {
++    setKeywords('');
++    [inputRef, modalInputRef].forEach(function (input) {
++      if (input.current) input.current.value = '';
++    });
++    if (targetRef.current) {
++      targetRef.current.focus();
++    }
++  };
++  var renderClearButton = function renderClearButton(targetRef) {
++    return /*#__PURE__*/React.createElement("button", {
++      className: "dumi-default-search-clear",
++      type: "button",
++      hidden: !keywords.length,
++      "aria-label": intl.formatMessage({
++        id: 'search.clear'
++      }),
++      onMouseDown: function onMouseDown(ev) {
++        ev.preventDefault();
++      },
++      onClick: function onClick() {
++        clearKeywords(targetRef);
++      }
++    }, /*#__PURE__*/React.createElement(IconClose, {
++      "aria-hidden": "true",
++      focusable: "false"
++    }));
++  };
+   var _useState5 = useState(false),
+     _useState6 = _slicedToArray(_useState5, 2),
+     modalVisible = _useState6[0],
+     setModalVisible = _useState6[1];
++  var skipModalFocusRestore = useRef(false);
++  var closeModal = function closeModal(preserveKeywords) {
++    if (preserveKeywords && modalInputRef.current) {
++      var modalKeywords = modalInputRef.current.value;
++      if (inputRef.current) inputRef.current.value = modalKeywords;
++      setKeywords(modalKeywords);
++    } else {
++      setKeywords('');
++      [inputRef, modalInputRef].forEach(function (input) {
++        if (input.current) input.current.value = '';
++      });
++    }
++    setModalVisible(false);
++  };
+   useEffect(function () {
+     // why put useEffect?
+     // to avoid Text content mismatch between server & client in ssr
+@@ -62,6 +115,7 @@ var SearchBar = function SearchBar() {
+           if (isInViewport) {
+             inputRef.current.focus();
+           } else {
++            inputRef.current.value = '';
+             setKeywords('');
+             setModalVisible(true);
+             setTimeout(function () {
+@@ -72,54 +126,83 @@ var SearchBar = function SearchBar() {
+         }
+       }
+       if (ev.key === 'Escape') {
+-        ev.preventDefault();
+-        setModalVisible(false);
++        if (modalVisible) {
++          ev.preventDefault();
++          closeModal(true);
++        } else if (focusing && keywords.trim()) {
++          ev.preventDefault();
++          setFocusing(false);
++          if (inputRef.current) inputRef.current.blur();
++        }
+       }
+     };
+     document.addEventListener('keydown', handler);
+     return function () {
+       return document.removeEventListener('keydown', handler);
+     };
+-  }, []);
++  }, [focusing, keywords, modalVisible]);
+   return /*#__PURE__*/React.createElement("div", {
+-    className: "dumi-default-search-bar"
++    className: "dumi-default-search-bar".concat(keywords.length ? " dumi-default-search-bar-with-clear" : "")
+   }, /*#__PURE__*/React.createElement(IconSearch, {
+     className: "dumi-default-search-bar-svg",
+     title: "Search"
+   }), /*#__PURE__*/React.createElement(Input, {
+     onFocus: function onFocus() {
+       setFocusing(true);
+-      loadSearchData();
++      Promise.resolve(loadSearchData()).catch(function () {});
+     },
+     onMouseEnter: function onMouseEnter() {
+-      loadSearchData();
++      Promise.resolve(loadSearchData()).catch(function () {});
+     },
+     onBlur: function onBlur() {
+       // wait for item click
+       setTimeout(function () {
+-        setFocusing(false);
++        if (document.activeElement !== inputRef.current && document.activeElement !== modalInputRef.current) {
++          setFocusing(false);
++        }
+       }, 1);
+     },
+     onChange: function onChange(keywords) {
+       return setKeywords(keywords);
+     },
++    "aria-controls": keywords.trim() && focusing && !modalVisible ? topbarResultsId : undefined,
++    "aria-describedby": keywords.trim() && focusing && !modalVisible ? "".concat(topbarInstructionsId, " ", topbarStatusId) : undefined,
+     ref: inputRef
+-  }), /*#__PURE__*/React.createElement("span", {
++  }), renderClearButton(inputRef), /*#__PURE__*/React.createElement("span", {
+     className: "dumi-default-search-shortcut"
+   }, symbol, " K"), keywords.trim() && focusing && !modalVisible && /*#__PURE__*/React.createElement("div", {
      className: "dumi-default-search-popover"
    }, /*#__PURE__*/React.createElement("section", null, /*#__PURE__*/React.createElement(SearchResult, {
      data: result,
 -    loading: loading
 +    loading: loading,
-+    keywords: keywords
++    error: error,
++    onRetry: retrySearch,
++    keywords: keywords,
++    inputRef: inputRef,
++    resultsId: topbarResultsId,
++    statusId: topbarStatusId,
++    instructionsId: topbarInstructionsId,
++    onItemSelect: function onItemSelect() {
++      closeModal(false);
++      setFocusing(false);
++    }
    }))), /*#__PURE__*/React.createElement(Mask, {
      visible: modalVisible,
      onMaskClick: function onMaskClick() {
-@@ -142,6 +143,7 @@ var SearchBar = function SearchBar() {
-   })), /*#__PURE__*/React.createElement(SearchResult, {
+-      setModalVisible(false);
++      closeModal(true);
+     },
+     onClose: function onClose() {
+-      return setKeywords('');
+-    }
++      if (skipModalFocusRestore.current) {
++        skipModalFocusRestore.current = false;
++        return;
++      }
++      if (inputRef.current) inputRef.current.focus();
++    },
++    dialogLabel: intl.formatMessage({
++      id: 'search.dialog'
++    })
+   }, /*#__PURE__*/React.createElement("div", {
++    className: "dumi-default-search-input-wrapper".concat(keywords.length ? " dumi-default-search-bar-with-clear" : ""),
+     style: {
+       position: 'relative'
+     }
+@@ -132,18 +215,30 @@ var SearchBar = function SearchBar() {
+     onBlur: function onBlur() {
+       // wait for item click
+       setTimeout(function () {
+-        setFocusing(false);
++        if (document.activeElement !== inputRef.current && document.activeElement !== modalInputRef.current) {
++          setFocusing(false);
++        }
+       }, 1);
+     },
+     onChange: function onChange(keywords) {
+       return setKeywords(keywords);
+     },
++    "aria-controls": modalVisible ? modalResultsId : undefined,
++    "aria-describedby": modalVisible ? "".concat(modalInstructionsId, " ", modalStatusId) : undefined,
+     ref: modalInputRef
+-  })), /*#__PURE__*/React.createElement(SearchResult, {
++  }), renderClearButton(modalInputRef)), /*#__PURE__*/React.createElement(SearchResult, {
      data: result,
      loading: loading,
++    error: error,
++    onRetry: retrySearch,
 +    keywords: keywords,
++    inputRef: modalInputRef,
++    resultsId: modalResultsId,
++    statusId: modalStatusId,
++    instructionsId: modalInstructionsId,
      onItemSelect: function onItemSelect() {
-       setModalVisible(false);
+-      setModalVisible(false);
++      skipModalFocusRestore.current = true;
++      closeModal(false);
      }
+   }), /*#__PURE__*/React.createElement("footer", null, /*#__PURE__*/React.createElement("ul", {
+     className: "dumi-default-search-modal-commands"
+diff --git a/node_modules/dumi/theme-default/slots/SearchResult/index.d.ts b/node_modules/dumi/theme-default/slots/SearchResult/index.d.ts
+index 1a669d5..f23282c 100644
+--- a/node_modules/dumi/theme-default/slots/SearchResult/index.d.ts
++++ b/node_modules/dumi/theme-default/slots/SearchResult/index.d.ts
+@@ -1,10 +1,17 @@
+ import { type useSiteSearch } from 'dumi';
+-import { type FC } from 'react';
++import { type FC, type RefObject } from 'react';
+ import './index.less';
+ type ISearchResult = ReturnType<typeof useSiteSearch>['result'];
+ declare const SearchResult: FC<{
+     data: ISearchResult;
+     loading: boolean;
++    error?: boolean;
++    onRetry?: () => void;
++    keywords?: string;
++    inputRef?: RefObject<HTMLInputElement>;
++    resultsId?: string;
++    statusId?: string;
++    instructionsId?: string;
+     onItemSelect?: (item: ISearchResult[0]['hints'][0]) => void;
+ }>;
+ export default SearchResult;
 diff --git a/node_modules/dumi/theme-default/slots/SearchResult/index.js b/node_modules/dumi/theme-default/slots/SearchResult/index.js
-index c8d676f..bfcacdb 100644
+index c8d676f..6c0aa14 100644
 --- a/node_modules/dumi/theme-default/slots/SearchResult/index.js
 +++ b/node_modules/dumi/theme-default/slots/SearchResult/index.js
-@@ -6,7 +6,7 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
+@@ -6,8 +6,8 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
  function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
  import { ReactComponent as IconInbox } from '@ant-design/icons-svg/inline-svg/outlined/inbox.svg';
  import animateScrollTo from 'animated-scroll-to';
 -import { FormattedMessage, history, Link, useLocation } from 'dumi';
+-import React, { Fragment, useCallback, useEffect, useState } from 'react';
 +import { FormattedMessage, history, Link, useIntl, useLocation } from 'dumi';
- import React, { Fragment, useCallback, useEffect, useState } from 'react';
++import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
  import "./index.less";
  var IconTitle = function IconTitle() {
-@@ -101,6 +101,26 @@ var SearchResult = function SearchResult(props) {
+   return /*#__PURE__*/React.createElement("svg", {
+@@ -99,8 +99,43 @@ var SearchResult = function SearchResult(props) {
+     _useState4 = _slicedToArray(_useState3, 2),
+     activeIndex = _useState4[0],
      setActiveIndex = _useState4[1];
++  var resultRef = useRef(null);
    var _useLocation = useLocation(),
      pathname = _useLocation.pathname;
 +  var intl = useIntl();
@@ -289,7 +808,11 @@ index c8d676f..bfcacdb 100644
 +  });
 +  var liveAnnouncement = '';
 +  if (typeof props.keywords === 'string' && props.keywords.trim()) {
-+    if (props.loading) {
++    if (props.error) {
++      liveAnnouncement = intl.formatMessage({
++        id: 'search.error'
++      });
++    } else if (props.loading) {
 +      liveAnnouncement = intl.formatMessage({
 +        id: 'search.loading'
 +      });
@@ -303,24 +826,164 @@ index c8d676f..bfcacdb 100644
 +      });
 +    }
 +  }
++  useEffect(function () {
++    setActiveIndex(-1);
++  }, [props.keywords, data]);
++  useEffect(function () {
++    if (activeIndex < 0 || !resultRef.current) return;
++    var activeLink = resultRef.current.querySelector('[data-active]');
++    if (activeLink) activeLink.scrollIntoView({
++      block: 'nearest'
++    });
++  }, [activeIndex]);
    var onItemSelect = function onItemSelect(item) {
      var _props$onItemSelect;
      (_props$onItemSelect = props.onItemSelect) === null || _props$onItemSelect === void 0 || _props$onItemSelect.call(props, item);
-@@ -182,6 +202,11 @@ var SearchResult = function SearchResult(props) {
+@@ -115,18 +150,23 @@ var SearchResult = function SearchResult(props) {
+   };
+   useEffect(function () {
+     var handler = function handler(ev) {
+-      // TODO: scroll into view for invisible items
+-      if (ev.key === 'ArrowDown') {
++      if (!props.inputRef || ev.target !== props.inputRef.current) return;
++      if (ev.key === 'ArrowDown' && histsCount) {
++        ev.preventDefault();
+         setActiveIndex((activeIndex + 1) % histsCount);
+-      } else if (ev.key === 'ArrowUp') {
+-        setActiveIndex((activeIndex + histsCount - 1) % histsCount);
++      } else if (ev.key === 'ArrowUp' && histsCount) {
++        ev.preventDefault();
++        setActiveIndex(activeIndex < 0 ? histsCount - 1 : (activeIndex + histsCount - 1) % histsCount);
+       } else if (ev.key === 'Enter' && activeIndex >= 0) {
+         var _item = data.find(function (item) {
+           return item.type === 'hint' && item.activeIndex === activeIndex;
+-        }).value;
+-        history.push(_item.link);
+-        onItemSelect === null || onItemSelect === void 0 || onItemSelect(_item);
+-        document.activeElement.blur();
++        });
++        if (_item) {
++          var _itemValue = _item.value;
++          history.push(_itemValue.link);
++          onItemSelect === null || onItemSelect === void 0 || onItemSelect(_itemValue);
++          document.activeElement.blur();
++        }
+       }
+       if (['Escape', 'Enter'].includes(ev.key)) {
+         setActiveIndex(-1);
+@@ -138,7 +178,19 @@ var SearchResult = function SearchResult(props) {
+     };
+   });
+   var returnNode = null;
+-  if (props.loading) {
++  if (props.error) {
++    returnNode = /*#__PURE__*/React.createElement("div", {
++      className: "dumi-default-search-empty"
++    }, /*#__PURE__*/React.createElement(IconInbox, null), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement(FormattedMessage, {
++      id: "search.error"
++    }), /*#__PURE__*/React.createElement("button", {
++      className: "dumi-default-search-retry",
++      type: "button",
++      onClick: props.onRetry
++    }, /*#__PURE__*/React.createElement(FormattedMessage, {
++      id: "search.reload"
++    }))));
++  } else if (props.loading) {
+     returnNode = /*#__PURE__*/React.createElement("div", {
+       className: "dumi-default-search-empty"
+     }, /*#__PURE__*/React.createElement(IconInbox, null), /*#__PURE__*/React.createElement(FormattedMessage, {
+@@ -162,15 +214,31 @@ var SearchResult = function SearchResult(props) {
+         texts: item.value.highlightTexts
+       }))));
+     }));
+-  } else {
++  } else if (typeof props.keywords === 'string' && !props.keywords.trim()) {
+     returnNode = /*#__PURE__*/React.createElement("div", {
+       className: "dumi-default-search-empty"
+     }, /*#__PURE__*/React.createElement(IconInbox, null), /*#__PURE__*/React.createElement(FormattedMessage, {
+-      id: "search.not.found"
++      id: "search.start"
+     }));
++  } else {
++    returnNode = /*#__PURE__*/React.createElement("div", {
++      className: "dumi-default-search-empty"
++    }, /*#__PURE__*/React.createElement(IconInbox, null), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement(FormattedMessage, {
++      id: "search.not.found"
++    }), /*#__PURE__*/React.createElement("small", {
++      className: "dumi-default-search-empty-hint"
++    }, /*#__PURE__*/React.createElement(FormattedMessage, {
++      id: "search.try.again"
++    }))));
+   }
+   return /*#__PURE__*/React.createElement("div", {
+     className: "dumi-default-search-result",
++    id: props.resultsId,
++    role: "region",
++    "aria-label": intl.formatMessage({
++      id: 'search.results'
++    }),
++    ref: resultRef,
+     onMouseEnter: function onMouseEnter() {
+       return setActiveIndex(-1);
+     }
+@@ -182,6 +250,17 @@ var SearchResult = function SearchResult(props) {
      onMouseUpCapture: function onMouseUpCapture() {
        document.activeElement.blur();
      }
 -  }, returnNode);
 +  }, returnNode, /*#__PURE__*/React.createElement("span", {
-+    className: "dumi-default-search-result-status",
++    className: "dumi-default-search-result-a11y",
++    id: props.instructionsId
++  }, intl.formatMessage({
++    id: 'search.keyboard.help'
++  })), /*#__PURE__*/React.createElement("span", {
++    id: props.statusId,
++    className: "dumi-default-search-result-a11y",
 +    role: "status",
 +    "aria-live": "polite",
 +    "aria-atomic": "true"
 +  }, liveAnnouncement));
  };
  export default SearchResult;
+\ No newline at end of file
+diff --git a/node_modules/dumi/theme-default/slots/SearchResult/index.less b/node_modules/dumi/theme-default/slots/SearchResult/index.less
+index 9916a6c..0a7cbe7 100644
+--- a/node_modules/dumi/theme-default/slots/SearchResult/index.less
++++ b/node_modules/dumi/theme-default/slots/SearchResult/index.less
+@@ -164,5 +164,31 @@
+         fill: darken(@c-text-note-dark, 20%);
+       }
+     }
++
++    > span {
++      display: flex;
++      flex-direction: column;
++      align-items: flex-start;
++      gap: 8px;
++    }
++
++    .@{prefix}-search-retry {
++      min-height: 44px;
++      padding: 0 12px;
++      color: @c-primary;
++      background: transparent;
++      border: 1px solid @c-border;
++      border-radius: 4px;
++      cursor: pointer;
++
++      &:hover {
++        background: fade(@c-primary, 6%);
++      }
++
++      &:focus-visible {
++        outline: 2px solid @c-primary;
++        outline-offset: 2px;
++      }
++    }
+   }
+ }
 diff --git a/node_modules/dumi/theme-default/slots/Toc/index.js b/node_modules/dumi/theme-default/slots/Toc/index.js
-index 009d903..2847289 100644
+index 009d903..18b46de 100644
 --- a/node_modules/dumi/theme-default/slots/Toc/index.js
 +++ b/node_modules/dumi/theme-default/slots/Toc/index.js
 @@ -84,6 +84,16 @@ var Toc = function Toc() {

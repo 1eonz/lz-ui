@@ -596,3 +596,12 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **独立复审：** 两轮工程复审指出的 P2（hover/active 对比度）已通过浅色专属覆盖修复；复审发现 Dumi 键盘活动结果原先无读屏状态播报，新增 status live region 后由同一独立代理复审至最终 GO。评审发现的 `title` 不存在问题已改用 Dumi 公共类型中的 `pageTitle`。独立 UX 评审为静态 28/40，认可入口和布局，同时提出非空查询缺少清除按钮、窄屏结果标题/摘要截断降低候选区分度（均记为后续 P2）；该评审没有浏览器证据。
 - **工程检查：** `npm run check` 通过（51 个测试文件、412 项测试）；`npm run check:scaffold`、`npm run build:lib`、`npm run build:docs` 与 `git diff --check` 通过；`npm run patch:dumi` 成功对 dumi@2.4.49 应用仓库补丁。测试中存在既有 AntD/jsdom `getComputedStyle(pseudoElt)` 与弃用 API 警告，命令退出码为 0。
 - **验收状态：** 最终补丁下 `npm run check`、`check:scaffold`、`build:lib`、`build:docs`、补丁重放、Prettier、PostCSS 和 `git diff --check` 均通过；独立最终 code review 为 GO。项目规则禁止在浏览器安全策略拒绝后通过其它入口或底层浏览器命令绕过，因此未取得截图、视口测量、无障碍树或实际菜单/搜索操作证据。320/390px、light/dark、Tab/Escape、Ctrl+K、触控、结果点击与路由仍留在浏览器矩阵中；本次不宣称视觉验收通过。文档壳品牌识别偏弱的 P3 仍未处理。
+
+### 2026-10-06 Dumi 移动搜索防抖 Polish 复核
+
+- 按 Impeccable 4.1.3 的 `polish` 流程检查当前 CSS、Dumi 补丁、相邻搜索交互与已有 UX 评审。`critique-storage latest docs/docs-shell.css --json` 没有当前可复用快照；本轮独立复核未把 `detect []` 当成设计结论，也未生成新的视觉评分，因为没有真实页面视口证据。
+- 代码审查首轮发现 P2：关闭弹窗时用相同关键词调用 setter 会清除延迟中的 Worker 请求，却不改变 `keywords` 状态，导致请求可能永不派发。修复在 `loadSearchData()` 后对同值返回，不动现有计时器；新增测试在防抖中段重复传值，再确认请求只派发一次。P3：`patches/README.md` 未列搜索槽位的升级复验职责，现已补充 SearchBar、SearchResult、useSiteSearch 检查项。指定 `gpt-6-luna max` 代理复审为 GO。
+- 之前 Impeccable UX 评审提到的非空查询清除入口和窄屏结果标题/摘要截断已在本批实现；方向键现仅在输入框本身持焦时消费，点击清除或结果后也不会留下错误焦点。自动化不能证明实际触屏、屏幕阅读器和浏览器布局结果。
+- 默认无并发上限的全库测试曾在 DynamicForm demo 产生 2 项负载相关失败；该文件独立 12/12 通过，随后以 1–4 worker 跑通全库 54 文件、438 测试。`test`、`test:watch`、`test:coverage` 已固定该并发范围。历史 AntD/jsdom `getComputedStyle(pseudoElt)` 及弃用 API 警告仍出现，但不导致用例失败。
+- 最终浏览器验收仍未完成：本会话不能控制视口、键盘/指针，也不能读取无障碍树；不把测试、source review 或包构建写成 UI 通过。文档壳品牌识别 P3 仍是非阻塞后续；全库 2B-1 未关闭。
+- **最终工程门禁：** `npm run check` 通过格式、类型、101 个 demo 类型检查、lint 和 54/438 测试；`check:scaffold`、`build:lib`、`build:docs`、`npm pack --dry-run` 通过。补丁使用从 npm tarball 取得的干净 `dumi@2.4.49` 副本，在隔离临时项目中运行 `patch-package --error-on-fail` 并确认同值防抖修复存在。包预览为 522 项、162,924 bytes 压缩、754,772 bytes 解包，docs/tests/UI/.dumi/docs-dist/coverage 禁入路径为 0 项。Dumi 文档站最大共享脚本为 661.35 KB gzip，属于文档构建而非组件库 npm 包。

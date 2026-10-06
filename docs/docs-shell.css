@@ -1,3 +1,46 @@
+/* 清除按钮沿用文档壳颜色；输入非空时才占用尾部空间。 */
+.dumi-default-search-clear {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 36px;
+  block-size: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--lx-docs-text-muted);
+  background: transparent;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.dumi-default-search-clear[hidden] {
+  display: none;
+}
+
+.dumi-default-search-bar .dumi-default-search-clear svg {
+  display: block;
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+.dumi-default-search-bar .dumi-default-search-clear:hover {
+  color: var(--lx-docs-link-text);
+}
+
+.dumi-default-search-bar .dumi-default-search-clear:focus-visible,
+.dumi-default-search-modal .dumi-default-search-clear:focus-visible {
+  outline: 2px solid var(--lx-focus-ring, #146ce8);
+  outline-offset: -3px;
+}
+
+.dumi-default-search-bar-with-clear .dumi-default-search-bar-input {
+  padding-inline-end: 44px;
+}
+
 /* 移动端菜单沿用 Dumi 图标按钮，只扩大可操作区域，不改变图标和对齐方向。 */
 @media (max-width: 767px) {
   .dumi-default-header-menu-btn,
@@ -73,6 +116,15 @@
 
   .dumi-default-header
     .dumi-default-header-right
+    .dumi-default-search-bar-with-clear
+    .dumi-default-search-bar-input,
+  .dumi-default-search-input-wrapper.dumi-default-search-bar-with-clear
+    .dumi-default-search-bar-input {
+    padding-inline-end: 52px;
+  }
+
+  .dumi-default-header
+    .dumi-default-header-right
     .dumi-default-search-bar
     .dumi-default-search-bar-input::placeholder {
     color: transparent;
@@ -92,7 +144,7 @@
   .dumi-default-header .dumi-default-header-right .dumi-default-search-bar:focus-within,
   .dumi-default-header
     .dumi-default-header-right
-    .dumi-default-search-bar:has(.dumi-default-search-bar-input:not(:placeholder-shown)) {
+    .dumi-default-search-bar.dumi-default-search-bar-with-clear {
     inset-block-start: 8px;
     inset-inline: 16px;
     inline-size: auto;
@@ -105,7 +157,7 @@
     .dumi-default-search-bar-input,
   .dumi-default-header
     .dumi-default-header-right
-    .dumi-default-search-bar:has(.dumi-default-search-bar-input:not(:placeholder-shown))
+    .dumi-default-search-bar.dumi-default-search-bar-with-clear
     .dumi-default-search-bar-input {
     border-radius: 6px;
   }
@@ -138,14 +190,97 @@
     overflow: hidden;
   }
 
+  /* 弹层本身限制视口高度，结果区负责滚动，避免长列表被父容器裁掉。 */
+  .dumi-default-header .dumi-default-search-popover > section,
+  .dumi-default-search-modal .dumi-default-search-result {
+    min-block-size: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dumi-default-header .dumi-default-search-popover > section {
+    max-block-size: min(460px, calc(100dvh - 120px));
+  }
+
+  .dumi-default-header .dumi-default-header-right .dumi-default-search-clear {
+    inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
+
+  .dumi-default-search-modal .dumi-default-search-clear {
+    inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
+
+  .dumi-default-search-input-wrapper.dumi-default-search-bar-with-clear
+    .dumi-default-search-bar-input {
+    padding-inline-end: 52px;
+  }
+
+  .dumi-default-search-modal .dumi-default-search-modal-content {
+    inset-inline: 16px;
+    width: auto;
+    max-width: 500px;
+    max-height: calc(100dvh - 120px);
+    margin-inline: auto;
+  }
+
+  .dumi-default-header .dumi-default-search-bar .dumi-default-search-result > dl > dd > a,
+  .dumi-default-search-modal .dumi-default-search-result > dl > dd > a {
+    block-size: auto;
+    min-block-size: 76px;
+    align-items: flex-start;
+    gap: 4px;
+    padding-block: 10px;
+  }
+
+  .dumi-default-header .dumi-default-search-bar .dumi-default-search-result > dl > dd > a > svg,
+  .dumi-default-search-modal .dumi-default-search-result > dl > dd > a > svg {
+    inset-block-start: 50%;
+    transform: translateY(-50%);
+  }
+
+  .dumi-default-header .dumi-default-search-result > dl > dd > a > h4,
+  .dumi-default-header .dumi-default-search-result > dl > dd > a > p,
+  .dumi-default-search-modal .dumi-default-search-result > dl > dd > a > h4,
+  .dumi-default-search-modal .dumi-default-search-result > dl > dd > a > p {
+    white-space: normal;
+    text-overflow: clip;
+    overflow: visible;
+    overflow-wrap: anywhere;
+  }
+
+  .dumi-default-header .dumi-default-search-result > dl > dd > a > h4 {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+
+  .dumi-default-header .dumi-default-search-result > dl > dd > a > p {
+    line-height: 1.45;
+  }
+
   .dumi-default-header .dumi-default-search-result > dl > dd > a:not([data-active]):not(:hover) > p,
   .dumi-default-header .dumi-default-search-empty {
     color: var(--lx-docs-text-muted);
   }
+
+  .dumi-default-search-empty > span {
+    display: block;
+    text-align: start;
+  }
+
+  .dumi-default-search-empty-hint {
+    display: block;
+    margin-block-start: 4px;
+    font-size: 13px;
+  }
 }
 
-/* 搜索状态由 status live region 播报，视觉上隐藏但保留辅助技术可读性。 */
-.dumi-default-search-result-status {
+/* 输入框通过描述关系读取键盘说明和状态播报；文本保留在无障碍树中。 */
+.dumi-default-search-result-a11y {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
