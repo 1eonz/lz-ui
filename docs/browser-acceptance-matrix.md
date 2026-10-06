@@ -109,3 +109,9 @@
 - 独立 `gpt-6-luna max` 复审首轮的 P2 防抖问题和 P3 Dumi 升级清单遗漏已修复，follow-up 为 GO；这一结论只覆盖代码，不代表浏览器界面验收通过。
 - 当前没有可用的视口、键鼠或辅助技术树自动化控制能力；本轮未记录截图、移动菜单、Ctrl+K、触控、Tab/Escape、结果跳转、明暗主题或读屏的真实浏览器观察。以上状态仍需按项目规则在 320/390px 等目标环境复验，不得用 jsdom 或静态检查替代。
 - 最终工程门禁：默认 `npm run check` 通过 54/54 个测试文件和 438/438 项测试，另有 scaffold、库构建、Dumi 生产构建通过。`npm pack --dry-run` 报告 522 个条目、162,924 bytes 压缩、754,772 bytes 解包；docs/tests/UI/.dumi/docs-dist/coverage 禁入检查为 0 条。干净 Dumi 2.4.49 基线在隔离临时目录成功重放补丁。
+
+### 2026-10-06 Dumi 静态导出 HTTP 冒烟
+
+- `npm run build:docs` 成功；随后使用临时 `python -m http.server` 从 `docs-dist/` 提供静态文件，并在检查完成后停止该服务。
+- Table、DynamicForm 页面及 Table 基础 demo、Table 交互 demo、DynamicForm 客户录入 demo 的嵌套 URL 均以 GET 返回 HTTP 200。每个页面 HTML 中引用的 3 个初始 CSS/JS 资源均以 HEAD 返回 HTTP 200。
+- 这证明本次构建生成了对应的嵌套 HTML 文件，且初始资源路径可由通用静态文件服务器解析；没有验证目标部署服务器的重写规则、浏览器 JavaScript hydration、demo iframe、hash/history 导航、控制台、布局或交互。2B-1 仍保持未关闭。
