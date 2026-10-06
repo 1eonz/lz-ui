@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { LxTableProps } from '../../src/components/data-display/table';
 import TableDemo from '../../docs/demos/table';
 import TableBasicDemo from '../../docs/demos/table-basic';
+import TableFixedColumnsDemo from '../../docs/demos/table-fixed-columns';
 
 const mocks = vi.hoisted(() => ({
   tableProps: vi.fn<(props: object) => void>(),
@@ -79,6 +80,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 function getTableProps() {
@@ -99,6 +101,92 @@ function getTableProps() {
 }
 
 describe('Table 文档示例', () => {
+  it('固定列详情通过受控 ARIA 关系展示完整字段并恢复关闭焦点', () => {
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        observe() {}
+
+        disconnect() {}
+      },
+    );
+    render(<TableFixedColumnsDemo />);
+
+    const firstTrigger = screen.getByRole('button', { name: '查看订单 PO-2026-1041 详情' });
+    const secondTrigger = screen.getByRole('button', { name: '查看订单 PO-2026-1042 详情' });
+    const panelId = firstTrigger.getAttribute('aria-controls');
+    expect(panelId).toBeTruthy();
+    expect(secondTrigger).toHaveAttribute('aria-controls', panelId);
+    expect(firstTrigger).toHaveAttribute('aria-expanded', 'false');
+    expect(document.getElementById(panelId!)).toHaveAttribute('hidden');
+
+    firstTrigger.focus();
+    fireEvent.click(firstTrigger);
+    const firstPanel = screen.getByRole('region', { name: '订单详情 PO-2026-1041' });
+    const firstHeading = within(firstPanel).getByRole('heading', {
+      name: '订单详情 PO-2026-1041',
+    });
+    expect(firstTrigger).toHaveAttribute('aria-expanded', 'true');
+    expect(firstTrigger).toHaveAttribute('aria-controls', firstPanel.id);
+    expect(firstPanel).toHaveAttribute('aria-labelledby', firstHeading.id);
+    expect(firstHeading).toHaveFocus();
+    expect(
+      within(firstPanel)
+        .getAllByRole('group')
+        .map((group) => group.getAttribute('aria-labelledby')),
+    ).toHaveLength(3);
+    expect(within(firstPanel).getByRole('group', { name: '订单信息' })).toBeInTheDocument();
+    expect(within(firstPanel).getByRole('group', { name: '采购归属' })).toBeInTheDocument();
+    expect(within(firstPanel).getByRole('group', { name: '审批与金额' })).toBeInTheDocument();
+    expect(
+      within(firstPanel)
+        .getAllByRole('term')
+        .map((field) => field.textContent),
+    ).toEqual(['订单编号', '供应商', '下单日期', '所属部门', '采购员', '采购金额', '审批状态']);
+    expect(
+      within(firstPanel)
+        .getAllByRole('definition')
+        .map((field) => field.textContent?.trim()),
+    ).toEqual([
+      'PO-2026-1041',
+      '上海深蓝光电高新材料有限公司',
+      '2026-09-18',
+      '精密制造中心',
+      '周敏',
+      '¥ 1,428,900',
+      '待审批',
+    ]);
+
+    fireEvent.click(secondTrigger);
+    const secondPanel = screen.getByRole('region', { name: '订单详情 PO-2026-1042' });
+    expect(firstTrigger).toHaveAttribute('aria-expanded', 'false');
+    expect(secondTrigger).toHaveAttribute('aria-expanded', 'true');
+    expect(
+      within(secondPanel).getByRole('heading', {
+        level: 4,
+        name: '订单详情 PO-2026-1042',
+      }),
+    ).toHaveFocus();
+    expect(
+      within(secondPanel)
+        .getAllByRole('definition')
+        .map((field) => field.textContent?.trim()),
+    ).toEqual([
+      'PO-2026-1042',
+      '深圳创智精密半导体装备股份有限公司华南区域战略供应商',
+      '2026-09-19',
+      '半导体事业部',
+      '陈立',
+      '¥ 3,892,150',
+      '已审批',
+    ]);
+
+    fireEvent.click(within(secondPanel).getByRole('button', { name: '关闭订单详情' }));
+    expect(secondPanel).toHaveAttribute('hidden');
+    expect(secondTrigger).toHaveAttribute('aria-expanded', 'false');
+    expect(secondTrigger).toHaveFocus();
+  });
+
   it('基础示例提供命名滚动区域，并保留子控件的键盘事件', () => {
     render(<TableBasicDemo />);
     const region = screen.getByRole('region', { name: '基础采购订单表格' });

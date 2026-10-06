@@ -42,7 +42,7 @@ const orders: PurchaseOrder[] = [
   },
   {
     id: 'PO-2026-1042',
-    vendor: '深圳创智精密半导体装备股份有限公司',
+    vendor: '深圳创智精密半导体装备股份有限公司华南区域战略供应商',
     department: '半导体事业部',
     buyer: '陈立',
     orderedAt: '2026-09-19',
@@ -96,11 +96,21 @@ function getTitleCheckbox(checkboxNode: ReactNode): ReactNode {
 
 export default function TableFixedColumnsDemo() {
   const headingId = useId();
+  const orderDetailsRegionId = useId();
+  const orderDetailsHeadingId = useId();
+  const orderInformationGroupId = useId();
+  const purchasingGroupId = useId();
+  const approvalGroupId = useId();
   const sectionRef = useRef<HTMLElement>(null);
+  const orderDetailsHeadingRef = useRef<HTMLHeadingElement>(null);
+  const orderDetailsTriggerRef = useRef<HTMLElement | null>(null);
   const [hasRoomForFixedColumns, setHasRoomForFixedColumns] = useState(false);
-  const [activeFeedback, setActiveFeedback] = useState<
-    { type: 'buyer'; order: PurchaseOrder } | { type: 'order'; order: PurchaseOrder } | null
-  >(null);
+  const [activeBuyerFeedback, setActiveBuyerFeedback] = useState<PurchaseOrder | null>(null);
+  const [activeOrderDetails, setActiveOrderDetails] = useState<PurchaseOrder | null>(null);
+
+  useEffect(() => {
+    if (activeOrderDetails) orderDetailsHeadingRef.current?.focus();
+  }, [activeOrderDetails]);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -147,7 +157,10 @@ export default function TableFixedColumnsDemo() {
           size="small"
           className={styles.buyerAction}
           aria-label={`查看采购员 ${buyer}`}
-          onClick={() => setActiveFeedback({ type: 'buyer', order })}
+          onClick={() => {
+            setActiveOrderDetails(null);
+            setActiveBuyerFeedback(order);
+          }}
         >
           {buyer}
         </Button>
@@ -173,9 +186,7 @@ export default function TableFixedColumnsDemo() {
       key: 'status',
       width: 120,
       render: (status: PurchaseOrder['status']) => (
-        <Tag color={status === '已审批' ? 'success' : 'warning'}>
-          {status === '已审批' ? '已审' : '待审'}
-        </Tag>
+        <Tag color={status === '已审批' ? 'success' : 'warning'}>{status}</Tag>
       ),
     },
     {
@@ -189,7 +200,13 @@ export default function TableFixedColumnsDemo() {
           size="small"
           className={styles.orderAction}
           aria-label={`查看订单 ${order.id} 详情`}
-          onClick={() => setActiveFeedback({ type: 'order', order })}
+          aria-expanded={activeOrderDetails?.id === order.id}
+          aria-controls={orderDetailsRegionId}
+          onClick={(event) => {
+            orderDetailsTriggerRef.current = event.currentTarget;
+            setActiveBuyerFeedback(null);
+            setActiveOrderDetails(order);
+          }}
         >
           查看详情
         </Button>
@@ -227,13 +244,106 @@ export default function TableFixedColumnsDemo() {
             getCheckboxProps,
           }}
         />
-        {activeFeedback && (
+        {activeBuyerFeedback && (
           <p className={styles.status} role="status">
-            {activeFeedback.type === 'buyer'
-              ? `采购员：${activeFeedback.order.buyer} · 所属部门：${activeFeedback.order.department}`
-              : `订单详情：${activeFeedback.order.id} · ${activeFeedback.order.buyer} · ${activeFeedback.order.vendor}`}
+            采购员：{activeBuyerFeedback.buyer} · 所属部门：{activeBuyerFeedback.department}
           </p>
         )}
+        <section
+          id={orderDetailsRegionId}
+          className={styles.orderDetailsRegion}
+          role="region"
+          aria-labelledby={orderDetailsHeadingId}
+          hidden={!activeOrderDetails}
+        >
+          <div className={styles.orderDetailsHeader}>
+            <h4
+              ref={orderDetailsHeadingRef}
+              id={orderDetailsHeadingId}
+              className={styles.orderDetailsTitle}
+              tabIndex={-1}
+            >
+              订单详情 {activeOrderDetails?.id}
+            </h4>
+            {activeOrderDetails && (
+              <Button
+                type="link"
+                size="small"
+                className={styles.orderDetailsCloseAction}
+                aria-label="关闭订单详情"
+                onClick={() => {
+                  setActiveOrderDetails(null);
+                  orderDetailsTriggerRef.current?.focus();
+                }}
+              >
+                关闭详情
+              </Button>
+            )}
+          </div>
+          {activeOrderDetails && (
+            <div className={styles.orderDetailsGroups}>
+              <div role="group" aria-labelledby={orderInformationGroupId}>
+                <h5 id={orderInformationGroupId} className={styles.orderDetailsGroupTitle}>
+                  订单信息
+                </h5>
+                <dl className={styles.orderDetailsList}>
+                  <div className={styles.orderDetailsField}>
+                    <dt className={styles.orderDetailsTerm}>订单编号</dt>
+                    <dd className={styles.orderDetailsValue}>{activeOrderDetails.id}</dd>
+                  </div>
+                  <div className={styles.orderDetailsField}>
+                    <dt className={styles.orderDetailsTerm}>供应商</dt>
+                    <dd className={styles.orderDetailsValue}>{activeOrderDetails.vendor}</dd>
+                  </div>
+                  <div className={styles.orderDetailsField}>
+                    <dt className={styles.orderDetailsTerm}>下单日期</dt>
+                    <dd className={styles.orderDetailsValue}>
+                      <time dateTime={activeOrderDetails.orderedAt}>
+                        {activeOrderDetails.orderedAt}
+                      </time>
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <div role="group" aria-labelledby={purchasingGroupId}>
+                <h5 id={purchasingGroupId} className={styles.orderDetailsGroupTitle}>
+                  采购归属
+                </h5>
+                <dl className={styles.orderDetailsList}>
+                  <div className={styles.orderDetailsField}>
+                    <dt className={styles.orderDetailsTerm}>所属部门</dt>
+                    <dd className={styles.orderDetailsValue}>{activeOrderDetails.department}</dd>
+                  </div>
+                  <div className={styles.orderDetailsField}>
+                    <dt className={styles.orderDetailsTerm}>采购员</dt>
+                    <dd className={styles.orderDetailsValue}>{activeOrderDetails.buyer}</dd>
+                  </div>
+                </dl>
+              </div>
+              <div role="group" aria-labelledby={approvalGroupId}>
+                <h5 id={approvalGroupId} className={styles.orderDetailsGroupTitle}>
+                  审批与金额
+                </h5>
+                <dl className={styles.orderDetailsList}>
+                  <div className={styles.orderDetailsField}>
+                    <dt className={styles.orderDetailsTerm}>采购金额</dt>
+                    <dd className={`${styles.orderDetailsValue} ${styles.orderDetailsAmount}`}>
+                      ¥ {activeOrderDetails.amount.toLocaleString('zh-CN')}
+                    </dd>
+                  </div>
+                  <div className={styles.orderDetailsField}>
+                    <dt className={styles.orderDetailsTerm}>审批状态</dt>
+                    <dd className={styles.orderDetailsValue}>
+                      <Tag color={activeOrderDetails.status === '已审批' ? 'success' : 'warning'}>
+                        {activeOrderDetails.status}
+                      </Tag>
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          )}
+        </section>
       </section>
     </DataDisplayDemoFrame>
   );

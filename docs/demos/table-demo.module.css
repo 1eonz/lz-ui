@@ -30,6 +30,87 @@
   color: var(--lx-color-text-secondary);
 }
 
+.orderDetailsRegion {
+  margin-block-start: var(--lx-space-md);
+  padding: var(--lx-space-md);
+  border: 1px solid var(--lx-color-border-secondary);
+  border-radius: var(--lx-radius-panel);
+  background-color: var(--lx-color-bg-container);
+}
+
+.orderDetailsRegion[hidden] {
+  display: none;
+}
+
+.orderDetailsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--lx-space-md);
+  margin-block-end: var(--lx-space-md);
+}
+
+.orderDetailsTitle {
+  min-inline-size: 0;
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.orderDetailsTitle:focus {
+  outline: 2px solid var(--lx-focus-ring, var(--lx-color-primary));
+  outline-offset: 2px;
+}
+
+.orderDetailsGroups {
+  display: grid;
+  gap: var(--lx-space-lg);
+}
+
+.orderDetailsGroupTitle {
+  margin: 0 0 var(--lx-space-sm);
+  font-size: var(--lx-font-size-body);
+  line-height: var(--lx-line-height-body);
+  font-weight: var(--lx-font-weight-heading-5);
+}
+
+.orderDetailsList {
+  display: grid;
+  gap: var(--lx-space-md);
+  margin: 0;
+}
+
+.orderDetailsField {
+  min-inline-size: 0;
+}
+
+.orderDetailsTerm {
+  margin-block-end: 2px;
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
+}
+
+.orderDetailsValue {
+  min-inline-size: 0;
+  margin: 0;
+  font-size: var(--lx-font-size-body);
+  line-height: var(--lx-line-height-body);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.orderDetailsAmount {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 1200px) {
+  .orderDetailsGroups {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .virtualScrollRegion:focus-visible {
   outline: 2px solid var(--lx-focus-ring, var(--lx-color-primary));
   outline-offset: 2px;
@@ -46,7 +127,8 @@
   }
 
   .buyerAction,
-  .orderAction {
+  .orderAction,
+  .orderDetailsCloseAction {
     /* 粗指针环境沿用项目触控目标 token；精细指针继续保持表格紧凑密度。 */
     min-inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
     min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));

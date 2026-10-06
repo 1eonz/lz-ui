@@ -166,9 +166,9 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
   const orderId = 'PO-2026-1041';
   const orderRow = demo.getByRole('row').filter({ hasText: orderId });
   const selection = orderRow.getByRole('checkbox', { name: `选择订单 ${orderId}` });
-  await expect(orderRow.getByText('待审', { exact: true })).toBeVisible();
+  await expect(orderRow.getByText('待审批', { exact: true })).toBeVisible();
   await expect(
-    demo.getByRole('row').filter({ hasText: 'PO-2026-1042' }).getByText('已审', { exact: true }),
+    demo.getByRole('row').filter({ hasText: 'PO-2026-1042' }).getByText('已审批', { exact: true }),
   ).toBeVisible();
   await expect(demo.getByRole('checkbox', { name: '选择当前页全部订单' })).toBeVisible();
   const idCell = orderRow.getByRole('cell').nth(1);
@@ -220,8 +220,96 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
     });
 
     if (viewport.width === 1280) {
-      await orderActionButton.click();
-      await expect(demo.getByRole('status')).toContainText(`订单详情：${orderId}`);
+      const secondRow = demo.getByRole('row').filter({ hasText: 'PO-2026-1042' });
+      const secondOrderActionButton = secondRow.getByRole('button', {
+        name: '查看订单 PO-2026-1042 详情',
+      });
+
+      await orderActionButton.focus();
+      await expect(orderActionButton).toBeFocused();
+      await page.keyboard.press('Enter');
+      await expect(orderActionButton).toHaveAttribute('aria-expanded', 'true');
+      const detailsId = await orderActionButton.getAttribute('aria-controls');
+      expect(detailsId).toBeTruthy();
+      expect(secondOrderActionButton).toHaveAttribute('aria-controls', detailsId!);
+
+      const detailsPanel = demo.locator(`[id="${detailsId}"]`);
+      await expect(detailsPanel).toBeVisible();
+      await expect(detailsPanel).toHaveAttribute('role', 'region');
+      await expect(detailsPanel).toHaveAccessibleName(`订单详情 ${orderId}`);
+      const detailsHeading = detailsPanel.getByRole('heading', {
+        name: `订单详情 ${orderId}`,
+      });
+      await expect(detailsHeading).toBeFocused();
+      await expect(detailsPanel).toHaveAttribute(
+        'aria-labelledby',
+        (await detailsHeading.getAttribute('id'))!,
+      );
+      await expect(detailsPanel.getByRole('term')).toHaveText([
+        '订单编号',
+        '供应商',
+        '下单日期',
+        '所属部门',
+        '采购员',
+        '采购金额',
+        '审批状态',
+      ]);
+      const supplierLabel = detailsPanel.getByText('供应商', { exact: true });
+      const supplierValue = detailsPanel.getByRole('definition').nth(1);
+      const supplierLabelSize = Number.parseFloat(
+        await supplierLabel.evaluate((element) => window.getComputedStyle(element).fontSize),
+      );
+      const supplierValueStyle = await supplierValue.evaluate((element) => {
+        const style = window.getComputedStyle(element);
+        return {
+          fontSize: Number.parseFloat(style.fontSize),
+          fontWeight: Number.parseInt(style.fontWeight, 10),
+        };
+      });
+      const amountWeight = Number.parseInt(
+        await detailsPanel
+          .getByRole('definition')
+          .nth(5)
+          .evaluate((element) => window.getComputedStyle(element).fontWeight),
+        10,
+      );
+      expect(supplierLabelSize).toBeLessThan(supplierValueStyle.fontSize);
+      expect(supplierValueStyle.fontWeight).toBeGreaterThanOrEqual(500);
+      expect(amountWeight).toBeGreaterThan(supplierValueStyle.fontWeight);
+      await expect(detailsPanel.getByRole('definition')).toHaveText([
+        orderId,
+        '上海深蓝光电高新材料有限公司',
+        '2026-09-18',
+        '精密制造中心',
+        '周敏',
+        '¥ 1,428,900',
+        '待审批',
+      ]);
+
+      await secondOrderActionButton.click();
+      await expect(orderActionButton).toHaveAttribute('aria-expanded', 'false');
+      await expect(secondOrderActionButton).toHaveAttribute('aria-expanded', 'true');
+      await expect(detailsPanel).toHaveAccessibleName('订单详情 PO-2026-1042');
+      await expect(
+        detailsPanel.getByRole('heading', {
+          level: 4,
+          name: '订单详情 PO-2026-1042',
+        }),
+      ).toBeFocused();
+      await expect(detailsPanel.getByRole('definition')).toHaveText([
+        'PO-2026-1042',
+        '深圳创智精密半导体装备股份有限公司华南区域战略供应商',
+        '2026-09-19',
+        '半导体事业部',
+        '陈立',
+        '¥ 3,892,150',
+        '已审批',
+      ]);
+
+      await detailsPanel.getByRole('button', { name: '关闭订单详情' }).click();
+      await expect(detailsPanel).toBeHidden();
+      await expect(secondOrderActionButton).toHaveAttribute('aria-expanded', 'false');
+      await expect(secondOrderActionButton).toBeFocused();
     }
 
     if (!hasRoomForFixedColumns) {
@@ -308,6 +396,65 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
       });
     }
   }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expectNoDocumentOverflow(page);
+  const longVendorRow = demo.getByRole('row').filter({ hasText: 'PO-2026-1042' });
+  const longVendorAction = longVendorRow.getByRole('button', {
+    name: '查看订单 PO-2026-1042 详情',
+  });
+  await longVendorAction.click();
+  const detailsId = await longVendorAction.getAttribute('aria-controls');
+  expect(detailsId).toBeTruthy();
+  const narrowDetails = demo.locator(`[id="${detailsId}"]`);
+  await expect(narrowDetails).toBeVisible();
+  const detailGroups = narrowDetails.getByRole('group');
+  await expect(detailGroups).toHaveCount(3);
+  const gridColumns = await detailGroups.first().evaluate((group) => {
+    const grid = group.parentElement;
+    if (!grid) throw new Error('未能读取订单详情分组布局');
+    return window.getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length;
+  });
+  expect(gridColumns).toBe(1);
+  const detailOverflow = await narrowDetails.evaluate((panel) => {
+    return panel.scrollWidth - panel.clientWidth;
+  });
+  expect(detailOverflow).toBeLessThanOrEqual(1);
+  await expectNoDocumentOverflow(page);
+  const vendorValue = narrowDetails.getByRole('definition').nth(1);
+  const vendorWraps = await vendorValue.evaluate((element) => {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    return range.getClientRects().length > 1;
+  });
+  expect(vendorWraps).toBe(true);
+  await narrowDetails.getByRole('button', { name: '关闭订单详情' }).click();
+  await expect(longVendorAction).toBeFocused();
+
+  await page.setViewportSize({ width: 320, height: 844 });
+  await expectNoDocumentOverflow(page);
+  await longVendorAction.focus();
+  await expect(longVendorAction).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(narrowDetails).toBeVisible();
+  await expect(narrowDetails.getByRole('heading', { level: 4 })).toBeFocused();
+  await expect(detailGroups).toHaveCount(3);
+  await expectNoDocumentOverflow(page);
+  expect(
+    await narrowDetails.evaluate((panel) => panel.scrollWidth - panel.clientWidth),
+  ).toBeLessThanOrEqual(1);
+  const narrowVendorValue = narrowDetails.getByRole('definition').nth(1);
+  const narrowVendorWraps = await narrowVendorValue.evaluate((element) => {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    return range.getClientRects().length > 1;
+  });
+  expect(narrowVendorWraps).toBe(true);
+  const narrowCloseAction = narrowDetails.getByRole('button', { name: '关闭订单详情' });
+  await narrowCloseAction.focus();
+  await page.keyboard.press('Enter');
+  await expect(narrowDetails).toBeHidden();
+  await expect(longVendorAction).toBeFocused();
 
   await page.setViewportSize({ width: 1280, height: 800 });
   await demo.evaluate((section) => section.style.removeProperty('inline-size'));
@@ -400,6 +547,20 @@ test('粗指针下固定列示例的主要操作达到 44px 目标尺寸', async
       expect(bounds.width).toBeGreaterThanOrEqual(44);
       expect(bounds.height).toBeGreaterThanOrEqual(44);
     }
+
+    const orderAction = demo.getByRole('button', { name: `查看订单 ${orderId} 详情` });
+    await orderAction.click();
+    const detailsId = await orderAction.getAttribute('aria-controls');
+    expect(detailsId).toBeTruthy();
+    const detailsPanel = demo.locator(`[id="${detailsId}"]`);
+    await expect(detailsPanel).toBeVisible();
+    const closeAction = detailsPanel.getByRole('button', { name: '关闭订单详情' });
+    const closeBounds = await closeAction.boundingBox();
+    if (!closeBounds) throw new Error('未能测量粗指针下的订单详情关闭按钮');
+    expect(closeBounds.width).toBeGreaterThanOrEqual(44);
+    expect(closeBounds.height).toBeGreaterThanOrEqual(44);
+    await closeAction.click();
+    await expect(orderAction).toBeFocused();
 
     const selectionBounds = await selectionTarget.boundingBox();
     if (!selectionBounds) throw new Error('未能测量粗指针下的行选择标签区域');
