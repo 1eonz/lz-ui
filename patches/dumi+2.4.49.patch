@@ -50,7 +50,7 @@ index 25c5e70..9646afa 100644
 +    retry: () => void;
  };
 diff --git a/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.js b/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.js
-index c9a642c..fb1a191 100644
+index c9a642c..aaf65a2 100644
 --- a/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.js
 +++ b/node_modules/dumi/dist/client/theme-api/useSiteSearch/index.js
 @@ -20,6 +20,10 @@ if (typeof window !== 'undefined') {
@@ -164,6 +164,7 @@ index c9a642c..fb1a191 100644
 +    }
    };
  };
+\ No newline at end of file
 diff --git a/node_modules/dumi/dist/features/routes.js b/node_modules/dumi/dist/features/routes.js
 index d3ff044..4a3b2fc 100644
 --- a/node_modules/dumi/dist/features/routes.js
@@ -227,10 +228,17 @@ index 99e06a1..add0b7f 100644
      className: "dumi-default-source-code-scroll-container"
    }, /*#__PURE__*/React.createElement("div", {
 diff --git a/node_modules/dumi/theme-default/locales/en-US.json b/node_modules/dumi/theme-default/locales/en-US.json
-index 7063b49..ef0c709 100644
+index 7063b49..c02e39f 100644
 --- a/node_modules/dumi/theme-default/locales/en-US.json
 +++ b/node_modules/dumi/theme-default/locales/en-US.json
-@@ -25,6 +25,16 @@
+@@ -1,5 +1,6 @@
+ {
+   "header.search.placeholder": "Type keywords...",
++  "header.search.shortPlaceholder": "Search",
+   "header.color.mode.light": "Light Mode",
+   "header.color.mode.dark": "Dark Mode",
+   "header.color.mode.auto": "Follow System",
+@@ -25,6 +26,18 @@
    "previewer.actions.codepen": "Open in CodePen (Not implemented)",
    "previewer.actions.stackblitz": "Open in StackBlitz",
    "previewer.actions.separate": "Open in separate page",
@@ -241,17 +249,26 @@ index 7063b49..ef0c709 100644
 +  "search.start": "Type a keyword to search",
 +  "search.results": "Search results",
 +  "search.keyboard.help": "Use the up and down arrow keys to browse results, then press Enter to open one.",
++  "search.keyboard.navigateOpen": "Browse results; press Enter to open",
++  "search.keyboard.close": "Close search",
 +  "search.try.again": "Try a different keyword.",
 +  "search.error": "Search data could not be loaded.",
-+  "search.reload": "Refresh the page to try again",
++  "search.retry": "Retry search",
    "404.title": "PAGE NOT FOUND",
    "404.back": "Back to homepage",
    "api.component.name": "Name",
 diff --git a/node_modules/dumi/theme-default/locales/zh-CN.json b/node_modules/dumi/theme-default/locales/zh-CN.json
-index cd70856..2c4f7f1 100644
+index cd70856..71db9bc 100644
 --- a/node_modules/dumi/theme-default/locales/zh-CN.json
 +++ b/node_modules/dumi/theme-default/locales/zh-CN.json
-@@ -24,6 +24,16 @@
+@@ -1,5 +1,6 @@
+ {
+   "header.search.placeholder": "输入关键字搜索...",
++  "header.search.shortPlaceholder": "搜索",
+   "header.color.mode.light": "亮色模式",
+   "header.color.mode.dark": "暗色模式",
+   "header.color.mode.auto": "跟随系统",
+@@ -24,6 +25,18 @@
    "previewer.actions.sketch.guide": "如何粘贴到 SKetch？",
    "previewer.actions.stackblitz": "在 StackBlitz 中打开",
    "previewer.actions.separate": "在独立页面中打开",
@@ -262,9 +279,11 @@ index cd70856..2c4f7f1 100644
 +  "search.start": "输入关键词开始搜索",
 +  "search.results": "搜索结果",
 +  "search.keyboard.help": "使用上下方向键浏览结果，按 Enter 打开。",
++  "search.keyboard.navigateOpen": "浏览结果并按 Enter 打开",
++  "search.keyboard.close": "关闭搜索",
 +  "search.try.again": "请尝试其他关键词。",
 +  "search.error": "搜索数据加载失败。",
-+  "search.reload": "刷新页面重试",
++  "search.retry": "重试搜索",
    "404.title": "页面未找到",
    "404.back": "返回首页",
    "api.component.name": "属性名",
@@ -388,34 +407,49 @@ index 2ab15f6..a073b77 100644
          }, files[activeKey][1].value.trim())
        };
 diff --git a/node_modules/dumi/theme-default/slots/SearchBar/Input.d.ts b/node_modules/dumi/theme-default/slots/SearchBar/Input.d.ts
-index 3225586..276a697 100644
+index 3225586..2508b63 100644
 --- a/node_modules/dumi/theme-default/slots/SearchBar/Input.d.ts
 +++ b/node_modules/dumi/theme-default/slots/SearchBar/Input.d.ts
-@@ -2,5 +2,5 @@ import React from 'react';
+@@ -2,5 +2,6 @@ import React from 'react';
  type NativeInputProps = React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
  export declare const Input: React.ForwardRefExoticComponent<{
      onChange: (keywords: string) => void;
 -} & Pick<NativeInputProps, "onBlur" | "onFocus" | "onMouseEnter"> & React.RefAttributes<HTMLInputElement>>;
++    keepFocusOnEscape?: boolean;
 +} & Pick<NativeInputProps, "id" | "aria-controls" | "aria-describedby" | "onBlur" | "onFocus" | "onMouseEnter"> & React.RefAttributes<HTMLInputElement>>;
  export {};
 diff --git a/node_modules/dumi/theme-default/slots/SearchBar/Input.js b/node_modules/dumi/theme-default/slots/SearchBar/Input.js
-index 287dd6d..1cafdea 100644
+index 287dd6d..e8d7e2f 100644
 --- a/node_modules/dumi/theme-default/slots/SearchBar/Input.js
 +++ b/node_modules/dumi/theme-default/slots/SearchBar/Input.js
-@@ -37,6 +37,12 @@ export var Input = /*#__PURE__*/forwardRef(function (props, ref) {
+@@ -22,8 +22,10 @@ export var Input = /*#__PURE__*/forwardRef(function (props, ref) {
+     onMouseEnter: props.onMouseEnter,
+     onKeyDown: function onKeyDown(ev) {
+       if (['ArrowDown', 'ArrowUp'].includes(ev.key)) ev.preventDefault();
+-      // esc to blur input
+-      if (ev.key === 'Escape' && !imeWaiting.current) ev.currentTarget.blur();
++      // Escape 时默认移出焦点，搜索输入可按需保留焦点
++      if (ev.key === 'Escape' && imeWaiting.current) {
++        ev.stopPropagation();
++      } else if (ev.key === 'Escape' && !props.keepFocusOnEscape) ev.currentTarget.blur();
+     },
+     onChange: function onChange(ev) {
+       // wait for onCompositionEnd event be triggered
+@@ -35,8 +37,14 @@ export var Input = /*#__PURE__*/forwardRef(function (props, ref) {
+       }, 1);
+     },
      placeholder: intl.formatMessage({
++      id: 'header.search.shortPlaceholder'
++    }),
++    'aria-label': intl.formatMessage({
        id: 'header.search.placeholder'
      }),
-+    'aria-label': intl.formatMessage({
-+      id: 'header.search.placeholder'
-+    }),
 +    id: props.id,
 +    'aria-controls': props['aria-controls'],
 +    'aria-describedby': props['aria-describedby'],
      ref: nativeInputRef
    });
  });
-\ No newline at end of file
 diff --git a/node_modules/dumi/theme-default/slots/SearchBar/Mask.d.ts b/node_modules/dumi/theme-default/slots/SearchBar/Mask.d.ts
 index 8b12e43..6f6038d 100644
 --- a/node_modules/dumi/theme-default/slots/SearchBar/Mask.d.ts
@@ -531,7 +565,7 @@ index aa9a4ac..7eed2d6 100644
  };
 \ No newline at end of file
 diff --git a/node_modules/dumi/theme-default/slots/SearchBar/index.js b/node_modules/dumi/theme-default/slots/SearchBar/index.js
-index 6274105..b06c724 100644
+index 6274105..a9224e2 100644
 --- a/node_modules/dumi/theme-default/slots/SearchBar/index.js
 +++ b/node_modules/dumi/theme-default/slots/SearchBar/index.js
 @@ -8,9 +8,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
@@ -547,7 +581,7 @@ index 6274105..b06c724 100644
  import { Input } from "./Input";
  import { Mask } from "./Mask";
  import "./index.less";
-@@ -23,6 +24,7 @@ var isInput = function isInput(target) {
+@@ -23,10 +24,15 @@ var isInput = function isInput(target) {
    return ['TEXTAREA', 'INPUT'].includes(target.tagName) || target.contentEditable === 'true';
  };
  var SearchBar = function SearchBar() {
@@ -555,7 +589,15 @@ index 6274105..b06c724 100644
    var _useState = useState(false),
      _useState2 = _slicedToArray(_useState, 2),
      focusing = _useState2[0],
-@@ -38,11 +40,62 @@ var SearchBar = function SearchBar() {
+     setFocusing = _useState2[1];
++  var _useStateDismissed = useState(false),
++    _useStateDismissed2 = _slicedToArray(_useStateDismissed, 2),
++    resultsDismissed = _useStateDismissed2[0],
++    setResultsDismissed = _useStateDismissed2[1];
+   var inputRef = useRef(null);
+   var modalInputRef = useRef(null);
+   var _useState3 = useState('⌘'),
+@@ -38,11 +44,62 @@ var SearchBar = function SearchBar() {
      setKeywords = _useSiteSearch.setKeywords,
      result = _useSiteSearch.result,
      loading = _useSiteSearch.loading,
@@ -619,27 +661,30 @@ index 6274105..b06c724 100644
    useEffect(function () {
      // why put useEffect?
      // to avoid Text content mismatch between server & client in ssr
-@@ -62,6 +115,7 @@ var SearchBar = function SearchBar() {
+@@ -60,8 +117,10 @@ var SearchBar = function SearchBar() {
+             right = _inputRef$current$get.right;
+           var isInViewport = top >= 0 && left >= 0 && bottom <= window.innerHeight && right <= window.innerWidth;
            if (isInViewport) {
++            setResultsDismissed(false);
              inputRef.current.focus();
            } else {
 +            inputRef.current.value = '';
              setKeywords('');
              setModalVisible(true);
              setTimeout(function () {
-@@ -72,54 +126,83 @@ var SearchBar = function SearchBar() {
+@@ -72,54 +131,86 @@ var SearchBar = function SearchBar() {
          }
        }
        if (ev.key === 'Escape') {
 -        ev.preventDefault();
 -        setModalVisible(false);
++        if (ev.isComposing || ev.keyCode === 229) return;
 +        if (modalVisible) {
 +          ev.preventDefault();
 +          closeModal(true);
-+        } else if (focusing && keywords.trim()) {
++        } else if (focusing && keywords.trim() && !resultsDismissed) {
 +          ev.preventDefault();
-+          setFocusing(false);
-+          if (inputRef.current) inputRef.current.blur();
++          setResultsDismissed(true);
 +        }
        }
      };
@@ -648,7 +693,7 @@ index 6274105..b06c724 100644
        return document.removeEventListener('keydown', handler);
      };
 -  }, []);
-+  }, [focusing, keywords, modalVisible]);
++  }, [focusing, keywords, modalVisible, resultsDismissed]);
    return /*#__PURE__*/React.createElement("div", {
 -    className: "dumi-default-search-bar"
 +    className: "dumi-default-search-bar".concat(keywords.length ? " dumi-default-search-bar-with-clear" : "")
@@ -659,6 +704,7 @@ index 6274105..b06c724 100644
      onFocus: function onFocus() {
        setFocusing(true);
 -      loadSearchData();
++      setResultsDismissed(false);
 +      Promise.resolve(loadSearchData()).catch(function () {});
      },
      onMouseEnter: function onMouseEnter() {
@@ -675,15 +721,18 @@ index 6274105..b06c724 100644
        }, 1);
      },
      onChange: function onChange(keywords) {
++      setResultsDismissed(false);
        return setKeywords(keywords);
      },
-+    "aria-controls": keywords.trim() && focusing && !modalVisible ? topbarResultsId : undefined,
-+    "aria-describedby": keywords.trim() && focusing && !modalVisible ? "".concat(topbarInstructionsId, " ", topbarStatusId) : undefined,
++    "aria-controls": keywords.trim() && focusing && !modalVisible && !resultsDismissed ? topbarResultsId : undefined,
++    "aria-describedby": keywords.trim() && focusing && !modalVisible && !resultsDismissed ? "".concat(topbarInstructionsId, " ", topbarStatusId) : undefined,
++    keepFocusOnEscape: !!keywords.trim() && !resultsDismissed,
      ref: inputRef
 -  }), /*#__PURE__*/React.createElement("span", {
 +  }), renderClearButton(inputRef), /*#__PURE__*/React.createElement("span", {
      className: "dumi-default-search-shortcut"
-   }, symbol, " K"), keywords.trim() && focusing && !modalVisible && /*#__PURE__*/React.createElement("div", {
+-  }, symbol, " K"), keywords.trim() && focusing && !modalVisible && /*#__PURE__*/React.createElement("div", {
++  }, symbol, " K"), keywords.trim() && focusing && !modalVisible && !resultsDismissed && /*#__PURE__*/React.createElement("div", {
      className: "dumi-default-search-popover"
    }, /*#__PURE__*/React.createElement("section", null, /*#__PURE__*/React.createElement(SearchResult, {
      data: result,
@@ -723,7 +772,7 @@ index 6274105..b06c724 100644
      style: {
        position: 'relative'
      }
-@@ -132,18 +215,30 @@ var SearchBar = function SearchBar() {
+@@ -132,18 +223,31 @@ var SearchBar = function SearchBar() {
      onBlur: function onBlur() {
        // wait for item click
        setTimeout(function () {
@@ -738,6 +787,7 @@ index 6274105..b06c724 100644
      },
 +    "aria-controls": modalVisible ? modalResultsId : undefined,
 +    "aria-describedby": modalVisible ? "".concat(modalInstructionsId, " ", modalStatusId) : undefined,
++    keepFocusOnEscape: true,
      ref: modalInputRef
 -  })), /*#__PURE__*/React.createElement(SearchResult, {
 +  }), renderClearButton(modalInputRef)), /*#__PURE__*/React.createElement(SearchResult, {
@@ -757,6 +807,23 @@ index 6274105..b06c724 100644
      }
    }), /*#__PURE__*/React.createElement("footer", null, /*#__PURE__*/React.createElement("ul", {
      className: "dumi-default-search-modal-commands"
+@@ -163,10 +267,14 @@ var SearchBar = function SearchBar() {
+     fill: "rgba(0, 0, 0, 0.45)"
+   })), /*#__PURE__*/React.createElement("span", {
+     className: "dumi-default-search-modal-commands-text"
+-  }, "to navigate")), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("span", {
++  }, intl.formatMessage({
++    id: 'search.keyboard.navigateOpen'
++  }))), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("span", {
+     className: "dumi-default-search-modal-shortcut"
+   }, "esc"), /*#__PURE__*/React.createElement("span", {
+     className: "dumi-default-search-modal-commands-text"
+-  }, "to close"))))));
++  }, intl.formatMessage({
++    id: 'search.keyboard.close'
++  })))))));
+ };
+ export default SearchBar;
 diff --git a/node_modules/dumi/theme-default/slots/SearchResult/index.d.ts b/node_modules/dumi/theme-default/slots/SearchResult/index.d.ts
 index 1a669d5..f23282c 100644
 --- a/node_modules/dumi/theme-default/slots/SearchResult/index.d.ts
@@ -781,7 +848,7 @@ index 1a669d5..f23282c 100644
  }>;
  export default SearchResult;
 diff --git a/node_modules/dumi/theme-default/slots/SearchResult/index.js b/node_modules/dumi/theme-default/slots/SearchResult/index.js
-index c8d676f..6c0aa14 100644
+index c8d676f..f3e9520 100644
 --- a/node_modules/dumi/theme-default/slots/SearchResult/index.js
 +++ b/node_modules/dumi/theme-default/slots/SearchResult/index.js
 @@ -6,8 +6,8 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
@@ -886,7 +953,7 @@ index c8d676f..6c0aa14 100644
 +      type: "button",
 +      onClick: props.onRetry
 +    }, /*#__PURE__*/React.createElement(FormattedMessage, {
-+      id: "search.reload"
++      id: "search.retry"
 +    }))));
 +  } else if (props.loading) {
      returnNode = /*#__PURE__*/React.createElement("div", {
@@ -945,7 +1012,6 @@ index c8d676f..6c0aa14 100644
 +  }, liveAnnouncement));
  };
  export default SearchResult;
-\ No newline at end of file
 diff --git a/node_modules/dumi/theme-default/slots/SearchResult/index.less b/node_modules/dumi/theme-default/slots/SearchResult/index.less
 index 9916a6c..0a7cbe7 100644
 --- a/node_modules/dumi/theme-default/slots/SearchResult/index.less

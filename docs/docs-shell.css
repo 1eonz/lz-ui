@@ -58,7 +58,9 @@
   }
 
   /* 菜单关闭时隐藏导航内容，但保留 Dumi 原生搜索输入和移动菜单定位。 */
-  .dumi-default-header:not([data-mobile-active]) .dumi-default-header-right {
+  .dumi-default-header:not([data-mobile-active])
+    .dumi-default-header-content
+    .dumi-default-header-right {
     padding: 0;
     border: 0;
     background: transparent;
@@ -89,7 +91,7 @@
     inset-block-start: -48px;
     inset-inline-end: calc(26px + max(44px, var(--lx-control-target-touch-min, 44px)));
     display: block;
-    inline-size: 44px;
+    inline-size: 96px;
     block-size: 44px;
     margin: 0;
     pointer-events: auto;
@@ -107,7 +109,7 @@
     padding-block: 0;
     padding-inline: 44px 8px;
     border: 1px solid var(--lx-docs-text-muted);
-    border-radius: 50%;
+    border-radius: 22px;
     background-color: var(--lx-docs-search-surface);
     font-size: 16px;
     transition: none;
@@ -127,8 +129,8 @@
     .dumi-default-header-right
     .dumi-default-search-bar
     .dumi-default-search-bar-input::placeholder {
-    color: transparent;
-    opacity: 0;
+    color: var(--lx-docs-text-muted);
+    opacity: 1;
   }
 
   .dumi-default-header
@@ -201,7 +203,7 @@
   }
 
   .dumi-default-header .dumi-default-search-popover > section {
-    max-block-size: min(460px, calc(100dvh - 120px));
+    max-block-size: min(320px, calc(100dvh - 120px));
   }
 
   .dumi-default-header .dumi-default-header-right .dumi-default-search-clear {
@@ -260,6 +262,15 @@
 
   .dumi-default-header .dumi-default-search-result > dl > dd > a > p {
     line-height: 1.45;
+  }
+
+  /* 长摘要最多占三行，避免单条命中挤占整个窄屏结果面板。 */
+  .dumi-default-header .dumi-default-search-result > dl > dd > a > p,
+  .dumi-default-search-modal .dumi-default-search-result > dl > dd > a > p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
 
   .dumi-default-header .dumi-default-search-result > dl > dd > a:not([data-active]):not(:hover) > p,

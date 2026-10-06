@@ -155,12 +155,12 @@ describe('Dumi 搜索结果键盘状态', () => {
     expect(emptyState).toHaveTextContent('search.try.again');
   });
 
-  it('索引加载失败时显示可操作的刷新按钮', () => {
+  it('索引加载失败时显示可操作的重试按钮', () => {
     const retry = vi.fn();
     render(<PatchedSearchResult data={[]} error keywords="查询" loading={false} onRetry={retry} />);
 
     expect(document.querySelector('.dumi-default-search-empty')).toHaveTextContent('search.error');
-    fireEvent.click(screen.getByRole('button', { name: 'search.reload' }));
+    fireEvent.click(screen.getByRole('button', { name: 'search.retry' }));
     expect(retry).toHaveBeenCalledTimes(1);
   });
 

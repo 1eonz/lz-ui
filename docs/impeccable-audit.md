@@ -605,3 +605,27 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - 默认无并发上限的全库测试曾在 DynamicForm demo 产生 2 项负载相关失败；该文件独立 12/12 通过，随后以 1–4 worker 跑通全库 54 文件、438 测试。`test`、`test:watch`、`test:coverage` 已固定该并发范围。历史 AntD/jsdom `getComputedStyle(pseudoElt)` 及弃用 API 警告仍出现，但不导致用例失败。
 - 最终浏览器验收仍未完成：本会话不能控制视口、键盘/指针，也不能读取无障碍树；不把测试、source review 或包构建写成 UI 通过。文档壳品牌识别 P3 仍是非阻塞后续；全库 2B-1 未关闭。
 - **最终工程门禁：** `npm run check` 通过格式、类型、101 个 demo 类型检查、lint 和 54/438 测试；`check:scaffold`、`build:lib`、`build:docs`、`npm pack --dry-run` 通过。补丁使用从 npm tarball 取得的干净 `dumi@2.4.49` 副本，在隔离临时项目中运行 `patch-package --error-on-fail` 并确认同值防抖修复存在。包预览为 522 项、162,924 bytes 压缩、754,772 bytes 解包，docs/tests/UI/.dumi/docs-dist/coverage 禁入路径为 0 项。Dumi 文档站最大共享脚本为 661.35 KB gzip，属于文档构建而非组件库 npm 包。
+
+### 2026-10-06 Dumi 移动搜索窄屏浏览器复核
+
+- **范围：** `docs/docs-shell.css` 的 Dumi 移动搜索覆盖、`tests/browser/search.spec.ts` 与移动搜索验收矩阵。按 Impeccable 4.1.3 使用 `context.mjs --target docs/docs-shell.css`、独立 A 组 UX critique、B 组 detector/浏览器证据，再由当前任务补真实 Playwright polish 复测。A 组静态评分 28/40，快照链接为 [2026-10-06T08-30-28Z__docs-docs-shell-css.md](../.impeccable/critique/2026-10-06T08-30-28Z__docs-docs-shell-css.md)；该组未取得真实浏览器视口证据。
+- **技术问题与修复：** 当前源码重新构建后，Chromium 首轮显示 320px 下搜索输入框继承 Dumi 原生移动隐藏状态。定位为本地和后加载 Dumi 规则特异性相同；将 `.dumi-default-header-content` 加到本地选择器提高特异性，不更改布局位置、行为或依赖。随后当前 `docs-dist` 下的 Chromium 与 Edge 均在 320×740、390×844 找到可见且有本地化可访问名称的搜索框，结果面板打开时文档根无横向溢出。
+- **交互结果：** 当前源码的 Playwright 搜索用例在两种浏览器各 2/3 通过。`Control+K` 聚焦搜索框、填入 `Table` 后能浏览命名为“搜索结果”的 region；`ArrowDown` 更新第一项 status，`Enter` 打开 Table 文档，旧输入未重新获焦。Escape 关闭结果并保留查询，但在 320/390 下焦点都到 `BODY`；输入框保持焦点的软断言两项均失败。按主代理指示暂不更改 `dumi+2.4.49.patch` 中的主动 blur，待焦点契约复审。
+- **独立 B 组范围限制：** B 组的额外交互走查使用 `127.0.0.1:8001` 现存预览，未从当前源代码重新构建；不作为当前源码通过证据。其观察包括 54×44px 触控区域、搜索展开覆盖 H1、`button` 查询显示 34 条结果、ArrowDown 当前结果没有 `aria-activedescendant` 关系及放大镜无障碍名称重复为英文 `Search`。这些后续触控/无障碍问题记录在 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md)，按主代理指示本批不扩改。
+- **检测器限制与审计分数：** B 组对 `docs-dist/index.html` 的 detector JSON 为 `[]`，stderr 明确说明解析依赖缺失并降级 regex，不用来证明 CSS 级联或视觉品质。此范围局部技术分数：无障碍 3/4（Escape 焦点缺口及未实测读屏）、性能 4/4（无运行时依赖变化）、主题 2/4（仅默认浅色）、响应式 3/4（320/390 窄屏通过但触控遮挡需复核）、实现完整性 3/4（局部修复有浏览器证据，焦点行为未闭合）。这些分数与 2B-1 全库验收完成无关；未覆盖真实读屏、深色、200%/400% 缩放、设备触控、Safari 和部署站点。
+
+### 2026-10-06 Dumi 移动搜索 Escape 焦点 Polish 收尾
+
+- 按 Impeccable 4.1.3 `polish` 对既有 Dumi 搜索补丁做窄范围修复，保留 Dumi 搜索状态机与文档壳视觉。`context.mjs --target docs/docs-shell.css` 确认这是已有视觉系统的 refinement；`critique-storage latest` 未找到与当前目标内容匹配的可复用快照，因此以真实 Playwright 截图、交互和自动化证据独立检查，不把 detector 的 `[]` 当成结论。
+- `gpt-6-luna max` 行为复审为 GO：输入法组合期间 Escape 不冒泡关闭搜索；首次 Escape 隐藏结果并保留输入焦点；再次 Escape 恢复默认失焦行为。新增浏览器断言覆盖第二次 Escape 后失焦，并确认快捷键仍能重新打开结果。移动摘要最多三行的顶栏与弹层 CSS 规则均由单测检查。
+- 最终 Playwright 搜索用例在 Chromium 和 Edge 均为 3/3 通过，覆盖 320×740、390×844、快捷键、Escape 两阶段焦点、结果播报与 Enter 导航；`mobile-search.test.tsx` 为 11/11 通过。Chromium 两种窄屏截图已目视检查，页面根无水平溢出，结果摘要保持在三行内。浏览器错误监听在导航前安装，并在请求排空和 1 秒静默后检查；共享负测验证延迟 404 与失败请求。
+- Impeccable 本轮结论仅针对移动搜索局部实现。真实读屏、物理触控、Safari、深色主题、高倍缩放和部署环境仍未验收；不据此关闭全库 2B-1。干净 npm tarball 上补丁正向重放成功；裸 `git apply --reverse --check` 对补丁格式差异敏感，后续已用 `--ignore-whitespace --inaccurate-eof` 完成反向检查，不再作为待处理门禁。
+
+### 2026-10-06 Dumi 移动搜索候选数 Polish
+
+- 按 Impeccable 4.1.3 `polish` 对上一轮已建立的 Dumi 搜索体验继续收尾。`critique-storage.mjs latest docs-docs-shell-css --json` 未返回开放快照；历史 A 组 UX critique 中“窄屏可能同时显示超过 4 项”的观察已作为待核风险，用 Chromium/Edge 真实 viewport、候选数量、滚动和截图独立复核，不把 detector 输出当作 UX 结论。
+- 将移动结果滚动区最大高度从 460px 限制为 320px，避免窄屏在首屏同时暴露五个以上候选；实际 `button` 查询共 36 项，320×740 显示 3 项，390×844 与 390×450 显示 4 项。三种视口面板高度均为 320px，末项可通过结果区滚动到达；常见宽度的文档根没有横向溢出。
+- 折叠搜索入口新增的“搜索”短标签在 320/390px 截图中均可见；结果列表仍保留标题、摘要、分类和 44px 输入框操作区域。首屏结果弹层覆盖部分文档内容是临时搜索状态，Escape 能按两阶段行为收起，不改变页面路由。
+- Chromium 和 Edge 搜索浏览器用例各 4/4 通过；包含候选上限、常见/短视口、内部滚动、折叠截图、两阶段 Escape 与 Enter 路由。自动化要求结果至少 20 项、首屏显示 3 至 4 项；当前索引实测 36 项、各视口分别 3/4/4 项。Dumi 生产构建、静态导出检查和两项相关单测组通过。测试期间识别并修复 locale JSX 补丁缺少右括号的问题，干净安装补丁后语法检查和生产构建均通过。
+- 复审补充的首屏边界断言已加入：滚动区顶部须 `>= 0`、底部须 `<= viewport.height`，防止面板整体越出上边缘时仍误报候选数量通过；当前 Chromium/Edge 构建均通过此约束。
+- Impeccable 局部结论：入口的可发现性、窄屏候选数量与恢复交互已通过当前 viewport 证据；评分仅适用于本次搜索路径，不外推到整个文档站。剩余读屏、真实触控、Safari、深色主题、缩放和部署环境仍未验证；全库 2B-1 保持未关闭。

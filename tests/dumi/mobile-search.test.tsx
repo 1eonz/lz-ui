@@ -43,9 +43,12 @@ vi.mock('dumi', async () => {
   const React = await import('react');
   const messages: Record<string, string> = {
     'header.search.placeholder': '输入关键字搜索...',
+    'header.search.shortPlaceholder': '搜索',
     'search.clear': '清除搜索内容',
     'search.dialog': '站点搜索',
     'search.keyboard.help': '使用上下方向键浏览结果，按 Enter 打开。',
+    'search.keyboard.navigateOpen': '浏览结果并按 Enter 打开',
+    'search.keyboard.close': '关闭搜索',
     'search.not.found': '没有找到相关内容',
     'search.results': '搜索结果',
     'search.start': '输入关键字搜索...',
@@ -129,6 +132,7 @@ describe('Dumi 移动搜索清除与结果排版', () => {
     render(<SearchBar />);
 
     const input = screen.getByRole('textbox', { name: '输入关键字搜索...' });
+    expect(input).toHaveAttribute('placeholder', '搜索');
     const topbarClearButton = input.parentElement?.querySelector<HTMLButtonElement>(
       '.dumi-default-search-clear',
     );
@@ -162,6 +166,8 @@ describe('Dumi 移动搜索清除与结果排版', () => {
     });
     const modalInput = initialDialog.querySelector('input') as HTMLInputElement;
     await waitFor(() => expect(modalInput).toHaveFocus());
+    expect(within(initialDialog).getByText('浏览结果并按 Enter 打开')).toBeInTheDocument();
+    expect(within(initialDialog).getByText('关闭搜索')).toBeInTheDocument();
     fireEvent.change(modalInput, { target: { value: '表格' } });
 
     const modalClearButton = await within(initialDialog).findByRole('button', {
@@ -465,14 +471,28 @@ describe('Dumi 移动搜索清除与结果排版', () => {
     expect(preventDefault).not.toHaveBeenCalled();
   });
 
-  it('Escape 关闭顶栏结果并保留查询内容', async () => {
+  it('输入法 Escape 不关闭搜索，首次 Escape 保留焦点，第二次允许离开', async () => {
     render(<SearchBar />);
 
     const input = screen.getByRole('textbox', { name: '输入关键字搜索...' });
-    fireEvent.focus(input);
+    act(() => input.focus());
     fireEvent.change(input, { target: { value: '客户' } });
     await screen.findByRole('region', { name: '搜索结果' });
 
+    fireEvent.compositionStart(input);
+    const imeEscape = createEvent.keyDown(input, {
+      key: 'Escape',
+      keyCode: 229,
+      isComposing: true,
+    });
+    const preventImeDefault = vi.spyOn(imeEscape, 'preventDefault');
+    fireEvent(input, imeEscape);
+
+    expect(preventImeDefault).not.toHaveBeenCalled();
+    expect(screen.getByRole('region', { name: '搜索结果' })).toBeInTheDocument();
+    expect(input).toHaveFocus();
+
+    fireEvent.compositionEnd(input);
     const escape = createEvent.keyDown(input, { key: 'Escape' });
     const preventDefault = vi.spyOn(escape, 'preventDefault');
     fireEvent(input, escape);
@@ -480,6 +500,14 @@ describe('Dumi 移动搜索清除与结果排版', () => {
     expect(preventDefault).toHaveBeenCalled();
     await waitFor(() => expect(screen.queryByRole('region', { name: '搜索结果' })).toBeNull());
     expect(input).toHaveValue('客户');
+    expect(input).toHaveFocus();
+
+    const dismissEscape = createEvent.keyDown(input, { key: 'Escape' });
+    const preventDismissDefault = vi.spyOn(dismissEscape, 'preventDefault');
+    fireEvent(input, dismissEscape);
+
+    expect(preventDismissDefault).not.toHaveBeenCalled();
+    expect(input).not.toHaveFocus();
   });
 
   it('为搜索结果配置窄屏滚动、换行、触控尺寸和焦点样式', () => {
@@ -521,6 +549,18 @@ describe('Dumi 移动搜索清除与结果排版', () => {
         rule.selector.includes('> h4') &&
         rule.selector.includes('> p'),
     );
+    const resultSummaryRule = mobileRules.find(
+      (rule) =>
+        rule.selector.includes('.dumi-default-header') &&
+        rule.selector.includes('.dumi-default-search-result') &&
+        getDeclarations(rule)['-webkit-line-clamp'] === '3',
+    );
+    const modalSummaryRule = mobileRules.find(
+      (rule) =>
+        rule.selector.includes('.dumi-default-search-modal') &&
+        rule.selector.includes('.dumi-default-search-result') &&
+        getDeclarations(rule)['-webkit-line-clamp'] === '3',
+    );
     const mainClearTarget = mobileRules.find(
       (rule) =>
         rule.selector.includes('.dumi-default-header') &&
@@ -530,6 +570,16 @@ describe('Dumi 移动搜索清除与结果排版', () => {
       (rule) =>
         rule.selector.includes('.dumi-default-search-modal') &&
         rule.selector.endsWith('.dumi-default-search-clear'),
+    );
+    const collapsedSearchBar = mobileRules.find(
+      (rule) =>
+        rule.selector ===
+        '.dumi-default-header .dumi-default-header-right .dumi-default-search-bar',
+    );
+    const collapsedSearchPlaceholder = mobileRules.find(
+      (rule) =>
+        rule.selector.includes('.dumi-default-search-bar-input::placeholder') &&
+        !rule.selector.includes(':focus-within'),
     );
     const headerResultsScroll = mobileRules.find(
       (rule) =>
@@ -571,6 +621,18 @@ describe('Dumi 移动搜索清除与结果排版', () => {
       overflow: 'visible',
       'overflow-wrap': 'anywhere',
     });
+    expect(resultSummaryRule && getDeclarations(resultSummaryRule)).toMatchObject({
+      display: '-webkit-box',
+      overflow: 'hidden',
+      '-webkit-box-orient': 'vertical',
+      '-webkit-line-clamp': '3',
+    });
+    expect(modalSummaryRule && getDeclarations(modalSummaryRule)).toMatchObject({
+      display: '-webkit-box',
+      overflow: 'hidden',
+      '-webkit-box-orient': 'vertical',
+      '-webkit-line-clamp': '3',
+    });
     expect(mainClearTarget).toBeDefined();
     expect(mainClearTarget && getDeclarations(mainClearTarget)).toMatchObject({
       'inline-size': touchTargetSize,
@@ -581,6 +643,16 @@ describe('Dumi 移动搜索清除与结果排版', () => {
       'inline-size': touchTargetSize,
       'block-size': touchTargetSize,
     });
+    expect(collapsedSearchBar && getDeclarations(collapsedSearchBar)).toMatchObject({
+      'inline-size': '96px',
+      'block-size': '44px',
+    });
+    expect(collapsedSearchPlaceholder && getDeclarations(collapsedSearchPlaceholder)).toMatchObject(
+      {
+        color: 'var(--lx-docs-text-muted)',
+        opacity: '1',
+      },
+    );
     expect(headerResultsScroll && getDeclarations(headerResultsScroll)).toMatchObject({
       'min-block-size': '0',
       'overflow-x': 'hidden',
@@ -589,7 +661,7 @@ describe('Dumi 移动搜索清除与结果排版', () => {
       '-webkit-overflow-scrolling': 'touch',
     });
     expect(headerResultsMaxHeight && getDeclarations(headerResultsMaxHeight)).toMatchObject({
-      'max-block-size': 'min(460px, calc(100dvh - 120px))',
+      'max-block-size': 'min(320px, calc(100dvh - 120px))',
     });
     expect(clearFocusRule).toBeDefined();
     expect(clearFocusRule?.selector).toContain(
