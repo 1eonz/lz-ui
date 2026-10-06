@@ -2,21 +2,20 @@ import { defineConfig } from 'dumi';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const isProduction = process.env.NODE_ENV === 'production';
-
 /**
  * Dumi 只负责文档站，不参与组件包的运行时逻辑。
  * 将文档构建和 library build 分开，可以避免 demo 依赖进入 npm 产物。
  */
 export default defineConfig({
   title: 'lx-ui',
+  favicons: ['/logo.svg'],
   outputPath: 'docs-dist',
   hash: true,
   // 第三方 Dumi 文档壳调整不进入发布的组件库 CSS。
   styles: [{ content: readFileSync(resolve(process.cwd(), 'docs/docs-shell.css'), 'utf8') }],
-  // Dumi 开发服务器要求绝对根路径；静态部署再切换成相对路径。
-  publicPath: isProduction ? './' : '/',
-  ...(isProduction ? { runtimePublicPath: {} } : {}),
+  // 静态文档按根路径部署，确保深路由的异步 chunk 使用根资源前缀。
+  base: '/',
+  publicPath: '/',
   // 仅公开已有完整文档路由的语言，避免语言切换跳转到未翻译页面。
   locales: [{ id: 'zh-CN', name: '中文' }],
   themeConfig: {

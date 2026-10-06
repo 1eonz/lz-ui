@@ -68,11 +68,15 @@
     "test:watch": "npm run test:prepare && vitest --minWorkers=1 --maxWorkers=4",
     "test:coverage": "npm run test:prepare && vitest run --coverage --minWorkers=1 --maxWorkers=4",
     "check": "npm run format:check && npm run typecheck && npm run typecheck:docs && npm run lint && npm run test",
+    "test:browser": "npm run build:docs && playwright test --project=chromium",
+    "test:browser:edge": "playwright test --project=edge",
+    "test:browser:all": "npm run test:browser && npm run test:browser:edge",
     "check:scaffold": "node scripts/check-scaffold.mjs",
     "clean": "node scripts/clean.mjs",
     "release:guard": "node scripts/release-guard.mjs"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.10.0",

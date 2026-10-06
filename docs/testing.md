@@ -20,6 +20,14 @@
 
 UI 设计确认后，引入 Playwright 对关键组件和业务组合页截图。截图矩阵至少覆盖 light/dark、comfortable/compact、business/soft/glass 和两个主题色，完整六色矩阵按发布周期执行。
 
+### 浏览器 Smoke
+
+`@playwright/test` 以精确版本作为开发依赖，仅测试已构建的文档站，不进入组件运行时或 npm 发布包。运行 `npm run test:browser` 会先构建 `docs-dist`，再由仓库已有的 Vite preview 托管并启动 Playwright 管理的 Chromium。文档导出固定使用根路径 `base` 与 `publicPath`；若默认 4173 端口被占用，可设置 `PLAYWRIGHT_PORT` 指定其他空闲端口。首次使用需执行 `npx playwright install chromium` 下载浏览器。
+
+浏览器 Smoke 显式检查 `tests/browser/routes.ts` 中的 32 个公开组件路由，使用独立 path/name 映射锁定路由身份，并逐页精确匹配预期 title/H1、至少一个真实运行的 Dumi demo，以及无 `requestfailed`、`pageerror`、console error 或 HTTP 4xx/5xx 响应。检查等待所有请求结束且持续 1 秒静默，最长等待 15 秒；另有延迟 404 与失败请求负向测试验证排空能捕获晚到错误。Tooltip、Input、DynamicForm、Table、Upload、Alert、Spin、Progress 还会在 930、390、320px 检查文档根横向溢出。失败会保存截图和 trace 到 `test-results/browser/`，HTML 报告写入 `playwright-report/`。
+
+需要同时覆盖本机已安装的 Microsoft Edge 时，可运行 `npm run test:browser:all`，它只构建一次，再依次运行 Chromium 与 Edge；`npm run test:browser:edge` 可在已有 `docs-dist` 上单独复跑 Edge。默认命令只依赖 Playwright 管理的 Chromium。当前静态文档部署和浏览器 Smoke 只覆盖站点根路径；子路径托管还需同时配置 Dumi `base` 与 `publicPath` 并增加部署级浏览器验收。该 Smoke 证明列出的路由和基础运行状态可用，不替代组件完整状态、交互、键盘、主题、可访问性、缩放、视觉回归或跨浏览器验收。
+
 ## 2. 测试命名
 
 测试名称描述用户行为和结果：
@@ -49,6 +57,7 @@ npm run lint
 npm test
 npm run build:lib
 npm run build:docs
+npm run test:browser
 npm pack --dry-run
 ```
 

@@ -51,5 +51,13 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react-hooks/exhaustive-deps': 'warn',
   },
-  ignorePatterns: ['dist', 'docs-dist', 'coverage', 'node_modules', '*.config.cjs'],
+  ignorePatterns: [
+    'dist',
+    'docs-dist',
+    'coverage',
+    'playwright-report',
+    'test-results',
+    'node_modules',
+    '*.config.cjs',
+  ],
 };
