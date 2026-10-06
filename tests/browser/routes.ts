@@ -3,7 +3,6 @@ export interface BrowserComponentRoute {
   path: `/components/${string}`;
   expectedTitle: string;
   expectedHeading: string;
-  checkNarrowOverflow?: boolean;
 }
 
 export const browserComponentRoutes: readonly BrowserComponentRoute[] = [
@@ -42,7 +41,6 @@ export const browserComponentRoutes: readonly BrowserComponentRoute[] = [
     path: '/components/form/input',
     expectedTitle: 'Input 输入框',
     expectedHeading: 'Input 输入框',
-    checkNarrowOverflow: true,
   },
   {
     name: 'InputNumber',
@@ -85,7 +83,6 @@ export const browserComponentRoutes: readonly BrowserComponentRoute[] = [
     path: '/components/form/upload',
     expectedTitle: 'Upload 文件选择',
     expectedHeading: 'Upload 文件选择',
-    checkNarrowOverflow: true,
   },
   {
     name: 'FormItem',
@@ -98,7 +95,6 @@ export const browserComponentRoutes: readonly BrowserComponentRoute[] = [
     path: '/components/form/dynamic-form',
     expectedTitle: 'DynamicForm 动态表单',
     expectedHeading: 'DynamicForm 动态表单',
-    checkNarrowOverflow: true,
   },
   {
     name: 'Pagination',
@@ -111,7 +107,6 @@ export const browserComponentRoutes: readonly BrowserComponentRoute[] = [
     path: '/components/data-display/table',
     expectedTitle: 'Table 表格',
     expectedHeading: 'Table 表格',
-    checkNarrowOverflow: true,
   },
   {
     name: 'Tree',
@@ -184,27 +179,23 @@ export const browserComponentRoutes: readonly BrowserComponentRoute[] = [
     path: '/components/feedback/alert',
     expectedTitle: 'Alert',
     expectedHeading: 'Alert',
-    checkNarrowOverflow: true,
   },
   {
     name: 'Spin',
     path: '/components/feedback/spin',
     expectedTitle: 'Spin',
     expectedHeading: 'Spin',
-    checkNarrowOverflow: true,
   },
   {
     name: 'Progress',
     path: '/components/feedback/progress',
     expectedTitle: 'Progress',
     expectedHeading: 'Progress',
-    checkNarrowOverflow: true,
   },
   {
     name: 'Tooltip',
     path: '/components/feedback/tooltip',
     expectedTitle: 'Tooltip',
     expectedHeading: 'Tooltip',
-    checkNarrowOverflow: true,
   },
 ];

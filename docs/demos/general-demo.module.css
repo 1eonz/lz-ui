@@ -83,6 +83,7 @@
 }
 
 .preview {
+  box-sizing: border-box;
   min-block-size: 160px;
   max-inline-size: 100%;
   padding-block: var(--lx-space-lg);

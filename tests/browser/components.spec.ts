@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { collectBrowserErrors, waitForBrowserQuiescence } from './browser-health';
 import { browserComponentRoutes } from './routes';
 
@@ -37,6 +37,55 @@ const expectedBrowserRouteIdentities = [
   { name: 'Tooltip', path: '/components/feedback/tooltip' },
 ] as const;
 
+const rootOverflowViewports = [
+  { width: 930, height: 720 },
+  { width: 390, height: 844 },
+  { width: 320, height: 740 },
+] as const;
+
+const cardTabViewports = [
+  {
+    viewport: { width: 320, height: 740 },
+    labels: ['采购', '供应链', '审计'],
+    panelText: ['本月采购订单', '高风险供应商', '本季度外部审计已完成，待整改事项 3 项。'],
+  },
+  {
+    viewport: { width: 360, height: 844 },
+    labels: ['采购', '供应链', '审计'],
+    panelText: ['本月采购订单', '高风险供应商', '本季度外部审计已完成，待整改事项 3 项。'],
+  },
+  {
+    viewport: { width: 361, height: 844 },
+    labels: ['采购', '供应链', '审计'],
+    panelText: ['本月采购订单', '高风险供应商', '本季度外部审计已完成，待整改事项 3 项。'],
+  },
+  {
+    viewport: { width: 375, height: 844 },
+    labels: ['采购', '供应链', '审计'],
+    panelText: ['本月采购订单', '高风险供应商', '本季度外部审计已完成，待整改事项 3 项。'],
+  },
+  {
+    viewport: { width: 387, height: 844 },
+    labels: ['采购', '供应链', '审计'],
+    panelText: ['本月采购订单', '高风险供应商', '本季度外部审计已完成，待整改事项 3 项。'],
+  },
+  {
+    viewport: { width: 388, height: 844 },
+    labels: ['采购运营', '供应链风险', '外部审计'],
+    panelText: ['本月采购订单', '高风险供应商', '本季度外部审计已完成，待整改事项 3 项。'],
+  },
+  {
+    viewport: { width: 390, height: 844 },
+    labels: ['采购运营', '供应链风险', '外部审计'],
+    panelText: ['本月采购订单', '高风险供应商', '本季度外部审计已完成，待整改事项 3 项。'],
+  },
+  {
+    viewport: { width: 1280, height: 720 },
+    labels: ['采购运营', '供应链风险', '外部审计'],
+    panelText: ['本月采购订单', '高风险供应商', '本季度外部审计已完成，待整改事项 3 项。'],
+  },
+] as const;
+
 function componentTitlePattern(name: string): RegExp {
   const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   return new RegExp(`^${escapedName}$`);
@@ -63,13 +112,11 @@ async function hasRenderedDemo(page: Page): Promise<boolean> {
   );
 }
 
-async function expectNoRootHorizontalOverflow(page: Page, width: number): Promise<void> {
-  const heights = new Map([
-    [930, 720],
-    [390, 844],
-    [320, 740],
-  ]);
-  await page.setViewportSize({ width, height: heights.get(width) ?? 720 });
+async function expectNoRootHorizontalOverflow(
+  page: Page,
+  viewport: { width: number; height: number },
+): Promise<void> {
+  await page.setViewportSize(viewport);
   await expect
     .poll(
       () =>
@@ -80,19 +127,102 @@ async function expectNoRootHorizontalOverflow(page: Page, width: number): Promis
             document.body.scrollWidth - root.clientWidth,
           );
         }),
-      { message: `${width}px 视口下文档根节点发生横向溢出` },
+      {
+        message: `${viewport.width}×${viewport.height} 视口下文档根节点发生横向溢出`,
+        timeout: 1_500,
+      },
     )
     .toBeLessThanOrEqual(0);
 }
 
-test('验收清单固定映射 32 个公开路由和 8 个窄屏重点页', () => {
+async function expectTabTextVisible(tab: Locator, label: string): Promise<void> {
+  const geometry = await tab.evaluate((element, expectedLabel) => {
+    type Bounds = { left: number; top: number; right: number; bottom: number };
+    type Clip = Bounds & { name: string; clipsX: boolean; clipsY: boolean };
+
+    const textFragments: Array<{ bounds: Bounds; clips: Clip[] }> = [];
+    let matchingTextNodeCount = 0;
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (node.nodeValue !== expectedLabel) continue;
+      matchingTextNodeCount += 1;
+
+      // 从精确匹配的标签文本节点向上检查，覆盖标签 wrapper、tab 与 nav-wrap 的裁切。
+      const clips: Clip[] = [];
+      for (let ancestor = node.parentElement; ancestor; ancestor = ancestor.parentElement) {
+        const style = window.getComputedStyle(ancestor);
+        const clipsX = style.overflowX !== 'visible';
+        const clipsY = style.overflowY !== 'visible';
+        if (!clipsX && !clipsY) continue;
+
+        const rect = ancestor.getBoundingClientRect();
+        const left = rect.left + ancestor.clientLeft;
+        const top = rect.top + ancestor.clientTop;
+        clips.push({
+          name: `${ancestor.tagName.toLowerCase()}.${String(ancestor.className)}`,
+          left,
+          top,
+          right: left + ancestor.clientWidth,
+          bottom: top + ancestor.clientHeight,
+          clipsX,
+          clipsY,
+        });
+      }
+      clips.push({
+        name: 'viewport',
+        left: 0,
+        top: 0,
+        right: document.documentElement.clientWidth,
+        bottom: window.innerHeight,
+        clipsX: true,
+        clipsY: true,
+      });
+
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      for (const rect of range.getClientRects()) {
+        if (rect.width > 0 && rect.height > 0) {
+          textFragments.push({
+            bounds: {
+              left: rect.left,
+              top: rect.top,
+              right: rect.right,
+              bottom: rect.bottom,
+            },
+            clips,
+          });
+        }
+      }
+    }
+
+    const clippedText = textFragments.flatMap(({ bounds, clips }) =>
+      clips
+        .filter(
+          (clip) =>
+            (clip.clipsX && (bounds.left < clip.left - 0.5 || bounds.right > clip.right + 0.5)) ||
+            (clip.clipsY && (bounds.top < clip.top - 0.5 || bounds.bottom > clip.bottom + 0.5)),
+        )
+        .map((clip) => ({ clip: clip.name, textRect: bounds })),
+    );
+
+    return { matchingTextNodeCount, textFragmentCount: textFragments.length, clippedText };
+  }, label);
+
+  expect(geometry.matchingTextNodeCount, `${label} 没有精确匹配的文本节点`).toBeGreaterThan(0);
+  expect(geometry.textFragmentCount, `${label} 没有可测量的文本片段`).toBeGreaterThan(0);
+  expect(geometry.clippedText, `${label} 的文本片段超出可视裁切边界`).toEqual([]);
+}
+
+test('验收清单固定映射 32 个公开路由和 3 个根节点溢出视口', () => {
   expect(browserComponentRoutes.map(({ name, path }) => ({ name, path }))).toEqual(
     expectedBrowserRouteIdentities,
   );
   expect(browserComponentRoutes).toHaveLength(expectedBrowserRouteIdentities.length);
-  expect(browserComponentRoutes.filter((component) => component.checkNarrowOverflow)).toHaveLength(
-    8,
-  );
+  expect(rootOverflowViewports).toEqual([
+    { width: 930, height: 720 },
+    { width: 390, height: 844 },
+    { width: 320, height: 740 },
+  ]);
 });
 
 test('浏览器错误排空会捕获静默期前完成的延迟错误响应与失败请求', async ({ page }) => {
@@ -130,7 +260,9 @@ test('浏览器错误排空会捕获静默期前完成的延迟错误响应与�
 });
 
 for (const component of browserComponentRoutes) {
-  test(`${component.name}：页面标题、H1、真实 demo 与浏览器错误`, async ({ page }) => {
+  test(`${component.name}：页面标题、H1、真实 demo、三视口根节点溢出与浏览器错误`, async ({
+    page,
+  }) => {
     const browserHealth = collectBrowserErrors(page);
     await page.goto(`${component.path}/`);
 
@@ -144,9 +276,53 @@ for (const component of browserComponentRoutes) {
       })
       .toBe(true);
 
-    if (component.checkNarrowOverflow) {
-      for (const width of [930, 390, 320]) {
-        await expectNoRootHorizontalOverflow(page, width);
+    for (const viewport of rootOverflowViewports) {
+      await expectNoRootHorizontalOverflow(page, viewport);
+    }
+
+    if (component.name === 'Card') {
+      const cardDemo = page
+        .locator('.dumi-default-previewer-demo')
+        .filter({ hasText: '运营指标概览' });
+      const cardTitle = cardDemo.getByText('运营指标概览', { exact: true });
+      for (const { viewport, labels, panelText } of cardTabViewports) {
+        await page.setViewportSize(viewport);
+        await expectNoRootHorizontalOverflow(page, viewport);
+        await expect(cardTitle).toBeVisible();
+
+        const titleBox = await cardTitle.evaluate((element) => ({
+          clientHeight: element.clientHeight,
+          clientWidth: element.clientWidth,
+          scrollHeight: element.scrollHeight,
+          scrollWidth: element.scrollWidth,
+        }));
+        expect(titleBox.scrollWidth).toBeLessThanOrEqual(titleBox.clientWidth);
+        expect(titleBox.scrollHeight).toBeLessThanOrEqual(titleBox.clientHeight);
+
+        const card = cardDemo.getByTestId('card-demo');
+        const cardBox = await card.evaluate((element) => element.getBoundingClientRect());
+        const frameBox = await cardDemo.evaluate((element) => element.getBoundingClientRect());
+        expect(cardBox.left).toBeGreaterThanOrEqual(frameBox.left);
+        expect(cardBox.right).toBeLessThanOrEqual(frameBox.right);
+        expect(
+          Math.abs((cardBox.left + cardBox.right - frameBox.left - frameBox.right) / 2),
+        ).toBeLessThanOrEqual(1);
+        await card.evaluate((element) => element.scrollIntoView({ block: 'center' }));
+
+        const tabList = cardDemo.getByRole('tablist');
+        const tabs = tabList.getByRole('tab');
+        await expect(tabs).toHaveCount(3);
+        for (let index = 0; index < labels.length; index += 1) {
+          await expect(tabs.nth(index)).toHaveAccessibleName(labels[index]);
+          await expectTabTextVisible(tabs.nth(index), labels[index]);
+        }
+
+        for (let index = 0; index < labels.length; index += 1) {
+          const tab = tabs.nth(index);
+          await tab.click();
+          await expect(tab).toHaveAttribute('aria-selected', 'true');
+          await expect(cardDemo.getByText(panelText[index], { exact: true })).toBeVisible();
+        }
       }
     }
 

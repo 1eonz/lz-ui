@@ -68,7 +68,7 @@ export default function GeneralSpaceOptionsDemo() {
         <label htmlFor={`${id}-wrap`}>允许换行</label>
         <Switch id={`${id}-wrap`} checked={wrap} onChange={setWrap} />
       </Space>
-      <div className={styles.preview} style={{ width }}>
+      <div className={styles.preview} style={{ inlineSize: `min(100%, ${width}px)` }}>
         <Space size={gap} direction={direction} align={align} wrap={wrap} block>
           <Text strong>¥ 8,920.00</Text>
           <Text type="secondary">本月采购</Text>

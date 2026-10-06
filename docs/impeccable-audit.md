@@ -629,3 +629,29 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - Chromium 和 Edge 搜索浏览器用例各 4/4 通过；包含候选上限、常见/短视口、内部滚动、折叠截图、两阶段 Escape 与 Enter 路由。自动化要求结果至少 20 项、首屏显示 3 至 4 项；当前索引实测 36 项、各视口分别 3/4/4 项。Dumi 生产构建、静态导出检查和两项相关单测组通过。测试期间识别并修复 locale JSX 补丁缺少右括号的问题，干净安装补丁后语法检查和生产构建均通过。
 - 复审补充的首屏边界断言已加入：滚动区顶部须 `>= 0`、底部须 `<= viewport.height`，防止面板整体越出上边缘时仍误报候选数量通过；当前 Chromium/Edge 构建均通过此约束。
 - Impeccable 局部结论：入口的可发现性、窄屏候选数量与恢复交互已通过当前 viewport 证据；评分仅适用于本次搜索路径，不外推到整个文档站。剩余读屏、真实触控、Safari、深色主题、缩放和部署环境仍未验证；全库 2B-1 保持未关闭。
+
+### 2026-10-06 Space 与 Card 窄屏示例复核
+
+- **范围与方法：** Impeccable 4.1.3；本会话执行 `context.mjs --target docs/demos/general-space-options.tsx`，遵循 `adapt` 与 `craft-floor`。Assessment A 和 B 由隔离的 `gpt-6-luna max` 子代理先后完成，A 首轮发现 Card 标题截断后进行一次修复确认。完整评审记录见 [Space/Card critique snapshot](../.impeccable/critique/2026-10-06T12-20-23Z__docs-demos-general-space-options-tsx.md)。
+- **目标与设计判断：** `docs/demos/general-space-options.tsx`、`docs/demos/card.tsx` 及 demo 自有 CSS Modules；组件文档属于 Read 模式。Dumi 外壳较常规，示例文案以采购、供应链风险、外部审计和运营指标体现 ERP/CRM 场景，目标适配度中高。
+- **Nielsen 启发式评分：** 系统状态 3/4；现实世界匹配 4/4；用户控制 3/4；一致性 3/4；错误预防 3/4；识别而非记忆 3/4；效率 3/4；简约 3/4；错误恢复 2/4；帮助文档 3/4；总分 30/40（Good，75%）。局部 UX 分数不外推到整个组件库。
+- **局部技术审计：** 无障碍 2/4（没有键盘全流程、对比度、axe 或真实读屏证据）；性能 3/4（无依赖和复杂运行逻辑，未测设备性能/Core Web Vitals）；主题 2/4（仅默认外观）；响应式 3/4（4 个视口根节点通过，Card tabs 仍内部横向滚动）；实现完整性 3/4（复现问题、浏览器回归与独立代码审查完成，detector 未扫描 CSS Module）。
+- **优先发现：** P1 Space 固定宽预览和 Card 子项最小内容宽度在窄屏造成文档根水平溢出，均已修复并通过全路由矩阵；P1 Card 标题在 320px 下被截断，已改为完整两行，1280px 单行，自动化断言检查真实标题盒的 scroll/client 宽高。P2 混排正文窄列两端对齐扫描性较差；P2 Space 示例代码在 320px 下需横向滚动但无明显提示；P2 Card tabs 可视宽度狭窄并省略部分文字，但所有项可滚动选择；P3 Card 文档小节标题可能形成单字换行。后 4 项未在本批改动，作为后续文档窄屏 polish。
+- **真实浏览器与交互：** 独立 Playwright fresh context 检查 320、390、930、1280px。Space 在 320px 下由父级内容宽度约束到 190px，选择 560px 也不会撑宽；桌面保持可调宽度。Card 在 320px 根节点与 body 均为 320px，卡片宽约 190px；标题最终完整且无盒内裁切；三个 tab、加载/完成状态及焦点恢复可操作，页面无浏览器错误。1280px 标题单行。
+- **检测器：** `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json docs/demos/general-space-options.tsx docs/demos/card.tsx` 最终输出 `[]`、退出码 0；只扫描两个 TSX 文件，不包含 CSS Modules、共享 frame、Dumi 文档壳或运行时表现。Assessment B 未注入 live overlay；页面判断来自独立 Playwright，不依据 `[]`。
+- **独立复审：** `gpt-6-luna max` code review 最终 GO，无可操作 P0–P2；覆盖 CSS Module 作用域、Card ReactNode 标题、Space 的 `min()` 约束、1500ms 布局轮询 timeout 和标题裁切断言。
+- **工程门禁：** `npm run check:scaffold` 通过；`npm run check` 的 Prettier、TypeScript、101 个 demo 类型、ESLint、55 个测试文件/444 个测试全部通过；`npm run build:lib`、`npm run build:docs`、静态导出和 `npm pack --dry-run` 通过。Chromium/Edge 各 38/38 浏览器用例通过。jsdom 对 AntD 伪元素测量及既有弃用 API 的 stderr 警告存在，但没有测试失败。
+- **范围结论：** 关闭 Space/Card 根溢出复现和 Card 标题裁切；窄列正文、代码滚动提示和 tab 标签呈现仍有非阻塞 polish 项。未覆盖物理设备、200%/400% 缩放、完整主题/密度、reduced motion 与真实读屏；这项审计不关闭 2B-1 全库组件验收。
+- **问题略过：** 本批由现有路线图和已授权的持续验收明确范围，不需要新增产品决策；上述未处理项进入后续窄屏 polish。
+
+### 2026-10-06 Card 标签完整可视性与测试有效性
+
+- **方法与范围：** Impeccable 4.1.3；本会话执行 `context.mjs --target docs/demos/card.tsx` 并读取 `critique`、`audit`、`craft-floor` 与项目级执行规则。目标是 Read 模式的 Card 文档 demo：`docs/demos/card.tsx`、`docs/demos/card.module.css` 和 Card 路由；没有改动发布组件 API。Assessment A/B 使用隔离的 `gpt-6-luna max` 子代理；A 先独立完成，B 后运行 detector 与浏览器 overlay。完整快照见 [Card critique snapshot](../.impeccable/critique/2026-10-06T13-26-02Z__docs-demos-card-tsx.md)。
+- **设计特异性与 Nielsen：** 业务文案以采购运营、供应链风险、外部审计呈现 ERP 中后台场景，特异性中高。系统状态 4/4；现实世界 4/4；用户控制 3/4；一致性 3/4；错误预防 3/4；识别而非回忆 4/4；效率 3/4；美学与简约 3/4；错误恢复 3/4；帮助文档 3/4；总分 **33/40（Good）**。认知负荷低，主要 demo 控件数量少；文档外壳导航的同级链接不归 Card 目标缺陷。
+- **局部技术审计：** 15/20（Good）：无障碍 3/4（tabs 有名称与键盘语义、状态有播报；未运行 axe 或真实读屏）；性能 3/4（少量内容、无新增依赖，absolute ink-bar 过渡无可见 layout shift；未测真实设备指标）；主题 2/4（本轮只检查默认外观）；响应式 4/4（320–1280px 与断点两侧均无根溢出，文本没有被内部滚动区裁切）；实现完整性 3/4（设计与测试闭环，但完整主题/跨浏览器矩阵未覆盖）。
+- **测试审查与返工：** 初版只比较 tab 与外层 `tablist`，且一边测量一边点击，独立 code review 判为 NO-GO。修复后只选择与预期标签文本精确匹配的 Range；从文本节点父级开始检查每一层 overflow client box 及 viewport；点击前先测量三个标签。第二轮独立 code review 为 GO，Card Playwright 用例 1/1 通过。
+- **Assessment B 命令与边界：** `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json F:\work\lz-ui\docs\demos\card.tsx` 原始输出 `[]`、退出码 0。CLI 对单文件 TSX 使用 regex 文本引擎，不跟随 CSS Module，无法检测实际裁切。浏览器注入 overlay 成功；全页 11 组命中分为 cramped-padding 3、line-length 6、layout-transition 2。10 项位于 Dumi TOC、其他示例 Select/说明段落或 body；Card 内唯一命中是 AntD absolute tab indicator 的 `width/left/right` 0.18s 过渡。点击时指示线平滑移动、不改变周边布局；reduced motion 下 computed duration/delay 为 0s，未触发 transition 事件。没有将检测器命中计作修复项或忽略规则。
+- **浏览器证据：** Assessment A 的 Chromium 新上下文覆盖 320、360、361、375、387、388、390、930、1280px；Assessment B 另以 320、390、930、1280px 量测标签 Range 与真实 `.ant-tabs-nav-wrap` 及 viewport 裁切边界。四档根节点无横向溢出，三个 tab 均可切换且显示对应内容。390px 下开始加载后出现骨架与 status 文案，完成后内容恢复并将焦点返回开始按钮。浏览器无错误；本批未保存截图，正文记录了可复现路由与文本几何数值。
+- **发现状态：** 唯一代码问题 P2 是浏览器断言测量范围不足，已修复并经二次独立复审关闭。没有未解决 P0–P2。detector 的 docs-shell 命中不属于 Card demo；长篇文档的行长需按文档窄屏目标另行复核。
+- **未覆盖范围：** 当前只有 Chromium 默认主题视图；未覆盖 Edge/WebKit/Safari、真实读屏、实体触控、200%/400% 缩放、所有 appearance/color/palette/density 组合。Card 局部通过不关闭 2B-1。
+- **Questions skipped:** 当前任务按已授权路线只修复测试有效性，没有待定的产品方向需要用户选择。

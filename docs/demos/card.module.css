@@ -1,0 +1,42 @@
+.card {
+  min-inline-size: 0;
+  container-name: card-demo;
+  container-type: inline-size;
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-sm);
+  min-inline-size: 0;
+}
+
+.title {
+  flex: 1 1 8rem;
+  min-inline-size: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.loadingButton {
+  flex: 0 0 auto;
+}
+
+.fullTab {
+  display: inline;
+}
+
+.compactTab {
+  display: none;
+}
+
+@container card-demo (max-width: 255px) {
+  .fullTab {
+    display: none;
+  }
+
+  .compactTab {
+    display: inline;
+  }
+}
