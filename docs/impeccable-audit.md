@@ -655,3 +655,12 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **发现状态：** 唯一代码问题 P2 是浏览器断言测量范围不足，已修复并经二次独立复审关闭。没有未解决 P0–P2。detector 的 docs-shell 命中不属于 Card demo；长篇文档的行长需按文档窄屏目标另行复核。
 - **未覆盖范围：** 当前只有 Chromium 默认主题视图；未覆盖 Edge/WebKit/Safari、真实读屏、实体触控、200%/400% 缩放、所有 appearance/color/palette/density 组合。Card 局部通过不关闭 2B-1。
 - **Questions skipped:** 当前任务按已授权路线只修复测试有效性，没有待定的产品方向需要用户选择。
+
+### 2026-10-07 Table 固定列与虚拟化回归复核
+
+- **目标与方法：** Impeccable 4.1.3，Read 模式；目标为 Table 文档页的固定列/虚拟化 demo、键盘同步和对应 Playwright 几何断言。视觉结构此前由独立 Assessment A 评为 33/40（Good）；沿用当前设计稿、Table 文档和已关闭的 `.impeccable/critique/2026-10-06T15-50-27Z__docs-demos-table-fixed-columns-tsx.md`，未改动组件公开 API。
+- **修复与独立复审：** 粗指针测试以浏览器计算的 `outlineWidth + outlineOffset` 再加 4px 安全余量，检查采购员按钮与两侧固定区域的分隔；避免测试仅与当前 AntD 轮廓尺寸偶然一致。独立 `gpt-6-luna max` 代码复审只读检查实现、测试和中文注释，结论与发现记于本批收口记录。
+- **Impeccable 结论：** 最终 Nielsen UX 33/40（Good），无 P0/P1。技术审计沿用已关闭快照的局部评分：无障碍 3/4、性能 3/4、主题 2/4、响应式 4/4、实现完整性 4/4，共 16/20；未实测真实读屏、设备帧率与全主题矩阵。Detector 命令 `node C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs --json docs/demos/table-fixed-columns.tsx docs/demos/table-virtual.tsx docs/demos/table-demo.module.css` 原始 stdout 为 `[]`、stderr 为空、退出码 0，只表示扫描范围内没有确定性规则命中。隔离 overlay 曾报告 39 个节点，包含 AntD 固定列与虚拟滚动结构命中；这些结构经公开 API 和几何证据判断，不把 detector 或 overlay 单独当成失败/通过结论。
+- **P2 边界：** Ant Design 5.24 的公开 Table API 未提供使纯文本单元格按方向键横向滚动的入口。纯文本格不在 Tab 顺序内；示例没有改写 AntD 私有 DOM，也没有虚构网格导航。文档明确记录此限制，作为后续 API 能力或替代交互评估项保留；无 P0/P1 阻断。
+- **浏览器与工程门禁：** 隔离验证副本中的 Dumi 生产构建、静态导出检查（158 个 HTML、474 个本地资源引用）、`npm run test:browser:all`（Chromium 42/42、Edge 42/42，合计 84/84）通过；Table 定向浏览器用例 8/8。`npm run check` 为 55 个测试文件、444 项通过；`npm run check:scaffold` 通过，demo 类型检查覆盖 103 个文件。`npm pack --dry-run --json` 当前为 522 个文件，163,015 B 压缩、755,114 B 解包；docs、tests、UI、Dumi 临时产物、coverage 禁入路径为 0 项。首次测试曾有两项 DynamicForm demo 在高负载并行下波动，单独通过后将 worker 限制为 1–4，再次完整测试通过。jsdom 的 AntD scrollbar 伪元素 `getComputedStyle` 警告仍是环境噪声，不影响断言。
+- **范围：** 本轮关闭固定列/虚拟化 demo 的浏览器回归有效性和验收状态不一致问题，不代表 Table 完整主题/色板、放大、真实读屏、Safari、实体触控、动态行高、部署环境或全库 2B-1 已关闭。

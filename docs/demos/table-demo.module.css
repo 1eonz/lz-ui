@@ -1,0 +1,54 @@
+.demo {
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.heading {
+  display: grid;
+  gap: var(--lx-space-xs);
+  margin-block-end: var(--lx-space-md);
+}
+
+.title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.description {
+  max-inline-size: 70ch;
+  margin: 0;
+  color: var(--lx-color-text-secondary);
+}
+
+.scrollHint {
+  margin: 0 0 var(--lx-space-sm);
+  color: var(--lx-color-text-secondary);
+}
+
+.status {
+  margin-block-start: var(--lx-space-sm);
+  color: var(--lx-color-text-secondary);
+}
+
+.virtualScrollRegion:focus-visible {
+  outline: 2px solid var(--lx-focus-ring, var(--lx-color-primary));
+  outline-offset: 2px;
+}
+
+@media (any-pointer: coarse) {
+  .selectionTarget {
+    box-sizing: border-box;
+    display: inline-flex;
+    inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    align-items: center;
+    justify-content: center;
+  }
+
+  .buyerAction,
+  .orderAction {
+    /* 粗指针环境沿用项目触控目标 token；精细指针继续保持表格紧凑密度。 */
+    min-inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
+}

@@ -203,6 +203,8 @@ flowchart TD
 
 2026-10-06 续验：Table 在 1280/930/390/320px、light/dark、comfortable/compact 共 16 组下复验；自动化记录的交互表示例表头均为 36px，基础示例表头在截图中目测为 36px、未单独写入矩阵 JSON。390px 页面根无横向溢出，独立 UX 评审报告的 48px 表头在当前复验未复现。排序、选择/筛选、详情焦点、空/错/加载恢复和键盘横向滚动已有局部浏览器证据；固定列宿主、虚拟化性能、缩放、读屏、Safari/Edge 和全色板仍未验收。文档壳的页头提示与页脚对比度已用当前 light/dark 计算样式复量并达到 AA。移动端搜索入口已由提交 `80a4ee0` 实现；本段早先“入口不可用”的状态由后续提交更新，不代表已通过浏览器验证。搜索清除入口、窄屏结果区分度及该入口的键盘、触控、读屏、明暗实测仍待处理；Table 及全库 2B-1 仍未关闭。
 
+2026-10-06 Table 固定列与虚拟化 demo 收口：新增宿主固定列和 1000 行虚拟化两个可运行示例及相邻文档说明。固定列以 `ResizeObserver` 按 422px 内容宽度启停；桌面两端在横向滚动中保持固定，320/390px 关闭固定后采购员操作可用 Tab 自动滚入并真实命中点击。窄屏另测 421/422px 边界。独立 A 组 Chromium 评审 Nielsen 为 33/40，发现固定 demo 审批状态应与主表 Tag 视觉统一；已改用公开 `lx-ui` Tag，并增加“待审/已审”可见断言。最终 8000 实时 Dumi 路由 Chromium 用例 2/2 通过，状态标签在 120px 列内完整显示。虚拟表 1000 行首末 DOM 为 9/8 行，末行位于 360px 容器内且页面 scrollTop 不变。初次即时 viewport 读取曾捕获布局未提交值，浏览器 helper 改为等待 `expect.poll` 的稳定值，仍对持续溢出严格失败。A/B 与 code review 局部结论 GO；这不代表 Table 完整主题、读屏、缩放或跨浏览器矩阵通过，2B-1 继续进行。
+
 2026-10-06 2B-2 架构评审：独立 `gpt-6-luna max` 复核建议使用 `@floating-ui/react` 的公开能力实现内部锚定定位与焦点管理，并由 lx-ui 私有、按 Document 注册的协调器统一 Tooltip 与交互 dialog 的 Escape/topmost 行为。决策、ARIA/焦点契约、SSR、依赖代价和验收条件见 [ADR-0004](./adr/0004-anchored-dialog.md)。2B-1 独立关闭审计为 NO-GO：开放的 P1 浏览器证据缺口与历史独立复审失败记录仍需处理。此处只完成架构决策；在 2B-1 关闭前不添加依赖、不实现原语、不导出 Popover/Popconfirm。
 
 2026-10-06 ADR-0004 复审返工：独立审查指出 portal 默认挂到 Document 时不能继承 Provider DOM wrapper 的 CSS 变量，且 Popconfirm 的 `alertdialog` 标注与非模态契约冲突。修订后规定由私有主题作用域 Context 将最近 Provider 的已解析 `--lx-*` 变量及主题标记应用到浮层根，不写入共享容器；普通 Popconfirm 使用非模态 `dialog`，紧急 `alertdialog` 留给具备完整模态焦点与背景隔离契约的后续规格。待独立复审确认这些边界后，2B-2 文档架构项方可关闭；2B-1 NO-GO 仍阻止运行时依赖和组件实现。
@@ -222,5 +224,7 @@ flowchart TD
 2026-10-06 Dumi 移动搜索焦点复验：`mobile-search.test.tsx` 11/11 通过，Playwright Chromium/Edge 搜索用例 6/6 通过；覆盖 320/390px、IME Escape、第一次 Escape 留焦点、第二次 Escape 失焦、快捷键重开和三行摘要。后续候选数量复验将长列表高度收至 320px，并在 320×740、390×844、390×450 验证首屏分别显示 3、4、4 项且可在内部滚动；折叠入口截图中的短标签可见，浏览器搜索用例在 Chromium/Edge 各 4/4 通过。此证据只关闭移动搜索局部验收项；真实读屏、设备触控、Safari、深色和高倍缩放仍待验证，2B-1 不关闭。
 
 2026-10-06 全组件窄屏根溢出复验：32 个公开组件路由现均通过 Chromium 与 Edge 的 930×720、390×844、320×740 根节点溢出 smoke；Space 固定宽度预览与 Card demo 最小内容宽度导致的溢出已修复，Card 标题窄屏裁切新增浏览器回归断言。独立 Impeccable 评审记录 Card tab 栏窄屏文字可视区域较窄、依赖横向滚动；code review GO，`npm run test:browser:all` 为两浏览器各 38/38 通过。该结果只扩大文档路由根溢出与两个 demo 的证据范围，不代表组件完整矩阵通过；屏幕阅读器、主题/密度全组合、高倍缩放、Safari 和设备实测仍待处理，2B-1 持续开放。
+
+2026-10-07 Table 固定列与虚拟化复验：固定列阈值为 448px，并在 447/448px 下验证列固定切换、键盘可见性、粗指针 44px 目标和焦点轮廓净距；净距断言由计算出的 `outlineWidth + outlineOffset` 加 4px 余量得出。隔离副本完成 Dumi 构建、静态导出检查及 Chromium/Edge 浏览器全套各 42/42 通过（84/84），Table 定向用例 8/8；覆盖 32 个公开路由 smoke、Table 固定列边界、采购操作反馈和 1000 行虚拟滚动。工程检查通过 55 个测试文件/444 项、103 个 demo 类型文件与 scaffold 检查。最终 Impeccable UX 33/40，无 P0/P1；保留 AntD 公开 Table API 不支持纯文本格方向键横移的 P2。此批只关闭固定列/虚拟化 demo 的浏览器回归证据；Table 的全主题/色板、高倍缩放、真实读屏、Safari、实体触控、动态行高和部署矩阵仍待验收，2B-1 持续开放。
 
 2026-10-06 Card 完整 tab 文本复验：初审发现旧浏览器断言只比较外层 tablist，且点击会自动滚动，不能证明标签文字完整可见；修正为精确匹配文本 Range、检查全部 overflow 祖先和 viewport，并在任何点击前先测完全部标签。断点覆盖 320/360/361/375/387/388/390/930/1280px，Card demo 的 loading 与恢复状态同时复验；第二轮独立 code review GO，Impeccable A 为 33/40，B 浏览器和 overlay 证据见 `docs/impeccable-audit.md`。该批只关闭 Card demo 局部测试有效性和文字裁切问题；主题/外观、缩放、真实读屏、Edge/Safari、设备与全库 2B-1 仍待验收。
