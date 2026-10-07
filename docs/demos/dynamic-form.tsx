@@ -3,7 +3,13 @@ import { usePrefersColor, useSiteData } from 'dumi';
 import '../../src/style.css';
 import { Button, DynamicForm, LxConfigProvider, useLxTheme } from '../../src/index';
 import type { ButtonRef, DynamicFormRef, DynamicFormValues, FieldSchema } from '../../src/index';
-import type { LxAppearance, LxDensity, LxThemeMode } from '../../src/theme';
+import type {
+  LxAppearance,
+  LxColorPreset,
+  LxDensity,
+  LxPalettePreset,
+  LxThemeMode,
+} from '../../src/theme';
 import { scrollDynamicFormFieldIntoView } from './dynamic-form-utils';
 import styles from './dynamic-form.module.css';
 
@@ -48,6 +54,37 @@ const schema: FieldSchema[] = [
   },
 ];
 
+const brandColorOptions: readonly { label: string; value: LxColorPreset }[] = [
+  { label: '海洋蓝', value: 'blue' },
+  { label: '活力橙', value: 'orange' },
+  { label: '翡翠绿', value: 'green' },
+  { label: '智慧紫', value: 'purple' },
+  { label: '清透青', value: 'cyan' },
+  { label: '品牌玫红', value: 'rose' },
+];
+
+const paletteOptions: readonly { label: string; value: LxPalettePreset }[] = [
+  { label: '青瓷桂影', value: 'celadon-laurel' },
+  { label: '暮桃微光', value: 'twilight-peach' },
+  { label: '石榴杏仁', value: 'garnet-almond' },
+  { label: '松针琥珀', value: 'pine-amber' },
+  { label: '雾色燕麦', value: 'misty-oatmeal' },
+  { label: '豆沙墨色', value: 'bean-sand-ink' },
+  { label: '奶酪远青', value: 'cheese-distant-cyan' },
+];
+
+function getColorSelection(theme: {
+  colorPreset: LxColorPreset;
+  palettePreset?: LxPalettePreset | null;
+}) {
+  const palette = paletteOptions.find((option) => option.value === theme.palettePreset);
+  if (palette) {
+    return { label: palette.label, type: '东方配色' };
+  }
+  const brand = brandColorOptions.find((option) => option.value === theme.colorPreset);
+  return { label: brand?.label ?? '品牌色', type: '品牌色' };
+}
+
 function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
   const id = useId();
   const formRef = useRef<DynamicFormRef>(null);
@@ -71,6 +108,7 @@ function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
   const submitLockRef = useRef(false);
   const { theme, setTheme } = useLxTheme();
   const submitting = submitState === 'submitting';
+  const colorSelection = getColorSelection(theme);
 
   useEffect(() => {
     // 跟随文档模式变化；局部选择在文档模式不变时保持独立，不写入持久化。
@@ -230,7 +268,7 @@ function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
                 ? '柔和'
                 : '玻璃'}{' '}
             · {theme.mode === 'dark' ? '深色' : theme.mode === 'system' ? '跟随系统' : '浅色'} ·{' '}
-            {theme.density === 'compact' ? '紧凑' : '舒适'}
+            {theme.density === 'compact' ? '紧凑' : '舒适'} · {colorSelection.label}
           </span>
         </summary>
         <div className={styles.demoToolbar}>
@@ -272,6 +310,57 @@ function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
               <option value="compact">紧凑</option>
             </select>
           </label>
+          <label className={styles.demoControl}>
+            品牌色
+            <select
+              className={styles.demoSelect}
+              aria-label="品牌色"
+              value={theme.colorPreset}
+              onChange={(event) =>
+                setTheme({
+                  colorPreset: event.target.value as LxColorPreset,
+                  palettePreset: null,
+                })
+              }
+            >
+              {brandColorOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className={styles.demoControl}>
+            东方配色
+            <select
+              className={styles.demoSelect}
+              aria-label="东方配色"
+              value={theme.palettePreset ?? 'brand'}
+              onChange={(event) => {
+                const value = event.target.value;
+                setTheme({
+                  palettePreset: value === 'brand' ? null : (value as LxPalettePreset),
+                });
+              }}
+            >
+              <option value="brand">使用品牌色</option>
+              {paletteOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className={styles.colorPreview} aria-live="polite">
+            <span
+              className={styles.colorSwatch}
+              aria-hidden="true"
+              style={{ backgroundColor: 'var(--lx-color-primary)' }}
+            />
+            <span>
+              当前配色：{colorSelection.label}（{colorSelection.type}）
+            </span>
+          </div>
           <label className={styles.failureToggle}>
             <input
               type="checkbox"

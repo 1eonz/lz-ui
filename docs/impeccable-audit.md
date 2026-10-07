@@ -708,3 +708,11 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **浏览器证据：** `tests/browser/theme-settings.spec.ts` 排除使用独立“显示选项”协议的 DynamicForm 后，Chromium **31/31**、Microsoft Edge **31/31** 通过。每条路由覆盖所有主题 frame 的入口和可见内容，以及首个 frame 的 light/dark、business/soft/glass、comfortable/compact、6 个品牌色、7 个东方配色。930×720、390×844、320×740 下 document/body 根节点无横向溢出；浏览器错误收集器在请求归零并静默后确认 pageerror、console error、requestfailed 与 HTTP 错误均为空。
 - **实现审查：** Radio 通过可见标签触发而不是对隐藏 AntD input 做可见性假设；rc-select 通过公开 combobox/listbox/option 语义和键盘操作，首项清除单独处理虚拟列表滚动。Table 的第二个 frame 密度控件用可见“紧凑 · 36px 基础/舒适 · 48px 基础”标签验证，主 Table 的 token snapshot 与完整交互由既有专项用例补充。未读取 AntD 私有 DOM，也未运行时改写 role。
 - **结论与边界：** 本批关闭非 DynamicForm 公开路由的统一主题矩阵缺口，未发现 P0/P1；DynamicForm 独立主题矩阵、真实 200%/400% page zoom、真实屏幕阅读器、Safari、实体触控、设备性能与目标部署仍保留。`[]` 不能单独作为视觉通过结论；Table 纯文本格方向键横向导航继续记录为 AntD 公开 API 限制下的 P2。
+
+### 2026-10-07 DynamicForm 独立主题矩阵
+
+- **目标与方法：** Impeccable 4.1.3，Read 模式；目标为 `docs/demos/dynamic-form.tsx` 的客户录入 demo 和折叠的“显示选项”。先执行 `node C:\Users\Administrator\.codex\skills\impeccable\scripts\context.mjs --target docs/demos/dynamic-form.tsx`，随后按 `audit`、`critique`、`polish` 和 `craft-floor` 规则检查层级、控件语义、窄屏布局与主题切换。该 demo 的主题设置协议与通用 `DataDisplayDemoFrame` 不同，使用独立浏览器用例验收。
+- **检测器边界：** `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json docs/demos/dynamic-form.tsx` 原始 stdout 为 `[]`、stderr 为空、退出码 0。它只表示 TSX 静态确定性规则未命中，不扫描 CSS Module，也不判断真实布局、对比度、动效、主题或交互；`[]` 不作为视觉通过结论。
+- **浏览器证据：** `tests/browser/dynamic-form-theme.spec.ts` 在 Chromium 与 Microsoft Edge 各通过 **1/1**。用例覆盖 light/dark、business/soft/glass、comfortable/compact、6 个品牌色和 7 个东方配色，验证 `data-lx-*`、`--lx-*` token、完整表单内容以及 930/390/320px CSS viewport 根节点无横向溢出；浏览器错误收集器在静默后为空。
+- **交互与层级判断：** 显示选项默认折叠，展开后按外观、主题、密度、品牌色、东方配色和演示失败开关分组；原生 `label`/`select` 保持可访问名称，东方配色与品牌色的清除和恢复行为由公开 `useLxTheme` API 驱动。第二轮 polish 已让摘要显示当前色板，并在展开区提供文字说明和色标；同时用局部 `inline-size` 与 `scroll-margin-block-start` 修复 320/390px 的可用宽度和吸顶栏锚点风险。复核后无 P0/P1/P2 阻断。
+- **边界：** 本批关闭 DynamicForm 独立主题矩阵，不关闭全库 2B-1。真实 page zoom 200%/400%、真实屏幕阅读器、Safari、实体触控、设备性能和目标部署环境仍未覆盖。

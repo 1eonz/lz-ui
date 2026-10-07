@@ -1,4 +1,5 @@
 .demo {
+  inline-size: 100%;
   max-inline-size: 35rem;
 }
 
@@ -42,6 +43,7 @@
 .demoOptions {
   margin-block-end: var(--lx-space-lg);
   border-block-end: 1px solid var(--lx-color-border-secondary);
+  scroll-margin-block-start: 6rem;
 }
 
 .demoOptions summary {
@@ -53,6 +55,7 @@
   color: var(--lx-color-text);
   font-weight: 600;
   cursor: pointer;
+  scroll-margin-block-start: 6rem;
 }
 
 /* 移除浏览器默认展开标记，只保留自定义箭头作为展开提示。 */
@@ -149,6 +152,26 @@
   outline-offset: 0;
 }
 
+.colorPreview {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-xs);
+  align-self: end;
+  min-block-size: var(--lx-control-height);
+  color: var(--lx-color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.colorSwatch {
+  display: inline-block;
+  flex: 0 0 auto;
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+  border: 1px solid var(--lx-color-border);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--lx-color-bg-container);
+}
+
 .demoSuccess {
   margin-block: var(--lx-space-md) 0;
   padding: var(--lx-space-md);
@@ -203,6 +226,12 @@
   .demoControl,
   .demoSelect {
     flex: 1 1 8rem;
+  }
+
+  .colorPreview {
+    flex-basis: 100%;
+    align-self: stretch;
+    min-block-size: 44px;
   }
 
   .demoSelect,

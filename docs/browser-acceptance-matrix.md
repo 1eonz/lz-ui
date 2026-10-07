@@ -229,3 +229,11 @@
 - 每条路由在 930×720、390×844、320×740 CSS viewport 检查 document/body 根节点没有横向溢出；等待请求归零和浏览器静默后，pageerror、console error、requestfailed 与 HTTP 错误均为空。Table 的第二个 demo frame 密度 Radio 通过可见文本标签单独检查，主 Table 的 token/交互细节由 `table-demo.spec.ts` 专项覆盖。
 - Select 验收使用可访问 `combobox`、`listbox`、`option` 和键盘语义，处理 rc-select 虚拟列表的首项清除路径；没有读取 AntD 私有 DOM 或运行时改写 role。静态 Impeccable detector 的 `[]` 只作为确定性规则无命中的记录，不替代上述浏览器证据。
 - 本批关闭了非 DynamicForm 路由的统一主题矩阵缺口；仍未覆盖 DynamicForm 完整主题矩阵、真实 page zoom 200%/400%、真实屏幕阅读器、Safari、实体触控、设备性能和目标部署环境。Table 纯文本格方向键横向导航继续保留为 P2，全库 2B-1 仍未宣称完成。
+
+### 2026-10-07 DynamicForm 独立主题矩阵收口
+
+- `tests/browser/dynamic-form-theme.spec.ts` 针对客户录入 demo 的独立“显示选项”协议执行主题验收。用例覆盖 light/dark、business/soft/glass、comfortable/compact、6 个品牌色和 7 组东方配色；东方配色切换会更新主色 token，恢复“使用品牌色”后能回到品牌色 token。
+- Chromium 与 Microsoft Edge 在最新 Dumi 生产导出经 Vite preview 提供的页面上各通过 **1/1**。测试同时检查完整客户录入内容、条件负责人字段与重置动作、表单控件可见性、930×720、390×844、320×740 CSS viewport 下 document/body 根节点无横向溢出，并在请求归零和静默后确认 pageerror、console error、requestfailed 与 HTTP 错误为空。
+- 显示选项使用原生 `details/summary` 和带真实 `label` 的 `select`，因此折叠状态默认不打断填写任务，控件名称不依赖 AntD 私有 DOM。品牌色与东方配色的互斥关系由公开 `useLxTheme` API 驱动并由浏览器断言覆盖。
+- 第二轮 polish 为摘要补充当前色板名称，并在展开区提供带文字说明的当前配色状态和色标；`aria-live` 状态区与原生控件保持同步，320/390px 下 demo 使用可用内容宽度，summary/详情保留 6rem 吸顶栏滚动边距。
+- 本批关闭 DynamicForm 独立主题矩阵缺口；仍未覆盖真实 page zoom 200%/400%、真实屏幕阅读器、Safari、实体触控、设备性能和目标部署环境。该结果不等同于全库 2B-1 已关闭。
