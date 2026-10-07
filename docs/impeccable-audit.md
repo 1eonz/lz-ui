@@ -683,3 +683,20 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **Detector 与 overlay：** 唯一最终源码扫描为 `node C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs --json docs/demos/table-fixed-columns.tsx`；stdout `[]`、stderr 为空、退出码 0，仅表示确定性规则没有命中。真实页面 overlay 注入成功，报告 11 个标记组：Dumi 目录、主题设置 Select、AntD Table 容器、AntD 虚拟滚动 holder、折叠主题设置内的选项文字及页面 body 动效规则。目录和 Select 属于文档壳/设置面板；隐藏文字标记由未打开的 details 后代产生；虚拟 holder 的裁切是虚拟化滚动预期；目标 `.ant-table` 的 padding 标记落在 AntD 生成的全宽包装层，实际页面截图未显示目标 demo 被遮挡；body 上的 bounce/layout 规则是文档站全局层级，无法归因到目标详情面板。没有把这些规则当成自动缺陷，也没有添加 ignore 例外。
 - **浏览器与工程门禁：** 新建 Playwright context 检查 `http://127.0.0.1:8000/components/data-display/table/`，桌面 1280px 固定列保持 sticky，390px 内部滚动展示操作列，控制台与 page errors 为 0。隔离验证 worktree 的 Chromium 与 Edge Table 专项各 4/4（合计 8/8），包含固定列桌面/窄屏、粗指针 44px 操作目标、虚拟表键盘/播报和滚动至第 1000 行；每项 browser health errors 均为空。隔离 Dumi 生产构建及导出门禁通过，生成 158 个 HTML 页面。主工作区 `npm run check` 通过 55 个测试文件、445 项，`npm run build:lib`、`npm run check:scaffold` 和 `git diff --check` 通过。审查后代码复审 **GO**，没有未解决的本批 P0–P2。
 - **未覆盖与后续：** Table 纯文本单元格方向键横向导航仍是单独的 P2；不通过私有 DOM 改写来处理。全主题/色板矩阵、200%/400% 缩放、真实读屏、Safari、实体触控、设备性能与目标部署仍未验收。此局部复审不关闭 Table 全量矩阵或全库 2B-1。下一步继续验证 Table 的风格/主题/密度组合及高倍缩放，再按路线图推进其余组件。
+
+### 2026-10-07 Table 主题/密度与视口等效回归实施记录
+
+- **覆盖实现：** 在 `tokens.test.ts` 增加 156 组公开解析断言（2 明暗 × 3 外观 × 13 配色 × 2 密度），验证 Table body/header 尺寸与密度预期一致，以及正文表面、表头和选中行文字对比度；对比度沿用该文件既有 helper。没有复制 token resolver 的实现。
+- **本地命令结果：** `npx vitest run src/theme/__tests__/tokens.test.ts` 通过，1 个文件/244 项；`npm run typecheck` 通过；`npx eslint src/theme/__tests__/tokens.test.ts tests/browser/table-demo.spec.ts` 通过。未在主工作区运行 Dumi 构建或 Playwright。
+- **浏览器用例状态：** `table-demo.spec.ts` 已加入通过可访问名称定位的主题设置、明暗 Switch、外观/密度 RadioGroup、品牌色/东方配色 Select 回归；所有 6 个标准色及 7 组东方配色均检查 `data-lx-color`、主色变量、实际表头背景及关键表格计算样式。另加入 640px 与 320px 主 Table CSS viewport 检查根溢出、密度操作、设置 details、订单详情入口和区域内横向滚动。Select 菜单按唯一可访问 listbox 与 option 操作；没有使用 AntD 私有类名或内部状态。
+- **执行边界：** 本地尚未执行上述 Playwright 用例；需同步至隔离 worktree 后运行 `npx playwright test tests/browser/table-demo.spec.ts --project=chromium`，届时只记录实际结果。文档术语为“视口等效/窄 CSS viewport 验收（1280px 基准下的 200%/400% reflow 等效）”，不是实际 page zoom。真实 page zoom、读屏、Safari、实体设备、部署环境及完整 156 组合的浏览器交叉测试仍未覆盖；Impeccable 正式评审与独立 code review 由主代理后续执行，本记录不代表它们通过。
+
+### 2026-10-07 Table 主题、密度与粗指针收口复核
+
+- **范围与方法：** Impeccable 4.1.3，Read 模式；目标为 `docs/demos/table.tsx`、Table 适配层、窄屏分页和详情分组。执行 `context.mjs --target docs/demos/table.tsx` 退出码 0，并保存快照 [`2026-10-07T04-35-00Z__docs-demos-table-tsx.md`](../.impeccable/critique/2026-10-07T04-35-00Z__docs-demos-table-tsx.md)。
+- **静态扫描边界：** 精确执行 `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json docs/demos/table.tsx`，原始 stdout 为 `[]`、退出码 0。它只说明 TSX 静态确定性规则未命中，不覆盖 CSS Modules、实际布局、主题切换、动效或交互；本批结论以真实浏览器与测试证据为准。
+- **设计结果：** 详情分为“采购信息、履约进度、审批与结算”，窄屏转单列；粗指针下默认/large 非虚拟 Table 的 body/header 行高分别使用基础 token 与 `--lx-control-target-touch-min` 的较大值，纯文本行和表头也达到至少 44px。320px 分页为三行，640px 为两行，摘要和操作保持可见。
+- **浏览器证据：** 最新 Dumi 生产构建上 Chromium Table 专项 8/8、Edge Table 专项 8/8；覆盖 6 个标准色、7 组东方配色、三种外观、明暗模式、两种密度、640/320px CSS viewport、详情焦点、固定列、粗指针和 1000 行虚拟滚动。两套均无 pageerror、console error 或 requestfailed。
+- **独立 B 组复核：** 使用 127.0.0.1:4199 临时预览采集 1440/640/390/320 细指针与 390/320 粗指针六个场景；每场 response、console、page、request 和 bad response 均为空。各阶段 document/body 的 `scrollWidth` 与 `clientWidth` 相等；640/390 为两行分页、320 为三行分页，粗指针 compact 纯文本行和表头均为 45px。详情的三个分组标题与 `aria-labelledby` 一一对应。独立结论 P0/P1/P2 均为 0、GO；仅记录 demo surface 下方默认白色余量为不阻断的 P3 观察。
+- **工程证据：** 全量 Vitest 55 个测试文件、606 项通过；`npm run typecheck`、`typecheck:docs`（103 个 demo 文件）、`lint`、`check:scaffold`、`build:lib` 和 `build:docs` 均通过；静态导出为 158 个 HTML、474 个本地 JS/CSS 引用和 88 个嵌套 demo 页面。Edge 初次连续键盘事件存在偶发少处理一次的时序，测试已改为对具体 Select 控件发送按键后两浏览器复跑通过。
+- **未覆盖范围：** 640/320px 是 CSS viewport 的响应式等效检查，不代表真实 page zoom；真实 200%/400% 缩放、屏幕阅读器、Safari、实体设备、设备性能和部署环境仍未验收。纯文本单元格方向键横向导航因 AntD 公开 API 限制继续作为 P2 记录。

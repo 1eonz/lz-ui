@@ -18,6 +18,18 @@ const palettes = [
     palettePreset: palettePreset as LxPalettePreset,
   })),
 ];
+const tableThemeMatrix = (['light', 'dark'] as const).flatMap((mode) =>
+  (['business', 'soft', 'glass'] as const).flatMap((appearance) =>
+    palettes.flatMap((palette) =>
+      (['comfortable', 'compact'] as const).map((density) => ({
+        ...palette,
+        mode,
+        appearance,
+        density,
+      })),
+    ),
+  ),
+);
 const contrast = (a: string, b: string) => {
   const luminance = (color: string) =>
     [1, 3, 5]
@@ -29,6 +41,10 @@ const contrast = (a: string, b: string) => {
 };
 
 describe('resolved theme tokens', () => {
+  it('covers all 156 Table theme combinations', () => {
+    expect(tableThemeMatrix).toHaveLength(156);
+  });
+
   it('在所有主题配色、外观和明暗模式下保持 Tooltip 对比度', () => {
     expect(feedbackTooltipTokens.spotlightBackground).toBe('#1f2937');
     expect(feedbackTooltipTokens.spotlightText).toBe('#ffffff');
@@ -92,21 +108,101 @@ describe('resolved theme tokens', () => {
     expect(components.Spin).toMatchObject({ dotSizeSM: 16, dotSize: 24, dotSizeLG: 36 });
   });
 
+  it.each(tableThemeMatrix)(
+    'keeps Table sizes and readable colors for $mode/$appearance/$density/$colorPreset/$palettePreset',
+    (options) => {
+      const { css, components } = resolveLxTokens(options);
+      const compact = options.density === 'compact';
+      const panelRadius =
+        options.appearance === 'business' ? 4 : options.appearance === 'soft' ? 8 : 12;
+      const table = components.Table;
+      if (!table) throw new Error('解析结果缺少 Table 主题 token');
+
+      expect(table).toMatchObject({
+        cellPaddingBlock: compact ? 9 : 15,
+        cellPaddingBlockMD: compact ? 7 : 12,
+        cellPaddingBlockSM: compact ? 5 : 9,
+        cellPaddingInline: 16,
+        cellPaddingInlineMD: 16,
+        cellPaddingInlineSM: 16,
+        cellFontSize: 12,
+        cellFontSizeMD: 12,
+        cellFontSizeSM: 12,
+        lineHeight: 18 / 12,
+        headerBg: css['--lx-color-item-hover-bg'],
+        headerColor: css['--lx-color-text-secondary'],
+        rowHoverBg: css['--lx-color-item-hover-bg'],
+        rowSelectedBg: css['--lx-color-item-selected-bg'],
+        borderColor: css['--lx-color-border-secondary'],
+        headerBorderRadius: panelRadius,
+      });
+      expect(css['--lx-table-row-height']).toBe(compact ? '36px' : '48px');
+      expect(css['--lx-table-header-height']).toBe('36px');
+      expect(css['--lx-table-font-size']).toBe('12px');
+      expect(css['--lx-table-line-height']).toBe('18px');
+      expect(css['--lx-table-cell-padding-block']).toBe(compact ? '9px' : '15px');
+      expect(css['--lx-table-cell-padding-inline']).toBe('16px');
+
+      expect(
+        contrast(css['--lx-color-text'], css['--lx-color-surface']),
+        'body text on the table surface',
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        contrast(table.headerColor ?? '', table.headerBg ?? ''),
+        'header text on the table header background',
+      ).toBeGreaterThanOrEqual(4.5);
+      expect(
+        contrast(css['--lx-color-text'], css['--lx-color-item-selected-bg']),
+        'body text on the selected row background',
+      ).toBeGreaterThanOrEqual(4.5);
+    },
+  );
+
   it('uses the highest content token for body cells and checkbox height for table headers', () => {
     const stylesheet = parse(
       readFileSync(resolve('src/components/data-display/table/index.module.css'), 'utf8'),
     );
     let paddingBlock: string | undefined;
     let headerPaddingBlock: string | undefined;
+    let coarseBodyHeight: string | undefined;
+    let coarseHeaderHeight: string | undefined;
+    let coarsePaddingBlock: string | undefined;
+    let coarseHeaderPaddingBlock: string | undefined;
     stylesheet.walkRules('.root .bodyRow.bodyRow > td', (rule) => {
+      if (rule.parent?.type !== 'root') return;
       rule.walkDecls('padding-block', (declaration) => {
         paddingBlock = declaration.value;
       });
     });
     stylesheet.walkRules((rule) => {
+      if (rule.parent?.type !== 'root') return;
       if (!rule.selector.includes('.headerRow.headerRow > th')) return;
       rule.walkDecls('padding-block', (declaration) => {
         headerPaddingBlock = declaration.value;
+      });
+    });
+    stylesheet.walkAtRules('media', (media) => {
+      if (media.params !== '(any-pointer: coarse)') return;
+      media.walkRules('.root .bodyRow', (rule) => {
+        rule.walkDecls('height', (declaration) => {
+          coarseBodyHeight = declaration.value;
+        });
+      });
+      media.walkRules('.root .headerRow', (rule) => {
+        rule.walkDecls('height', (declaration) => {
+          coarseHeaderHeight = declaration.value;
+        });
+      });
+      media.walkRules('.root .bodyRow.bodyRow > td', (rule) => {
+        rule.walkDecls('padding-block', (declaration) => {
+          coarsePaddingBlock = declaration.value;
+        });
+      });
+      media.walkRules((rule) => {
+        if (!rule.selector.includes('.headerRow.headerRow > th')) return;
+        rule.walkDecls('padding-block', (declaration) => {
+          coarseHeaderPaddingBlock = declaration.value;
+        });
       });
     });
 
@@ -117,6 +213,19 @@ describe('resolved theme tokens', () => {
     expect(headerPaddingBlock).toContain('max(');
     expect(headerPaddingBlock).toContain('var(--lx-table-header-height)');
     expect(headerPaddingBlock).toContain('var(--lx-control-height-small)');
+    expect(coarsePaddingBlock).toContain('max(');
+    expect(coarsePaddingBlock).toContain('var(--lx-table-line-height)');
+    expect(coarsePaddingBlock).toContain('var(--lx-control-target-touch-min)');
+    expect(coarsePaddingBlock).toContain('var(--lx-tag-height)');
+    expect(coarseHeaderPaddingBlock).toContain('max(');
+    expect(coarseHeaderPaddingBlock).toContain('var(--lx-table-header-height)');
+    expect(coarseHeaderPaddingBlock).toContain('var(--lx-control-target-touch-min)');
+    expect(coarseBodyHeight).toBe(
+      'max(var(--lx-table-row-height), var(--lx-control-target-touch-min))',
+    );
+    expect(coarseHeaderHeight).toBe(
+      'max(var(--lx-table-header-height), var(--lx-control-target-touch-min))',
+    );
   });
 
   it('maps approved typography, semantic states and content spacing through public tokens', () => {

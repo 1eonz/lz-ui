@@ -29,15 +29,20 @@ const amountFormatter = new Intl.NumberFormat('zh-CN', {
 });
 
 function getOrderCheckboxProps(order: PurchaseOrder): AccessibleCheckboxProps {
-  return { 'aria-label': `选择采购单 ${order.id}` };
+  return {
+    'aria-label': `选择采购单 ${order.id}`,
+    className: styles.orderSelectionCheckbox,
+  };
 }
 
 function getTitleCheckbox(checkboxNode: ReactNode): ReactNode {
   if (!isValidElement(checkboxNode)) return checkboxNode;
 
-  // AntD 5.24 的公开标题回调提供原始复选框；克隆只补名称，保留内建选择状态和操作。
-  return cloneElement(checkboxNode as ReactElement<AriaAttributes>, {
+  // AntD 5.24 的公开标题回调提供原始复选框；克隆只补名称和目标样式，保留内建选择行为。
+  const checkboxProps = checkboxNode.props as AriaAttributes & { className?: string };
+  return cloneElement(checkboxNode as ReactElement<AriaAttributes & { className?: string }>, {
     'aria-label': '选择当前页全部采购单',
+    className: [checkboxProps.className, styles.orderSelectionCheckbox].filter(Boolean).join(' '),
   });
 }
 
@@ -48,6 +53,7 @@ function renderExpandIcon({ expanded, expandable, onExpand, record }: ExpandIcon
     <Button
       type="link"
       size="small"
+      className={styles.expandButton}
       icon={expanded ? <DownOutlined /> : <RightOutlined />}
       title={`${action}采购订单 ${record.id}`}
       disabled={!expandable}
@@ -86,9 +92,15 @@ function TableDemoContent() {
   const { theme, setTheme } = useLxTheme();
   const densityLabelId = useId();
   const detailHeadingId = useId();
+  const purchaseInfoHeadingId = `${detailHeadingId}-purchase-info`;
+  const fulfillmentHeadingId = `${detailHeadingId}-fulfillment`;
+  const settlementHeadingId = `${detailHeadingId}-settlement`;
+  const scrollHintId = useId();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const detailHeadingRef = useRef<HTMLHeadingElement>(null);
   const detailRegionRef = useRef<HTMLElement>(null);
+  const tableViewportRef = useRef<HTMLDivElement>(null);
+  const scrollHintRef = useRef<HTMLParagraphElement>(null);
   const removedFocusRef = useRef<Element | null>(null);
   const detailRefs = useRef(new Map<string, ButtonRef>());
   const [state, setState] = useState<'ready' | 'loading' | 'error' | 'empty'>('ready');
@@ -99,6 +111,33 @@ function TableDemoContent() {
   const [statusFilter, setStatusFilter] = useState<OrderStatusFilter>('all');
   const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | null>(null);
   const [detail, setDetail] = useState<PurchaseOrder | null>(null);
+  const [compactPagination, setCompactPagination] = useState(false);
+
+  // 窄屏容器查询写入标记；未加载 CSS 时标记为空，保留宽屏分页默认值。
+  useEffect(() => {
+    if (state !== 'ready') return;
+    const viewport = tableViewportRef.current;
+    const hint = scrollHintRef.current;
+    if (!viewport || !hint) return;
+
+    const updatePaginationMode = () => {
+      setCompactPagination(
+        window.getComputedStyle(hint).getPropertyValue('--lx-table-compact-pagination').trim() ===
+          '1',
+      );
+    };
+    updatePaginationMode();
+
+    const observer =
+      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updatePaginationMode);
+    observer?.observe(viewport);
+    window.addEventListener('resize', updatePaginationMode);
+
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', updatePaginationMode);
+    };
+  }, [state]);
 
   // 详情是非模态区域；打开时提供阅读起点，关闭后的恢复只处理已卸载的焦点，避免抢走筛选或分页操作焦点。
   useEffect(() => {
@@ -163,6 +202,7 @@ function TableDemoContent() {
       align: 'right',
       className: styles.amountCell,
       sorter: (a, b) => a.amount - b.amount,
+      showSorterTooltip: false,
       sortOrder,
       onHeaderCell: () => ({ className: styles.sortableHeader }),
       render: (amount: number) => `¥ ${amountFormatter.format(amount)}`,
@@ -182,7 +222,7 @@ function TableDemoContent() {
       key: 'status',
       width: 100,
       render: (approved: boolean) => (
-        <Tag color={approved ? 'success' : 'warning'}>{approved ? '已审' : '待审'}</Tag>
+        <Tag color={approved ? 'success' : 'warning'}>{approved ? '已审批' : '待审批'}</Tag>
       ),
     },
     {
@@ -197,6 +237,7 @@ function TableDemoContent() {
           }}
           type="link"
           size="small"
+          className={styles.detailButton}
           aria-label={`查看 ${order.id} 详情`}
           onClick={() => openDetail(order)}
         >
@@ -209,10 +250,16 @@ function TableDemoContent() {
     pagination,
     _filters,
     sorter,
+    extra,
   ) => {
     closeDetailForListChange();
-    setCurrent(pagination.pageSize !== pageSize ? 1 : (pagination.current ?? 1));
-    setPageSize(pagination.pageSize ?? 5);
+    // AntD 在紧凑分页模式下仍可能回传内部默认页大小；只有真实分页动作才能更新页大小。
+    const isPaginationAction = extra.action === 'paginate';
+    const nextPageSize = isPaginationAction ? (pagination.pageSize ?? pageSize) : pageSize;
+    setCurrent(
+      isPaginationAction && nextPageSize === pageSize ? (pagination.current ?? current) : 1,
+    );
+    setPageSize(nextPageSize);
     setSortOrder(Array.isArray(sorter) ? (sorter[0]?.order ?? null) : (sorter.order ?? null));
   };
   const filteredOrders =
@@ -221,6 +268,25 @@ function TableDemoContent() {
       : orders.filter(
           (order) => statusFilter === 'all' || order.approved === (statusFilter === 'approved'),
         );
+  // AntD 分页将焦点放在列表项上，难以维持原生按钮语义；demo 始终使用自有语义分页器。
+  // 先对完整筛选结果排序再切片，避免只排序当前页；跨页选择继续由稳定 rowKey 保留。
+  const pageCount = Math.max(1, Math.ceil(filteredOrders.length / pageSize));
+  const activePage = Math.min(current, pageCount);
+  const sortedOrders = sortOrder
+    ? [...filteredOrders].sort((left, right) =>
+        sortOrder === 'ascend' ? left.amount - right.amount : right.amount - left.amount,
+      )
+    : filteredOrders;
+  const visibleOrders = sortedOrders.slice((activePage - 1) * pageSize, activePage * pageSize);
+  const changePage = (nextPage: number) => {
+    closeDetailForListChange();
+    setCurrent(Math.min(pageCount, Math.max(1, nextPage)));
+  };
+  const changePageSize = (nextPageSize: number) => {
+    closeDetailForListChange();
+    setPageSize(nextPageSize);
+    setCurrent(1);
+  };
   const selectedOrders = orders.filter((order) => selected.includes(order.id));
   return (
     <>
@@ -236,11 +302,12 @@ function TableDemoContent() {
               optionType="button"
               value={theme.density}
               options={[
-                { label: '舒适 · 48px', value: 'comfortable' },
-                { label: '紧凑 · 36px', value: 'compact' },
+                { label: '舒适 · 48px 基础', value: 'comfortable' },
+                { label: '紧凑 · 36px 基础', value: 'compact' },
               ]}
               onChange={(event) => setTheme({ density: event.target.value as LxDensity })}
             />
+            <p className={styles.touchDensityHint}>粗指针下，紧凑基础行高会服从 44px 操作目标。</p>
           </div>
           <details className={styles.exampleStates}>
             <summary>示例状态</summary>
@@ -271,8 +338,8 @@ function TableDemoContent() {
             value={statusFilter}
             options={[
               { label: '全部状态', value: 'all' },
-              { label: '已审', value: 'approved' },
-              { label: '待审', value: 'pending' },
+              { label: '已审批', value: 'approved' },
+              { label: '待审批', value: 'pending' },
             ]}
             onChange={(value: OrderStatusFilter) => {
               closeDetailForListChange();
@@ -298,7 +365,7 @@ function TableDemoContent() {
             {selectedOrders.map((order) => (
               <li key={order.id}>
                 <span>
-                  {order.id} · {order.vendor} · {order.approved ? '已审' : '待审'}
+                  {order.id} · {order.vendor} · {order.approved ? '已审批' : '待审批'}
                 </span>
                 <span className={styles.amountCell}>¥ {amountFormatter.format(order.amount)}</span>
               </li>
@@ -325,63 +392,125 @@ function TableDemoContent() {
           }
         />
       ) : (
-        <TableDemoScrollRegion label="采购订单表格">
-          {/* 固定布局会按列定义分配宽度；自动布局会在窄容器中压缩列宽并折断长表头。 */}
-          <Table<PurchaseOrder>
-            rowKey="id"
-            columns={columns}
-            dataSource={filteredOrders}
-            loading={state === 'loading'}
-            tableLayout="fixed"
-            scroll={{ x: tableScrollWidth }}
-            style={{ minInlineSize: tableScrollWidth }}
-            rowSelection={{
-              selectedRowKeys: selected,
-              preserveSelectedRowKeys: true,
-              getCheckboxProps: getOrderCheckboxProps,
-              columnTitle: getTitleCheckbox,
-              onChange: setSelected,
-            }}
-            expandable={{
-              expandedRowKeys: expanded,
-              onExpandedRowsChange: (keys) => setExpanded([...keys]),
-              expandIcon: renderExpandIcon,
-              expandedRowRender: (order) => (
-                <div className={styles.note}>
-                  订单 {order.id} · 首期款项 30%：¥ {amountFormatter.format(order.amount * 0.3)} ·
-                  中期款项 50% · 尾款 20%
-                </div>
-              ),
-            }}
-            pagination={{
-              current,
-              pageSize,
-              total: filteredOrders.length,
-              showSizeChanger: true,
-              pageSizeOptions: [5, 10, 20],
-              showTotal: (total) => `共 ${total} 条`,
-            }}
-            locale={{
-              emptyText: (
-                <Empty
-                  variant="small"
-                  description="暂无采购订单"
-                  action={
-                    <Button
-                      onClick={() => {
-                        headingRef.current?.focus();
-                        setState('ready');
-                      }}
-                    >
-                      恢复订单
-                    </Button>
-                  }
+        <div ref={tableViewportRef} className={styles.tableViewport}>
+          <p ref={scrollHintRef} id={scrollHintId} className={styles.scrollHint}>
+            可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。
+          </p>
+          <TableDemoScrollRegion
+            label="采购订单表格"
+            descriptionId={compactPagination ? scrollHintId : undefined}
+          >
+            {/* 固定布局会按列定义分配宽度；自动布局会在窄容器中压缩列宽并折断长表头。 */}
+            <Table<PurchaseOrder>
+              rowKey="id"
+              columns={columns}
+              dataSource={visibleOrders}
+              loading={state === 'loading'}
+              tableLayout="fixed"
+              scroll={{ x: tableScrollWidth }}
+              style={{ minInlineSize: tableScrollWidth }}
+              rowSelection={{
+                selectedRowKeys: selected,
+                preserveSelectedRowKeys: true,
+                getCheckboxProps: getOrderCheckboxProps,
+                columnTitle: getTitleCheckbox,
+                onChange: setSelected,
+              }}
+              expandable={{
+                expandedRowKeys: expanded,
+                onExpandedRowsChange: (keys) => setExpanded([...keys]),
+                expandIcon: renderExpandIcon,
+                expandedRowRender: (order) => (
+                  <div className={styles.note}>
+                    订单 {order.id} · 首期款项 30%：¥ {amountFormatter.format(order.amount * 0.3)} ·
+                    中期款项 50% · 尾款 20%
+                  </div>
+                ),
+              }}
+              pagination={false}
+              locale={{
+                emptyText: (
+                  <Empty
+                    variant="small"
+                    description="暂无采购订单"
+                    action={
+                      <Button
+                        onClick={() => {
+                          headingRef.current?.focus();
+                          setState('ready');
+                        }}
+                      >
+                        恢复订单
+                      </Button>
+                    }
+                  />
+                ),
+              }}
+              onChange={onChange}
+            />
+          </TableDemoScrollRegion>
+          {state === 'ready' && (
+            <nav className={styles.tablePagination} aria-label="采购订单分页">
+              <span className={styles.pageStatus} aria-live="polite" aria-atomic="true">
+                第 {activePage} 页，共 {pageCount} 页
+              </span>
+              <span className={styles.compactPageSummary} aria-hidden="true">
+                第 {activePage} / {pageCount} 页 · 共 {filteredOrders.length} 条
+              </span>
+              <Select
+                className={styles.pageJump}
+                aria-label="跳至页码"
+                value={activePage}
+                options={Array.from({ length: pageCount }, (_, index) => ({
+                  label: `第 ${index + 1} 页`,
+                  value: index + 1,
+                }))}
+                onChange={(value: number) => changePage(value)}
+              />
+              <span className={styles.paginationTotal}>共 {filteredOrders.length} 条</span>
+              <label className={styles.pageSizeControl}>
+                每页
+                <Select
+                  aria-label="每页条数"
+                  value={pageSize}
+                  options={[5, 10, 20].map((size) => ({ label: `${size} 条/页`, value: size }))}
+                  onChange={(value: number) => changePageSize(value)}
                 />
-              ),
-            }}
-            onChange={onChange}
-          />
-        </TableDemoScrollRegion>
+              </label>
+              <Button
+                className={`${styles.paginationButton} ${styles.previousPaginationButton}`}
+                aria-label="上一页"
+                disabled={activePage <= 1}
+                onClick={() => changePage(activePage - 1)}
+              >
+                上一页
+              </Button>
+              <div className={styles.pageNumbers} role="group" aria-label="页码">
+                {Array.from({ length: pageCount }, (_, index) => index + 1).map((page) => (
+                  <Button
+                    key={page}
+                    size="small"
+                    className={styles.pageNumberButton}
+                    aria-label={`第 ${page} 页`}
+                    aria-current={activePage === page ? 'page' : undefined}
+                    type={activePage === page ? 'primary' : 'default'}
+                    onClick={() => changePage(page)}
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+              <Button
+                className={`${styles.paginationButton} ${styles.nextPaginationButton}`}
+                aria-label="下一页"
+                disabled={activePage >= pageCount}
+                onClick={() => changePage(activePage + 1)}
+              >
+                下一页
+              </Button>
+            </nav>
+          )}
+        </div>
       )}
       {detail && (
         <section ref={detailRegionRef} className={styles.note} aria-labelledby={detailHeadingId}>
@@ -391,13 +520,77 @@ function TableDemoContent() {
             tabIndex={-1}
             className={styles.tableTitle}
           >
-            采购订单 {detail.id} 详情
+            采购订单 {detail.id} <span className={styles.detailTitleSuffix}>详情</span>
           </h4>
-          <p>
-            {detail.vendor} ·{' '}
-            <span className={styles.amountCell}>¥ {amountFormatter.format(detail.amount)}</span>
-          </p>
+          <div className={styles.orderDetailGroups}>
+            <div
+              className={styles.orderDetailGroup}
+              role="group"
+              aria-labelledby={purchaseInfoHeadingId}
+            >
+              <h5 id={purchaseInfoHeadingId} className={styles.orderDetailGroupTitle}>
+                采购信息
+              </h5>
+              <dl className={styles.orderDetailList}>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>订单编号</dt>
+                  <dd className={styles.orderDetailValue}>{detail.id}</dd>
+                </div>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>供应商</dt>
+                  <dd className={styles.orderDetailValue}>{detail.vendor}</dd>
+                </div>
+              </dl>
+            </div>
+            <div
+              className={styles.orderDetailGroup}
+              role="group"
+              aria-labelledby={fulfillmentHeadingId}
+            >
+              <h5 id={fulfillmentHeadingId} className={styles.orderDetailGroupTitle}>
+                履约进度
+              </h5>
+              <dl className={styles.orderDetailList}>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>订单履约</dt>
+                  <dd className={styles.orderFulfillmentValue}>
+                    <Progress
+                      aria-label="订单履约进度"
+                      percent={detail.fulfillmentPercent}
+                      size="small"
+                    />
+                  </dd>
+                </div>
+              </dl>
+            </div>
+            <div
+              className={styles.orderDetailGroup}
+              role="group"
+              aria-labelledby={settlementHeadingId}
+            >
+              <h5 id={settlementHeadingId} className={styles.orderDetailGroupTitle}>
+                审批与结算
+              </h5>
+              <dl className={styles.orderDetailList}>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>采购金额</dt>
+                  <dd className={`${styles.orderDetailValue} ${styles.orderDetailAmount}`}>
+                    ¥ {amountFormatter.format(detail.amount)}
+                  </dd>
+                </div>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>审批状态</dt>
+                  <dd className={styles.orderDetailValue}>
+                    <Tag color={detail.approved ? 'success' : 'warning'}>
+                      {detail.approved ? '已审批' : '待审批'}
+                    </Tag>
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
           <Button
+            className={styles.detailCloseButton}
             onClick={() => {
               // 翻页可能已卸载原行；不存在时回到始终可见的表格标题。
               (detailRefs.current.get(detail.id) ?? headingRef.current)?.focus();
@@ -413,7 +606,7 @@ function TableDemoContent() {
           ? '订单读取失败'
           : state === 'loading'
             ? '订单加载中'
-            : `第 ${current} 页，每页 ${pageSize} 条，已选择 ${selected.length} 条`}
+            : `当前显示 ${visibleOrders.length} 条采购订单，每页 ${pageSize} 条，已选择 ${selected.length} 条`}
       </p>
     </>
   );

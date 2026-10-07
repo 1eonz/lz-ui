@@ -24,6 +24,136 @@ interface Bounds {
   right: number;
   top: number;
   bottom: number;
+  width: number;
+  height: number;
+}
+
+interface TableThemeSnapshot {
+  tokens: {
+    primary: string;
+    text: string;
+    textSecondary: string;
+    surface: string;
+    headerBackground: string;
+    rowHeight: string;
+    panelRadius: string;
+  };
+  visible: {
+    tableBackground: string;
+    tableSurfaceRadius: string;
+    headerBackground: string;
+    headerColor: string;
+    bodyColor: string;
+    rowHeight: string;
+  };
+}
+
+function cssHexToRgb(value: string): string {
+  const match = /^#([0-9a-f]{6})$/i.exec(value);
+  if (!match) throw new Error(`主题变量不是六位十六进制颜色：${value}`);
+  const channels = [0, 2, 4].map((index) => Number.parseInt(match[1].slice(index, index + 2), 16));
+  return `rgb(${channels.join(', ')})`;
+}
+
+async function readTableThemeSnapshot(
+  themeRoot: Locator,
+  tableRegion: Locator,
+): Promise<TableThemeSnapshot> {
+  const table = tableRegion.getByRole('table').first();
+  const header = tableRegion.getByRole('columnheader').first();
+  const bodyCell = tableRegion.getByRole('cell').first();
+  const bodyRow = tableRegion.getByRole('row').nth(1);
+  const provider = await themeRoot.elementHandle();
+  if (!provider) throw new Error('找不到主 Table 的主题作用域');
+  const [root, tableStyle, tableSurfaceRadius, headerStyle, bodyStyle, rowHeight] =
+    await Promise.all([
+      themeRoot.evaluate((element) => {
+        const style = window.getComputedStyle(element);
+        return {
+          tokens: {
+            primary: style.getPropertyValue('--lx-color-primary').trim(),
+            text: style.getPropertyValue('--lx-color-text').trim(),
+            textSecondary: style.getPropertyValue('--lx-color-text-secondary').trim(),
+            surface: style.getPropertyValue('--lx-color-surface').trim(),
+            headerBackground: style.getPropertyValue('--lx-color-item-hover-bg').trim(),
+            rowHeight: style.getPropertyValue('--lx-table-row-height').trim(),
+            panelRadius: style.getPropertyValue('--lx-panel-radius').trim(),
+          },
+        };
+      }),
+      table.evaluate((element, providerElement) => {
+        const isOpaque = (color: string) => {
+          if (color === 'transparent') return false;
+          const legacyAlpha = /^rgba\([^,]+,[^,]+,[^,]+,\s*([\d.]+)\)$/i.exec(color);
+          if (legacyAlpha) return Number(legacyAlpha[1]) >= 1;
+          const modernAlpha = /\/\s*([\d.]+)(%)?\s*\)$/i.exec(color);
+          if (modernAlpha) {
+            const alpha = Number(modernAlpha[1]) / (modernAlpha[2] ? 100 : 1);
+            return alpha >= 1;
+          }
+          return true;
+        };
+        let backgroundOwner: HTMLElement | null = element as HTMLElement;
+        while (backgroundOwner) {
+          const background = window.getComputedStyle(backgroundOwner).backgroundColor;
+          if (isOpaque(background)) return { background };
+          if (backgroundOwner === providerElement) break;
+          backgroundOwner = backgroundOwner.parentElement;
+        }
+        throw new Error('主题作用域内找不到不透明的表格背景');
+      }, provider),
+      table.evaluate((element, providerElement) => {
+        for (
+          let ancestor = (element as HTMLElement).parentElement;
+          ancestor;
+          ancestor = ancestor.parentElement
+        ) {
+          const style = window.getComputedStyle(ancestor);
+          const radii = [
+            style.borderTopLeftRadius,
+            style.borderTopRightRadius,
+            style.borderBottomRightRadius,
+            style.borderBottomLeftRadius,
+          ];
+          if (radii.some((radius) => Number.parseFloat(radius) > 0))
+            return style.borderTopLeftRadius;
+          if (ancestor === providerElement) break;
+        }
+        throw new Error('语义表格的祖先中找不到非零圆角');
+      }, provider),
+      header.evaluate((element) => {
+        const style = window.getComputedStyle(element);
+        return { background: style.backgroundColor, color: style.color };
+      }),
+      bodyCell.evaluate((element) => window.getComputedStyle(element).color),
+      bodyRow.evaluate((element) => window.getComputedStyle(element).height),
+    ]);
+  return {
+    ...root,
+    visible: {
+      tableBackground: tableStyle.background,
+      tableSurfaceRadius,
+      headerBackground: headerStyle.background,
+      headerColor: headerStyle.color,
+      bodyColor: bodyStyle,
+      rowHeight,
+    },
+  };
+}
+
+function expectTableThemeStyles(snapshot: TableThemeSnapshot): void {
+  expect(snapshot.visible.tableBackground).toBe(cssHexToRgb(snapshot.tokens.surface));
+  expect(snapshot.visible.headerBackground).toBe(cssHexToRgb(snapshot.tokens.headerBackground));
+  expect(snapshot.visible.headerColor).toBe(cssHexToRgb(snapshot.tokens.textSecondary));
+  expect(snapshot.visible.bodyColor).toBe(cssHexToRgb(snapshot.tokens.text));
+  expect(snapshot.visible.tableSurfaceRadius).toBe(snapshot.tokens.panelRadius);
+  expect(snapshot.visible.rowHeight).toBe(snapshot.tokens.rowHeight);
+}
+
+async function chooseRadio(themeRoot: Locator, name: string): Promise<void> {
+  const radio = themeRoot.getByRole('radio', { name, exact: true });
+  await themeRoot.getByText(name, { exact: true }).click();
+  await expect(radio).toBeChecked();
 }
 
 async function inspectTableScrollport(
@@ -109,8 +239,22 @@ async function inspectTableScrollport(
 async function readBounds(element: Locator): Promise<Bounds> {
   return element.evaluate((node) => {
     const rect = node.getBoundingClientRect();
-    return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+    return {
+      left: rect.left,
+      right: rect.right,
+      top: rect.top,
+      bottom: rect.bottom,
+      width: rect.width,
+      height: rect.height,
+    };
   });
+}
+
+async function expectVisuallyHidden(element: Locator): Promise<void> {
+  await expect(element).toHaveCSS('width', '1px');
+  await expect(element).toHaveCSS('height', '1px');
+  await expect(element).toHaveCSS('overflow', 'hidden');
+  await expect(element).toHaveCSS('clip-path', 'inset(50%)');
 }
 
 async function expectNoDocumentOverflow(page: Page): Promise<void> {
@@ -152,6 +296,606 @@ function expectFixedEdges(
   expect(Math.abs(cells.orderId.left - cells.selection.right)).toBeLessThanOrEqual(2);
   expect(Math.abs(cells.action.right - port.right)).toBeLessThanOrEqual(2);
 }
+
+test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见表格样式', async ({ page }) => {
+  const browserHealth = collectBrowserErrors(page);
+  await page.goto('/components/data-display/table/');
+
+  const tableRegion = page.getByRole('region', { name: '采购订单表格', exact: true });
+  const themeRoot = page.locator('[data-lx-mode]').filter({ has: tableRegion });
+  await expect(themeRoot).toHaveCount(1);
+  await expect(tableRegion.getByRole('table').first()).toBeVisible();
+  await themeRoot.getByText('主题设置', { exact: true }).click();
+
+  const darkSwitch = themeRoot.getByRole('switch', { name: '暗色模式' });
+  await expect(darkSwitch).toBeVisible();
+
+  const setMode = async (mode: 'light' | 'dark') => {
+    if ((await themeRoot.getAttribute('data-lx-mode')) !== mode) await darkSwitch.click();
+    await expect(themeRoot).toHaveAttribute('data-lx-mode', mode);
+    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    expectTableThemeStyles(snapshot);
+    return snapshot;
+  };
+
+  const light = await setMode('light');
+  const dark = await setMode('dark');
+  expect(dark.tokens.text).not.toBe(light.tokens.text);
+  expect(dark.tokens.surface).not.toBe(light.tokens.surface);
+  expect(dark.visible.tableBackground).not.toBe(light.visible.tableBackground);
+  expect(dark.visible.headerBackground).not.toBe(light.visible.headerBackground);
+  await setMode('light');
+
+  for (const appearance of [
+    { label: '商务', value: 'business', radius: '4px' },
+    { label: '轻盈', value: 'soft', radius: '8px' },
+    { label: '玻璃', value: 'glass', radius: '12px' },
+  ]) {
+    await chooseRadio(themeRoot, appearance.label);
+    await expect(themeRoot).toHaveAttribute('data-lx-appearance', appearance.value);
+    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    expect(snapshot.tokens.panelRadius).toBe(appearance.radius);
+    expectTableThemeStyles(snapshot);
+  }
+
+  for (const density of [
+    { label: '舒适 · 48px 基础', value: 'comfortable', height: '48px' },
+    { label: '紧凑 · 36px 基础', value: 'compact', height: '36px' },
+  ]) {
+    await chooseRadio(themeRoot, density.label);
+    await expect(themeRoot).toHaveAttribute('data-lx-density', density.value);
+    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    expect(snapshot.tokens.rowHeight).toBe(density.height);
+    expectTableThemeStyles(snapshot);
+  }
+
+  await chooseRadio(themeRoot, '商务');
+  await chooseRadio(themeRoot, '舒适 · 48px 基础');
+
+  const brandColors = [
+    { label: '海洋蓝', value: 'blue' },
+    { label: '活力橙', value: 'orange' },
+    { label: '翡翠绿', value: 'green' },
+    { label: '智慧紫', value: 'purple' },
+    { label: '清透青', value: 'cyan' },
+    { label: '品牌玫红', value: 'rose' },
+  ];
+  const paletteColors = [
+    { label: '青瓷桂影', value: 'celadon-laurel' },
+    { label: '暮桃微光', value: 'twilight-peach' },
+    { label: '石榴杏仁', value: 'garnet-almond' },
+    { label: '松针琥珀', value: 'pine-amber' },
+    { label: '雾色燕麦', value: 'misty-oatmeal' },
+    { label: '豆沙墨色', value: 'bean-sand-ink' },
+    { label: '奶酪远青', value: 'cheese-distant-cyan' },
+  ];
+  const brandLabels = brandColors.map(({ label }) => label);
+  const paletteLabels = ['使用品牌色', ...paletteColors.map(({ label }) => label)];
+  const selectedIndexes = new Map<string, number>([
+    ['品牌色', 0],
+    ['东方配色', 0],
+  ]);
+  const chooseOption = async (name: string, label: string, options: readonly string[]) => {
+    const optionIndex = options.indexOf(label);
+    expect(optionIndex).toBeGreaterThanOrEqual(0);
+    const currentIndex = selectedIndexes.get(name);
+    expect(currentIndex).toBeDefined();
+    const select = themeRoot.getByRole('combobox', { name });
+    await select.evaluate((element) =>
+      element.scrollIntoView({ block: 'center', inline: 'nearest' }),
+    );
+    await select.press('Enter');
+    const popup = page.getByRole('listbox');
+    await expect(popup).toHaveCount(1);
+    await expect(select).toHaveAttribute('aria-expanded', 'true');
+    const distance = Math.abs(optionIndex - currentIndex!);
+    const direction = optionIndex >= currentIndex! ? 'ArrowDown' : 'ArrowUp';
+    for (let index = 0; index < distance; index += 1) await select.press(direction);
+    const option = popup.getByRole('option', { name: label, exact: true });
+    await expect(option).toHaveCount(1);
+    const activeOptionId = await select.getAttribute('aria-activedescendant');
+    expect(activeOptionId).toBe(await option.getAttribute('id'));
+    await select.press('Enter');
+    await expect(select).toHaveAttribute('aria-expanded', 'false');
+    selectedIndexes.set(name, optionIndex);
+  };
+  await expect(themeRoot).toHaveAttribute('data-lx-color', 'blue');
+  await expect(themeRoot.getByText('使用品牌色', { exact: true })).toBeVisible();
+  let previous = await readTableThemeSnapshot(themeRoot, tableRegion);
+  expectTableThemeStyles(previous);
+
+  for (const color of brandColors.slice(1)) {
+    await chooseOption('品牌色', color.label, brandLabels);
+    await expect(themeRoot).toHaveAttribute('data-lx-mode', 'light');
+    await expect(themeRoot).toHaveAttribute('data-lx-appearance', 'business');
+    await expect(themeRoot).toHaveAttribute('data-lx-density', 'comfortable');
+    await expect(themeRoot).toHaveAttribute('data-lx-color', color.value);
+    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    expectTableThemeStyles(snapshot);
+    expect(snapshot.tokens.primary).not.toBe(previous.tokens.primary);
+    expect(snapshot.visible.headerBackground).not.toBe(previous.visible.headerBackground);
+    previous = snapshot;
+  }
+
+  await expect(themeRoot.getByText('使用品牌色', { exact: true })).toBeVisible();
+  for (const palette of paletteColors) {
+    await chooseOption('东方配色', palette.label, paletteLabels);
+    await expect(themeRoot).toHaveAttribute('data-lx-mode', 'light');
+    await expect(themeRoot).toHaveAttribute('data-lx-appearance', 'business');
+    await expect(themeRoot).toHaveAttribute('data-lx-density', 'comfortable');
+    await expect(themeRoot).toHaveAttribute('data-lx-color', palette.value);
+    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    expectTableThemeStyles(snapshot);
+    expect(snapshot.tokens.primary).not.toBe(previous.tokens.primary);
+    expect(snapshot.visible.headerBackground).not.toBe(previous.visible.headerBackground);
+    previous = snapshot;
+  }
+
+  await waitForBrowserQuiescence(page, browserHealth);
+  expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
+});
+
+test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情并限制横向滚动', async ({
+  page,
+}) => {
+  const browserHealth = collectBrowserErrors(page);
+  await page.goto('/components/data-display/table/');
+
+  const tableRegion = page.getByRole('region', { name: '采购订单表格', exact: true });
+  const tableViewport = tableRegion.locator('xpath=..');
+  const themeRoot = page.locator('[data-lx-mode]').filter({ has: tableRegion });
+  const settingsSummary = themeRoot.getByText('主题设置', { exact: true });
+  const darkSwitch = themeRoot.getByRole('switch', { name: '暗色模式' });
+  const firstOrder = tableRegion.getByRole('row').filter({ hasText: 'PO-2024-1881' });
+  const orderIdCell = firstOrder.getByRole('cell').nth(1);
+
+  for (const width of [320, 640]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expectNoDocumentOverflow(page);
+    await inspectTableScrollport(orderIdCell, 'x', 'start');
+    const viewportBounds = await readBounds(tableViewport);
+    const needsCompactLayout = viewportBounds.width <= 855;
+    if (needsCompactLayout) {
+      await tableRegion.evaluate((region) => {
+        region.scrollLeft = 0;
+      });
+      await expect(
+        themeRoot.getByText('可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。', {
+          exact: true,
+        }),
+      ).toBeVisible();
+      const pagination = themeRoot.getByRole('navigation', { name: '采购订单分页' });
+      const previousPage = pagination.getByRole('button', { name: '上一页' });
+      const nextPage = pagination.getByRole('button', { name: '下一页' });
+      const pageJump = pagination.getByRole('combobox', { name: '跳至页码' });
+      const pageAnnouncement = pagination.getByText(/^第 \d+ 页，共 \d+ 页$/);
+      await expect(pagination).toBeVisible();
+      await expect(pageJump).toBeVisible();
+      await expect(pageAnnouncement).toHaveAttribute('aria-live', 'polite');
+      await expectVisuallyHidden(pageAnnouncement);
+      await expect(previousPage).toBeDisabled();
+      await expect(nextPage).toBeEnabled();
+
+      await tableRegion.focus();
+      let reachedNextPage = false;
+      for (let index = 0; index < 40; index += 1) {
+        await page.keyboard.press('Tab');
+        if (await nextPage.evaluate((button) => button === document.activeElement)) {
+          reachedNextPage = true;
+          break;
+        }
+      }
+      expect(reachedNextPage).toBe(true);
+      await page.keyboard.press('Space');
+      await expect(pageAnnouncement).toHaveText('第 2 页，共 5 页');
+      await expect(themeRoot.getByRole('status')).toContainText(
+        '当前显示 5 条采购订单，每页 5 条，已选择 0 条',
+      );
+      await expect(themeRoot.getByRole('status')).not.toContainText('第 2 页');
+      await expect(nextPage).toBeFocused();
+
+      await page.keyboard.press('Shift+Tab');
+      await expect(previousPage).toBeFocused();
+      await expect(previousPage).toBeEnabled();
+      await page.keyboard.press('Space');
+      await expect(pageAnnouncement).toHaveText('第 1 页，共 5 页');
+      await page.keyboard.press('Tab');
+      await expect(nextPage).toBeFocused();
+      await page.keyboard.press('Enter');
+      await expect(pageAnnouncement).toHaveText('第 2 页，共 5 页');
+      await page.keyboard.press('Shift+Tab');
+      await page.keyboard.press('Space');
+      await expect(pageAnnouncement).toHaveText('第 1 页，共 5 页');
+      await pageJump.focus();
+      await pageJump.press('Enter');
+      for (let index = 1; index < 5; index += 1) await pageJump.press('ArrowDown');
+      await pageJump.press('Enter');
+      await expect(pageAnnouncement).toHaveText('第 5 页，共 5 页');
+      await expect(pagination.getByText('第 5 / 5 页 · 共 24 条', { exact: true })).toBeVisible();
+      await expect(nextPage).toBeDisabled();
+      await expect(
+        themeRoot.getByRole('checkbox', { name: '选择采购单 PO-2024-1901' }),
+      ).toBeVisible();
+      for (let currentPage = 5; currentPage > 1; currentPage -= 1) {
+        await previousPage.click();
+      }
+      await expect(pageAnnouncement).toHaveText('第 1 页，共 5 页');
+      await expect(pagination.getByText('第 1 / 5 页 · 共 24 条', { exact: true })).toBeVisible();
+      await expect(tableRegion).toHaveAccessibleDescription(
+        '可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。',
+      );
+      const viewportBounds = await readBounds(tableViewport);
+      const paginationBounds = await readBounds(pagination);
+      // 340px 以下为了避免摘要与操作按钮挤在同一行，分页会采用三行布局。
+      const paginationHeightLimit = viewportBounds.width <= 340 ? 140 : 100;
+      expect(paginationBounds.height).toBeLessThanOrEqual(paginationHeightLimit);
+      expect(
+        paginationBounds.left,
+        `紧凑分页越出表格容器：${JSON.stringify({ paginationBounds, viewportBounds })}`,
+      ).toBeGreaterThanOrEqual(viewportBounds.left - 1);
+      expect(paginationBounds.right).toBeLessThanOrEqual(viewportBounds.right + 1);
+      for (const control of [previousPage, nextPage]) {
+        const controlBounds = await readBounds(control);
+        expect(controlBounds.height).toBeGreaterThanOrEqual(44);
+        expect(controlBounds.left).toBeGreaterThanOrEqual(viewportBounds.left - 1);
+        expect(controlBounds.right).toBeLessThanOrEqual(viewportBounds.right + 1);
+      }
+    } else {
+      await expect(
+        themeRoot.getByText('可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。', {
+          exact: true,
+        }),
+      ).not.toBeVisible();
+      const pagination = themeRoot.getByRole('navigation', { name: '采购订单分页' });
+      await expect(pagination.getByRole('button', { name: '第 1 页' })).toHaveAttribute(
+        'aria-current',
+        'page',
+      );
+      await expect(pagination.getByRole('combobox', { name: '每页条数' })).toBeVisible();
+      await expect(tableRegion).not.toHaveAttribute('aria-describedby');
+    }
+    await expect(themeRoot.getByText('紧凑 · 36px 基础', { exact: true })).toBeVisible();
+    await chooseRadio(themeRoot, '紧凑 · 36px 基础');
+    await expect(themeRoot).toHaveAttribute('data-lx-density', 'compact');
+    const compact = await readTableThemeSnapshot(themeRoot, tableRegion);
+    expect(compact.tokens.rowHeight).toBe('36px');
+    expect(compact.visible.rowHeight).toBe('36px');
+
+    await chooseRadio(themeRoot, '舒适 · 48px 基础');
+    await expect(themeRoot).toHaveAttribute('data-lx-density', 'comfortable');
+    const comfortable = await readTableThemeSnapshot(themeRoot, tableRegion);
+    expect(comfortable.tokens.rowHeight).toBe('48px');
+    expect(comfortable.visible.rowHeight).toBe('48px');
+
+    await settingsSummary.scrollIntoViewIfNeeded();
+    await expect(settingsSummary).toBeVisible();
+    await settingsSummary.click();
+    await expect(darkSwitch).toBeVisible();
+    await settingsSummary.click();
+    await expect(darkSwitch).not.toBeVisible();
+
+    const scrollport = await inspectTableScrollport(orderIdCell, 'x', 'end');
+    expect(scrollport.scrollWidth).toBeGreaterThan(scrollport.clientWidth + 1);
+    expect(['auto', 'scroll']).toContain(scrollport.overflow);
+    await expectNoDocumentOverflow(page);
+
+    await firstOrder.getByRole('button', { name: '查看 PO-2024-1881 详情' }).click();
+    const orderDetail = themeRoot.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
+    await expect(orderDetail).toBeVisible();
+    await expect(orderDetail.getByRole('group')).toHaveCount(3);
+    await expect(orderDetail.getByRole('group', { name: '采购信息' })).toBeVisible();
+    await expect(orderDetail.getByRole('group', { name: '履约进度' })).toBeVisible();
+    await expect(orderDetail.getByRole('group', { name: '审批与结算' })).toBeVisible();
+    await expect(orderDetail.getByRole('progressbar', { name: '订单履约进度' })).toHaveAttribute(
+      'aria-valuenow',
+      '82',
+    );
+    await expect(orderDetail.getByRole('definition')).toHaveText([
+      'PO-2024-1881',
+      '上海深蓝光电高新材料有限公司',
+      '82%',
+      '¥ 1,428,900.00',
+      '已审批',
+    ]);
+    await expect(orderDetail.getByRole('button', { name: '收起详情' })).toBeVisible();
+    const groupColumns = await orderDetail
+      .getByRole('group')
+      .first()
+      .evaluate((group) => {
+        const grid = group.parentElement;
+        if (!grid) throw new Error('未能读取采购订单详情分组布局');
+        return window.getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length;
+      });
+    expect(groupColumns).toBe(1);
+    await expectNoDocumentOverflow(page);
+    await orderDetail.getByRole('button', { name: '收起详情' }).click();
+    await expect(orderDetail).toHaveCount(0);
+  }
+
+  await page.setViewportSize({ width: 1280, height: 844 });
+  await firstOrder.getByRole('button', { name: '查看 PO-2024-1881 详情' }).click();
+  const desktopOrderDetail = themeRoot.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
+  const desktopGroupColumns = await desktopOrderDetail
+    .getByRole('group')
+    .first()
+    .evaluate((group) => {
+      const grid = group.parentElement;
+      if (!grid) throw new Error('未能读取桌面采购订单详情分组布局');
+      return window.getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length;
+    });
+  expect(desktopGroupColumns).toBe(3);
+  await desktopOrderDetail.getByRole('button', { name: '收起详情' }).click();
+
+  for (const containerWidth of [855, 856]) {
+    await tableViewport.evaluate((node, inlineSize) => {
+      (node as HTMLElement).style.inlineSize = `${inlineSize}px`;
+    }, containerWidth);
+
+    const scrollHint = themeRoot.getByText(
+      '可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。',
+      { exact: true },
+    );
+    if (containerWidth === 855) {
+      await expect(scrollHint).toBeVisible();
+      await expect(themeRoot.getByRole('navigation', { name: '采购订单分页' })).toBeVisible();
+      await expect(
+        themeRoot.getByRole('navigation', { name: '采购订单分页' }).getByRole('combobox', {
+          name: '跳至页码',
+        }),
+      ).toBeVisible();
+      await expect(tableRegion).toHaveAccessibleDescription(
+        '可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。',
+      );
+    } else {
+      await expect(scrollHint).not.toBeVisible();
+      const pagination = themeRoot.getByRole('navigation', { name: '采购订单分页' });
+      await expect(pagination.getByRole('combobox', { name: '跳至页码' })).not.toBeVisible();
+      await expect(pagination.getByRole('combobox', { name: '每页条数' })).toBeVisible();
+      await expect(pagination.getByRole('button', { name: '第 1 页' })).toHaveAttribute(
+        'aria-current',
+        'page',
+      );
+      await expect(tableRegion).not.toHaveAttribute('aria-describedby');
+    }
+  }
+
+  await tableViewport.evaluate((node) => {
+    (node as HTMLElement).style.removeProperty('inline-size');
+  });
+  await page.setViewportSize({ width: 320, height: 844 });
+  await expectNoDocumentOverflow(page);
+  await firstOrder.getByRole('button', { name: '查看 PO-2024-1881 详情' }).click();
+  const narrowOrderDetail = themeRoot.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
+  const detailTitleSuffix = narrowOrderDetail.getByRole('heading', { level: 4 }).locator('span');
+  await detailTitleSuffix.evaluate((element) => {
+    const heading = element.closest('h4');
+    if (!heading) throw new Error('未能读取采购订单详情标题');
+    heading.style.inlineSize = '120px';
+  });
+  await expect(detailTitleSuffix).toHaveText('详情');
+  await expect
+    .poll(() =>
+      detailTitleSuffix.evaluate((element) => window.getComputedStyle(element).whiteSpace),
+    )
+    .toBe('nowrap');
+  const detailTitleSuffixLineCount = await detailTitleSuffix.evaluate((element) => {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    return range.getClientRects().length;
+  });
+  expect(detailTitleSuffixLineCount).toBe(1);
+  const narrowGroupColumns = await narrowOrderDetail
+    .getByRole('group')
+    .first()
+    .evaluate((group) => {
+      const grid = group.parentElement;
+      if (!grid) throw new Error('未能读取窄屏采购订单详情分组布局');
+      return window.getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length;
+    });
+  expect(narrowGroupColumns).toBe(1);
+  await expect(narrowOrderDetail.getByRole('group')).toHaveCount(3);
+  await narrowOrderDetail.getByRole('button', { name: '收起详情' }).click();
+  await expect(firstOrder.getByRole('button', { name: '查看 PO-2024-1881 详情' })).toBeFocused();
+
+  await waitForBrowserQuiescence(page, browserHealth);
+  expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
+});
+
+test('宽屏 Table 分页使用原生按钮维护键盘与当前页语义', async ({ page }) => {
+  const browserHealth = collectBrowserErrors(page);
+  await page.goto('/components/data-display/table/');
+  await page.setViewportSize({ width: 1280, height: 844 });
+
+  const themeRoot = page.locator('[data-lx-mode]').filter({
+    has: page.getByRole('region', { name: '采购订单表格', exact: true }),
+  });
+  const pagination = themeRoot.getByRole('navigation', { name: '采购订单分页' });
+  const pageSize = pagination.getByRole('combobox', { name: '每页条数' });
+  const firstPage = pagination.getByRole('button', { name: '第 1 页' });
+  const secondPage = pagination.getByRole('button', { name: '第 2 页' });
+  const thirdPage = pagination.getByRole('button', { name: '第 3 页' });
+  const fifthPage = pagination.getByRole('button', { name: '第 5 页' });
+  const previousPage = pagination.getByRole('button', { name: '上一页' });
+  const nextPage = pagination.getByRole('button', { name: '下一页' });
+
+  await expect(pagination).toContainText('共 24 条');
+  await expect(previousPage).toBeDisabled();
+  await expect(firstPage).toHaveAttribute('aria-current', 'page');
+  await pageSize.focus();
+  await page.keyboard.press('Tab');
+  await expect(firstPage).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(firstPage).toHaveAttribute('aria-current', 'page');
+  await page.keyboard.press('Tab');
+  await expect(secondPage).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(secondPage).toHaveAttribute('aria-current', 'page');
+  await expect(themeRoot.getByRole('status')).toContainText(
+    '当前显示 5 条采购订单，每页 5 条，已选择 0 条',
+  );
+  await page.keyboard.press('Tab');
+  await expect(thirdPage).toBeFocused();
+  await page.keyboard.press('Space');
+  await expect(thirdPage).toHaveAttribute('aria-current', 'page');
+  await fifthPage.click();
+  await expect(fifthPage).toHaveAttribute('aria-current', 'page');
+  await expect(nextPage).toBeDisabled();
+  await expect(previousPage).toBeEnabled();
+
+  await pageSize.press('Enter');
+  await expect(pageSize).toHaveAttribute('aria-expanded', 'true');
+  await pageSize.press('ArrowDown');
+  const tenRows = page.getByText('10 条/页', { exact: true });
+  await expect(tenRows).toBeVisible();
+  await pageSize.press('Enter');
+  await expect(themeRoot.getByRole('status')).toContainText(
+    '当前显示 10 条采购订单，每页 10 条，已选择 0 条',
+  );
+  await expect(pagination).toContainText('共 3 页');
+  await expect(pagination.getByRole('button', { name: '第 1 页' })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
+
+  await waitForBrowserQuiescence(page, browserHealth);
+  expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
+});
+
+test('切换到紧凑分页后排序保留宽屏选定的页大小', async ({ page }) => {
+  const browserHealth = collectBrowserErrors(page);
+  await page.goto('/components/data-display/table/');
+  await page.setViewportSize({ width: 1280, height: 844 });
+
+  const tableRegion = page.getByRole('region', { name: '采购订单表格', exact: true });
+  const tableViewport = tableRegion.locator('xpath=..');
+  const themeRoot = page.locator('[data-lx-mode]').filter({ has: tableRegion });
+  const totalOrderCount = 24;
+  await tableViewport.evaluate((node) => {
+    (node as HTMLElement).style.inlineSize = '856px';
+  });
+
+  let activePageSize = 5;
+  for (const { pageSize, pageCount } of [
+    { pageSize: 10, pageCount: 3 },
+    { pageSize: 20, pageCount: 2 },
+  ]) {
+    const pagination = themeRoot.getByRole('navigation', { name: '采购订单分页' });
+    await expect(pagination).toContainText(`共 ${totalOrderCount} 条`);
+    const pageSizeSelect = pagination.getByRole('combobox', { name: '每页条数' });
+    await expect(pageSizeSelect).toBeVisible();
+    await pageSizeSelect.press('Enter');
+    await expect(pageSizeSelect).toHaveAttribute('aria-expanded', 'true');
+    const pageSizeOptions = [5, 10, 20];
+    const optionIndex = pageSizeOptions.indexOf(pageSize);
+    const currentIndex = pageSizeOptions.indexOf(activePageSize);
+    const direction = optionIndex >= currentIndex ? 'ArrowDown' : 'ArrowUp';
+    for (let index = 0; index < Math.abs(optionIndex - currentIndex); index += 1) {
+      await pageSizeSelect.press(direction);
+    }
+    const pageSizeOption = page.getByText(`${pageSize} 条/页`, { exact: true });
+    await expect(pageSizeOption).toBeVisible();
+    await pageSizeSelect.press('Enter');
+    activePageSize = pageSize;
+    await expect(themeRoot.getByRole('status')).toContainText(`每页 ${pageSize} 条`);
+
+    const visibleOrdersOnSecondPage = Math.min(pageSize, totalOrderCount - pageSize);
+    await pagination.getByRole('button', { name: '下一页' }).click();
+    await expect(themeRoot.getByRole('status')).toContainText(
+      `当前显示 ${visibleOrdersOnSecondPage} 条采购订单，每页 ${pageSize} 条，已选择 0 条`,
+    );
+    await expect(tableRegion.getByRole('table').getByRole('row')).toHaveCount(
+      visibleOrdersOnSecondPage + 1,
+    );
+    await tableViewport.evaluate((node) => {
+      (node as HTMLElement).style.inlineSize = '855px';
+    });
+    const compactPagination = themeRoot.getByRole('navigation', { name: '采购订单分页' });
+    await expect(compactPagination).toContainText(`第 2 页，共 ${pageCount} 页`);
+
+    const amountHeader = tableRegion.getByRole('columnheader', { name: '结算金额' });
+    await amountHeader.hover();
+    await expect(page.getByRole('tooltip')).toHaveCount(0);
+    await amountHeader.click();
+    const expectedSort = pageSize === 10 ? 'ascending' : 'descending';
+    await expect(amountHeader).toHaveAttribute('aria-sort', expectedSort);
+    await expect(themeRoot.getByRole('status')).toContainText(
+      `当前显示 ${pageSize} 条采购订单，每页 ${pageSize} 条，已选择 0 条`,
+    );
+    await expect(compactPagination).toContainText(`第 1 页，共 ${pageCount} 页`);
+    await expect(tableRegion.getByRole('table').getByRole('row')).toHaveCount(pageSize + 1);
+    const visibleAmounts = (await tableRegion.getByRole('cell').allTextContents())
+      .filter((text) => text.includes('¥'))
+      .map((text) => {
+        const match = /¥\s*([\d,]+(?:\.\d+)?)/.exec(text);
+        if (!match) throw new Error(`无法解析采购订单金额：${text}`);
+        return Number(match[1].replace(/,/g, ''));
+      });
+    expect(visibleAmounts.length).toBe(pageSize);
+    const expectedAmounts = [...visibleAmounts].sort((left, right) =>
+      expectedSort === 'ascending' ? left - right : right - left,
+    );
+    expect(visibleAmounts).toEqual(expectedAmounts);
+    expect(visibleAmounts[0]).toBe(expectedSort === 'ascending' ? 1_428_900 : 4_268_250);
+
+    await tableViewport.evaluate((node) => {
+      (node as HTMLElement).style.inlineSize = '856px';
+    });
+  }
+
+  const compactPagination = themeRoot.getByRole('navigation', { name: '采购订单分页' });
+  const previousPage = compactPagination.getByRole('button', { name: '上一页' });
+  const nextPage = compactPagination.getByRole('button', { name: '下一页' });
+  const pageStatus = compactPagination.getByText('第 1 页，共 2 页', { exact: true });
+  const compactPageSummary = compactPagination.getByText('第 1 / 2 页 · 共 24 条', { exact: true });
+  const pageJump = compactPagination.getByRole('combobox', { name: '跳至页码' });
+  for (const containerWidth of [299, 300, 301, 339, 340, 341]) {
+    await tableViewport.evaluate((node, width) => {
+      (node as HTMLElement).style.inlineSize = `${width}px`;
+    }, containerWidth);
+    await expect(compactPagination).toBeVisible();
+    await expectVisuallyHidden(pageStatus);
+    await expect(compactPageSummary).toBeVisible();
+    await expect(compactPageSummary).toHaveAttribute('aria-hidden', 'true');
+    await expect(pageJump).toBeVisible();
+    const display = await compactPagination.evaluate(
+      (element) => window.getComputedStyle(element).display,
+    );
+    expect(display).toBe('grid');
+
+    const containerBounds = await readBounds(tableViewport);
+    const paginationBounds = await readBounds(compactPagination);
+    const pageJumpBounds = await readBounds(pageJump);
+    const summaryBounds = await readBounds(compactPageSummary);
+    const previousBounds = await readBounds(previousPage);
+    const nextBounds = await readBounds(nextPage);
+    for (const bounds of [
+      paginationBounds,
+      pageJumpBounds,
+      summaryBounds,
+      previousBounds,
+      nextBounds,
+    ]) {
+      expect(bounds.left).toBeGreaterThanOrEqual(containerBounds.left - 1);
+      expect(bounds.right).toBeLessThanOrEqual(containerBounds.right + 1);
+    }
+    if (containerWidth <= 340) {
+      expect(pageJumpBounds.bottom).toBeLessThanOrEqual(summaryBounds.top - 1);
+      expect(summaryBounds.bottom).toBeLessThanOrEqual(previousBounds.top - 1);
+      expect(Math.abs(previousBounds.top - nextBounds.top)).toBeLessThanOrEqual(1);
+    } else {
+      const jumpCenter = (pageJumpBounds.top + pageJumpBounds.bottom) / 2;
+      const summaryCenter = (summaryBounds.top + summaryBounds.bottom) / 2;
+      expect(Math.abs(jumpCenter - summaryCenter)).toBeLessThanOrEqual(1);
+      expect(summaryBounds.left).toBeGreaterThanOrEqual(pageJumpBounds.right - 1);
+      expect(summaryBounds.right).toBeLessThanOrEqual(containerBounds.right + 1);
+      expect(pageJumpBounds.bottom).toBeLessThan(previousBounds.top);
+      expect(Math.abs(previousBounds.top - nextBounds.top)).toBeLessThanOrEqual(1);
+    }
+  }
+
+  await waitForBrowserQuiescence(page, browserHealth);
+  expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
+});
 
 test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实点击', async ({ page }) => {
   const browserHealth = collectBrowserErrors(page);
@@ -397,8 +1141,6 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
     }
   }
 
-  await page.setViewportSize({ width: 390, height: 844 });
-  await expectNoDocumentOverflow(page);
   const longVendorRow = demo.getByRole('row').filter({ hasText: 'PO-2026-1042' });
   const longVendorAction = longVendorRow.getByRole('button', {
     name: '查看订单 PO-2026-1042 详情',
@@ -503,7 +1245,7 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
   expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
 });
 
-test('粗指针下固定列示例的主要操作达到 44px 目标尺寸', async ({ browser }, testInfo) => {
+test('粗指针下 Table 与固定列示例的主要操作达到 44px 目标尺寸', async ({ browser }, testInfo) => {
   const baseURL = testInfo.project.use.baseURL;
   if (typeof baseURL !== 'string') throw new Error('浏览器测试项目必须配置 HTTP baseURL');
 
@@ -517,6 +1259,65 @@ test('粗指针下固定列示例的主要操作达到 44px 目标尺寸', async
     const page = await context.newPage();
     const browserHealth = collectBrowserErrors(page);
     await page.goto(new URL('/components/data-display/table/', baseURL).href);
+    await page.setViewportSize({ width: 320, height: 844 });
+    await expectNoDocumentOverflow(page);
+
+    const table = page.getByRole('region', { name: '采购订单表格', exact: true });
+    const themeRoot = page.locator('[data-lx-mode]').filter({ has: table });
+    const tableRow = table.getByRole('row').filter({ hasText: 'PO-2024-1881' });
+    const rowSelection = tableRow.getByRole('checkbox', { name: '选择采购单 PO-2024-1881' });
+    const rowSelectionTarget = rowSelection.locator('xpath=ancestor::label[1]');
+    const rowExpand = tableRow.getByRole('button', { name: '展开采购订单 PO-2024-1881' });
+    const rowDetail = tableRow.getByRole('button', { name: '查看 PO-2024-1881 详情' });
+    const exampleStates = themeRoot.getByText('示例状态', { exact: true });
+    const selectedOrders = themeRoot.getByText('已选订单（0）', { exact: true });
+    const rowHeight = () => tableRow.evaluate((row) => row.getBoundingClientRect().height);
+
+    await chooseRadio(themeRoot, '舒适 · 48px 基础');
+    expect(await rowHeight()).toBeGreaterThanOrEqual(48);
+    expect(await rowHeight()).toBeLessThanOrEqual(49);
+    await chooseRadio(themeRoot, '紧凑 · 36px 基础');
+    const compactRowHeight = await rowHeight();
+    expect(compactRowHeight).toBeGreaterThanOrEqual(44);
+    expect(compactRowHeight).toBeLessThanOrEqual(46);
+    await expect(
+      themeRoot.getByText('粗指针下，紧凑基础行高会服从 44px 操作目标。', { exact: true }),
+    ).toBeVisible();
+    const headerHeight = await table
+      .getByRole('row')
+      .first()
+      .evaluate((row) => row.getBoundingClientRect().height);
+    expect(headerHeight).toBeGreaterThanOrEqual(44);
+    expect(headerHeight).toBeLessThanOrEqual(46);
+    await chooseRadio(themeRoot, '舒适 · 48px 基础');
+
+    for (const control of [rowSelectionTarget, rowExpand, rowDetail]) {
+      await control.scrollIntoViewIfNeeded();
+      const bounds = await control.boundingBox();
+      if (!bounds) throw new Error('未能测量粗指针下的采购订单操作目标');
+      expect(bounds.width).toBeGreaterThanOrEqual(44);
+      expect(bounds.height).toBeGreaterThanOrEqual(44);
+    }
+    for (const disclosure of [exampleStates, selectedOrders]) {
+      const bounds = await disclosure.boundingBox();
+      if (!bounds) throw new Error('未能测量粗指针下的订单示例展开目标');
+      expect(bounds.height).toBeGreaterThanOrEqual(44);
+    }
+    await rowSelectionTarget.click();
+    await expect(rowSelection).toBeChecked();
+    await rowExpand.click();
+    const rowCollapse = tableRow.getByRole('button', { name: '收起采购订单 PO-2024-1881' });
+    await expect(rowCollapse).toHaveAttribute('aria-expanded', 'true');
+    await rowDetail.click();
+    const tableDetails = page.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
+    await expect(tableDetails).toBeVisible();
+    const closeDetails = tableDetails.getByRole('button', { name: '收起详情' });
+    const closeDetailsBounds = await closeDetails.boundingBox();
+    if (!closeDetailsBounds) throw new Error('未能测量粗指针下的详情关闭按钮');
+    expect(closeDetailsBounds.width).toBeGreaterThanOrEqual(44);
+    expect(closeDetailsBounds.height).toBeGreaterThanOrEqual(44);
+    await closeDetails.click();
+    await expect(rowDetail).toBeFocused();
 
     const demo = page.getByRole('region', { name: '固定列采购订单示例' });
     await demo.scrollIntoViewIfNeeded();

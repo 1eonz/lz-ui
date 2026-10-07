@@ -14,8 +14,9 @@ type TableComponent = (<T extends object>(
  * 分页、筛选、排序、选择、固定列和虚拟化不另建状态机；请求、rowKey
  * 与 URL 由宿主提供。ref 属于 AntD 公开实例，不增加布局包装层。
  * 通过公开 onRow/onHeaderRow 合并局部行类名，消费独立表格密度 token，
- * 不改写 columns 或依赖 AntD 私有 DOM。普通单行默认 48/36px，长内容
- * 可以增高；显式 middle/small 和虚拟行保留 AntD/宿主的尺寸责任。
+ * 不改写 columns 或依赖 AntD 私有 DOM。非粗指针下普通单行使用 48/36px 基础高度；
+ * 粗指针下按触控目标重算行高与内距，短行至少满足 44px，长内容仍可自然增高。
+ * 显式 middle/small、虚拟行和宿主内联单元格样式保留各自的尺寸责任。
  * 通过公开 ConfigProvider.useConfig() 读取宿主的 componentSize；size 显式传入时优先，
  * 只有解析后的默认尺寸或 large 才附加 lx-ui 行高类，避免覆盖宿主的 small/middle 密度。
  * 宿主的行属性、事件与内联样式最后合并，允许按行扩展和覆盖。

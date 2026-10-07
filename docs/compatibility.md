@@ -10,7 +10,7 @@
 
 ## Tag 与 Table 尺寸 token 迁移
 
-本批只增加可选样式扩展点，不改变组件 Props、事件、ref 或 AntD peer 范围。普通 Tag 的最小高度归一为 26px，可通过主题 Provider 的 `style` 或局部 CSS scope 覆盖 `--lx-tag-height`；该 token 只设最小值，较高内容仍可撑开标签。默认/large Table 普通单行维持 comfortable/compact 的 48/36px，表头统一为 36px；这会归一 Tag 和默认 Table 行的视觉高度，使用固定容器高度或依赖旧视觉尺寸的页面应复查。
+本批只增加可选样式扩展点，不改变组件 Props、事件、ref 或 AntD peer 范围。普通 Tag 的最小高度归一为 26px，可通过主题 Provider 的 `style` 或局部 CSS scope 覆盖 `--lx-tag-height`；该 token 只设最小值，较高内容仍可撑开标签。默认/large 非虚拟 Table 的普通单行基础高度为 comfortable/compact 的 48/36px，表头基础高度为 36px；粗指针设备下会按至少 44px 的操作目标重算行高和单元格内距，因此纯文本行、含控件的紧凑短行和表头实际至少满足 44px，舒适短行约为 48px。长内容仍自然增高，使用固定容器高度或依赖旧视觉尺寸的页面应复查。
 
 Table 的默认/large 行高和 36px 表头 token 仅由非虚拟表格使用；有效尺寸按显式 `size` 优先、其次 AntD `ConfigProvider.componentSize` 继承解析。显式或继承的 `middle`/`small` 与 `virtual` 保留 AntD/宿主尺寸责任。宿主可按主题子树覆盖 `--lx-table-row-height`、`--lx-table-header-height` 和 `--lx-tag-height`，无需增加组件属性。Table 受控选择搭配 `preserveSelectedRowKeys` 时，筛选隐藏的 key 仍会计入完整选择数；宿主可提供清除选择动作。
 

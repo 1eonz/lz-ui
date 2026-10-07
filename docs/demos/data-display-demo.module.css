@@ -60,6 +60,189 @@
   overscroll-behavior-inline: contain;
 }
 
+.tableViewport {
+  min-inline-size: 0;
+  container-name: table-viewport;
+  container-type: inline-size;
+}
+
+.scrollHint {
+  display: none;
+  --lx-table-compact-pagination: 0;
+  margin: 0 0 var(--lx-space-sm);
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+}
+
+.tablePagination {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--lx-space-sm);
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  margin-block-start: var(--lx-space-sm);
+}
+
+.pageStatus {
+  margin-inline-end: auto;
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  white-space: nowrap;
+}
+
+.compactPageSummary {
+  display: none;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.pageJump {
+  display: none;
+  inline-size: 7.5rem;
+  max-inline-size: 100%;
+}
+
+.paginationTotal {
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  white-space: nowrap;
+}
+
+.pageSizeControl {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-xs);
+  white-space: nowrap;
+}
+
+.pageNumbers {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-2xs);
+}
+
+.pageNumberButton {
+  min-inline-size: var(--lx-control-height-small);
+  min-block-size: var(--lx-control-height-small);
+}
+
+.paginationButton {
+  min-inline-size: 64px;
+  min-block-size: var(--lx-control-height-large);
+}
+
+@container table-viewport (max-width: 855px) {
+  .scrollHint {
+    display: block;
+    --lx-table-compact-pagination: 1;
+  }
+  .tablePagination {
+    display: grid;
+    grid-template-areas:
+      'jump summary'
+      'previous next';
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    justify-items: stretch;
+  }
+  .pageStatus {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    order: 2;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+  }
+  .pageJump {
+    display: block;
+    grid-area: jump;
+    justify-self: start;
+  }
+  .compactPageSummary {
+    display: block;
+    grid-area: summary;
+    justify-self: end;
+  }
+  .nextPaginationButton {
+    grid-area: next;
+  }
+  .previousPaginationButton {
+    grid-area: previous;
+  }
+  .paginationTotal,
+  .pageSizeControl,
+  .pageNumbers {
+    display: none;
+  }
+}
+
+@container table-viewport (max-width: 340px) {
+  .tablePagination {
+    grid-template-areas:
+      'jump jump'
+      'summary summary'
+      'previous next';
+  }
+  .pageJump {
+    grid-area: jump;
+    inline-size: 7.5rem;
+    justify-self: center;
+  }
+  .compactPageSummary {
+    justify-self: center;
+  }
+}
+
+.orderSelectionCheckbox {
+  min-inline-size: 24px;
+  min-block-size: 24px;
+}
+
+.expandButton,
+.detailButton {
+  min-inline-size: 24px;
+  min-block-size: 24px;
+}
+
+/* 仅在粗指针设备上扩大命中区，避免为了触控基线撑大桌面表格行。 */
+@media (any-pointer: coarse) {
+  .orderSelectionCheckbox,
+  .expandButton,
+  .detailButton,
+  .detailCloseButton,
+  .pageNumberButton,
+  .pageJump {
+    min-inline-size: var(--lx-control-target-touch-min);
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+
+  .orderSelectionCheckbox {
+    display: inline-grid;
+    place-items: center;
+    margin-inline: 0;
+  }
+
+  .expandButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: var(--lx-space-sm);
+  }
+}
+
 .scroll:focus-visible {
   outline: 2px solid var(--lx-focus-ring);
   outline-offset: 2px;
@@ -74,6 +257,14 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--lx-space-sm);
+}
+
+.touchDensityHint {
+  display: none;
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
 }
 
 .tableHeading {
@@ -142,6 +333,18 @@
   outline-offset: 2px;
 }
 
+/* 粗指针下的辅助披露入口使用触控尺寸，放在基础尺寸规则之后避免层叠覆盖。 */
+@media (any-pointer: coarse) {
+  .touchDensityHint {
+    display: block;
+  }
+
+  .exampleStates summary,
+  .selectedOrders summary {
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+}
+
 .selectedOrderList {
   margin-block: var(--lx-space-sm);
   padding-inline-start: var(--lx-space-lg);
@@ -184,6 +387,75 @@
   padding: var(--lx-space-md);
   background: var(--lx-color-ambient);
   border-radius: var(--lx-radius-control);
+}
+
+.orderDetailGroups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--lx-space-md);
+  margin-block: var(--lx-space-md);
+}
+
+.detailTitleSuffix {
+  white-space: nowrap;
+}
+
+.orderDetailGroup {
+  min-inline-size: 0;
+  padding-block-start: var(--lx-space-sm);
+  border-block-start: 1px solid var(--lx-color-split);
+}
+
+.orderDetailGroupTitle {
+  margin: 0 0 var(--lx-space-sm);
+  font-size: var(--lx-font-size-body);
+  font-weight: 600;
+}
+
+.orderDetailList {
+  display: grid;
+  gap: var(--lx-space-sm);
+  margin: 0;
+}
+
+.orderDetailField {
+  display: grid;
+  gap: var(--lx-space-2xs);
+  min-inline-size: 0;
+}
+
+.orderDetailTerm {
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+}
+
+.orderDetailValue {
+  min-inline-size: 0;
+  margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.orderDetailAmount {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.orderFulfillmentValue {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--lx-space-sm);
+  min-inline-size: 0;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .orderDetailGroups {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .themeSettings {

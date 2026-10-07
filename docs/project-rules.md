@@ -40,6 +40,7 @@ DynamicForm 只能组合公开的表单基础控件。它负责 schema、联动�
 - `palettePreset` 独立承载 7 套东方色系，不把 13 个值塞进一个枚举。
 - `appearance` 为 `business`、`soft`、`glass`；`mode` 为 `light`、`dark`、`system`；`density` 为 `comfortable`、`compact`。
 - 控件高度和表格行高是两套 token。comfortable/compact 不得直接覆盖表格的独立 row height。
+- 默认/large 非虚拟 Table 在粗指针设备下按 `--lx-control-target-touch-min` 重算表头、正文行高与单元格内距，纯文本短行也至少满足 44px 操作目标；长内容自然增高，`small`/`middle`、虚拟行和宿主内联单元格样式保留各自的尺寸责任。
 - Glass 是渐进增强。`backdrop-filter` 不可用或低性能时回退到不透明表面；关键表单、表格、焦点环和错误提示必须保持可读。
 
 ## 3. 架构和依赖方向

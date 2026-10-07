@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { LxTableProps } from '../../src/components/data-display/table';
@@ -93,10 +93,13 @@ function getTableProps() {
       width?: number;
       onHeaderCell?: () => { className?: string };
       sortOrder?: 'ascend' | 'descend' | null;
+      showSorterTooltip?: boolean;
     }>;
+    pagination?: LxTableProps<object>['pagination'];
     rowSelection?: { fixed?: boolean | 'left' | 'right' };
     scroll?: { x?: number | string };
     style?: { minInlineSize?: number };
+    onChange?: LxTableProps<object>['onChange'];
   };
 }
 
@@ -235,7 +238,30 @@ describe('Table 文档示例', () => {
     expect(
       within(region).getByRole('heading', { name: '采购订单 PO-2024-1881 详情' }),
     ).toHaveFocus();
-    expect(region).toHaveTextContent('¥ 1,428,900.00');
+    expect(
+      within(region)
+        .getAllByRole('group')
+        .map((group) => group.getAttribute('aria-labelledby')),
+    ).toHaveLength(3);
+    expect(within(region).getByRole('group', { name: '采购信息' })).toBeInTheDocument();
+    expect(within(region).getByRole('group', { name: '履约进度' })).toBeInTheDocument();
+    expect(within(region).getByRole('group', { name: '审批与结算' })).toBeInTheDocument();
+    expect(
+      within(region)
+        .getAllByRole('term')
+        .map((field) => field.textContent),
+    ).toEqual(['订单编号', '供应商', '订单履约', '采购金额', '审批状态']);
+    expect(
+      within(region)
+        .getAllByRole('definition')
+        .map((field) => field.textContent?.replace(/\s+/g, ' ').trim()),
+    ).toEqual(['PO-2024-1881', '上海深蓝光电高新材料有限公司', '82%', '¥ 1,428,900.00', '已审批']);
+    expect(within(region).getByRole('progressbar', { name: '订单履约进度' })).toHaveAttribute(
+      'aria-valuenow',
+      '82',
+    );
+    expect(within(region).getByText('¥ 1,428,900.00')).toBeInTheDocument();
+    expect(within(region).getByText('已审批')).toBeInTheDocument();
     fireEvent.click(within(region).getByRole('button', { name: '收起详情' }));
 
     expect(
@@ -247,14 +273,14 @@ describe('Table 文档示例', () => {
   it('翻页关闭详情并恢复已卸载焦点，分页控件主动获焦时保持其焦点', () => {
     render(<TableDemo />);
     fireEvent.click(screen.getByRole('button', { name: '查看 PO-2024-1881 详情' }));
-    fireEvent.click(screen.getByTitle('Next Page'));
+    fireEvent.click(screen.getByRole('button', { name: /^下一页$/ }));
     expect(
       screen.queryByRole('region', { name: '采购订单 PO-2024-1881 详情' }),
     ).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '采购订单' })).toHaveFocus();
 
     fireEvent.click(screen.getByRole('button', { name: '查看 PO-2024-1886 详情' }));
-    const nextPage = screen.getByTitle('Next Page');
+    const nextPage = screen.getByRole('button', { name: /^下一页$/ });
     nextPage.focus();
     fireEvent.click(nextPage);
     expect(
@@ -279,14 +305,11 @@ describe('Table 文档示例', () => {
   it('页大小变化关闭详情并保留页大小控件焦点', () => {
     render(<TableDemo />);
     fireEvent.click(screen.getByRole('button', { name: '查看 PO-2024-1881 详情' }));
-    const pageSize = screen
-      .getAllByRole('combobox')
-      .find((control) => control.getAttribute('aria-label') !== '审批状态快速筛选');
-    expect(pageSize).toBeDefined();
-    pageSize!.focus();
-    fireEvent.keyDown(pageSize!, { key: 'ArrowDown', keyCode: 40 });
-    fireEvent.keyDown(pageSize!, { key: 'ArrowDown', keyCode: 40 });
-    fireEvent.keyDown(pageSize!, { key: 'Enter', keyCode: 13 });
+    const pageSize = screen.getByRole('combobox', { name: '每页条数' });
+    pageSize.focus();
+    fireEvent.keyDown(pageSize, { key: 'ArrowDown', keyCode: 40 });
+    fireEvent.keyDown(pageSize, { key: 'ArrowDown', keyCode: 40 });
+    fireEvent.keyDown(pageSize, { key: 'Enter', keyCode: 13 });
     expect(screen.getByRole('status')).toHaveTextContent('每页 10 条');
     expect(
       screen.queryByRole('region', { name: '采购订单 PO-2024-1881 详情' }),
@@ -294,17 +317,104 @@ describe('Table 文档示例', () => {
     expect(pageSize).toHaveFocus();
   });
 
+  it('自有分页使用命名导航、原生按钮和当前页语义', () => {
+    render(<TableDemo />);
+    const pagination = screen.getByRole('navigation', { name: '采购订单分页' });
+    const previousPage = within(pagination).getByRole('button', { name: '上一页' });
+    const firstPage = within(pagination).getByRole('button', { name: '第 1 页' });
+    expect(previousPage).toBeDisabled();
+    expect(firstPage).toHaveAttribute('aria-current', 'page');
+
+    fireEvent.click(within(pagination).getByRole('button', { name: '第 2 页' }));
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '当前显示 5 条采购订单，每页 5 条，已选择 0 条',
+    );
+    expect(within(pagination).getByRole('button', { name: '第 2 页' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(within(pagination).getByRole('button', { name: '下一页' })).toBeEnabled();
+  });
+
+  it('窄分页可直接跳页，并将当前页播报与结果状态分开', () => {
+    render(<TableDemo />);
+    const scrollHint = screen.getByText(
+      '可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。',
+      { exact: true },
+    );
+    scrollHint.style.setProperty('--lx-table-compact-pagination', '1');
+    fireEvent.resize(window);
+
+    const jump = screen.getByRole('combobox', { name: '跳至页码' });
+    jump.focus();
+    fireEvent.keyDown(jump, { key: 'ArrowDown', keyCode: 40 });
+    fireEvent.keyDown(jump, { key: 'ArrowDown', keyCode: 40 });
+    fireEvent.keyDown(jump, { key: 'Enter', keyCode: 13 });
+
+    const pageAnnouncement = screen.getByText('第 2 页，共 5 页', { exact: true });
+    expect(pageAnnouncement).toHaveAttribute('aria-live', 'polite');
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '当前显示 5 条采购订单，每页 5 条，已选择 0 条',
+    );
+    expect(screen.getByRole('status')).not.toHaveTextContent('第 2 页');
+    expect(screen.getByRole('checkbox', { name: '选择采购单 PO-2024-1886' })).toBeInTheDocument();
+  });
+
+  it.each([10, 20])('排序回调为空或带 AntD 默认值时仍保留每页 %i 条', (nextPageSize) => {
+    render(<TableDemo />);
+    const pageSize = screen.getByRole('combobox', { name: '每页条数' });
+    pageSize.focus();
+    for (let index = 0; index < (nextPageSize === 10 ? 2 : 3); index += 1) {
+      fireEvent.keyDown(pageSize, { key: 'ArrowDown', keyCode: 40 });
+    }
+    fireEvent.keyDown(pageSize, { key: 'Enter', keyCode: 13 });
+    expect(screen.getByRole('status')).toHaveTextContent(`每页 ${nextPageSize} 条`);
+
+    const tableProps = getTableProps();
+    expect(tableProps.pagination).toBe(false);
+    expect(tableProps.columns?.find((column) => column.key === 'amount')?.showSorterTooltip).toBe(
+      false,
+    );
+    act(() =>
+      tableProps.onChange!(
+        { current: 1, pageSize: 5 },
+        {},
+        { columnKey: 'amount', order: 'ascend' },
+        { currentDataSource: [], action: 'sort' },
+      ),
+    );
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      `当前显示 ${nextPageSize === 10 ? 10 : 20} 条采购订单，每页 ${nextPageSize} 条，已选择 0 条`,
+    );
+    expect(getTableProps().columns?.find((column) => column.key === 'amount')?.sortOrder).toBe(
+      'ascend',
+    );
+
+    act(() =>
+      getTableProps().onChange!(
+        {},
+        {},
+        { columnKey: 'amount', order: 'descend' },
+        { currentDataSource: [], action: 'sort' },
+      ),
+    );
+    expect(screen.getByRole('status')).toHaveTextContent(
+      `当前显示 ${nextPageSize === 10 ? 10 : 20} 条采购订单，每页 ${nextPageSize} 条，已选择 0 条`,
+    );
+  });
+
   it('已选列表跨页与筛选保留订单身份、供应商、审批状态和金额', () => {
     render(<TableDemo />);
     fireEvent.click(screen.getByRole('checkbox', { name: '选择采购单 PO-2024-1881' }));
-    fireEvent.click(screen.getByTitle('Next Page'));
+    fireEvent.click(screen.getByRole('button', { name: /^下一页$/ }));
     fireEvent.click(screen.getByRole('checkbox', { name: '选择采购单 PO-2024-1886' }));
     const summary = screen.getByText('已选订单（2）');
     expect(summary.parentElement).not.toHaveAttribute('open');
     fireEvent.click(summary);
     const list = screen.getByRole('list', { name: '已选采购订单' });
     expect(within(list).getAllByRole('listitem')).toHaveLength(2);
-    expect(list).toHaveTextContent('PO-2024-1881 · 上海深蓝光电高新材料有限公司 · 已审');
+    expect(list).toHaveTextContent('PO-2024-1881 · 上海深蓝光电高新材料有限公司 · 已审批');
     expect(list).toHaveTextContent('¥ 1,428,900.00');
 
     fireEvent.click(screen.getByRole('button', { name: '查看 PO-2024-1886 详情' }));
@@ -330,13 +440,13 @@ describe('Table 文档示例', () => {
   it('Table 示例隐藏通用密度开关并保留自有密度单选控件', () => {
     render(<TableDemo />);
     expect(mocks.densitySwitchVisibility).toEqual([false]);
-    expect(screen.getByRole('radio', { name: '舒适 · 48px' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: '舒适 · 48px 基础' })).toBeInTheDocument();
 
     const toolbar = screen.getByRole('group', { name: '表格工具栏' });
     expect(within(toolbar).getByRole('combobox', { name: '审批状态快速筛选' })).toBeInTheDocument();
     expect(within(toolbar).getByRole('button', { name: '取消选择' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: '采购订单' }).parentElement).toContainElement(
-      screen.getByRole('radio', { name: '舒适 · 48px' }),
+      screen.getByRole('radio', { name: '舒适 · 48px 基础' }),
     );
 
     const exampleStates = screen.getByText('示例状态');
@@ -423,10 +533,10 @@ describe('Table 文档示例', () => {
     const themeRoot = container.querySelector('[data-lx-density]');
     expect(themeRoot).toHaveAttribute('data-lx-density', 'comfortable');
 
-    fireEvent.click(screen.getByRole('radio', { name: '紧凑 · 36px' }));
+    fireEvent.click(screen.getByRole('radio', { name: '紧凑 · 36px 基础' }));
 
     expect(themeRoot).toHaveAttribute('data-lx-density', 'compact');
-    expect(screen.getByRole('radio', { name: '紧凑 · 36px' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: '紧凑 · 36px 基础' })).toBeChecked();
   });
 
   it('金额排序表头有自定义焦点目标并支持键盘触发排序', () => {
@@ -442,6 +552,7 @@ describe('Table 文档示例', () => {
     expect(header).toHaveFocus();
     fireEvent.keyDown(header, { key: 'Enter', keyCode: 13 });
 
+    expect(header).toHaveFocus();
     expect(getTableProps().columns?.find((column) => column.key === 'amount')?.sortOrder).toBe(
       'ascend',
     );
@@ -451,8 +562,8 @@ describe('Table 文档示例', () => {
     const { container } = render(<TableDemo />);
     expect(screen.getByText('共 24 条')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTitle('Next Page'));
-    expect(screen.getByRole('status')).toHaveTextContent('第 2 页');
+    fireEvent.click(screen.getByRole('button', { name: /^下一页$/ }));
+    expect(screen.getByText('第 2 页，共 5 页', { exact: true })).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: '选择采购单 PO-2024-1886' })).toBeInTheDocument();
 
     const filter = screen.getByRole('combobox', { name: '审批状态快速筛选' });
@@ -463,7 +574,7 @@ describe('Table 文档示例', () => {
     fireEvent.keyDown(filter, { key: 'Enter', keyCode: 13 });
 
     expect(filter).toHaveFocus();
-    expect(screen.getByRole('status')).toHaveTextContent('第 1 页');
+    expect(screen.getByText('第 1 页，共 4 页', { exact: true })).toBeInTheDocument();
     expect(screen.getByText('共 16 条')).toBeInTheDocument();
     expect(screen.getByRole('checkbox', { name: '选择采购单 PO-2024-1881' })).toBeInTheDocument();
     expect(
@@ -471,12 +582,12 @@ describe('Table 文档示例', () => {
     ).not.toBeInTheDocument();
     const statuses = Array.from(container.querySelectorAll('td'))
       .map((cell) => cell.textContent?.trim())
-      .filter((value) => value === '已审' || value === '待审');
+      .filter((value) => value === '已审批' || value === '待审批');
     expect(statuses.length).toBeGreaterThan(0);
-    expect(statuses.every((value) => value === '已审')).toBe(true);
+    expect(statuses.every((value) => value === '已审批')).toBe(true);
   });
 
-  it('筛选隐藏已选的已审订单时仍保留选择计数，并可取消选择', () => {
+  it('筛选隐藏已选的已审批订单时仍保留选择计数，并可取消选择', () => {
     render(<TableDemo />);
     fireEvent.click(screen.getByRole('checkbox', { name: '选择采购单 PO-2024-1881' }));
     expect(screen.getByRole('status')).toHaveTextContent('已选择 1 条');

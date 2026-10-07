@@ -6,7 +6,15 @@ import styles from './data-display-demo.module.css';
  * 子表格需保留自身最小列宽且不启用固定列，让这里承担唯一的横向滚动。
  * 左右箭头只在区域自身聚焦时生效，不截获单元格控件的键盘操作。
  */
-export function TableDemoScrollRegion({ children, label }: { children: ReactNode; label: string }) {
+export function TableDemoScrollRegion({
+  children,
+  label,
+  descriptionId,
+}: {
+  children: ReactNode;
+  label: string;
+  descriptionId?: string;
+}) {
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
     // 修饰键组合保留浏览器导航和宿主快捷键，不拦截 Alt+方向键等系统行为。
     if (
@@ -28,6 +36,7 @@ export function TableDemoScrollRegion({ children, label }: { children: ReactNode
       className={styles.scroll}
       role="region"
       aria-label={label}
+      aria-describedby={descriptionId}
       tabIndex={0}
       onKeyDown={handleKeyDown}
     >

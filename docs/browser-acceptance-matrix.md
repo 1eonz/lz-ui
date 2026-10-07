@@ -205,3 +205,19 @@
 - 独立代码复审先发现旧断言只比较外层 `tablist`，并且逐项检查与点击交错，结论 NO-GO。返工改为精确文本 Range、检查完整裁切祖先、所有标签先测量后点击；第二轮独立 `gpt-6-luna max` code review 为 GO，Card 定向 Chromium Playwright 1/1 通过。
 - Impeccable detector 命令为 `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json F:\work\lz-ui\docs\demos\card.tsx`，原始输出 `[]`、退出码 0。该单文件 TSX regex 扫描不跟随 CSS Module，也不测布局、主题、动效或交互；`[]` 不作为验收结论。独立浏览器 overlay 对整页报告 11 组：cramped-padding 3、line-length 6、layout-transition 2；其中 10 项位于 Dumi 文档壳或其他示例。Card 唯一命中是绝对定位的 `.ant-tabs-ink-bar` 宽度/位置过渡；实测不移动周边布局，Layout Shift 约 1e-6。`prefers-reduced-motion: reduce` 下实际 duration/delay 为 0s，无 transition 事件。body padding 命中属于文档壳，不在 Card demo 范围。
 - Assessment A 在 `docs/demos/card.tsx` 与 CSS Module 上打分 33/40（Good），设计特异性中高，未发现需修复的 P0–P2。局部技术审计为 15/20：无障碍 3、性能 3、主题 2、响应式 4、实现完整性 3。真实读屏、Edge/Safari、主题/密度和外观全组合、200%/400% 放大、实体设备未覆盖；本结果不关闭全库 2B-1。
+
+### 2026-10-07 Table 主题矩阵与视口等效回归
+
+- 新增 `src/theme/__tests__/tokens.test.ts` 的 Table 公开解析结果矩阵：light/dark × business/soft/glass × 6 个标准色与 7 组东方配色 × comfortable/compact，共 156 组合，并断言矩阵条目数为 156。断言覆盖 body 行高、header 高度、Table 单元格尺寸、header/body/选中行文字对比；`npx vitest run src/theme/__tests__/tokens.test.ts` 实际通过 244/244，其中包括上述 156 组合。
+- `tests/browser/table-demo.spec.ts` 新增公开控件运行时回归，依次切换明暗、三种外观、两种密度及全部标准色/东方配色，并检查目标 Provider 的 `data-lx-*`、CSS 变量和语义表格节点的计算样式。新增 640px、320px 主 Table 窄视口用例，检查根节点无横向溢出、密度可切换、主题设置 details 与订单详情入口可达、表格横向滚动留在命名表格区域。上述 Playwright 用例尚未在主工作区执行；应由隔离 worktree 运行 `npx playwright test tests/browser/table-demo.spec.ts --project=chromium` 后再记录浏览器结果。
+- 本批 640px/320px 只称为“视口等效/窄 CSS viewport 验收（1280px 基准下的 200%/400% reflow 等效）”；没有执行或声称执行真实浏览器 page zoom。真实缩放、真实读屏、Safari、实体设备和部署环境仍未覆盖，Table 与全库 2B-1 继续开放。
+
+### 2026-10-07 Table 主题、密度与粗指针收口复验
+
+- 在最新 Dumi 生产构建上执行 `npx playwright test tests/browser/table-demo.spec.ts --project=chromium` 和 `--project=edge`，两套均为 **8/8** 通过。覆盖主题设置运行时切换、light/dark、business/soft/glass、6 个标准色、7 组东方配色、comfortable/compact、640/320px CSS viewport、详情分组与回焦、固定列、粗指针操作目标和 1000 行虚拟滚动。
+- 粗指针下默认/large 非虚拟 Table 的纯文本 body 行和 header 行均取基础行高与 `--lx-control-target-touch-min` 的较大值；紧凑模式实测短行/表头至少 44px，长内容仍自然增高。`small`、`middle`、virtual 和宿主内联高度路径保持原边界。
+- 窄分页在容器宽度大于 340px 时使用两行，320px 等效视口使用三行；跳页、摘要、上一页和下一页均可见、可键盘操作，横向滚动只发生在具名表格区域，document/body 无根级横向溢出。
+- 独立 Impeccable B 组在 1440/640/390/320 细指针与 390/320 粗指针场景复核：所有初始、主题、密度和详情阶段根 `scrollWidth == clientWidth`；640/390 分页高度约 96/88px，320 三行分页约 126/118px，粗指针 compact 行与表头 45px，内部表格滚动不会改变根宽度。
+- 本轮一次 Chromium 断言因 320px 三行分页仍沿用两行 100px 限制而失败，已按 340px 断点修正为三行 140px 上限；Edge 一次连续 page-level 键盘事件在 Select 更新时少处理一次，改为对具体 Select 控件发送按键后复跑通过。最终不保留失败状态。
+- 全量工程证据：`npm test` 为 55 个测试文件、606 项通过；`typecheck`、demo 类型检查（103 个文件）、Lint、scaffold、库构建和 Dumi 导出门禁通过。Dumi 导出为 158 个 HTML、474 个本地 JS/CSS 引用和 88 个嵌套 demo 页面。
+- 仍未覆盖真实 page zoom 200%/400%、真实屏幕阅读器、Safari、实体触控、设备性能和目标部署环境；640/320px 仅代表 CSS viewport 响应式等效检查。Table 纯文本单元格方向键横向导航仍因 AntD 公开 API 限制保留为 P2，全库 2B-1 尚未关闭。
