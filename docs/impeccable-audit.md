@@ -724,3 +724,14 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **真实浏览器证据：** Windows Playwright WebKit 桌面 smoke 通过 **2/2**；Chromium 与 Microsoft Edge 的 `hasTouch` 触控仿真均通过 **2/2**。WebKit smoke 使用公开 role/name 和 label、原生 `details/summary`、文档化 `data-lx-mode` 标记及真实交互路径，覆盖 930/390/320px 根溢出、Table 详情标题聚焦/关闭和 DynamicForm 主题/重置；触控 smoke 额外覆盖 `locator.tap`、`page.touchscreen.tap`、关闭后的焦点恢复，以及通过可见“重点客户”标签触控选择后负责人字段出现、重置后负责人字段隐藏并恢复普通客户等级。测试不把程序化表单输入或 selectOption 作为触控证据。三组均使用浏览器错误排空器，当前运行没有 pageerror、console error、requestfailed 或 HTTP 错误。
 - **独立评审判断：** 触控测试通过独立 Chromium/Edge context 运行，不与 Dumi/AntD 私有 DOM 耦合；WebKit project 只执行桌面 smoke。触控用例按实际 `navigator.maxTouchPoints` 能力决定执行或 skip，并检查 coarse pointer；Chromium/Edge 各 2/2 通过，Windows WebKit 设置 `hasTouch: true` 返回 `maxTouchPoints=0`，因此该 project 为运行时 skip。主要动作使用公开 role/name 和可见文本，并结合原生 `details/summary`、文档化 `data-lx-mode` 标记；该 skip 是环境限制，不能扩展为 Safari 真机或实体设备结论。
 - **未覆盖与后续：** 真实 Safari 最近两个大版本、实体触控设备、真实屏幕阅读器、200%/400% page zoom、设备性能/INP 和目标部署仍未验收；Table 纯文本单元格方向键横移仍是 AntD 公开 API 限制下的 P2。当前批无 P0/P1 发现，不关闭全库 2B-1。
+
+### 2026-10-07 Table 基础示例键盘横向滚动与窄屏提示
+
+- **目标与方法：** Impeccable 4.1.3，Read 模式；目标为 `docs/demos/table-basic.tsx` 及其共享滚动区、CSS Module、Table 文档和回归测试。执行 `context.mjs --target docs/demos/table-basic.tsx` 一次，确认沿用现有采购后台设计；按 `audit`、`critique`、`polish` 和 craft floor 完成。本批只改变文档示例，不改变组件公开 API。
+- **独立评审：** Assessment A 的 Nielsen 初评为 29/40（Good），十项依次 `3,3,3,3,3,2,3,3,3,3`。A 指出键盘滚动提示缺失的 P2 已补齐并验证；320px 约 190px 内容宽度从 P2 降为 P3，原因是 Dumi demo 外框与 `.surface` 内距，内容仍可通过键盘和触控到达；宽屏无溢出仍保留 region Tab stop 为 P3。A 还观察到从 Dumi 文档起点约需 41 次 Tab，该问题属于全站文档壳，本批没有修改。
+- **技术审计：** 局部 16/20（无障碍 3、性能 3、主题 3、响应式 3、实现完整性 4）。region 名称、描述关联、焦点环、修饰键/边界/子控件透传均有证据；没有新增依赖；没有真实读屏、设备性能或完整主题截图证据。
+- **静态 detector 与 overlay 边界：** B 组扫描 `table-basic.tsx`、`table-demo-scroll-region.tsx`、`table.tsx` 的原始结果为 `[]`、退出码 0，仅表示 TSX 确定性规则没有命中。Overlay 注入后记录 2 项 `cramped-padding`、4 项 `text-occlusion` 和 1 项 `layout-transition`；四项遮挡位于默认关闭的主题设置内容，其他命中属于 Dumi/共享壳；overlay 自己将 html 滚动宽度从 390px 增至 498px，未按此认定应用横向溢出。
+- **修复和二次复审：** 独立代码审查发现 479px CSS 断点与 480px 表格最小宽度之间的次像素空隙。已将容器查询改为严格小于 480px，浏览器测试在 479.5/480px 分别断言提示显示/隐藏；第二轮独立 `gpt-6-luna max` 复审为 GO，无 P0–P2。
+- **最终浏览器证据：** 从最新源码完成 Dumi 构建后，完整 `tests/browser/table-demo.spec.ts` 在 Chromium、Microsoft Edge 各 **10/10** 通过。包括 320/390/1280px、方向键起止默认行为、真实 Shift+Tab/Tab 路径、复选框按键透传、`aria-describedby`、479.5/480px 断点、主题、详情、固定列、粗指针和虚拟滚动；错误收集器无浏览器错误。
+- **工程门禁：** `npm run check` 通过（55 个测试文件、606 项测试；103 个 demo 类型检查）、`check:scaffold`、`build:lib`、`build:docs` 均通过；静态导出 158 个 HTML、474 个本地资源引用、88 个嵌套 demo。
+- **未覆盖：** 真实读屏、实体触控、200%/400% 页面缩放、设备性能和目标部署仍待验收；不关闭全库 2B-1。`detect []` 不作为视觉通过依据。完整证据见 [Table 基础示例 critique snapshot](../.impeccable/critique/2026-10-07T14-18-33Z__docs-demos-table-basic-tsx.md)。

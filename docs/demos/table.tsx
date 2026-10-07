@@ -394,7 +394,8 @@ function TableDemoContent() {
       ) : (
         <div ref={tableViewportRef} className={styles.tableViewport}>
           <p ref={scrollHintRef} id={scrollHintId} className={styles.scrollHint}>
-            可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。
+            可左右滑动查看完整表格；按 Tab
+            聚焦表格区域后，左右方向键横向滚动，不会在单元格间移动焦点。
           </p>
           <TableDemoScrollRegion
             label="采购订单表格"

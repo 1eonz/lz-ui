@@ -190,28 +190,59 @@ describe('Table 文档示例', () => {
     expect(secondTrigger).toHaveFocus();
   });
 
-  it('基础示例提供命名滚动区域，并保留子控件的键盘事件', () => {
+  it('基础示例仅在实际横移时取消方向键默认行为', () => {
     render(<TableBasicDemo />);
     const region = screen.getByRole('region', { name: '基础采购订单表格' });
     expect(region).toHaveAttribute('tabindex', '0');
     region.focus();
     expect(region).toHaveFocus();
-    fireEvent.keyDown(region, { key: 'ArrowRight' });
+
+    let scrollLeft = 0;
+    Object.defineProperties(region, {
+      clientWidth: { configurable: true, value: 240 },
+      scrollWidth: { configurable: true, value: 480 },
+      scrollLeft: {
+        configurable: true,
+        get: () => scrollLeft,
+        set: (value: number) => {
+          scrollLeft = Math.max(0, Math.min(value, 240));
+        },
+      },
+    });
+
+    const dispatchArrow = (key: 'ArrowLeft' | 'ArrowRight', init: KeyboardEventInit = {}) => {
+      const event = new KeyboardEvent('keydown', {
+        key,
+        bubbles: true,
+        cancelable: true,
+        ...init,
+      });
+      fireEvent(region, event);
+      return event;
+    };
+
+    const leftAtStart = dispatchArrow('ArrowLeft');
+    expect(leftAtStart.defaultPrevented).toBe(false);
+    expect(region.scrollLeft).toBe(0);
+
+    const rightInRange = dispatchArrow('ArrowRight');
+    expect(rightInRange.defaultPrevented).toBe(true);
     expect(region.scrollLeft).toBe(80);
     fireEvent.keyDown(screen.getByRole('columnheader', { name: '采购单' }), { key: 'ArrowLeft' });
     expect(region.scrollLeft).toBe(80);
-    fireEvent.keyDown(region, { key: 'ArrowLeft' });
+    const leftInRange = dispatchArrow('ArrowLeft');
+    expect(leftInRange.defaultPrevented).toBe(true);
     expect(region.scrollLeft).toBe(0);
+
+    region.scrollLeft = 240;
+    const rightAtEnd = dispatchArrow('ArrowRight');
+    expect(rightAtEnd.defaultPrevented).toBe(false);
+    expect(region.scrollLeft).toBe(240);
+
     for (const modifier of ['altKey', 'ctrlKey', 'metaKey', 'shiftKey']) {
-      const event = new KeyboardEvent('keydown', {
-        key: 'ArrowRight',
-        [modifier]: true,
-        bubbles: true,
-        cancelable: true,
-      });
-      fireEvent(region, event);
+      const event = dispatchArrow('ArrowLeft', { [modifier]: true });
       expect(event.defaultPrevented).toBe(false);
-      expect(region.scrollLeft).toBe(0);
+      expect(region.scrollLeft).toBe(240);
     }
   });
 
@@ -339,7 +370,7 @@ describe('Table 文档示例', () => {
   it('窄分页可直接跳页，并将当前页播报与结果状态分开', () => {
     render(<TableDemo />);
     const scrollHint = screen.getByText(
-      '可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。',
+      '可左右滑动查看完整表格；按 Tab 聚焦表格区域后，左右方向键横向滚动，不会在单元格间移动焦点。',
       { exact: true },
     );
     scrollHint.style.setProperty('--lx-table-compact-pagination', '1');
@@ -655,6 +686,16 @@ describe('Table 文档示例', () => {
     expect(scrollRegion).toHaveAttribute('tabindex', '0');
     scrollRegion.focus();
     expect(scrollRegion).toHaveFocus();
+    const rowSelection = screen.getByRole('checkbox', { name: '选择采购单 PO-2024-1881' });
+    const childKeyEvent = new KeyboardEvent('keydown', {
+      key: 'ArrowRight',
+      bubbles: true,
+      cancelable: true,
+    });
+    fireEvent(rowSelection, childKeyEvent);
+    expect(childKeyEvent.defaultPrevented).toBe(false);
+    expect(scrollRegion.scrollLeft).toBe(0);
+
     fireEvent.keyDown(scrollRegion, { key: 'ArrowRight' });
     expect(scrollRegion.scrollLeft).toBe(80);
     fireEvent.keyDown(scrollRegion, { key: 'ArrowLeft' });

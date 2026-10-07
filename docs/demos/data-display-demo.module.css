@@ -140,7 +140,7 @@
 }
 
 @container table-viewport (max-width: 855px) {
-  .scrollHint {
+  .scrollHint:not(.basicScrollHint) {
     display: block;
     --lx-table-compact-pagination: 1;
   }
@@ -186,6 +186,12 @@
   .pageSizeControl,
   .pageNumbers {
     display: none;
+  }
+}
+
+@container table-viewport (inline-size < 480px) {
+  .basicScrollHint {
+    display: block;
   }
 }
 

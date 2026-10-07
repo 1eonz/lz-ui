@@ -297,6 +297,22 @@ function expectFixedEdges(
   expect(Math.abs(cells.action.right - port.right)).toBeLessThanOrEqual(2);
 }
 
+async function pressKeyAndReadDefault(
+  page: Page,
+  key: 'ArrowLeft' | 'ArrowRight',
+): Promise<boolean> {
+  const defaultPrevented = page.evaluate(
+    () =>
+      new Promise<boolean>((resolve) => {
+        window.addEventListener('keydown', (event) => resolve(event.defaultPrevented), {
+          once: true,
+        });
+      }),
+  );
+  await page.keyboard.press(key);
+  return defaultPrevented;
+}
+
 test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见表格样式', async ({ page }) => {
   const browserHealth = collectBrowserErrors(page);
   await page.goto('/components/data-display/table/');
@@ -435,6 +451,150 @@ test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见�
   expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
 });
 
+test('普通 Table 滚动区仅横向响应方向键，边界保留默认行为且 Tab 可离开', async ({ page }) => {
+  const browserHealth = collectBrowserErrors(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/components/data-display/table/');
+
+  const region = page.getByRole('region', { name: '基础采购订单表格', exact: true });
+  await region.scrollIntoViewIfNeeded();
+  await expect(region).toBeVisible();
+  const sequentialTabStops = await region
+    .locator('a, button, input, select, textarea, [tabindex]')
+    .evaluateAll((elements) =>
+      elements
+        .filter((element) => (element as HTMLElement).tabIndex >= 0)
+        .map((element) => {
+          const node = element as HTMLElement;
+          return {
+            tagName: node.tagName.toLowerCase(),
+            role: node.getAttribute('role'),
+            tabIndex: node.tabIndex,
+            ariaLabel: node.getAttribute('aria-label'),
+          };
+        }),
+    );
+  expect(sequentialTabStops).toEqual([]);
+  await region.focus();
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Tab');
+  await expect(region).toBeFocused();
+
+  const initial = await region.evaluate((element) => ({
+    scrollLeft: element.scrollLeft,
+    scrollWidth: element.scrollWidth,
+    clientWidth: element.clientWidth,
+  }));
+  expect(initial.scrollWidth).toBeGreaterThan(initial.clientWidth);
+  const documentScrollBefore = await page.evaluate(() => ({
+    x: window.scrollX,
+    y: window.scrollY,
+  }));
+
+  await region.evaluate((element) => {
+    element.scrollLeft = 0;
+  });
+  expect(await pressKeyAndReadDefault(page, 'ArrowLeft')).toBe(false);
+  expect(await region.evaluate((element) => element.scrollLeft)).toBe(0);
+
+  expect(await pressKeyAndReadDefault(page, 'ArrowRight')).toBe(true);
+  expect(await region.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+  const focusRing = await region.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    return {
+      keyboardVisible: element.matches(':focus-visible'),
+      outlineStyle: style.outlineStyle,
+      outlineWidth: style.outlineWidth,
+    };
+  });
+  expect(focusRing).toEqual({ keyboardVisible: true, outlineStyle: 'solid', outlineWidth: '2px' });
+  expect(await page.evaluate(() => ({ x: window.scrollX, y: window.scrollY }))).toEqual(
+    documentScrollBefore,
+  );
+
+  await region.evaluate((element) => {
+    element.scrollLeft = element.scrollWidth;
+  });
+  const maxScrollLeft = await region.evaluate((element) => element.scrollLeft);
+  expect(maxScrollLeft).toBeGreaterThan(0);
+  expect(await pressKeyAndReadDefault(page, 'ArrowRight')).toBe(false);
+  expect(await region.evaluate((element) => element.scrollLeft)).toBe(maxScrollLeft);
+  expect(await page.evaluate(() => ({ x: window.scrollX, y: window.scrollY }))).toEqual(
+    documentScrollBefore,
+  );
+
+  await page.keyboard.press('Tab');
+  expect(await region.evaluate((element) => element.contains(document.activeElement))).toBe(false);
+
+  const tableRegion = page.getByRole('region', { name: '采购订单表格', exact: true });
+  const rowSelection = tableRegion.getByRole('checkbox', { name: '选择采购单 PO-2024-1881' });
+  await tableRegion.scrollIntoViewIfNeeded();
+  await rowSelection.focus();
+  await expect(rowSelection).toBeFocused();
+  const childControlScrollBefore = await Promise.all([
+    tableRegion.evaluate((element) => element.scrollLeft),
+    page.evaluate(() => ({ x: window.scrollX, y: window.scrollY })),
+  ]);
+  expect(await pressKeyAndReadDefault(page, 'ArrowRight')).toBe(false);
+  expect(await tableRegion.evaluate((element) => element.scrollLeft)).toBe(
+    childControlScrollBefore[0],
+  );
+  expect(await page.evaluate(() => ({ x: window.scrollX, y: window.scrollY }))).toEqual(
+    childControlScrollBefore[1],
+  );
+
+  await waitForBrowserQuiescence(page, browserHealth);
+  expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
+});
+
+test('基础采购表格仅在内容溢出时显示横向滚动提示并提供条件式描述', async ({ page }) => {
+  const browserHealth = collectBrowserErrors(page);
+  const hintText =
+    '表格超出可视区域时，可横向滚动查看；也可按 Tab 聚焦表格区后，用左右方向键滚动。';
+  await page.goto('/components/data-display/table/');
+
+  const region = page.getByRole('region', { name: '基础采购订单表格', exact: true });
+  const scrollHint = page.getByText(hintText, { exact: true });
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expect(region).toBeVisible();
+    await expect(scrollHint).toBeVisible();
+    await expect(region).toHaveAccessibleDescription(hintText);
+    const dimensions = await region.evaluate((element) => ({
+      clientWidth: element.clientWidth,
+      scrollWidth: element.scrollWidth,
+    }));
+    expect(dimensions.scrollWidth).toBeGreaterThan(dimensions.clientWidth);
+    await expectNoDocumentOverflow(page);
+  }
+
+  await page.setViewportSize({ width: 1280, height: 844 });
+  await expect(scrollHint).not.toBeVisible();
+  await expect(region).toHaveAttribute('aria-describedby');
+  await expect(region).toHaveAccessibleDescription(hintText);
+  await expect(scrollHint).toHaveText(hintText);
+
+  const tableViewport = region.locator('xpath=..');
+  for (const boundary of [
+    { inlineSize: 479.5, hintVisible: true },
+    { inlineSize: 480, hintVisible: false },
+  ]) {
+    const measuredWidth = await tableViewport.evaluate((element, inlineSize) => {
+      (element as HTMLElement).style.inlineSize = `${inlineSize}px`;
+      return element.getBoundingClientRect().width;
+    }, boundary.inlineSize);
+    expect(measuredWidth).toBeCloseTo(boundary.inlineSize, 1);
+    if (boundary.hintVisible) await expect(scrollHint).toBeVisible();
+    else await expect(scrollHint).not.toBeVisible();
+  }
+  await tableViewport.evaluate((element) => {
+    (element as HTMLElement).style.removeProperty('inline-size');
+  });
+
+  await waitForBrowserQuiescence(page, browserHealth);
+  expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
+});
+
 test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情并限制横向滚动', async ({
   page,
 }) => {
@@ -460,9 +620,12 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
         region.scrollLeft = 0;
       });
       await expect(
-        themeRoot.getByText('可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。', {
-          exact: true,
-        }),
+        themeRoot.getByText(
+          '可左右滑动查看完整表格；按 Tab 聚焦表格区域后，左右方向键横向滚动，不会在单元格间移动焦点。',
+          {
+            exact: true,
+          },
+        ),
       ).toBeVisible();
       const pagination = themeRoot.getByRole('navigation', { name: '采购订单分页' });
       const previousPage = pagination.getByRole('button', { name: '上一页' });
@@ -522,7 +685,7 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
       await expect(pageAnnouncement).toHaveText('第 1 页，共 5 页');
       await expect(pagination.getByText('第 1 / 5 页 · 共 24 条', { exact: true })).toBeVisible();
       await expect(tableRegion).toHaveAccessibleDescription(
-        '可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。',
+        '可左右滑动查看完整表格；按 Tab 聚焦表格区域后，左右方向键横向滚动，不会在单元格间移动焦点。',
       );
       const viewportBounds = await readBounds(tableViewport);
       const paginationBounds = await readBounds(pagination);
@@ -542,9 +705,12 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
       }
     } else {
       await expect(
-        themeRoot.getByText('可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。', {
-          exact: true,
-        }),
+        themeRoot.getByText(
+          '可左右滑动查看完整表格；按 Tab 聚焦表格区域后，左右方向键横向滚动，不会在单元格间移动焦点。',
+          {
+            exact: true,
+          },
+        ),
       ).not.toBeVisible();
       const pagination = themeRoot.getByRole('navigation', { name: '采购订单分页' });
       await expect(pagination.getByRole('button', { name: '第 1 页' })).toHaveAttribute(
@@ -632,7 +798,7 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
     }, containerWidth);
 
     const scrollHint = themeRoot.getByText(
-      '可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。',
+      '可左右滑动查看完整表格；按 Tab 聚焦表格区域后，左右方向键横向滚动，不会在单元格间移动焦点。',
       { exact: true },
     );
     if (containerWidth === 855) {
@@ -644,7 +810,7 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
         }),
       ).toBeVisible();
       await expect(tableRegion).toHaveAccessibleDescription(
-        '可左右滑动查看完整表格；使用键盘时，先聚焦表格区域，再按方向键。',
+        '可左右滑动查看完整表格；按 Tab 聚焦表格区域后，左右方向键横向滚动，不会在单元格间移动焦点。',
       );
     } else {
       await expect(scrollHint).not.toBeVisible();
