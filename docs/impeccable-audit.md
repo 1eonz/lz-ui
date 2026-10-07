@@ -662,7 +662,7 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **修复与独立复审：** 粗指针测试以浏览器计算的 `outlineWidth + outlineOffset` 再加 4px 安全余量，检查采购员按钮与两侧固定区域的分隔；避免测试仅与当前 AntD 轮廓尺寸偶然一致。独立 `gpt-6-luna max` 代码复审只读检查实现、测试和中文注释，结论与发现记于本批收口记录。
 - **Impeccable 结论：** 最终 Nielsen UX 33/40（Good），无 P0/P1。技术审计沿用已关闭快照的局部评分：无障碍 3/4、性能 3/4、主题 2/4、响应式 4/4、实现完整性 4/4，共 16/20；未实测真实读屏、设备帧率与全主题矩阵。Detector 命令 `node C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs --json docs/demos/table-fixed-columns.tsx docs/demos/table-virtual.tsx docs/demos/table-demo.module.css` 原始 stdout 为 `[]`、stderr 为空、退出码 0，只表示扫描范围内没有确定性规则命中。隔离 overlay 曾报告 39 个节点，包含 AntD 固定列与虚拟滚动结构命中；这些结构经公开 API 和几何证据判断，不把 detector 或 overlay 单独当成失败/通过结论。
 - **P2 边界：** Ant Design 5.24 的公开 Table API 未提供使纯文本单元格按方向键横向滚动的入口。纯文本格不在 Tab 顺序内；示例没有改写 AntD 私有 DOM，也没有虚构网格导航。文档明确记录此限制，作为后续 API 能力或替代交互评估项保留；无 P0/P1 阻断。
-- **浏览器与工程门禁：** 隔离验证副本中的 Dumi 生产构建、静态导出检查（158 个 HTML、474 个本地资源引用）、`npm run test:browser:all`（Chromium 42/42、Edge 42/42，合计 84/84）通过；Table 定向浏览器用例 8/8。`npm run check` 为 55 个测试文件、444 项通过；`npm run check:scaffold` 通过，demo 类型检查覆盖 103 个文件。`npm pack --dry-run --json` 当前为 522 个文件，163,015 B 压缩、755,114 B 解包；docs、tests、UI、Dumi 临时产物、coverage 禁入路径为 0 项。首次测试曾有两项 DynamicForm demo 在高负载并行下波动，单独通过后将 worker 限制为 1–4，再次完整测试通过。jsdom 的 AntD scrollbar 伪元素 `getComputedStyle` 警告仍是环境噪声，不影响断言。
+- **浏览器与工程门禁：** 隔离验证副本中的 Dumi 生产构建、静态导出检查（158 个 HTML、474 个本地资源引用）、`npm run test:browser:all`（Chromium 42/42、Edge 42/42，合计 84/84）通过；Table 定向浏览器用例 8/8。`npm run check` 为 55 个测试文件、444 项通过；`npm run check:scaffold` 通过，demo 类型检查覆盖 103 个文件。`npm pack --dry-run --json` 当前为 522 个文件，163,495 B 压缩、757,370 B 解包；docs、tests、UI、Dumi 临时产物、coverage 禁入路径为 0 项。首次测试曾有两项 DynamicForm demo 在高负载并行下波动，单独通过后将 worker 限制为 1–4，再次完整测试通过。jsdom 的 AntD scrollbar 伪元素 `getComputedStyle` 警告仍是环境噪声，不影响断言。
 - **范围：** 本轮关闭固定列/虚拟化 demo 的浏览器回归有效性和验收状态不一致问题，不代表 Table 完整主题/色板、放大、真实读屏、Safari、实体触控、动态行高、部署环境或全库 2B-1 已关闭。
 
 ### 2026-10-07 Table 固定列详情键盘与移动布局
@@ -700,3 +700,11 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **独立 B 组复核：** 使用 127.0.0.1:4199 临时预览采集 1440/640/390/320 细指针与 390/320 粗指针六个场景；每场 response、console、page、request 和 bad response 均为空。各阶段 document/body 的 `scrollWidth` 与 `clientWidth` 相等；640/390 为两行分页、320 为三行分页，粗指针 compact 纯文本行和表头均为 45px。详情的三个分组标题与 `aria-labelledby` 一一对应。独立结论 P0/P1/P2 均为 0、GO；仅记录 demo surface 下方默认白色余量为不阻断的 P3 观察。
 - **工程证据：** 全量 Vitest 55 个测试文件、606 项通过；`npm run typecheck`、`typecheck:docs`（103 个 demo 文件）、`lint`、`check:scaffold`、`build:lib` 和 `build:docs` 均通过；静态导出为 158 个 HTML、474 个本地 JS/CSS 引用和 88 个嵌套 demo 页面。Edge 初次连续键盘事件存在偶发少处理一次的时序，测试已改为对具体 Select 控件发送按键后两浏览器复跑通过。
 - **未覆盖范围：** 640/320px 是 CSS viewport 的响应式等效检查，不代表真实 page zoom；真实 200%/400% 缩放、屏幕阅读器、Safari、实体设备、设备性能和部署环境仍未验收。纯文本单元格方向键横向导航因 AntD 公开 API 限制继续作为 P2 记录。
+
+### 2026-10-07 全公开路由主题矩阵收口
+
+- **方法与目标：** Impeccable 4.1.3；本批按 Read 模式检查 Dumi 组件文档中的统一主题设置。执行 `node C:\Users\Administrator\.codex\skills\impeccable\scripts\context.mjs --target docs/demos/table.tsx`，上下文确认项目已有 `DESIGN.md` 和 incumbent visual system；没有创建或修改用户已有 `.impeccable/critique` 快照。
+- **静态检测边界：** 执行 `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json docs/demos/table.tsx`，退出码 0，原始 stdout 为 `[]`。该 detector 只表示 TSX 确定性规则没有命中，不扫描 CSS Modules，也不判断真实布局、对比度、动效或交互；本批结论以浏览器矩阵为准。
+- **浏览器证据：** `tests/browser/theme-settings.spec.ts` 排除使用独立“显示选项”协议的 DynamicForm 后，Chromium **31/31**、Microsoft Edge **31/31** 通过。每条路由覆盖所有主题 frame 的入口和可见内容，以及首个 frame 的 light/dark、business/soft/glass、comfortable/compact、6 个品牌色、7 个东方配色。930×720、390×844、320×740 下 document/body 根节点无横向溢出；浏览器错误收集器在请求归零并静默后确认 pageerror、console error、requestfailed 与 HTTP 错误均为空。
+- **实现审查：** Radio 通过可见标签触发而不是对隐藏 AntD input 做可见性假设；rc-select 通过公开 combobox/listbox/option 语义和键盘操作，首项清除单独处理虚拟列表滚动。Table 的第二个 frame 密度控件用可见“紧凑 · 36px 基础/舒适 · 48px 基础”标签验证，主 Table 的 token snapshot 与完整交互由既有专项用例补充。未读取 AntD 私有 DOM，也未运行时改写 role。
+- **结论与边界：** 本批关闭非 DynamicForm 公开路由的统一主题矩阵缺口，未发现 P0/P1；DynamicForm 独立主题矩阵、真实 200%/400% page zoom、真实屏幕阅读器、Safari、实体触控、设备性能与目标部署仍保留。`[]` 不能单独作为视觉通过结论；Table 纯文本格方向键横向导航继续记录为 AntD 公开 API 限制下的 P2。
