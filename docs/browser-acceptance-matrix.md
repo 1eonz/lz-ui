@@ -237,3 +237,10 @@
 - 显示选项使用原生 `details/summary` 和带真实 `label` 的 `select`，因此折叠状态默认不打断填写任务，控件名称不依赖 AntD 私有 DOM。品牌色与东方配色的互斥关系由公开 `useLxTheme` API 驱动并由浏览器断言覆盖。
 - 第二轮 polish 为摘要补充当前色板名称，并在展开区提供带文字说明的当前配色状态和色标；`aria-live` 状态区与原生控件保持同步，320/390px 下 demo 使用可用内容宽度，summary/详情保留 6rem 吸顶栏滚动边距。
 - 本批关闭 DynamicForm 独立主题矩阵缺口；仍未覆盖真实 page zoom 200%/400%、真实屏幕阅读器、Safari、实体触控、设备性能和目标部署环境。该结果不等同于全库 2B-1 已关闭。
+
+### 2026-10-07 WebKit 桌面与触控仿真补证
+
+- **总体验收入口：** `npm run test:browser:all` 先构建文档并运行 Chromium 与 Edge 的浏览器套件，再运行 WebKit 桌面 smoke；WebKit 不复用 Chromium/Edge 的完整套件，避免将当前尚未覆盖的 WebKit 行为误作通过。
+- **WebKit 桌面 smoke：** `npx playwright test tests/browser/webkit-smoke.spec.ts --project=webkit` 在当前 Windows Playwright WebKit 运行时通过 **2/2**。Table 使用公开 `region`、`row`、`button` 和详情 heading 验证打开、标题聚焦、关闭；DynamicForm 使用公开 `heading`、`label`/`combobox`、`textbox` 和重置按钮验证主题切换与值清理。两个页面均在 930×720、390×844、320×740 CSS viewport 检查 document/body 根节点没有横向溢出，并在请求归零和静默后确认 pageerror、console error、requestfailed 与 HTTP 错误为空。
+- **触控仿真：** Chromium 与 Microsoft Edge 分别执行 `npx playwright test tests/browser/touch-smoke.spec.ts --project=chromium`、`npx playwright test tests/browser/touch-smoke.spec.ts --project=edge`，均通过 **2/2**。测试创建 `isMobile: true`、`hasTouch: true` 的独立上下文，使用 `locator.tap` 和 `page.touchscreen.tap` 验证 Table 详情触控打开/关闭、关闭后焦点恢复，以及 DynamicForm 显示选项展开、通过可见“重点客户”文本触控选择、负责人条件字段出现并在重置后隐藏、等级恢复普通客户；390/320px 根节点无横向溢出。未把程序化输入或 selectOption 操作计作触控证据。
+- **能力边界：** 触控用例基于运行时 `navigator.maxTouchPoints` 探测，并断言触控上下文匹配 coarse pointer。Windows WebKit 设置 `hasTouch: true` 后实测值为 0，因此该 project 的触控用例显示为 **2 skipped**；skip 是环境能力保护，不是组件通过。WebKit 桌面 smoke 不代表 Safari 真机兼容，Playwright `hasTouch` 仿真不代表实体设备；真实 page zoom、真实屏幕阅读器、Safari 真机、实体触控、44px 目标尺寸、设备性能和目标部署仍未验收。测试使用主要交互的公开 role/name、可见文本、原生 `details/summary` 和文档化 `data-lx-mode` 标记，不查询 AntD 私有 DOM 或改写 role。

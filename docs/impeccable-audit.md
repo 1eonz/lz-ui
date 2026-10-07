@@ -716,3 +716,11 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **浏览器证据：** `tests/browser/dynamic-form-theme.spec.ts` 在 Chromium 与 Microsoft Edge 各通过 **1/1**。用例覆盖 light/dark、business/soft/glass、comfortable/compact、6 个品牌色和 7 个东方配色，验证 `data-lx-*`、`--lx-*` token、完整表单内容以及 930/390/320px CSS viewport 根节点无横向溢出；浏览器错误收集器在静默后为空。
 - **交互与层级判断：** 显示选项默认折叠，展开后按外观、主题、密度、品牌色、东方配色和演示失败开关分组；原生 `label`/`select` 保持可访问名称，东方配色与品牌色的清除和恢复行为由公开 `useLxTheme` API 驱动。第二轮 polish 已让摘要显示当前色板，并在展开区提供文字说明和色标；同时用局部 `inline-size` 与 `scroll-margin-block-start` 修复 320/390px 的可用宽度和吸顶栏锚点风险。复核后无 P0/P1/P2 阻断。
 - **边界：** 本批关闭 DynamicForm 独立主题矩阵，不关闭全库 2B-1。真实 page zoom 200%/400%、真实屏幕阅读器、Safari、实体触控、设备性能和目标部署环境仍未覆盖。
+
+### 2026-10-07 WebKit 桌面与触控仿真验收
+
+- **目标与设计依据：** 本批只补验收证据，不改变组件视觉或公开 API。目标为 `tests/browser/webkit-smoke.spec.ts`、`tests/browser/touch-smoke.spec.ts` 覆盖的 Table 详情和 DynamicForm 客户录入路径；沿用 `UI/P0 基础组件-Data Display/DESIGN.md` 的中后台表格层级、公开语义和主题 token。Impeccable `context.mjs --target docs/demos/table.tsx` 识别为现有视觉系统的窄范围扩展，允许保留现有实现；项目提供的独立 `audit.mjs` 脚本不存在，因此技术审计按 `docs/impeccable-workflow.md` 的无障碍、响应式、性能、主题和实现完整性维度手工记录，不把缺失脚本当作通过。
+- **静态扫描边界：** `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json tests/browser/touch-smoke.spec.ts` 与 `... tests/browser/webkit-smoke.spec.ts` 均退出码 0、原始 stdout 为 `[]`。该 detector 只表示测试源码没有命中确定性规则，不扫描实际页面 CSS，也不判断触控、浏览器布局或辅助技术。
+- **真实浏览器证据：** Windows Playwright WebKit 桌面 smoke 通过 **2/2**；Chromium 与 Microsoft Edge 的 `hasTouch` 触控仿真均通过 **2/2**。WebKit smoke 使用公开 role/name 和 label、原生 `details/summary`、文档化 `data-lx-mode` 标记及真实交互路径，覆盖 930/390/320px 根溢出、Table 详情标题聚焦/关闭和 DynamicForm 主题/重置；触控 smoke 额外覆盖 `locator.tap`、`page.touchscreen.tap`、关闭后的焦点恢复，以及通过可见“重点客户”标签触控选择后负责人字段出现、重置后负责人字段隐藏并恢复普通客户等级。测试不把程序化表单输入或 selectOption 作为触控证据。三组均使用浏览器错误排空器，当前运行没有 pageerror、console error、requestfailed 或 HTTP 错误。
+- **独立评审判断：** 触控测试通过独立 Chromium/Edge context 运行，不与 Dumi/AntD 私有 DOM 耦合；WebKit project 只执行桌面 smoke。触控用例按实际 `navigator.maxTouchPoints` 能力决定执行或 skip，并检查 coarse pointer；Chromium/Edge 各 2/2 通过，Windows WebKit 设置 `hasTouch: true` 返回 `maxTouchPoints=0`，因此该 project 为运行时 skip。主要动作使用公开 role/name 和可见文本，并结合原生 `details/summary`、文档化 `data-lx-mode` 标记；该 skip 是环境限制，不能扩展为 Safari 真机或实体设备结论。
+- **未覆盖与后续：** 真实 Safari 最近两个大版本、实体触控设备、真实屏幕阅读器、200%/400% page zoom、设备性能/INP 和目标部署仍未验收；Table 纯文本单元格方向键横移仍是 AntD 公开 API 限制下的 P2。当前批无 P0/P1 发现，不关闭全库 2B-1。

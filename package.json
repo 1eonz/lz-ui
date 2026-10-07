@@ -70,7 +70,8 @@
     "check": "npm run format:check && npm run typecheck && npm run typecheck:docs && npm run lint && npm run test",
     "test:browser": "npm run build:docs && playwright test --project=chromium",
     "test:browser:edge": "playwright test --project=edge",
-    "test:browser:all": "npm run test:browser && npm run test:browser:edge",
+    "test:browser:webkit": "playwright test tests/browser/webkit-smoke.spec.ts --project=webkit",
+    "test:browser:all": "npm run test:browser && npm run test:browser:edge && npm run test:browser:webkit",
     "check:scaffold": "node scripts/check-scaffold.mjs",
     "clean": "node scripts/clean.mjs",
     "release:guard": "node scripts/release-guard.mjs"

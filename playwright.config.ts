@@ -38,6 +38,10 @@ export default defineConfig({
         viewport: { width: 1280, height: 720 },
       },
     },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'], browserName: 'webkit' },
+    },
   ],
   webServer: {
     command: `node node_modules/vite/bin/vite.js preview --host 127.0.0.1 --port ${previewPort} --strictPort --outDir docs-dist`,
