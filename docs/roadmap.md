@@ -197,7 +197,7 @@ flowchart TD
 
 ## 六、当前下一步
 
-**批次 2B-1 仍在进行，详细状态以 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md) 为准。** 全部 32 个公开组件路由已有 Chromium/Edge 根溢出 smoke；非 DynamicForm 路由主题矩阵为两浏览器各 31/31，DynamicForm 独立矩阵为各 1/1；Table 基础滚动、固定列、虚拟化、详情和主题/密度已有分项浏览器证据。Table 纯文本格方向键不作为当前默认组件的 P2 待修项，已按 [ADR-0005](./adr/0005-table-keyboard-model.md) 接受原生静态表格语义；该选择不等于单元格网格导航或真实读屏通过。仍待完成的重点包括真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机/版本覆盖、实体触控、目标部署、设备性能，以及 Upload 的真实网络上传和完整恢复路径验证。**批次 2B-2 的 ADR-0004 架构决策已接受，但其实现仍受 2B-1 关闭条件约束**；在门槛满足前不加入浮层依赖、不实现锚定原语、不公开 Popover/Popconfirm。所有浏览器能力限制和逐组件未验收项都以实际证据记录，不从源码推断通过。
+**批次 2B-1 仍在进行，详细状态以 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md) 为准。** 全部 32 个公开组件路由已有 Chromium/Edge 根溢出 smoke；非 DynamicForm 路由主题矩阵为两浏览器各 31/31，DynamicForm 独立矩阵为各 1/1；Table 基础滚动、固定列、虚拟化、详情和主题/密度已有分项浏览器证据。Upload 宿主示例已通过 Chromium 8/8，验证浏览器 multipart mock 请求和失败/删除恢复；真实生产服务端、认证授权和实际系统文件选择器取消仍待验收。Table 纯文本格方向键不作为当前默认组件的 P2 待修项，已按 [ADR-0005](./adr/0005-table-keyboard-model.md) 接受原生静态表格语义；该选择不等于单元格网格导航或真实读屏通过。仍待完成的重点包括真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机/版本覆盖、实体触控、目标部署和设备性能。**批次 2B-2 的 ADR-0004 架构决策已接受，但其实现仍受 2B-1 关闭条件约束**；在门槛满足前不加入浮层依赖、不实现锚定原语、不公开 Popover/Popconfirm。所有浏览器能力限制和逐组件未验收项都以实际证据记录，不从源码推断通过。
 
 2026-10-05 续验：DynamicForm 级联与提交恢复已在 `http://localhost:8001/components/form/dynamic-form` 实际演示。已验证选择“西湖区”后改为“华南”会清空城市/区县、禁用区县并播报清理结果；重置回到“华东”。完整客户录入首次提交失败保留值、错误和重试同屏、焦点返回重试按钮；重试成功后聚焦“查看客户”，继续新增清空并聚焦客户名称。页面主题、级联值、客户输入、失败模拟选项均已恢复。DynamicForm 的宽度与主题局部证据不关闭全库 2B-1 矩阵；其他组件的键盘、主题、缩放、读屏和跨浏览器缺口仍按 `browser-acceptance-matrix.md` 继续处理。
 
@@ -245,3 +245,5 @@ flowchart TD
 2026-10-07 Table 基础示例横向滚动收口：基础采购表示例仅在滚动容器小于 480px 时显示横向操作提示，并将提示通过 `aria-describedby` 关联到具名滚动区域；区域自身持焦且内容确实横移时才消费无修饰方向键。浏览器用例验证 Tab/Shift+Tab、滚动边界、修饰键、子复选框透传和 479.5/480px 断点。独立 UX 初评分 29/40，键盘提示 P2 已关闭；320px 仅约 190px 可视宽度及宽屏无效停靠点列为非阻断 P3。独立代码审查两轮 GO。全量 `npm run check` 为 55 文件、606 项通过；库与文档构建、脚手架检查通过；Chromium/Edge 完整 Table 套件各 10/10。未覆盖真实读屏、实体触控、真实 200%/400% page zoom、设备性能与部署；本批不关闭全库 2B-1。细节见 `docs/impeccable-audit.md` 与对应 critique 快照。
 
 2026-10-07 Table 原生键盘模型决策：依据 ADR-0005，Table 保留原生静态表格语义，不默认把单元格变为 Tab 停靠点或启用网格方向键导航；普通滚动区只支持横向滚动，固定列不查询 AntD 私有 DOM。AntD `onCell`、`components.body.cell` 和 `components.body` 可让宿主另建行为，但不提供现成的完整焦点管理协议。此前“纯文本单元格方向键导航 P2”重分类为已接受的语义约束，不作为当前默认 Table 的待修缺陷；明确记录代价：不使用屏幕阅读器的键盘用户不能逐 Tab 遍历纯文本单元格，真实屏幕阅读器行为尚未验证。若产品出现逐格操作需求，另行评审完整 opt-in Grid。此 ADR 不关闭 Table 全矩阵或全库 2B-1。
+
+2026-10-08 Upload 宿主网络传输示例：新增按需启用的 multipart 网络传输、地址校验、本地暂存、失败重试、远端删除恢复和安全 `fileId` 处理；Upload 文档已按操作流程、服务端契约、属性/事件/ref 与 Form 集成分组。进度条使用 `scaleX`，reduced-motion 下停止动效。A 组 UX 34/40，B 组技术审查 GO；Chromium 专项 8/8、稳定视口 1280/930/390/320px 无页面级溢出；全工程 55 文件/606 项、104 个 demo 类型检查、库与 Dumi 构建及 scaffold 门禁通过。浏览器服务端响应为 Playwright route mock，生产后端、认证/授权、真实系统文件选择器取消、真实读屏、高倍缩放和目标部署仍未覆盖。保留 P3：320px demo 操作宽约 190px、主题色选项无色样。此局部结果不关闭全库 2B-1；后续按 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md) 处理剩余组件验收与独立评审发现。

@@ -744,3 +744,14 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **独立架构复审：** `gpt-6-luna max` 只读检查 Table 公开类型、AntD 适配层、设计稿、滚动示例和 Playwright 用例。结论为将纯文本单元格方向键导航从 P2 缺陷清单重分类为已接受语义约束；保持静态 Table，不默认增加 `role="grid"`、单元格 tabindex 或焦点管理器。`onCell`、`components.body.cell` 和 `components.body` 是可用于宿主自建行为的公开扩展点，因此不表述为“完全无法实现”；它们并不提供现成的完整 Grid 焦点协议，AntD 也没有直接提供 prop/ref 配置固定列默认内部横向滚动区的名称、焦点或键盘行为。
 - **影响与代价：** 普通命名滚动区只提供横向滚动，固定列示例依靠 Tab 可达的行操作和详情面板阅读字段；纯文本格不进入 Tab 顺序。不使用屏幕阅读器的键盘用户不能逐格 Tab 遍历。辅助技术可能提供表格浏览命令，但实际行为取决于浏览器/读屏组合，当前尚未验证。若出现电子表格式操作需求，应另立 opt-in Grid 决策并定义焦点、键盘、控件、虚拟化和读屏协议。
 - **状态更新：** 决策、未选方案、优点、代价与重新评估条件见 [ADR-0005](./adr/0005-table-keyboard-model.md)。原 P2 不再列作当前默认 Table 的待修项；本 ADR 不关闭 Table 全矩阵、真实读屏或全库 2B-1。静态文档修改不改变既有 Chromium/Edge 测试结果。
+
+### 2026-10-08 Upload 宿主网络传输示例
+
+- **目标与设计依据：** Impeccable 4.1.3，Read 模式；目标为 `docs/demos/upload-network.tsx`、CSS Module、Upload API 文档和 Playwright 专项。执行 `context.mjs --target docs/demos/upload-network.tsx` 一次，沿用 `UI/P0 基础组件-Form/DESIGN.md` 与 `code.html` 中的拖放区、呼吸图标和文件生命周期设计。网络传输保持默认关闭，后端认证、存储与权限契约归宿主负责。
+- **Assessment A：** 独立设计评审为 **34/40（Good）**，十项依次 `4,3,3,4,3,4,3,3,4,3`，低负荷、无 P0/P1/P2。Dumi 930px 首帧曾多约 5px，但属于搜索栏过渡，约 100ms 后稳定为视口宽；320px 目录退出过渡的旧截图稳定后不再遮挡。保留两项 P3：320px demo 宽约 190px、主题色选择可以增加色样。文件选择器由 Playwright filechooser 模拟，不能代表操作系统取消路径。
+- **Assessment B 与技术审计：** 独立代码/网络契约结论 GO，没有可复现 P0–P3。局部技术审计 **15/20（Good）**：无障碍 3/4（名称、键盘和焦点有覆盖，原生文件对话框取消未验证）；性能 3/4（transform 动画及 reduced-motion 已实测，生产后端负载未测）；主题 3/4（验证局部暗色，完整密度和色板未覆盖）；响应式 3/4（四种 CSS viewport 无页面根溢出，320px 操作宽度窄）；完整性 3/4（本地、上传、失败恢复与删除路径覆盖，后端生产契约仍由宿主实现）。
+- **Impeccable detector 与修复：** 初次扫描报告 `.progressValue` 的 `transition: width`，宽度动画会触发布局计算。填充条现固定 100% 宽并用 `scaleX(percent / 100)` 过渡，`prefers-reduced-motion` 继续关闭过渡；最终 detector 对 TSX 和 CSS Module 输出 `[]`，stderr 为空、退出码 0。该结果只代表确定性规则没有命中。
+- **真实浏览器证据：** 最新 Dumi 生产构建在 Chromium 专项 **8/8** 通过，覆盖 multipart mock 上传内容、503 重试、无效服务端地址阻止请求和恢复、远端删除失败恢复、焦点不被异步结果抢回、删除后的焦点恢复、不安全 `fileId`、拖放、键盘选择、暗色和 reduced-motion。1280×720、930×720、390×844、320×740 的 document/body 均无横向溢出；浏览器错误排空没有 pageerror、console error、requestfailed 或非预期 HTTP 错误。限速 8MB mock 下普通模式观测 `aria-valuenow=13` / `scaleX(0.13)` / `0.18s` transition；减少动态效果时为 `aria-valuenow=8` / `scaleX(0.08)` / `0s`，无活动动画。普通模式读取值落在过渡启动帧，未单独测量过渡后的矩阵值。
+- **工程门禁：** `npm run check` 通过（55 个测试文件、606 项；104 个 demo 类型检查）；`check:scaffold`、`build:lib`、`build:docs` 通过。Dumi 导出为 160 个 HTML、480 个本地 JS/CSS 引用和 89 个嵌套 demo。独立浏览器评审截图保存在当次本机临时目录；可复现用例为 `tests/browser/upload-network.spec.ts`；完整 A/B 评审快照见 [Upload critique](../.impeccable/critique/2026-10-07T18-42-58Z__docs-demos-upload-network-tsx.md)。因后续补充中文安全边界与性能说明注释，快照由 `critique-storage.mjs` 重新写入并更新目标指纹；注释没有改变 JSX、样式或交互。
+- **未覆盖范围：** 请求由 Playwright route mock 截获，不证明生产后端、存储、认证、授权、并发或断点续传；真实系统文件选择器取消、真实读屏器、真实 200%/400% page zoom、实体触控、设备性能及目标部署未验收。该局部结果不关闭全库 2B-1。
+- **Questions skipped:** 当前范围和视觉方向已由用户确认；本轮没有待决产品选择。窄屏信息密度和主题色样属于后续 P3 打磨，不阻断此批次。

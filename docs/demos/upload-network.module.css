@@ -1,0 +1,305 @@
+.root {
+  display: grid;
+  gap: var(--lx-space-lg);
+  color: var(--lx-color-text);
+}
+
+.settings {
+  display: grid;
+  gap: var(--lx-space-md);
+  padding: var(--lx-space-lg);
+  border: 1px solid var(--lx-color-split);
+  border-radius: 8px;
+  background: var(--lx-color-bg-container);
+}
+
+.label {
+  display: grid;
+  gap: var(--lx-space-xs);
+  font-weight: 600;
+}
+
+.endpoint {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: 40px;
+  padding-inline: var(--lx-space-md);
+  border: 1px solid var(--lx-color-border);
+  border-radius: 4px;
+  color: var(--lx-color-text);
+  background: var(--lx-color-bg-container);
+  font: inherit;
+}
+
+.endpoint:focus-visible,
+.consent input:focus-visible {
+  outline: 2px solid var(--lx-color-primary);
+  outline-offset: 2px;
+}
+
+.contract,
+.description,
+.boundary,
+.notice,
+.empty,
+.stateText {
+  margin: 0;
+  color: var(--lx-color-text-secondary);
+  line-height: 1.5;
+}
+
+.consent {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--lx-space-sm);
+  line-height: 1.5;
+}
+
+.consent input {
+  inline-size: 20px;
+  block-size: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--lx-color-primary);
+}
+
+.dropZone.dropZone {
+  /* AntD 将 className 放在外层 wrapper；仅去掉 wrapper 描边，保留内部拖放区边框。 */
+  display: grid;
+  justify-items: center;
+  min-block-size: 0;
+  padding: var(--lx-space-xl);
+  border: 0;
+  border-radius: 8px;
+  background: var(--lx-color-bg-base);
+  text-align: center;
+}
+
+.draggerContent {
+  display: grid;
+  justify-items: center;
+  gap: var(--lx-space-sm);
+}
+
+.uploadMark {
+  display: grid;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 48px;
+  border-radius: 50%;
+  color: var(--lx-color-primary-text);
+  background: var(--lx-color-primary-bg);
+  font-size: 28px;
+  line-height: 1;
+  animation: upload-mark-breathe 2400ms ease-in-out infinite;
+}
+
+.uploadMark :global(svg) {
+  inline-size: 1em;
+  block-size: 1em;
+}
+
+.title {
+  margin: 0;
+  color: var(--lx-color-text);
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.description {
+  max-inline-size: 62ch;
+}
+
+.action {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+}
+
+.phaseSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--lx-space-sm);
+}
+
+.phase {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--lx-space-sm);
+  min-inline-size: 0;
+  padding: var(--lx-space-md);
+  border: 1px solid var(--lx-color-split);
+  border-radius: 6px;
+  background: var(--lx-color-bg-container);
+}
+
+.phase strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.fileList {
+  display: grid;
+  gap: var(--lx-space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.fileRow {
+  display: grid;
+  gap: var(--lx-space-md);
+  min-inline-size: 0;
+  padding: var(--lx-space-md);
+  border: 1px solid var(--lx-color-split);
+  border-radius: 6px;
+  background: var(--lx-color-bg-container);
+}
+
+.fileHeader,
+.fileInfo,
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-sm);
+  min-inline-size: 0;
+}
+
+.fileHeader {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.fileInfo {
+  flex: 1 1 auto;
+}
+
+.fileText {
+  display: grid;
+  gap: var(--lx-space-xs);
+  min-inline-size: 0;
+}
+
+.fileName {
+  overflow-wrap: anywhere;
+}
+
+.fileMeta {
+  color: var(--lx-color-text-secondary);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.statusMark {
+  display: grid;
+  flex: 0 0 32px;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 50%;
+  color: var(--lx-color-primary-text);
+  background: var(--lx-color-primary-bg);
+  font-weight: 700;
+}
+
+.statusMark[data-status='done'] {
+  color: var(--lx-color-success);
+  background: var(--lx-color-success-bg);
+}
+
+.statusMark[data-status='error'] {
+  color: var(--lx-color-error);
+  background: var(--lx-color-error-bg);
+}
+
+.actions {
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.progressGroup {
+  display: grid;
+  gap: var(--lx-space-xs);
+}
+
+.progressTrack {
+  overflow: hidden;
+  block-size: 8px;
+  border-radius: 999px;
+  background: var(--lx-color-border-secondary);
+}
+
+.progressValue {
+  /* 进度回调只改变变换值，避免每次上传更新都触发布局宽度计算。 */
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: inherit;
+  background: var(--lx-color-primary);
+  transform-origin: left;
+  transition: transform 180ms ease-out;
+}
+
+.stateText,
+.successText,
+.errorText {
+  font-size: 13px;
+}
+
+.successText,
+.errorText {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.successText {
+  color: var(--lx-color-success);
+}
+
+.errorText {
+  color: var(--lx-color-error);
+}
+
+.boundary {
+  padding-block-start: var(--lx-space-sm);
+  border-block-start: 1px solid var(--lx-color-split);
+}
+
+@media (max-width: 600px) {
+  .settings,
+  .dropZone {
+    padding: var(--lx-space-md);
+  }
+
+  .phaseSummary {
+    grid-template-columns: 1fr;
+  }
+
+  .fileHeader {
+    display: grid;
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uploadMark {
+    animation: none;
+  }
+
+  .progressValue {
+    transition: none;
+  }
+}
+
+@keyframes upload-mark-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.045);
+  }
+}

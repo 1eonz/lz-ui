@@ -7,7 +7,7 @@ demo:
 
 # Upload 文件选择
 
-默认本地文件选择，不自动发起上传。需要服务端传输时由宿主显式提供action/customRequest并负责认证、失败恢复和服务器文件ID。
+默认只选择并保留本地文件，不发起网络请求。服务端传输、认证、失败恢复和服务器文件 ID 均由宿主负责。
 
 ## 最小使用
 
@@ -46,9 +46,40 @@ accept仅是文件选择器提示；beforeUpload验证PDF与2MB限制。不合�
 
 <code src="../../../../docs/demos/form-doc-upload-limit.tsx" title="文件限制"></code>
 
+### 宿主网络传输与恢复
+
+示例默认关闭网络传输，服务端地址初始为同源 `/api/uploads`。文件可拖放到区域或通过键盘可用的按钮选择。启用后新选文件会发送到配置地址；已暂存文件需单独点击“上传到服务端”。请求使用浏览器 `multipart/form-data`，字段名为 `file`；成功响应需包含 1–128 位安全单路径 `fileId`：首位为字母、数字、下划线或连字符，后续可含点和波浪线，不含路径分隔符或转义字符。删除已上传项会请求该文件上传时的服务端地址下的 `/{fileId}`；删除前当前地址输入值也必须有效，否则文件保留，修正地址后可重试。HTTP 失败、重试和删除失败均在列表内保留恢复操作。
+
+<code src="../../../../docs/demos/upload-network.tsx" title="宿主网络传输"></code>
+
+#### 操作路径
+
+1. 保持网络开关关闭时选择文件，只暂存到当前页面，不会发起请求。
+2. 填写服务端地址并启用网络传输；之后新选文件会直接上传。
+3. 单独上传已暂存文件；失败时保留原文件和重试操作。
+4. 删除已上传文件时调用远端删除接口；失败时保留列表项并提供重试。
+
+#### 服务端请求契约
+
+| 操作         | 请求                                                     | 成功条件                               | 失败后的状态                         |
+| ------------ | -------------------------------------------------------- | -------------------------------------- | ------------------------------------ |
+| 上传         | `POST {endpoint}`，`multipart/form-data` 字段名为 `file` | 任意 2xx 且 JSON 含安全单路径 `fileId` | 保留本地文件，可重试；不清除所选内容 |
+| 删除远端文件 | `DELETE {endpoint}/{fileId}`                             | 任意 2xx                               | 保留列表项及 `fileId`，可重试删除    |
+
+此 demo 的服务端契约仅用于演示，浏览器测试用 Playwright route mock 响应，不证明生产后端实现、存储、认证或部署能力。
+
+#### 恢复与安全边界
+
+- 无效地址只在地址输入处显示一条告警；文件仍可暂存，修正地址后同一文件可上传。
+- 上传失败保留原文件，重试沿用相同文件内容；删除失败保留远端文件记录，避免 UI 显示“已删除”而服务端仍有文件。
+- `fileId` 只接受安全路径字符并作为单段 URL 编码；服务端仍需鉴权、授权、校验文件类型与大小，并限制跨租户访问。
+- 断点续传、SHA-256 校验、认证、权限与并发策略均依赖服务端契约，本示例未实现、未验收。
+
 ## API
 
 `UploadProps`为公开AntD >=5.24 <6上传属性别名。
+
+### 组件属性
 
 | 属性                       | 类型                                                      | 默认                 | 说明                                                 |
 | -------------------------- | --------------------------------------------------------- | -------------------- | ---------------------------------------------------- |
@@ -66,8 +97,6 @@ accept仅是文件选择器提示；beforeUpload验证PDF与2MB限制。不合�
 | children                   | ReactNode                                                 | —                    | 真实选择触发控件，禁用时应同步禁用按钮               |
 
 `UploadRef`保留AntD公开实例，可在挂载期间读取nativeElement和fileList；不承诺focus/open方法，选择由真实按钮触发。组件没有size属性，触发按钮和主题决定几何。未导出Upload.Dragger或Upload.LIST_IGNORE，需要原生静态能力从lx-ui/antd引入。
-
-## 安全边界、表单与性能
 
 ### 事件参数
 
@@ -88,6 +117,28 @@ accept仅是文件选择器提示；beforeUpload验证PDF与2MB限制。不合�
 | fileList      | `ref.current?.fileList`      | 当前公开列表快照；受控业务修改通过setFiles，不直接改数组      |
 | 文件选择入口  | 点击children中的真实Button   | 无ref.open()/focus()承诺；原生选择器由用户操作打开            |
 
-显式beforeUpload会覆盖本地默认，返回true/undefined可能放行请求；没有传输能力时务必返回false或LIST_IGNORE，不能把类型限制误写成放行路径。客户端大小/类型限制不能替代服务端校验。被false拦截的文件可能没有status，不应视作已经上传。
+## 集成与安全边界
 
-Form收集fileList时设置valuePropName="fileList"和getValueFromEvent归一化公开onChange参数。文件ID、权限、重试及取消由宿主负责。Tab聚焦触发按钮，Enter/Space打开原生选择器；主题和reduced motion遵循基础控件基线。大文件预览避免全量读取，创建object URL时须释放；真实浏览器文件选择/键盘与视觉门禁另行验证。
+### 上传拦截与校验
+
+显式 `beforeUpload` 会覆盖本地默认，返回 `true`/`undefined` 可能放行请求；没有传输能力时务必返回 `false` 或 `LIST_IGNORE`，不能把类型限制误写成放行路径。被 `false` 拦截的文件可能没有 `status`，不应视为已经上传。
+
+### Form 表单集成
+
+将文件数组绑定到表单字段时，设置 `valuePropName="fileList"`，并用 `getValueFromEvent` 从公开 `onChange` 参数中返回 `fileList`：
+
+```tsx
+<Form.Item
+  name="attachments"
+  valuePropName="fileList"
+  getValueFromEvent={({ fileList }) => fileList}
+>
+  <Upload>
+    <Button>选择附件</Button>
+  </Upload>
+</Form.Item>
+```
+
+### 宿主与性能责任
+
+客户端大小/类型限制只用于体验提示，不能替代服务端校验。文件 ID、权限、重试及取消策略由宿主定义。Tab 聚焦真实选择按钮，Enter/Space 打开原生选择器；主题和 reduced motion 遵循基础控件基线。大文件预览避免全量读取，创建 object URL 时须释放；真实浏览器行为按验收矩阵单独记录。
