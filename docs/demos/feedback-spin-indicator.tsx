@@ -10,7 +10,13 @@ export default function SpinIndicatorDemo() {
       <Spin
         delay={0}
         spinning={spinning}
-        indicator={<span className={styles.customIndicator} aria-hidden="true" />}
+        indicator={
+          <span
+            className={styles.customIndicator}
+            data-testid="spin-custom-indicator"
+            aria-hidden="true"
+          />
+        }
       />
       <Button onClick={() => setSpinning((value) => !value)}>
         {spinning ? '停止加载' : '恢复加载'}

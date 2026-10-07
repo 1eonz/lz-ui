@@ -778,3 +778,15 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **未覆盖：** 完整 Alert 组件级 light/dark、comfortable/compact、business/soft/glass 和全部色板矩阵，真实 200%/400% page zoom、屏幕阅读器、Safari、实体设备、性能剖析和目标部署仍未验收；本批不关闭 Alert 完整矩阵或全库 2B-1。
 - **Questions skipped:** 用户已确认本轮继续打磨的方向；当前没有待决产品选择。
 - **评审快照：** [Alert 交互 Demo critique](../.impeccable/critique/2026-10-07T21-34-21Z__docs-demos-feedback-alert-interaction-tsx.md)。
+
+### 2026-10-08 Spin loading 交互与重复激活复核
+
+- **目标与设计依据：** Impeccable 4.1.3 `polish`；目标为 `docs/demos/feedback-spin-region.tsx`、`docs/demos/feedback-scenarios.module.css`、`docs/demos/feedback-spin-indicator.tsx`、`docs/docs-shell.css`、Spin 文档及浏览器回归。依据 Stitch `UI/P0 基础组件-Feedback/code.html` 和 `screen.png`。本会话已执行 `context.mjs --target docs/demos/feedback-spin-region.tsx`，按 `frontend-ui-ux`、`reference/polish.md` 和 `reference/craft-floor.md` 验收。
+- **首轮复审发现与修复：** 独立代码审查在 loading 按钮 hover 时复现 P2：Ant Design 主按钮规则覆盖了忙碌状态 token，背景/文字变为蓝底白字。通过增加带根状态上下文和 `:not(:disabled)` 的 hover/active 选择器提高 specificity，继续使用主题 token；增加浏览器断言覆盖 rest、hover 和 pressed 三态。第二轮复审确认三态背景 `rgb(243, 248, 254)`、文字 `rgb(97, 107, 120)`、边框 `rgb(114, 119, 134)` 均与解析后的 token 一致，`cursor: wait` 和 `aria-disabled="true"` 保留。最终代码复审 GO，无遗留 P0-P2。
+- **Assessment A：** `gpt-6-luna max` 独立评审，设计特异性高，认知负荷低；围绕地区输入、客户数据加载、失败保留与重试成功形成清楚的后台工作流。Nielsen **38/40（Good）**，十项依次为 `4,4,4,4,4,4,3,3,4,4`。优势是筛选留在遮罩外且可操作、焦点与重试路径清楚、状态和粗指针目标有明确反馈。无 P0-P2。P3：loading tip、status、按钮文案重复表达状态；输入“华南”时旧的上海记录仍显示；成功数、单条示例记录及固定同步时间之间存在轻微数据呈现不一致；失败示例未提供原因。评审快照见 [Spin critique](../.impeccable/critique/2026-10-07T23-35-53Z__docs-demos-feedback-spin-region-tsx.md)。
+- **局部技术审计：** **17/20（Good）**：无障碍 3/4（标签、landmark、`aria-busy`、独立 status 与焦点保留均有代码和浏览器证据，未做真实读屏）；性能 3/4（无依赖和大规模渲染，单一计时器卸载清理，未测实体设备帧率）；主题 3/4（使用 lx token 并跟随 Dumi 明暗模式，完整主题与密度矩阵未覆盖）；响应式 4/4（桌面、320/390px 粗指针视口无根溢出，触控目标达标）；实现完整性 4/4（无公开 API 变更，锁、失败/重试、清理与视觉交互均有回归证据）。
+- **Assessment B 与 detector：** `gpt-6-luna max` 独立复核使用 8006 最新构建和新浏览器上下文；rest、hover、mouse-down 三态样式均匹配 token，未发现其它可操作 P0-P2。命令 `node C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs --json docs/demos/feedback-spin-region.tsx` 的 stdout 原样为 `[]`，stderr 为空、退出码 0。该检测仅表示扫描的 TSX 未命中确定性规则；不扫描 CSS Module，也不能替代浏览器、视觉或读屏检查。没有注入 overlay，页面判断来自真实 DOM 和计算样式。
+- **真实浏览器证据：** 最新 Dumi 静态构建上 `npx playwright test tests/browser/spin-demo.spec.ts --project=chromium --reporter=line` **5/5**。覆盖假时钟下 loading 连续两次 Enter 仍先失败、随后单次重试成功；鼠标/键盘重复激活、请求中用户移焦不抢回焦点、hover/pressed token、筛选与 tip 不重叠、失败后值保留、320/390px 粗指针目标与 document/body 无溢出，以及系统 reduced-motion 下默认/自定义指示器停止动画。浏览器错误排空为 0。独立 A 组复核 1280×900 与 390×844；页面路由 200，文档根无横向溢出。
+- **工程门禁：** 最终代码修改后 `npm run check` 通过：55 个测试文件、606 项测试，104 个 Dumi 示例源码类型检查；`npm run check:scaffold`、`npm run build:lib`、`npm run build:docs` 均通过。静态导出门禁为 160 个 HTML 页面、480 个本地 JS/CSS 引用和 89 个嵌套 demo。全量测试仍会输出现有 jsdom 伪元素测量、循环引用和 AntD 弃用告警，相关测试均通过。
+- **未覆盖范围：** 本批只验收 Spin 文档示例和交互，不代表完整组件库矩阵。真实读屏、实体触控、200%/400% 缩放、Safari、设备性能、全配色/风格/密度组合及目标部署未验证。地区输入与静态示例记录的语义、加载文案冗余和错误原因说明作为 P3 留待后续内容打磨；不阻断本批交付。
+- **Questions skipped:** 用户已确认持续实施范围与 UI 方向；P3 是文案与示例数据表达，不需要新的架构或产品决策，本批按现有状态行为交付。

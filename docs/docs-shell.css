@@ -354,6 +354,21 @@
   --lx-docs-search-active-surface: #004b9b;
 }
 
+/* Dumi 2.4.49 的 preview 操作栏固定为 32px；粗指针下扩容行高与点击区。 */
+@media (max-width: 767px) and (any-pointer: coarse) {
+  :root .dumi-default-previewer-actions {
+    block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
+
+  :root .dumi-default-previewer-action-btn {
+    box-sizing: border-box;
+    inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    flex: 0 0 auto;
+  }
+}
+
 /* 浅色模式加深 Dumi 搜索高亮；限定主题状态并提高特异性，避免被后加载样式覆盖。 */
 :root[data-prefers-color='light']
   .dumi-default-header

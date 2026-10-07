@@ -12,8 +12,44 @@
   padding-block: var(--lx-space-md);
 }
 
-.region p {
+.regionFilter {
+  display: grid;
+  gap: var(--lx-space-sm);
+}
+
+.regionData {
+  display: grid;
+  min-block-size: 76px;
+  place-content: center;
+}
+
+.regionData p {
   margin: 0;
+}
+
+.regionSyncButton {
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  justify-self: start;
+  white-space: nowrap;
+}
+
+/* aria-disabled 保留键盘焦点；交互态需高于 AntD 主按钮规则，避免覆盖忙碌状态颜色。 */
+.regionSyncButton[aria-disabled='true'],
+:root .regionSyncButton[aria-disabled='true']:not(:disabled):hover,
+:root .regionSyncButton[aria-disabled='true']:not(:disabled):active {
+  border-color: var(--lx-color-border);
+  background-color: var(--lx-color-item-hover-bg);
+  color: var(--lx-color-text-disabled);
+  cursor: wait;
+}
+
+/* 粗指针下扩大同步主操作；桌面继续使用 Button 的默认高度。 */
+@media (any-pointer: coarse) {
+  .regionSyncButton {
+    box-sizing: border-box;
+    min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
 }
 
 .customIndicator {
