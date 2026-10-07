@@ -24,9 +24,9 @@ description 补充恢复步骤；banner 未传 type 时默认为 warning。长�
 
 <code src="../../../../docs/demos/feedback-alert-description.tsx" title="描述与 Banner" defaultShowCode></code>
 
-### 关闭、恢复与真实操作
+### 关闭、恢复与本地状态模拟
 
-重试会更新结果并展示同步范围；关闭后焦点回到始终可用的恢复按钮，重新显示创建新实例。
+重试只将本地状态切换为成功，不会发起网络请求；“查看结果”和“收起结果”会展开或收起同步范围。320px 窄屏下，主操作移到 Alert 下方，为提示正文保留阅读宽度。真实请求、loading 和连续失败策略由宿主负责，完整请求生命周期应放在业务综合状态示例中演示。轻量重置入口始终可用，关闭后焦点回到该入口。
 
 <code src="../../../../docs/demos/feedback-alert-interaction.tsx" title="关闭与恢复" defaultShowCode></code>
 

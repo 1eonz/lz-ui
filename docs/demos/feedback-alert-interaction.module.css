@@ -1,0 +1,47 @@
+.reset {
+  justify-self: start;
+  max-inline-size: 100%;
+}
+
+.alertGroup {
+  min-inline-size: 0;
+}
+
+.note {
+  margin: 0;
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+}
+
+.alert :global(button[aria-label='关闭']) {
+  border-radius: var(--lx-radius-control);
+}
+
+.action {
+  max-inline-size: 100%;
+}
+
+.narrowAction {
+  display: none;
+}
+
+@media (max-width: 360px) {
+  /* 窄屏把演示主操作移到提示下方，释放正文宽度；只使用本地组件类名。 */
+  .alert .action {
+    display: none;
+  }
+
+  .narrowAction {
+    display: flex;
+    justify-content: flex-end;
+    margin-block-start: var(--lx-space-xs);
+  }
+}
+
+@media (any-pointer: coarse) {
+  .reset,
+  .action {
+    min-inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
+}

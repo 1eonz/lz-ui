@@ -6,10 +6,24 @@
   transition-timing-function: ease-out !important;
 }
 
-.root > :global(button[aria-label]:focus-visible) {
-  /* 关闭按钮位于 Alert 根节点；限制直接子项可避免覆盖嵌套的自定义操作按钮。 */
+.root :global(button[aria-label]:focus-visible) {
+  /* 用公开可访问名称定位键盘目标，不依赖 AntD 为关闭控件选择的节点层级；具名操作也保留清晰焦点。 */
   outline: 3px solid var(--lx-focus-ring, var(--lx-color-primary));
   outline-offset: 2px;
+}
+
+.root :global(button[aria-label]) {
+  /* 触控设备会在文档示例中继续扩大至 44px；桌面关闭入口至少满足 24px 命中区。 */
+  min-inline-size: 24px;
+  min-block-size: 24px;
+}
+
+@media (any-pointer: coarse) {
+  .root :global(button[aria-label]) {
+    /* 组件本身承诺触控命中区，不依赖文档 demo 的局部样式来补足尺寸。 */
+    min-inline-size: var(--lx-control-target-touch-min, 44px);
+    min-block-size: var(--lx-control-target-touch-min, 44px);
+  }
 }
 
 .root.info {

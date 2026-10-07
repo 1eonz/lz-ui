@@ -766,3 +766,15 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **工程门禁：** 最终 UI 改动后 `npm run check` 通过，55 个测试文件、606 项测试，104 个 Dumi demo 类型检查；`npm run check:scaffold`、`npm run build:lib`、`npm run build:docs` 通过。Dumi 导出 160 个 HTML、480 个本地 JS/CSS 引用、89 个嵌套 demo 页面。详情为文档 demo/CSS 改动，未改变库公开 API。
 - **边界：** 此批关闭订单号伸出标题焦点框的 P2，不关闭 Table 全矩阵或全库 2B-1。真实屏幕阅读器、200%/400% page zoom、Safari/实体设备、完整主题与密度矩阵及目标部署仍未在本批复验；下阶段继续按 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md) 处理。双代理复审快照见 [Table critique](../.impeccable/critique/2026-10-07T20-01-30Z__docs-demos-table-fixed-columns-tsx.md)。
 - **Questions skipped:** 本轮范围已经由用户授权；当前没有待决产品选择。桌面重复入口和无批量操作为不阻断的演示范围观察。
+
+### 2026-10-08 Alert 交互 Demo 窄屏复审
+
+- **范围与依据：** 目标为 `src/components/feedback/alert/index.module.css`、`src/components/feedback/alert/index.md`、`docs/demos/feedback-alert-interaction.tsx` 与其 CSS Module。依据 Stitch 输入 `UI/P0 基础组件-Feedback/code.html` 的 Alert 语义状态、关闭操作及退出动效；本轮未改公开 API。Impeccable 4.1.3 按 `context.mjs --target docs/demos/feedback-alert-interaction.tsx` 建立会话上下文，并按 `frontend-ui-ux`、`reference/polish.md`、`reference/craft-floor.md` 检查真实页面。
+- **首次独立 Assessment A：** `gpt-6-luna max`，Nielsen 33/40（Good），无 P0/P1。两个 P2 均由浏览器复现：320×740 触屏下错误消息宽约 28px、6 行，操作挤占正文；1280×900 fine pointer 下关闭目标仅 16×17px。另确认 demo 应明确重试只切换本地状态，不模拟服务端请求，本批已在文档和可见说明中明确。
+- **最终 Assessment A 与 B：** 第二轮独立 UX 评审为 **35/40（Good）**（十项依次 `3,4,3,3,3,4,3,4,3,4`），无 P0–P3；首轮两项 P2 均关闭。技术复审曾指出组件触屏目标不能依赖 demo 样式补齐；现 `index.module.css` 自身按具名按钮选择器为 fine pointer 保证 24×24px、粗指针使用 `--lx-control-target-touch-min` 保证至少 44×44px。最终技术复审为 **17/20（Good），GO**，无遗留 P0–P3；样式不依赖 AntD 私有 class、API 或节点层级。
+- **打磨后真实浏览器检查：** Chromium 1280×900、390×844、320×740；初始 error、retry success、结果展开/收起、Tab 顺序、Enter 关闭后焦点恢复、reduced motion 与粗指针 tap 均已执行。320px 下 action 移至 Alert 之后，正文实测宽 90px/两行；Alert 190×62px，action 64×44px；fine pointer close 24×24px，粗指针关闭、action 和 reset 均至少 44×44px。页面根及 body 无横向溢出，pageerror、console error、requestfailed 为 0。最新 Dumi 生产导出上的 Playwright 定向 **4/4** 通过。
+- **Impeccable detector：** 最终执行 `node C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs --json docs/demos/feedback-alert-interaction.tsx docs/demos/feedback-alert-interaction.module.css src/components/feedback/alert/index.module.css`，stdout 原样为 `[]`，stderr 为空，退出码 0。它只表明本次确定性静态规则没有命中，不代表设计、CSS、DOM、浏览器或辅助技术审核通过。
+- **工程门禁：** `npm run check:scaffold` 通过；`npm run check` 通过（55 个测试文件、606 项；104 个 demo 类型检查）；`npm run build:lib` 和 `npm run build:docs` 通过，Dumi 导出 160 HTML、480 个本地资源引用、89 个 demo；Alert Chromium 专项 4/4 通过。全量测试输出有既有 jsdom 伪元素 `getComputedStyle`、循环引用和 AntD API deprecation stderr 告警，相关测试仍通过。
+- **未覆盖：** 完整 Alert 组件级 light/dark、comfortable/compact、business/soft/glass 和全部色板矩阵，真实 200%/400% page zoom、屏幕阅读器、Safari、实体设备、性能剖析和目标部署仍未验收；本批不关闭 Alert 完整矩阵或全库 2B-1。
+- **Questions skipped:** 用户已确认本轮继续打磨的方向；当前没有待决产品选择。
+- **评审快照：** [Alert 交互 Demo critique](../.impeccable/critique/2026-10-07T21-34-21Z__docs-demos-feedback-alert-interaction-tsx.md)。
