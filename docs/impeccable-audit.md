@@ -1,5 +1,7 @@
 # Impeccable 审查记录：DynamicForm 与 Dumi 文档页
 
+本文件按批次记录当时的审查结论；历史条目中的未关闭项可能已由后续记录重新分类或处理。Table 纯文本单元格方向键导航的当前状态见 [ADR-0005](./adr/0005-table-keyboard-model.md)。
+
 ## 2026-10-01：General 与其余 Form 详细文档
 
 - 本批覆盖 General 五页、基础 Form 八页与 DynamicForm，共新增 39 个独立运行示例；已有 31 个组件页具备样式展示、使用方法、参数、事件及实例边界。
@@ -661,7 +663,7 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **目标与方法：** Impeccable 4.1.3，Read 模式；目标为 Table 文档页的固定列/虚拟化 demo、键盘同步和对应 Playwright 几何断言。视觉结构此前由独立 Assessment A 评为 33/40（Good）；沿用当前设计稿、Table 文档和已关闭的 `.impeccable/critique/2026-10-06T15-50-27Z__docs-demos-table-fixed-columns-tsx.md`，未改动组件公开 API。
 - **修复与独立复审：** 粗指针测试以浏览器计算的 `outlineWidth + outlineOffset` 再加 4px 安全余量，检查采购员按钮与两侧固定区域的分隔；避免测试仅与当前 AntD 轮廓尺寸偶然一致。独立 `gpt-6-luna max` 代码复审只读检查实现、测试和中文注释，结论与发现记于本批收口记录。
 - **Impeccable 结论：** 最终 Nielsen UX 33/40（Good），无 P0/P1。技术审计沿用已关闭快照的局部评分：无障碍 3/4、性能 3/4、主题 2/4、响应式 4/4、实现完整性 4/4，共 16/20；未实测真实读屏、设备帧率与全主题矩阵。Detector 命令 `node C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs --json docs/demos/table-fixed-columns.tsx docs/demos/table-virtual.tsx docs/demos/table-demo.module.css` 原始 stdout 为 `[]`、stderr 为空、退出码 0，只表示扫描范围内没有确定性规则命中。隔离 overlay 曾报告 39 个节点，包含 AntD 固定列与虚拟滚动结构命中；这些结构经公开 API 和几何证据判断，不把 detector 或 overlay 单独当成失败/通过结论。
-- **P2 边界：** Ant Design 5.24 的公开 Table API 未提供使纯文本单元格按方向键横向滚动的入口。纯文本格不在 Tab 顺序内；示例没有改写 AntD 私有 DOM，也没有虚构网格导航。文档明确记录此限制，作为后续 API 能力或替代交互评估项保留；无 P0/P1 阻断。
+- **P2 边界：** Ant Design 5.24 没有内建的纯文本单元格方向键导航协议；公开 `onCell` 和自定义 cell 扩展允许宿主自行实现，但不提供完整的 roving focus、焦点恢复或固定列滚动区协调。纯文本格不在 Tab 顺序内；示例没有改写 AntD 私有 DOM，也没有虚构网格导航。后来此范围按 ADR-0005 重分类为已接受语义限制；无 P0/P1 阻断。
 - **浏览器与工程门禁：** 隔离验证副本中的 Dumi 生产构建、静态导出检查（158 个 HTML、474 个本地资源引用）、`npm run test:browser:all`（Chromium 42/42、Edge 42/42，合计 84/84）通过；Table 定向浏览器用例 8/8。`npm run check` 为 55 个测试文件、444 项通过；`npm run check:scaffold` 通过，demo 类型检查覆盖 103 个文件。`npm pack --dry-run --json` 当前为 522 个文件，163,495 B 压缩、757,370 B 解包；docs、tests、UI、Dumi 临时产物、coverage 禁入路径为 0 项。首次测试曾有两项 DynamicForm demo 在高负载并行下波动，单独通过后将 worker 限制为 1–4，再次完整测试通过。jsdom 的 AntD scrollbar 伪元素 `getComputedStyle` 警告仍是环境噪声，不影响断言。
 - **范围：** 本轮关闭固定列/虚拟化 demo 的浏览器回归有效性和验收状态不一致问题，不代表 Table 完整主题/色板、放大、真实读屏、Safari、实体触控、动态行高、部署环境或全库 2B-1 已关闭。
 
@@ -672,7 +674,7 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **Impeccable 实际检查：** `node C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs --json docs/demos/table-fixed-columns.tsx docs/demos/table-demo.module.css src/components/data-display/table/index.md` 原始 stdout `[]`、stderr 为空、退出码 0；只表示确定性规则未命中。按 polish 对真实页面而非检测器输出作判断：1280×900 两列、390×844 单列；字段与长供应商可读、文档根和面板无横向溢出。标签文字颜色计算样式为 `rgb(65,71,85)`，值文字为 `rgb(11,28,48)`，表面为白色；对比度满足普通文字 AA。无新增动效，页面使用 reduced-motion 模拟仍可完成操作。
 - **浏览器证据：** 隔离 worktree Dumi 生产构建与静态导出通过（158 个 HTML 页面、474 个本地 JS/CSS 引用、88 个嵌套 demo 页面）。Playwright Chromium 与 Edge Table 专项各 4/4（合计 8/8）：桌面 Enter 打开后标题获焦，七个字段的 label/value 完整，切换行后内容和展开状态更新，关闭后焦点回到第二行按钮；390px 下长供应商换行、关闭后回焦且文档根无溢出；1000 行虚拟表原有键盘和渲染测试继续通过。粗指针上下文确认 `any-pointer: coarse=true`，关闭按钮实测 64×44px，触控关闭与焦点返回通过；浏览器无 pageerror、console error、requestfailed 或 HTTP 错误。独立浏览器截图和复现步骤位于临时验收 worktree；自动化断言作为持久回归证据保留在 `tests/browser/table-demo.spec.ts`。
 - **工程检查：** 主工作区 `npm run check` 通过，55 个测试文件、445 项；同时 `npm run check:scaffold`、`git diff --check` 和修改文件的 Prettier/ESLint、103 个 demo 类型检查通过。jsdom 的 AntD scrollbar pseudo-element `getComputedStyle` 噪声不影响断言。
-- **剩余范围：** Table 纯文本单元格仍无方向键横向导航；AntD 5.24 公共 API 没有安全入口可为这些格添加滚动行为，不依赖私有 DOM。它保留为已有 P2，仍不妨碍本局部 demo 完整字段的逐行读取。真实屏幕阅读器、实体设备、Safari、200%/400% 缩放、完整主题/色板矩阵和部署环境仍未验收；本批不关闭 Table 完整矩阵或全库 2B-1。
+- **剩余范围：** Table 纯文本单元格没有默认方向键导航；AntD 5.24 没有内建导航协议，但公开 `onCell` 和自定义 cell 扩展可供宿主自行实现。该行为后来按 ADR-0005 记为已接受语义限制，不作为本局部 demo 已解决方向键遍历的证据。真实屏幕阅读器、实体设备、Safari、200%/400% 缩放、完整主题/色板矩阵和部署环境仍未验收；本批不关闭 Table 完整矩阵或全库 2B-1。
 
 ### 2026-10-07 Table 订单详情分组与状态一致性复审
 
@@ -735,3 +737,10 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **最终浏览器证据：** 从最新源码完成 Dumi 构建后，完整 `tests/browser/table-demo.spec.ts` 在 Chromium、Microsoft Edge 各 **10/10** 通过。包括 320/390/1280px、方向键起止默认行为、真实 Shift+Tab/Tab 路径、复选框按键透传、`aria-describedby`、479.5/480px 断点、主题、详情、固定列、粗指针和虚拟滚动；错误收集器无浏览器错误。
 - **工程门禁：** `npm run check` 通过（55 个测试文件、606 项测试；103 个 demo 类型检查）、`check:scaffold`、`build:lib`、`build:docs` 均通过；静态导出 158 个 HTML、474 个本地资源引用、88 个嵌套 demo。
 - **未覆盖：** 真实读屏、实体触控、200%/400% 页面缩放、设备性能和目标部署仍待验收；不关闭全库 2B-1。`detect []` 不作为视觉通过依据。完整证据见 [Table 基础示例 critique snapshot](../.impeccable/critique/2026-10-07T14-18-33Z__docs-demos-table-basic-tsx.md)。
+
+### 2026-10-07 Table 原生键盘模型架构决策
+
+- **范围与 Impeccable 上下文：** Impeccable 4.1.3，Read 模式；执行 `context.mjs --target src/components/data-display/table/index.md`，确认本批沿用既有 Table 文档与视觉系统。变更仅涉及 ADR、组件文档和验收台账，没有改动 JSX、CSS、主题或交互；因此本批不新增 Nielsen 视觉分数、不运行 detector，也不声称产生新的浏览器验收。最近一次真实页面 UX/浏览器证据仍以本文件上方的 Table 基础示例记录为准。
+- **独立架构复审：** `gpt-6-luna max` 只读检查 Table 公开类型、AntD 适配层、设计稿、滚动示例和 Playwright 用例。结论为将纯文本单元格方向键导航从 P2 缺陷清单重分类为已接受语义约束；保持静态 Table，不默认增加 `role="grid"`、单元格 tabindex 或焦点管理器。`onCell`、`components.body.cell` 和 `components.body` 是可用于宿主自建行为的公开扩展点，因此不表述为“完全无法实现”；它们并不提供现成的完整 Grid 焦点协议，AntD 也没有直接提供 prop/ref 配置固定列默认内部横向滚动区的名称、焦点或键盘行为。
+- **影响与代价：** 普通命名滚动区只提供横向滚动，固定列示例依靠 Tab 可达的行操作和详情面板阅读字段；纯文本格不进入 Tab 顺序。不使用屏幕阅读器的键盘用户不能逐格 Tab 遍历。辅助技术可能提供表格浏览命令，但实际行为取决于浏览器/读屏组合，当前尚未验证。若出现电子表格式操作需求，应另立 opt-in Grid 决策并定义焦点、键盘、控件、虚拟化和读屏协议。
+- **状态更新：** 决策、未选方案、优点、代价与重新评估条件见 [ADR-0005](./adr/0005-table-keyboard-model.md)。原 P2 不再列作当前默认 Table 的待修项；本 ADR 不关闭 Table 全矩阵、真实读屏或全库 2B-1。静态文档修改不改变既有 Chromium/Edge 测试结果。
