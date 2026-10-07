@@ -260,3 +260,11 @@
 - 1280×720、930×720、390×844、320×740 稳定视口的 document/body 宽度均等于视口；Upload demo 分别宽 870、520、260、190px。930px 首帧约 5px 的 Dumi 搜索栏溢出在约 100ms 内消失；320px 下目录退出过渡在稳定后隐藏，未遮挡正文。此处没有修改 Dumi 壳，也不将过渡首帧记作稳定布局缺陷。
 - Impeccable 4.1.3 detector 初次命中进度条 `width` transition；现已改用 transform，最终命令 `node C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs --json docs/demos/upload-network.tsx docs/demos/upload-network.module.css` 原始输出为 `[]`、stderr 为空、退出码 0。`[]` 只表示扫描规则未命中，不代替 A/B 与实际浏览器证据。
 - `npm run check` 通过（55 个测试文件、606 项；104 个 demo 类型检查），`npm run check:scaffold`、`npm run build:lib`、`npm run build:docs` 通过；Dumi 导出 160 个 HTML、480 个本地 JS/CSS 引用及 89 个嵌套 demo。真实生产服务端/存储/认证/权限、真实操作系统文件选择器取消、读屏器、200%/400% page zoom、实体触控和目标部署环境仍未验收。
+
+### 2026-10-08 Table 详情标题窄容器修复
+
+- 详情标题把订单号作为不可拆分片段；详情容器内容宽度不高于 220px 时，标题占满一行，关闭操作移到标题下方。该行为由 CSS 容器查询驱动，不依赖 window 断点或 AntD 私有 DOM。
+- 独立 Chromium 在 1440×1000、930×720、390×844、320×844 检查 Dumi Table 页面。四档 document/body 和详情区均无横向溢出，浏览器错误为空；桌面和窄屏均按“审批与金额 → 订单信息 → 采购归属”分组。320px 下标题框为 164×48px，编号包含在标题盒及焦点轮廓内，与关闭按钮无重叠。
+- 键盘路径验证 Tab 到行详情动作、Enter 打开并聚焦标题、Tab 到关闭、Enter 关闭后恢复原触发按钮。Playwright Chromium 专项 `tests/browser/table-demo.spec.ts` 通过 **10/10**；独立 Assessment A 复审为 GO，B 技术/代码复审为 **18/20（Excellent）/ Approved**。
+- 最终 `npm run check` 为 55 个测试文件、606 项通过，含 104 个 demo 类型检查；`npm run check:scaffold`、`npm run build:lib` 与 `npm run build:docs` 通过。Impeccable detector 只扫描目标 TSX，原始 stdout `[]`、stderr 空、退出码 0；它只表示规则未命中，不替代真实浏览器证据。
+- 本批不关闭 Table 全主题/密度、高倍缩放、真实屏幕阅读器、Safari、实体触控、设备性能或部署矩阵，也不关闭全库 2B-1。当前 UI 证据截图由两组 reviewer 保存于系统 Temp 临时目录。

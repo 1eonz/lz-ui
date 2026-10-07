@@ -263,7 +263,7 @@ export default function TableFixedColumnsDemo() {
               className={styles.orderDetailsTitle}
               tabIndex={-1}
             >
-              订单详情 {activeOrderDetails?.id}
+              订单详情 <span className={styles.orderDetailsId}>{activeOrderDetails?.id}</span>
             </h4>
             {activeOrderDetails && (
               <Button
@@ -282,7 +282,36 @@ export default function TableFixedColumnsDemo() {
           </div>
           {activeOrderDetails && (
             <div className={styles.orderDetailsGroups}>
-              <div role="group" aria-labelledby={orderInformationGroupId}>
+              <div
+                className={styles.orderDetailsGroup}
+                role="group"
+                aria-labelledby={approvalGroupId}
+              >
+                <h5 id={approvalGroupId} className={styles.orderDetailsGroupTitle}>
+                  审批与金额
+                </h5>
+                <dl className={styles.orderDetailsList}>
+                  <div className={styles.orderDetailsField}>
+                    <dt className={styles.orderDetailsTerm}>采购金额</dt>
+                    <dd className={`${styles.orderDetailsValue} ${styles.orderDetailsAmount}`}>
+                      ¥ {activeOrderDetails.amount.toLocaleString('zh-CN')}
+                    </dd>
+                  </div>
+                  <div className={styles.orderDetailsField}>
+                    <dt className={styles.orderDetailsTerm}>审批状态</dt>
+                    <dd className={styles.orderDetailsValue}>
+                      <Tag color={activeOrderDetails.status === '已审批' ? 'success' : 'warning'}>
+                        {activeOrderDetails.status}
+                      </Tag>
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <div
+                className={styles.orderDetailsGroup}
+                role="group"
+                aria-labelledby={orderInformationGroupId}
+              >
                 <h5 id={orderInformationGroupId} className={styles.orderDetailsGroupTitle}>
                   订单信息
                 </h5>
@@ -305,7 +334,11 @@ export default function TableFixedColumnsDemo() {
                   </div>
                 </dl>
               </div>
-              <div role="group" aria-labelledby={purchasingGroupId}>
+              <div
+                className={styles.orderDetailsGroup}
+                role="group"
+                aria-labelledby={purchasingGroupId}
+              >
                 <h5 id={purchasingGroupId} className={styles.orderDetailsGroupTitle}>
                   采购归属
                 </h5>
@@ -317,27 +350,6 @@ export default function TableFixedColumnsDemo() {
                   <div className={styles.orderDetailsField}>
                     <dt className={styles.orderDetailsTerm}>采购员</dt>
                     <dd className={styles.orderDetailsValue}>{activeOrderDetails.buyer}</dd>
-                  </div>
-                </dl>
-              </div>
-              <div role="group" aria-labelledby={approvalGroupId}>
-                <h5 id={approvalGroupId} className={styles.orderDetailsGroupTitle}>
-                  审批与金额
-                </h5>
-                <dl className={styles.orderDetailsList}>
-                  <div className={styles.orderDetailsField}>
-                    <dt className={styles.orderDetailsTerm}>采购金额</dt>
-                    <dd className={`${styles.orderDetailsValue} ${styles.orderDetailsAmount}`}>
-                      ¥ {activeOrderDetails.amount.toLocaleString('zh-CN')}
-                    </dd>
-                  </div>
-                  <div className={styles.orderDetailsField}>
-                    <dt className={styles.orderDetailsTerm}>审批状态</dt>
-                    <dd className={styles.orderDetailsValue}>
-                      <Tag color={activeOrderDetails.status === '已审批' ? 'success' : 'warning'}>
-                        {activeOrderDetails.status}
-                      </Tag>
-                    </dd>
                   </div>
                 </dl>
               </div>

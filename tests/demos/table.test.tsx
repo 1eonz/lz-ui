@@ -138,6 +138,15 @@ describe('Table 文档示例', () => {
         .getAllByRole('group')
         .map((group) => group.getAttribute('aria-labelledby')),
     ).toHaveLength(3);
+    expect(
+      within(firstPanel)
+        .getAllByRole('group')
+        .map((group) => group.textContent),
+    ).toEqual([
+      expect.stringContaining('审批与金额'),
+      expect.stringContaining('订单信息'),
+      expect.stringContaining('采购归属'),
+    ]);
     expect(within(firstPanel).getByRole('group', { name: '订单信息' })).toBeInTheDocument();
     expect(within(firstPanel).getByRole('group', { name: '采购归属' })).toBeInTheDocument();
     expect(within(firstPanel).getByRole('group', { name: '审批与金额' })).toBeInTheDocument();
@@ -145,19 +154,19 @@ describe('Table 文档示例', () => {
       within(firstPanel)
         .getAllByRole('term')
         .map((field) => field.textContent),
-    ).toEqual(['订单编号', '供应商', '下单日期', '所属部门', '采购员', '采购金额', '审批状态']);
+    ).toEqual(['采购金额', '审批状态', '订单编号', '供应商', '下单日期', '所属部门', '采购员']);
     expect(
       within(firstPanel)
         .getAllByRole('definition')
         .map((field) => field.textContent?.trim()),
     ).toEqual([
+      '¥ 1,428,900',
+      '待审批',
       'PO-2026-1041',
       '上海深蓝光电高新材料有限公司',
       '2026-09-18',
       '精密制造中心',
       '周敏',
-      '¥ 1,428,900',
-      '待审批',
     ]);
 
     fireEvent.click(secondTrigger);
@@ -175,13 +184,13 @@ describe('Table 文档示例', () => {
         .getAllByRole('definition')
         .map((field) => field.textContent?.trim()),
     ).toEqual([
+      '¥ 3,892,150',
+      '已审批',
       'PO-2026-1042',
       '深圳创智精密半导体装备股份有限公司华南区域战略供应商',
       '2026-09-19',
       '半导体事业部',
       '陈立',
-      '¥ 3,892,150',
-      '已审批',
     ]);
 
     fireEvent.click(within(secondPanel).getByRole('button', { name: '关闭订单详情' }));

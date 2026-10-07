@@ -31,6 +31,8 @@
 }
 
 .orderDetailsRegion {
+  container-name: order-details;
+  container-type: inline-size;
   margin-block-start: var(--lx-space-md);
   padding: var(--lx-space-md);
   border: 1px solid var(--lx-color-border-secondary);
@@ -53,8 +55,15 @@
 .orderDetailsTitle {
   min-inline-size: 0;
   margin: 0;
+  font-size: var(--lx-font-size-heading-5);
+  line-height: var(--lx-line-height-heading-5);
   font-weight: 600;
   overflow-wrap: anywhere;
+}
+
+.orderDetailsId {
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .orderDetailsTitle:focus {
@@ -65,6 +74,24 @@
 .orderDetailsGroups {
   display: grid;
   gap: var(--lx-space-lg);
+}
+
+@container order-details (max-width: 220px) {
+  /* 容器过窄时，上下排列可让订单编号留在完整标题焦点框内。 */
+  .orderDetailsHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .orderDetailsCloseAction {
+    align-self: flex-end;
+  }
+}
+
+.orderDetailsGroup {
+  min-inline-size: 0;
+  padding-block-start: var(--lx-space-sm);
+  border-block-start: 1px solid var(--lx-color-split);
 }
 
 .orderDetailsGroupTitle {
@@ -101,6 +128,8 @@
 }
 
 .orderDetailsAmount {
+  font-size: var(--lx-font-size-heading-5);
+  line-height: var(--lx-line-height-heading-5);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }

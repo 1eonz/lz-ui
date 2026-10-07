@@ -1147,6 +1147,10 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
       await expect(detailsPanel).toBeVisible();
       await expect(detailsPanel).toHaveAttribute('role', 'region');
       await expect(detailsPanel).toHaveAccessibleName(`订单详情 ${orderId}`);
+      await expect(detailsPanel.getByRole('group')).toHaveCount(3);
+      await expect(detailsPanel.getByRole('group').nth(0)).toHaveAccessibleName('审批与金额');
+      await expect(detailsPanel.getByRole('group').nth(1)).toHaveAccessibleName('订单信息');
+      await expect(detailsPanel.getByRole('group').nth(2)).toHaveAccessibleName('采购归属');
       const detailsHeading = detailsPanel.getByRole('heading', {
         name: `订单详情 ${orderId}`,
       });
@@ -1156,16 +1160,16 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
         (await detailsHeading.getAttribute('id'))!,
       );
       await expect(detailsPanel.getByRole('term')).toHaveText([
+        '采购金额',
+        '审批状态',
         '订单编号',
         '供应商',
         '下单日期',
         '所属部门',
         '采购员',
-        '采购金额',
-        '审批状态',
       ]);
       const supplierLabel = detailsPanel.getByText('供应商', { exact: true });
-      const supplierValue = detailsPanel.getByRole('definition').nth(1);
+      const supplierValue = detailsPanel.getByRole('definition').nth(3);
       const supplierLabelSize = Number.parseFloat(
         await supplierLabel.evaluate((element) => window.getComputedStyle(element).fontSize),
       );
@@ -1179,21 +1183,40 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
       const amountWeight = Number.parseInt(
         await detailsPanel
           .getByRole('definition')
-          .nth(5)
+          .nth(0)
           .evaluate((element) => window.getComputedStyle(element).fontWeight),
         10,
       );
+      const [headingSize, groupHeadingSize, amountSize, groupBorder] = await Promise.all([
+        detailsHeading.evaluate((element) => window.getComputedStyle(element).fontSize),
+        detailsPanel
+          .getByRole('group')
+          .first()
+          .getByRole('heading')
+          .evaluate((element) => window.getComputedStyle(element).fontSize),
+        detailsPanel
+          .getByRole('definition')
+          .first()
+          .evaluate((element) => window.getComputedStyle(element).fontSize),
+        detailsPanel
+          .getByRole('group')
+          .first()
+          .evaluate((element) => window.getComputedStyle(element).borderBlockStartWidth),
+      ]);
+      expect(Number.parseFloat(headingSize)).toBeGreaterThan(Number.parseFloat(groupHeadingSize));
+      expect(Number.parseFloat(amountSize)).toBeGreaterThan(supplierValueStyle.fontSize);
+      expect(groupBorder).toBe('1px');
       expect(supplierLabelSize).toBeLessThan(supplierValueStyle.fontSize);
       expect(supplierValueStyle.fontWeight).toBeGreaterThanOrEqual(500);
       expect(amountWeight).toBeGreaterThan(supplierValueStyle.fontWeight);
       await expect(detailsPanel.getByRole('definition')).toHaveText([
+        '¥ 1,428,900',
+        '待审批',
         orderId,
         '上海深蓝光电高新材料有限公司',
         '2026-09-18',
         '精密制造中心',
         '周敏',
-        '¥ 1,428,900',
-        '待审批',
       ]);
 
       await secondOrderActionButton.click();
@@ -1207,13 +1230,13 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
         }),
       ).toBeFocused();
       await expect(detailsPanel.getByRole('definition')).toHaveText([
+        '¥ 3,892,150',
+        '已审批',
         'PO-2026-1042',
         '深圳创智精密半导体装备股份有限公司华南区域战略供应商',
         '2026-09-19',
         '半导体事业部',
         '陈立',
-        '¥ 3,892,150',
-        '已审批',
       ]);
 
       await detailsPanel.getByRole('button', { name: '关闭订单详情' }).click();
@@ -1316,8 +1339,41 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
   expect(detailsId).toBeTruthy();
   const narrowDetails = demo.locator(`[id="${detailsId}"]`);
   await expect(narrowDetails).toBeVisible();
+  const narrowHeading = narrowDetails.getByRole('heading', { level: 4 });
+  await expect(narrowHeading).toHaveAccessibleName('订单详情 PO-2026-1042');
+  const orderIdFragment = narrowHeading.getByText('PO-2026-1042', { exact: true });
+  const orderIdMetrics = await orderIdFragment.evaluate((element) => {
+    const bounds = element.getBoundingClientRect();
+    const style = window.getComputedStyle(element);
+    return {
+      height: bounds.height,
+      inlineSize: bounds.width,
+      lineHeight: Number.parseFloat(style.lineHeight),
+      scrollWidth: element.scrollWidth,
+    };
+  });
+  expect(orderIdMetrics.height).toBeLessThanOrEqual(orderIdMetrics.lineHeight + 1);
+  expect(orderIdMetrics.scrollWidth).toBeLessThanOrEqual(orderIdMetrics.inlineSize + 1);
+  const headingBounds = await readBounds(narrowHeading);
+  const orderIdBounds = await readBounds(orderIdFragment);
+  expect(orderIdBounds.left).toBeGreaterThanOrEqual(headingBounds.left - 1);
+  expect(orderIdBounds.right).toBeLessThanOrEqual(headingBounds.right + 1);
+  expect(orderIdBounds.top).toBeGreaterThanOrEqual(headingBounds.top - 1);
+  expect(orderIdBounds.bottom).toBeLessThanOrEqual(headingBounds.bottom + 1);
+  const narrowCloseAction = narrowDetails.getByRole('button', { name: '关闭订单详情' });
+  const closeBounds = await readBounds(narrowCloseAction);
+  const orderIdOverlapsCloseAction =
+    orderIdBounds.left < closeBounds.right &&
+    orderIdBounds.right > closeBounds.left &&
+    orderIdBounds.top < closeBounds.bottom &&
+    orderIdBounds.bottom > closeBounds.top;
+  expect(orderIdOverlapsCloseAction).toBe(false);
+  expect(closeBounds.top).toBeGreaterThanOrEqual(headingBounds.bottom - 1);
   const detailGroups = narrowDetails.getByRole('group');
   await expect(detailGroups).toHaveCount(3);
+  await expect(detailGroups.nth(0)).toHaveAccessibleName('审批与金额');
+  await expect(detailGroups.nth(0).getByText('采购金额', { exact: true })).toBeVisible();
+  await expect(detailGroups.nth(0).getByText('审批状态', { exact: true })).toBeVisible();
   const gridColumns = await detailGroups.first().evaluate((group) => {
     const grid = group.parentElement;
     if (!grid) throw new Error('未能读取订单详情分组布局');
@@ -1358,7 +1414,6 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
     return range.getClientRects().length > 1;
   });
   expect(narrowVendorWraps).toBe(true);
-  const narrowCloseAction = narrowDetails.getByRole('button', { name: '关闭订单详情' });
   await narrowCloseAction.focus();
   await page.keyboard.press('Enter');
   await expect(narrowDetails).toBeHidden();
