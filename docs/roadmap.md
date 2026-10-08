@@ -252,6 +252,8 @@ flowchart TD
 
 2026-10-08 Table 详情层级决策确认：用户确认同时优化信息层级与分组。当前采购详情按“审批与金额、订单信息、采购归属”组织，桌面三组并列、窄屏单列；本次只确认采用该方向，不重复修改已验收布局。
 
+2026-10-08 Progress API 表窄屏验收收口：新增具名可聚焦滚动区及窄屏 API 列样式后，Chromium/Edge 专项各 5/5；验证 320/390/930/1280px 根布局、320px 144px 属性列、键盘往返、粘滞列、状态边界、dark/compact/glass 与 reduced-motion。Impeccable A 35/40、B 17/20，独立代码复审 GO；无 P0–P2，保留长类型需要横向滚动的 P3。`npm run check`（55 文件/606 项、104 demo 类型）、scaffold、库构建及隔离 Dumi 160 HTML/480 资源/89 demo 导出通过。本批不关闭 Progress 完整矩阵或全库 2B-1；真实读屏、高倍缩放、Safari、实体设备、性能剖析与完整主题矩阵仍待验收。
+
 2026-10-08 Spin 地区状态与锚点最终复核：地区输入明确为本地同步参数，提交时冻结地区快照；失败保留旧记录，重试更新成功地区，未配置地区及 `__proto__` 安全进入空态。桌面/窄屏锚点跳转后输入和操作均可见。Impeccable A 40/40、B 19/20，独立代码复审 GO；Chromium Spin 专项 7/7，`npm run check` 为 55 个测试文件/606 项，104 个 demo 类型检查；scaffold、库构建、Dumi 160 HTML/480 资源/89 demo 导出通过。真实读屏、200%/400% 浏览器缩放、Safari、实体设备、性能剖析、目标部署及完整组件矩阵仍未验收，2B-1 保持开放。
 
 2026-10-08 Input 基础表单控件浏览器局部验收：新增 `tests/browser/input-demo.spec.ts`，Playwright Chromium 在 Vite 静态 preview `127.0.0.1:4173` 对当时 `docs-dist` 通过 5/5；覆盖受控值更新、allowClear 鼠标操作与 `ControlOrMeta+A` 键盘清除、邮箱错误关联及纠正、TextArea 字数与 200 字上限、320/390/930/1280px 根溢出，以及暗色、紧凑和 reduced-motion 代表性状态；browser-health 错误为 0。定向 Playwright 命令没有构建或清理 `docs-dist`。在收到“已有预览共享 `docs-dist`，不要重建”的约束前，我已运行 `npm run build:docs` 并重写该共享目录；导出检查为 160 个 HTML、480 个本地 JS/CSS 引用、89 个嵌套 demo，期间未停止预览进程。此记录仅代表这 5 条 Chromium 用例及当时静态产物，不代表 Input 完整主题矩阵、真实读屏、200%/400% 放大、Safari、实体设备或目标部署已通过；全库 2B-1 保持开放。详见 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md)。

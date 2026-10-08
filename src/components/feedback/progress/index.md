@@ -36,21 +36,35 @@ circle/dashboard 用于紧凑概览，steps 表达已完成批次。成功分段
 
 成功分段表示已完成总量的子集：所有成功字段先按0–100规范，再限制不超过规范后的总 percent。例如 percent=80、success.percent=120 时，视觉/format/ARIA 分别为总80、成功80、总80；多个成功字段同时存在时保留 AntD 原有优先级。
 
-| 属性                              | 类型                                                          | 默认值                   | 说明                                                       |
-| --------------------------------- | ------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------- |
-| percent                           | number                                                        | 0                        | 总比例；有限 clamp 到0–100，非有限归0，小数不舍入          |
-| type                              | 'line' \| 'circle' \| 'dashboard'                             | line                     | 展示形态                                                   |
-| status                            | 'normal' \| 'active' \| 'exception' \| 'success'              | normal；100时自动success | 状态；active仅视觉动效                                     |
-| format                            | (percent?: number, successPercent?: number) =&gt; ReactNode   | 百分比或原生状态图标     | 接收规范数值，返回内容保留                                 |
-| success                           | { percent?: number; strokeColor?: string; progress?: number } | —                        | 成功分段，使用同样数值规范；progress为废弃兼容字段         |
-| successPercent                    | number                                                        | —                        | 废弃，改用success.percent；仍按有限0–100规范               |
-| showInfo                          | boolean                                                       | true                     | 是否显示格式化文本/状态图标，不影响aria值                  |
-| size                              | AntD ProgressProps['size']                                    | default                  | preset、数值或公开尺寸配置；circle/dashboard用数值或preset |
-| steps                             | number \| { count: number; gap: number }                      | —                        | 分步展示，适用形态遵循AntD                                 |
-| strokeColor                       | AntD ProgressProps['strokeColor']                             | 主题primary              | 单色、分段色或公开渐变配置                                 |
-| trailColor                        | string                                                        | 主题remaining            | 未完成轨道颜色                                             |
-| aria-label / aria-labelledby      | string                                                        | —                        | 由宿主命名任务                                             |
-| className / rootClassName / style | string / string / CSSProperties                               | —                        | 原生根节点样式                                             |
+<p id="progress-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下参数表可左右滚动；键盘用户聚焦表格区域后按左右方向键浏览，属性列会保持可见。
+</p>
+
+<div
+  className="lx-docs-table lx-progress-api-table"
+  role="region"
+  tabindex="0"
+  aria-label="Progress 常用属性参数表"
+  aria-describedby="progress-docs-table-hint"
+>
+
+| 属性                                                                                                                                                                                          | 类型                                                          | 默认值                   | 说明                                                       |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ------------------------ | ---------------------------------------------------------- |
+| <code className="lx-progress-api-identifier">percent</code>                                                                                                                                   | number                                                        | 0                        | 总比例；有限 clamp 到0–100，非有限归0，小数不舍入          |
+| <code className="lx-progress-api-identifier">type</code>                                                                                                                                      | 'line' \| 'circle' \| 'dashboard'                             | line                     | 展示形态                                                   |
+| <code className="lx-progress-api-identifier">status</code>                                                                                                                                    | 'normal' \| 'active' \| 'exception' \| 'success'              | normal；100时自动success | 状态；active仅视觉动效                                     |
+| <code className="lx-progress-api-identifier">format</code>                                                                                                                                    | (percent?: number, successPercent?: number) =&gt; ReactNode   | 百分比或原生状态图标     | 接收规范数值，返回内容保留                                 |
+| <code className="lx-progress-api-identifier">success</code>                                                                                                                                   | { percent?: number; strokeColor?: string; progress?: number } | —                        | 成功分段，使用同样数值规范；progress为废弃兼容字段         |
+| <code className="lx-progress-api-identifier">successPercent</code> <span className="lx-progress-api-deprecated">已废弃</span>                                                                 | number                                                        | —                        | 改用 success.percent；仍按有限 0–100 规范。                |
+| <code className="lx-progress-api-identifier">showInfo</code>                                                                                                                                  | boolean                                                       | true                     | 是否显示格式化文本/状态图标，不影响aria值                  |
+| <code className="lx-progress-api-identifier">size</code>                                                                                                                                      | AntD ProgressProps['size']                                    | default                  | preset、数值或公开尺寸配置；circle/dashboard用数值或preset |
+| <code className="lx-progress-api-identifier">steps</code>                                                                                                                                     | number \| { count: number; gap: number }                      | —                        | 分步展示，适用形态遵循AntD                                 |
+| <code className="lx-progress-api-identifier">strokeColor</code>                                                                                                                               | AntD ProgressProps['strokeColor']                             | 主题primary              | 单色、分段色或公开渐变配置                                 |
+| <code className="lx-progress-api-identifier">trailColor</code>                                                                                                                                | string                                                        | 主题remaining            | 未完成轨道颜色                                             |
+| <code className="lx-progress-api-identifier">aria-label</code> / <code className="lx-progress-api-identifier">aria-labelledby</code>                                                          | string                                                        | —                        | 由宿主命名任务                                             |
+| <code className="lx-progress-api-identifier">className</code> / <code className="lx-progress-api-identifier">rootClassName</code> / <code className="lx-progress-api-identifier">style</code> | string / string / CSSProperties                               | —                        | 原生根节点样式                                             |
+
+</div>
 
 ### Ref 与受控更新
 

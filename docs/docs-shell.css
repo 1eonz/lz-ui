@@ -694,3 +694,66 @@
     overflow-wrap: normal;
   }
 }
+
+/* Progress API 表在窄屏保留可读列宽，滚动时固定属性名并避免拆断英文属性标识符。 */
+.markdown .lx-progress-api-table table {
+  inline-size: min(1040px, 100%);
+  min-inline-size: 920px;
+  table-layout: fixed;
+}
+
+.markdown .lx-progress-api-table th:first-child,
+.markdown .lx-progress-api-table td:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  inline-size: 176px;
+  min-inline-size: 176px;
+  max-inline-size: 176px;
+  overflow-wrap: normal;
+  word-break: keep-all;
+  background: var(--lx-docs-table-sticky-surface);
+  box-shadow: 1px 0 0 var(--lx-docs-table-sticky-border);
+}
+
+.markdown .lx-progress-api-table th:first-child {
+  z-index: 2;
+  background: var(--lx-docs-table-sticky-header);
+}
+
+.markdown .lx-progress-api-table th:nth-child(2),
+.markdown .lx-progress-api-table td:nth-child(2) {
+  inline-size: 300px;
+}
+
+.markdown .lx-progress-api-table th:nth-child(3),
+.markdown .lx-progress-api-table td:nth-child(3) {
+  inline-size: 140px;
+}
+
+.markdown .lx-progress-api-table td:nth-child(2) code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.markdown .lx-progress-api-table td:first-child code.lx-progress-api-identifier {
+  white-space: nowrap;
+}
+
+.markdown .lx-progress-api-table .lx-progress-api-deprecated {
+  display: inline-block;
+  margin-inline-start: 4px;
+  color: var(--lx-docs-text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+@media (max-width: 360px) {
+  .markdown .lx-progress-api-table th:first-child,
+  .markdown .lx-progress-api-table td:first-child {
+    inline-size: 144px;
+    min-inline-size: 144px;
+    max-inline-size: 144px;
+  }
+}

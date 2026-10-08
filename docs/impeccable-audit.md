@@ -824,6 +824,17 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **工程门禁：** Input 与示例定向单测 8/8；`npm run typecheck`、`npm run typecheck:docs`（104 个示例源码）、目标 ESLint、`npm run check:scaffold`、`npm run format:check` 和 `git diff --check` 通过。测试环境仍有 AntD `rc-textarea` 在 jsdom 中 `height: NaN` 的既有告警，不影响断言。没有运行会重写共享 `docs-dist` 的 `build:docs`。
 - **最终独立复审与浏览器：** 最终 Assessment A（UX）复审为 GO，无遗留 P0–P3；独立技术/代码复审为 GO，无可复现 P0–P2。最新隔离 Dumi 页面上的 Chromium Input 专项为 7/7，验证清除按钮名称和 fine/coarse 命中区、TextArea 计数/隐藏播报、键盘说明关联、窄屏 API 表滚动与粘滞首列、邮箱错误恢复、主题及 reduced-motion。browser-health 错误为 0。复审和工程结果已补入 [浏览器验收矩阵](./browser-acceptance-matrix.md)；Safari、真实读屏、高倍缩放、实体设备、完整主题矩阵和全库 2B-1 仍待验收。
 
+### 2026-10-08 Progress API 表窄屏与可访问滚动复验
+
+- **目标与设计依据：** Impeccable 4.1.3，Read 模式；目标为 `src/components/feedback/progress/index.md`、`docs/docs-shell.css` 与 `tests/browser/progress-demo.spec.ts`。Progress API 表被明确为可聚焦的横向滚动 region，提供方向键往返、粘滞属性列和稳定的英文属性标识；窄屏以滚动查看完整类型，不裁切字段内容。
+- **Stitch 设计对照：** `UI/P0 基础组件-Feedback/code.html` 展示线形、渐变流光、圆环、仪表盘及分段进度。本批不改变这些 demo 的视觉形态，只补 API 文档的窄屏查阅能力，并沿用 Dumi 文档中的表格与主题 token。
+- **Assessment A：** 独立设计评审 **35/40（Good）**，十项 Nielsen 分数依次 `3,3,4,4,4,4,3,3,3,4`。评审确认名称、表格语义、焦点、键盘滚动、废弃标记和 reduced-motion 有实际证据；保留一项 P3：320px 下查看长类型说明需要横向滚动。无 P0/P1/P2。
+- **Assessment B 与代码复审：** 独立技术审查 **17/20（Good）**：无障碍 3/4、性能 3/4、主题 3/4、响应式 4/4、完整性 4/4；未做性能剖析。首轮代码复审发现滚动断言没有证明真实位移，已改为等待 `scrollLeft >= 30` 并验证方向键返回 0，复审 GO。没有遗留 P0/P1/P2。
+- **Detector 边界：** Impeccable 4.1.3 的目标扫描原始结果为 `[]`（退出码 0）。这只代表确定性静态规则未命中，不检测真实视觉、键盘行为、读屏支持或性能，不能表述为 Impeccable 通过；完成依据是独立 A/B 与浏览器证据。
+- **真实浏览器证据：** Chromium 与 Microsoft Edge 对最新 Dumi 构建的 Progress 专项各 **5/5**，共 10/10。覆盖四种进度形态及 `aria-valuenow`、键盘受控更新、失败后保留与恢复、`-10/62.5/120/NaN/Infinity` 范围规范、dark/compact/glass、reduced-motion，以及 320/390/930/1280px 根溢出和 API 表标识符布局。320px 属性列宽 144px，窄屏方向键横移后属性列仍固定；browser-health 错误为 0。
+- **工程门禁与未覆盖：** `npm run check` 通过，55 个测试文件、606 项测试与 104 个 demo 类型检查通过；`npm run check:scaffold`、库构建通过。隔离 Dumi 构建/导出检查为 160 个 HTML、480 个本地资源引用及 89 个 demo。真实屏幕阅读器、200%/400% 缩放、Safari、实体触控、性能剖析和完整主题矩阵仍未覆盖；本批不关闭 Progress 完整矩阵或全库 2B-1。
+- **Questions skipped：** 用户已确认下一轮 Table 详情采用信息层级与关系分组；本批 Progress 仅保留上述非阻断 P3。
+
 ### 2026-10-08 Upload 状态播报与删除确认最终复验
 
 - **目标与设计依据：** Impeccable 4.1.3，Operate 模式；继续使用 `UI/P0 基础组件-Form/DESIGN.md` 与 Upload 生命周期稿。目标为 `docs/demos/upload-network.tsx`、对应 CSS Module、Upload API 文档及 `tests/browser/upload-network.spec.ts`。本轮修复与复验聚焦自动上传结果播报和远端删除确认，不改公开组件 API、不引入依赖。
