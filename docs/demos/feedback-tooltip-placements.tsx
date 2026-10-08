@@ -19,14 +19,23 @@ export default function TooltipPlacementsDemo() {
             className={styles.placementGroup}
             role="group"
             aria-label={`${label}提示位置`}
+            data-placement-side={
+              placements[0].startsWith('right')
+                ? 'right'
+                : placements[0].startsWith('left')
+                  ? 'left'
+                  : undefined
+            }
             key={label}
           >
             <h3 className={styles.placementHeading}>{label}</h3>
             <div className={styles.placements}>
               {placements.map((placement) => (
-                <Tooltip key={placement} title={`提示位于 ${placement}`} placement={placement}>
-                  <Button className={styles.placementButton}>{placement}</Button>
-                </Tooltip>
+                <div className={styles.placementTrigger} key={placement}>
+                  <Tooltip title="位置说明" placement={placement}>
+                    <Button className={styles.placementButton}>{placement}</Button>
+                  </Tooltip>
+                </div>
               ))}
             </div>
           </div>

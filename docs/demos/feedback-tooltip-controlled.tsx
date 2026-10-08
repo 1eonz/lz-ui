@@ -16,7 +16,7 @@ export default function TooltipControlledDemo() {
           <Tooltip
             open={open}
             onOpenChange={setOpen}
-            title="主题变量由局部容器继承"
+            title="局部主题变量"
             placement="right"
             color="var(--lx-color-bg-elevated)"
             classNames={{ body: styles.tokenBody }}

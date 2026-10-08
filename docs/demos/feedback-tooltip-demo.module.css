@@ -18,6 +18,32 @@
   gap: var(--lx-space-sm);
 }
 
+.placementTrigger {
+  min-inline-size: 0;
+}
+
+.placementGroup[data-placement-side] .placements {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.placementGroup[data-placement-side] .placementTrigger {
+  inline-size: fit-content;
+  max-inline-size: 100%;
+}
+
+.placementGroup[data-placement-side='right'] .placementTrigger {
+  justify-self: start;
+}
+
+.placementGroup[data-placement-side='left'] .placementTrigger {
+  justify-self: end;
+}
+
+.placementGroup[data-placement-side] .placementButton {
+  inline-size: 7.5rem;
+  max-inline-size: 100%;
+}
+
 .placementGroups {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
@@ -77,8 +103,11 @@
 }
 
 .portalScope {
+  /* 局部 portal 以该容器为定位基准，同时让弹层继承 Provider 子树中的主题变量。 */
+  position: relative;
   display: flex;
   justify-content: center;
+  min-inline-size: 0;
   padding-block: var(--lx-space-xl);
   border-block: 1px dashed var(--lx-color-border);
 }
@@ -91,5 +120,12 @@
 @media (max-width: 480px) {
   .placementButton {
     padding-inline: 0;
+  }
+
+  .portalScope {
+    /* 窄屏让 portal 独占一行并左对齐触点，为 right 提示留出空间，避免覆盖开关或越界。 */
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    padding-inline-start: var(--lx-space-md);
   }
 }
