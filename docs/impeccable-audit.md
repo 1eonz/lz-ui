@@ -790,3 +790,16 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **工程门禁：** 最终代码修改后 `npm run check` 通过：55 个测试文件、606 项测试，104 个 Dumi 示例源码类型检查；`npm run check:scaffold`、`npm run build:lib`、`npm run build:docs` 均通过。静态导出门禁为 160 个 HTML 页面、480 个本地 JS/CSS 引用和 89 个嵌套 demo。全量测试仍会输出现有 jsdom 伪元素测量、循环引用和 AntD 弃用告警，相关测试均通过。
 - **未覆盖范围：** 本批只验收 Spin 文档示例和交互，不代表完整组件库矩阵。真实读屏、实体触控、200%/400% 缩放、Safari、设备性能、全配色/风格/密度组合及目标部署未验证。地区输入与静态示例记录的语义、加载文案冗余和错误原因说明作为 P3 留待后续内容打磨；不阻断本批交付。
 - **Questions skipped:** 用户已确认持续实施范围与 UI 方向；P3 是文案与示例数据表达，不需要新的架构或产品决策，本批按现有状态行为交付。
+
+### 2026-10-08 Spin 地区状态、锚点与数据边界最终复审
+
+- **方法与目标：** Impeccable 4.1.3 `polish`；目标为 `docs/demos/feedback-spin-region.tsx`、共享 demo 样式、文档锚点偏移补丁、Spin 文档和 `tests/browser/spin-demo.spec.ts`。沿用 Stitch Feedback 稿及本次已初始化的上下文；本轮 A、B 两组分别复核，B 没有读取 A 的结论。
+- **已解决的旧 P3：** 地区输入被明确为本地同步参数；输入华南时加载提示使用提交快照，旧记录在失败时保留，重试成功后显示深圳记录及“刚刚”；未配置地区显示明确空态且不伪造客户数或更新时间。错误说明提供模拟服务原因与恢复动作。加载中的按钮保留稳定操作名称，辅助技术状态与可见 tip 分工，减轻状态文案重复。`__proto__` 等非自有键只能进入空态，不会读取对象原型。
+- **Assessment A：** `/root/spin_ux_postpolish` 对 8006 最新 Spin 页面复核，设计特异性高，符合组件文档开发者验证加载与恢复行为的任务。Nielsen **40/40**，十项均 4/4；无 P0-P3。320×740、390×844、1440×1000 锚点跳转后输入与按钮均在首屏，文档根无横向溢出；失败保留数据和更新时间，成功更新示例记录，未知地区明确为无本地样例。认知负荷低；窄屏较长说明需滚动查看是非阻断观察。截图见 [`spin-assessment-20261008-finalcopy`](/C:/Users/Administrator/AppData/Local/Temp/spin-assessment-20261008-finalcopy)。
+- **Assessment B：** `/root/spin_impeccable_b_final` 独立技术与浏览器复核 **19/20（Excellent）**：无障碍 3/4、性能 4/4、主题 4/4、响应式 4/4、实现完整性 4/4；没有已验证 P0-P3。无障碍扣分仅因本轮没有计算对比度比值，不代表发现对比度缺陷。8006 页面在 1440×1000、390×844、320×740 下无溢出或浏览器错误；覆盖深色切换、键盘焦点、重试与 `__proto__` 空态。
+- **Detector 边界：** Assessment B 对目标 TSX 的 detector 原始 stdout 为 `[]`、stderr 为空、退出码 0。该结果只表示确定性规则没有命中，不扫描 CSS Module，也不代替以上真实浏览器、交互及辅助技术检查。
+- **独立代码复审：** 原型属性读取修复结论 GO；输入键通过 `Object.prototype.hasOwnProperty.call` 校验后读取记录。计时器卸载清理、提交地区快照、`aria-busy` 范围、稳定按钮焦点及 reduced-motion 行为均有实现和回归覆盖。最后的 token 一致性与测试稳定性调整经 B 组复审 GO。
+- **浏览器与工程门禁：** Chromium `tests/browser/spin-demo.spec.ts` **7/7**；覆盖重复 Enter/鼠标激活、首次失败与重试、空态、锚点滚动安全区、320/390px 粗指针目标、主题状态及 reduced-motion；浏览器错误为 0。提交前复跑发现首项在文档水合前冻结时钟会得到空白页面，reduced-motion 的重试式 CSS 断言也可能跨过 900ms 加载结束；测试改为水合后冻结时钟，并在指示器仍挂载时同步读取计算动画名与活动动画数，最终构建复跑 7/7。`npm run check` 通过：55 个测试文件、606 项测试及 104 个 demo 类型检查；`npm run check:scaffold`、`npm run build:lib`、`npm run build:docs` 通过，Dumi 静态导出 160 个 HTML、480 个本地资源引用和 89 个嵌套 demo。
+- **评审快照：** 最新结论保存在 [`Spin post-polish critique`](../.impeccable/critique/2026-10-08T01-17-25Z__docs-demos-feedback-spin-region-tsx.md)；旧的 38/40 快照已由 skill 脚本关闭，保留历史趋势。
+- **未覆盖范围：** 没有做真实屏幕阅读器、真实 200%/400% 浏览器缩放、Safari、实体触控设备、设备帧率/性能剖析或目标部署验收；局部 Spin 通过不代表全组件库通过，也不关闭 2B-1。
+- **Questions skipped:** 本轮范围、视口和本地模拟边界明确，没有待决产品问题；没有对生产同步服务或真实用户访谈作判断。

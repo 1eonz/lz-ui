@@ -9,6 +9,7 @@ target_fingerprint: "sha256:050ab761f9117f6a0c0559ae498055571258ed3bc656df12a5a9
 target_path: "F:\\work\\lz-ui\\docs\\demos\\feedback-spin-region.tsx"
 timestamp: 2026-10-07T23-35-53Z
 slug: docs-demos-feedback-spin-region-tsx
+closed: true
 ---
 Method: dual-agent (A: /root/spin_ux_final · B: /root/spin_fix_batch)
 

@@ -1,6 +1,8 @@
 # 第三方补丁维护
 
-`dumi+2.4.49.patch` 为文档站 Previewer 和源码区的图标控件补充可访问名称及中英文文案，为移动顶栏菜单补充双语名称、展开状态和受控区域，并在目录链接激活后聚焦对应标题。Dumi 的 demo ID 可以包含 `/`；默认链接保留这些路径段，和静态 exporter 输出的嵌套目录一致。补丁将文档端 `~demos/:id` 路由改为 `~demos/*`，并从 splat 参数恢复完整 ID，使客户端独立页面和 iframe 也能解析同一路径。搜索补丁还覆盖清除按钮、键盘结果选择、查询防抖、过期响应、Worker 错误恢复和弹窗关闭后的查询/焦点状态。修复只作用于文档依赖，不进入 lx-ui 组件产物。
+`dumi+2.4.49+001+initial.patch` 为文档站 Previewer 和源码区的图标控件补充可访问名称及中英文文案，为移动顶栏菜单补充双语名称、展开状态和受控区域，并在目录链接激活后聚焦对应标题。Dumi 的 demo ID 可以包含 `/`；默认链接保留这些路径段，和静态 exporter 输出的嵌套目录一致。补丁将文档端 `~demos/:id` 路由改为 `~demos/*`，并从 splat 参数恢复完整 ID，使客户端独立页面和 iframe 也能解析同一路径。搜索补丁还覆盖清除按钮、键盘结果选择、查询防抖、过期响应、Worker 错误恢复和弹窗关闭后的查询/焦点状态。
+
+`dumi+2.4.49+002+spin-anchor-offset.patch` 只影响锁定的 Dumi 2.4.49 文档主题：hash 锚点滚动读取标题的 `scroll-margin-block-start`，以适配桌面和移动吸顶栏高度。对应值由 `docs/docs-shell.css` 设置为桌面 6rem、767px 以下 8rem；不依赖业务组件，也不进入 lx-ui 组件产物。
 
 `dumi` 在 `package.json` 中精确锁定为 `2.4.49`。`dev`、`dev:docs` 和 `build:docs` 会先运行 `patch:dumi` 自动应用补丁。
 

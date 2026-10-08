@@ -1,0 +1,14 @@
+diff --git a/node_modules/dumi/theme-default/layouts/DocLayout/index.js b/node_modules/dumi/theme-default/layouts/DocLayout/index.js
+index ef4b53e..261995b 100644
+--- a/node_modules/dumi/theme-default/layouts/DocLayout/index.js
++++ b/node_modules/dumi/theme-default/layouts/DocLayout/index.js
+@@ -43,7 +43,8 @@ var DocLayout = function DocLayout() {
+         var elm = document.getElementById(decodeURIComponent(id));
+         if (elm) {
+           // animated-scroll-to instead of native scroll
+-          animateScrollTo(elm.offsetTop - 80, {
++          var scrollMargin = parseFloat(getComputedStyle(elm).scrollMarginBlockStart);
++          animateScrollTo(elm.offsetTop - (Number.isNaN(scrollMargin) ? 80 : scrollMargin), {
+             maxDuration: 300
+           });
+         }

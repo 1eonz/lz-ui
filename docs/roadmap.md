@@ -249,3 +249,7 @@ flowchart TD
 2026-10-08 Upload 宿主网络传输示例：新增按需启用的 multipart 网络传输、地址校验、本地暂存、失败重试、远端删除恢复和安全 `fileId` 处理；Upload 文档已按操作流程、服务端契约、属性/事件/ref 与 Form 集成分组。进度条使用 `scaleX`，reduced-motion 下停止动效。A 组 UX 34/40，B 组技术审查 GO；Chromium 专项 8/8、稳定视口 1280/930/390/320px 无页面级溢出；全工程 55 文件/606 项、104 个 demo 类型检查、库与 Dumi 构建及 scaffold 门禁通过。浏览器服务端响应为 Playwright route mock，生产后端、认证/授权、真实系统文件选择器取消、真实读屏、高倍缩放和目标部署仍未覆盖。保留 P3：320px demo 操作宽约 190px、主题色选项无色样。此局部结果不关闭全库 2B-1；后续按 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md) 处理剩余组件验收与独立评审发现。
 
 2026-10-08 Table 详情标题极窄布局修复：首轮独立 UX 评审在 320px 复现订单号伸出标题焦点框并靠近关闭操作的 P2；按详情容器宽度加 CSS container query，在内容宽度不高于 220px 时将关闭操作移到标题下方。最终标题框实测 164×48px，订单号位于标题及焦点轮廓内，关闭按钮间距 12px。第二轮 Assessment A GO，Assessment B 与 code review GO（18/20）；Chromium 四视口手动检查无溢出/浏览器错误，Table Playwright 10/10。全量工程检查 55 文件/606 项、104 个 demo 类型、库构建、文档构建和 scaffold 检查通过，Dumi 导出 160 HTML/480 资源/89 嵌套 demo。P3 保留桌面 5 个重复详情入口和示例行选择无批量动作；本批不关闭 Table 全矩阵或全库 2B-1。下一步仍按 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md) 补 Table/全库缩放、读屏、Safari、实体设备及部署环境证据。
+
+2026-10-08 Table 详情层级决策确认：用户确认同时优化信息层级与分组。当前采购详情按“审批与金额、订单信息、采购归属”组织，桌面三组并列、窄屏单列；本次只确认采用该方向，不重复修改已验收布局。
+
+2026-10-08 Spin 地区状态与锚点最终复核：地区输入明确为本地同步参数，提交时冻结地区快照；失败保留旧记录，重试更新成功地区，未配置地区及 `__proto__` 安全进入空态。桌面/窄屏锚点跳转后输入和操作均可见。Impeccable A 40/40、B 19/20，独立代码复审 GO；Chromium Spin 专项 7/7，`npm run check` 为 55 个测试文件/606 项，104 个 demo 类型检查；scaffold、库构建、Dumi 160 HTML/480 资源/89 demo 导出通过。真实读屏、200%/400% 浏览器缩放、Safari、实体设备、性能剖析、目标部署及完整组件矩阵仍未验收，2B-1 保持开放。

@@ -309,6 +309,17 @@
   outline-offset: 2px;
 }
 
+/* 锚点滚动预留双层移动吸顶栏空间，避免章节标题落在栏下方。 */
+.markdown :is(h2, h3, h4)[id] {
+  scroll-margin-block-start: 6rem;
+}
+
+@media (max-width: 767px) {
+  .markdown :is(h2, h3, h4)[id] {
+    scroll-margin-block-start: 8rem;
+  }
+}
+
 /* 长组件名与本页目录允许换行，避免 Dumi 固定侧栏宽度下的信息被省略。 */
 .dumi-default-sidebar > .dumi-default-sidebar-group > dd > a,
 .dumi-default-sidebar .dumi-default-toc > li > a {
