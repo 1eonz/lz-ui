@@ -17,7 +17,10 @@ function withClearTouchTarget(allowClear: InputProps['allowClear']): InputProps[
     typeof allowClear === 'object' && allowClear.clearIcon ? (
       allowClear.clearIcon
     ) : (
-      <CloseCircleFilled aria-hidden="true" />
+      <>
+        <CloseCircleFilled aria-hidden="true" />
+        <span className={styles.clearLabel}>清除输入内容</span>
+      </>
     );
 
   return {

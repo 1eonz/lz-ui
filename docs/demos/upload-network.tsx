@@ -99,6 +99,21 @@ export default function UploadNetworkDemo() {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [deleteErrors, setDeleteErrors] = useState<Record<string, string>>({});
   const [deletingUids, setDeletingUids] = useState<Set<string>>(() => new Set());
+  const [confirmDeleteUid, setConfirmDeleteUid] = useState<string | null>(null);
+  const [confirmedDeleteUids, setConfirmedDeleteUids] = useState<Set<string>>(() => new Set());
+  const confirmDeleteSectionId = useId();
+  const [pendingUploadFocus, setPendingUploadFocus] = useState<{
+    fileUid: string;
+    initiatingButton: HTMLElement;
+  } | null>(null);
+  // 删除失败后等待按钮退出 loading，再恢复焦点；记录起始节点以尊重用户主动移动焦点。
+  const [pendingDeleteFocus, setPendingDeleteFocus] = useState<{
+    fileUid: string;
+    initiatingButton: HTMLElement;
+    intentId: number;
+  } | null>(null);
+  // 删除请求可能并发；序号确保较早返回的请求不能抢走最近一次操作的焦点。
+  const deleteFocusIntentId = useRef(0);
   const [notice, setNotice] = useState('文件默认只保留在本地，不会发送网络请求。');
   const mounted = useRef(false);
   const filePickerPending = useRef(false);
@@ -167,6 +182,79 @@ export default function UploadNetworkDemo() {
     };
   }, [restoreFilePickerFocus]);
 
+  // 等错误和 loading 状态提交后再聚焦，避免动画帧早于 React 更新并落到禁用按钮上。
+  useEffect(() => {
+    if (!pendingDeleteFocus) {
+      return;
+    }
+
+    if (pendingDeleteFocus.intentId !== deleteFocusIntentId.current) {
+      setPendingDeleteFocus(null);
+      return;
+    }
+
+    const activeElement = document.activeElement;
+    if (activeElement !== document.body && activeElement !== pendingDeleteFocus.initiatingButton) {
+      setPendingDeleteFocus(null);
+      return;
+    }
+
+    const retryButton = deleteButtonRefs.current.get(pendingDeleteFocus.fileUid);
+    if (!retryButton || retryButton.matches(':disabled')) {
+      return;
+    }
+
+    retryButton.focus();
+    setPendingDeleteFocus(null);
+  }, [confirmDeleteUid, deleteErrors, deletingUids, pendingDeleteFocus]);
+
+  // 原生 disabled 会让上传按钮退出 Tab 顺序；仅在启动时持焦，才交给同一行的取消操作。
+  useEffect(() => {
+    if (!pendingUploadFocus) {
+      return;
+    }
+
+    const file = fileList.find((item) => item.uid === pendingUploadFocus.fileUid);
+    if (!file) {
+      setPendingUploadFocus(null);
+      return;
+    }
+
+    const actionButton = deleteButtonRefs.current.get(file.uid);
+    const activeElement = document.activeElement;
+    if (file.status === 'uploading') {
+      if (
+        activeElement !== document.body &&
+        activeElement !== pendingUploadFocus.initiatingButton &&
+        activeElement !== actionButton
+      ) {
+        setPendingUploadFocus(null);
+        return;
+      }
+
+      if (actionButton && !actionButton.matches(':disabled')) {
+        actionButton.focus();
+      }
+      return;
+    }
+
+    if (file.status === 'error') {
+      if (
+        activeElement !== document.body &&
+        activeElement !== pendingUploadFocus.initiatingButton &&
+        activeElement !== actionButton
+      ) {
+        setPendingUploadFocus(null);
+        return;
+      }
+
+      if (!pendingUploadFocus.initiatingButton.matches(':disabled')) {
+        pendingUploadFocus.initiatingButton.focus();
+      }
+    }
+    setPendingUploadFocus(null);
+  }, [fileList, pendingUploadFocus]);
+
   const updateFile = useCallback((uid: string, changes: Partial<UploadItem>) => {
     if (!mounted.current) {
       return;
@@ -179,26 +267,39 @@ export default function UploadNetworkDemo() {
   }, []);
 
   const customRequest = useCallback<UploadRequest>((options) => {
+    const fileName =
+      typeof options.file === 'object' &&
+      options.file !== null &&
+      'name' in options.file &&
+      typeof options.file.name === 'string'
+        ? options.file.name
+        : 'upload.bin';
+    const uid =
+      typeof options.file === 'object' &&
+      options.file !== null &&
+      'uid' in options.file &&
+      typeof options.file.uid === 'string'
+        ? options.file.uid
+        : undefined;
+    const reportError = (error: Error, response?: unknown, aborted = false) => {
+      if (mounted.current) {
+        setNotice(fileName + (aborted ? ' 上传已取消。' : ' 上传失败。'));
+      }
+      options.onError?.(error, response);
+    };
     const target = resolveRequestUrl(options.action);
     if (!target) {
-      options.onError?.(new Error('服务端地址无效，请填写 HTTP 或 HTTPS 地址。'));
+      reportError(new Error('服务端地址无效，请填写 HTTP 或 HTTPS 地址。'));
       return;
     }
     if (!(options.file instanceof Blob)) {
-      options.onError?.(new Error('浏览器没有提供可上传的文件内容。'));
+      reportError(new Error('浏览器没有提供可上传的文件内容。'));
       return;
     }
 
     // XHR 提供浏览器上传进度事件；FormData 的 boundary 必须交给浏览器生成。
     const xhr = new XMLHttpRequest();
     const formData = new FormData();
-    const fileName =
-      'name' in options.file && typeof options.file.name === 'string'
-        ? options.file.name
-        : 'upload.bin';
-    const uid =
-      'uid' in options.file && typeof options.file.uid === 'string' ? options.file.uid : undefined;
-
     formData.append(options.filename || 'file', options.file, fileName);
     Object.entries(options.data ?? {}).forEach(([name, value]) => {
       if (value instanceof Blob) {
@@ -230,7 +331,7 @@ export default function UploadNetworkDemo() {
       }
       if (xhr.status < 200 || xhr.status >= 300) {
         const detail = getResponseMessage(response);
-        options.onError?.(
+        reportError(
           new Error(
             detail
               ? '服务端返回 HTTP ' + xhr.status + '：' + detail
@@ -241,7 +342,7 @@ export default function UploadNetworkDemo() {
         return;
       }
       if (!getFileId(response)) {
-        options.onError?.(
+        reportError(
           new Error('服务端响应缺少有效 fileId；仅支持安全的单路径标识，请检查接口响应格式。'),
           response,
         );
@@ -250,6 +351,7 @@ export default function UploadNetworkDemo() {
       if (uid) {
         uploadedEndpoints.current.set(uid, options.action);
       }
+      setNotice(fileName + ' 上传成功。');
       options.onSuccess?.(response, xhr);
     });
     xhr.addEventListener('error', () => {
@@ -257,7 +359,7 @@ export default function UploadNetworkDemo() {
         requests.current.delete(uid);
       }
       if (mounted.current) {
-        options.onError?.(new Error('无法连接服务端；请检查地址或网络后重试。'));
+        reportError(new Error('无法连接服务端；请检查地址或网络后重试。'));
       }
     });
     xhr.addEventListener('abort', () => {
@@ -265,7 +367,7 @@ export default function UploadNetworkDemo() {
         requests.current.delete(uid);
       }
       if (mounted.current) {
-        options.onError?.(new Error('上传已取消。'));
+        reportError(new Error('上传已取消。'), undefined, true);
       }
     });
 
@@ -286,7 +388,7 @@ export default function UploadNetworkDemo() {
       if (uid) {
         requests.current.delete(uid);
       }
-      options.onError?.(new Error('无法发送上传请求；请检查服务端地址后重试。'));
+      reportError(new Error('无法发送上传请求；请检查服务端地址后重试。'));
     }
 
     return {
@@ -319,7 +421,11 @@ export default function UploadNetworkDemo() {
     return true;
   };
 
-  const startUpload = (file: UploadItem) => {
+  const startUpload = (
+    file: UploadItem,
+    buttonWasFocusedAtStart: boolean,
+    initiatingButton: HTMLElement,
+  ) => {
     if (file.status === 'uploading' || validationErrors[file.uid]) {
       return;
     }
@@ -349,6 +455,9 @@ export default function UploadNetworkDemo() {
       return next;
     });
     setNotice(file.name + ' 正在发送到已配置的服务端。');
+    if (buttonWasFocusedAtStart) {
+      setPendingUploadFocus({ fileUid: file.uid, initiatingButton });
+    }
     updateFile(file.uid, { status: 'uploading', percent: 0, error: undefined });
     const options: UploadRequestOptions = {
       action: target,
@@ -371,7 +480,6 @@ export default function UploadNetworkDemo() {
           response,
           error: undefined,
         });
-        setNotice(file.name + ' 上传成功。');
       },
       onError: (error, response) => {
         updateFile(file.uid, {
@@ -379,7 +487,6 @@ export default function UploadNetworkDemo() {
           response,
           error,
         });
-        setNotice(file.name + ' 上传失败。');
       },
     };
     const requestInfo: UploadRequestInfo = {
@@ -469,13 +576,16 @@ export default function UploadNetworkDemo() {
     file: UploadItem,
     buttonWasFocusedAtStart: boolean,
     initiatingButton: HTMLElement,
+    focusIntentId: number,
   ) => {
-    // 异步操作期间用户可能移到别处；只在焦点仍落在原按钮或 BODY 时恢复，不抢用户焦点。
+    // 异步操作结束时仅在焦点仍位于原操作位置时恢复，避免覆盖用户主动移动后的选择。
     const shouldRestoreFocus = () =>
       buttonWasFocusedAtStart &&
+      focusIntentId === deleteFocusIntentId.current &&
       (document.activeElement === document.body || document.activeElement === initiatingButton);
 
-    if (file.status === 'uploading') {
+    const wasUploading = file.status === 'uploading';
+    if (wasUploading) {
       requests.current.get(file.uid)?.abort();
     }
     const shouldRemove = await removeRemoteFile(file);
@@ -483,12 +593,11 @@ export default function UploadNetworkDemo() {
       return;
     }
     if (shouldRemove === false) {
-      if (buttonWasFocusedAtStart) {
-        window.requestAnimationFrame(() => {
-          if (!mounted.current || !shouldRestoreFocus()) {
-            return;
-          }
-          deleteButtonRefs.current.get(file.uid)?.focus();
+      if (buttonWasFocusedAtStart && focusIntentId === deleteFocusIntentId.current) {
+        setPendingDeleteFocus({
+          fileUid: file.uid,
+          initiatingButton,
+          intentId: focusIntentId,
         });
       }
       return;
@@ -514,7 +623,14 @@ export default function UploadNetworkDemo() {
       delete next[file.uid];
       return next;
     });
-    setNotice(file.name + ' 已从列表移除。');
+    setConfirmedDeleteUids((current) => {
+      const next = new Set(current);
+      next.delete(file.uid);
+      return next;
+    });
+    setNotice(
+      wasUploading ? file.name + ' 上传已取消，并从列表移除。' : file.name + ' 已从列表移除。',
+    );
     if (buttonWasFocusedAtStart) {
       window.requestAnimationFrame(() => {
         if (!mounted.current || !shouldRestoreFocus()) {
@@ -593,7 +709,7 @@ export default function UploadNetworkDemo() {
               }}
             />
             <span>
-              启用网络传输。启用后，新选文件会立即发送到上方地址；已暂存文件需单独点击上传。
+              启用网络传输后，新选文件会立即发送到上方地址；关闭开关不会中止已开始的请求，上传中的文件可单独取消。
             </span>
           </label>
         </div>
@@ -643,7 +759,7 @@ export default function UploadNetworkDemo() {
           </div>
         </AntUpload.Dragger>
 
-        <div className={styles.phaseSummary} aria-label="上传阶段计数">
+        <div className={styles.phaseSummary} role="group" aria-label="上传阶段计数">
           <div className={styles.phase}>
             <span>正在上传</span>
             <strong>{counts.uploading}</strong>
@@ -698,9 +814,18 @@ export default function UploadNetworkDemo() {
                                 ? '重试上传 ' + file.name
                                 : '上传到服务端 ' + file.name
                           }
-                          aria-disabled={status === 'uploading'}
-                          disabled={Boolean(validationError) || !networkEnabled || endpointInvalid}
-                          onClick={() => startUpload(file)}
+                          disabled={
+                            status === 'uploading' ||
+                            Boolean(validationError) ||
+                            !networkEnabled ||
+                            endpointInvalid
+                          }
+                          onClick={(event) => {
+                            const initiatingButton = event.currentTarget;
+                            const buttonWasFocusedAtStart =
+                              document.activeElement === initiatingButton;
+                            startUpload(file, buttonWasFocusedAtStart, initiatingButton);
+                          }}
                         >
                           {status === 'uploading'
                             ? '正在上传'
@@ -716,11 +841,19 @@ export default function UploadNetworkDemo() {
                             ? '取消上传文件 ' + file.name
                             : deletingUids.has(file.uid)
                               ? '正在删除远端文件 ' + file.name
-                              : deleteError
+                              : deleteError || confirmedDeleteUids.has(file.uid)
                                 ? '重试删除远端文件 ' + file.name
                                 : fileId
                                   ? '删除已上传文件 ' + file.name
                                   : '移除本地文件 ' + file.name
+                        }
+                        aria-expanded={
+                          fileId && !deleteError ? confirmDeleteUid === file.uid : undefined
+                        }
+                        aria-controls={
+                          fileId && !deleteError && confirmDeleteUid === file.uid
+                            ? confirmDeleteSectionId
+                            : undefined
                         }
                         disabled={deletingUids.has(file.uid)}
                         ref={(instance) => {
@@ -734,14 +867,26 @@ export default function UploadNetworkDemo() {
                           const initiatingButton = event.currentTarget;
                           const buttonWasFocusedAtStart =
                             document.activeElement === initiatingButton;
-                          void removeFromList(file, buttonWasFocusedAtStart, initiatingButton);
+                          if (fileId && !deleteError && !confirmedDeleteUids.has(file.uid)) {
+                            deleteFocusIntentId.current += 1;
+                            setConfirmDeleteUid(file.uid);
+                            return;
+                          }
+                          const focusIntentId = ++deleteFocusIntentId.current;
+                          setConfirmDeleteUid(null);
+                          void removeFromList(
+                            file,
+                            buttonWasFocusedAtStart,
+                            initiatingButton,
+                            focusIntentId,
+                          );
                         }}
                       >
                         {status === 'uploading'
                           ? '取消上传'
                           : deletingUids.has(file.uid)
                             ? '正在删除'
-                            : deleteError
+                            : deleteError || confirmedDeleteUids.has(file.uid)
                               ? '重试删除'
                               : fileId
                                 ? '删除远端文件'
@@ -749,6 +894,51 @@ export default function UploadNetworkDemo() {
                       </Button>
                     </div>
                   </div>
+
+                  {confirmDeleteUid === file.uid && fileId && !deleteError ? (
+                    <div
+                      className={styles.deleteConfirmation}
+                      id={confirmDeleteSectionId}
+                      role="group"
+                      aria-label={'确认删除远端文件 ' + file.name}
+                    >
+                      <p role="status">
+                        将从服务端移除此文件，此操作无法撤销。请选择确认删除或保留文件。
+                      </p>
+                      <Button
+                        danger
+                        className={styles.action}
+                        aria-label={'确认删除远端文件 ' + file.name}
+                        onClick={(event) => {
+                          const initiatingButton = event.currentTarget;
+                          const buttonWasFocusedAtStart =
+                            document.activeElement === initiatingButton;
+                          const focusIntentId = ++deleteFocusIntentId.current;
+                          setConfirmedDeleteUids((current) => new Set(current).add(file.uid));
+                          setConfirmDeleteUid(null);
+                          void removeFromList(
+                            file,
+                            buttonWasFocusedAtStart,
+                            initiatingButton,
+                            focusIntentId,
+                          );
+                        }}
+                      >
+                        确认删除
+                      </Button>
+                      <Button
+                        className={styles.action}
+                        aria-label={'保留远端文件 ' + file.name}
+                        onClick={() => {
+                          deleteFocusIntentId.current += 1;
+                          setConfirmDeleteUid(null);
+                          deleteButtonRefs.current.get(file.uid)?.focus();
+                        }}
+                      >
+                        保留文件
+                      </Button>
+                    </div>
+                  ) : null}
 
                   {status === 'uploading' ? (
                     <div className={styles.progressGroup}>

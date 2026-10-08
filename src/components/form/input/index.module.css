@@ -4,6 +4,29 @@
   transition-duration: var(--lx-motion-duration);
 }
 
+/* 细指针下也满足 WCAG 2.2 的最小操作目标；粗指针会按主题 token 扩大。 */
+.clearMarker {
+  position: relative;
+  display: inline-grid;
+  min-inline-size: 24px;
+  min-block-size: 24px;
+  place-items: center;
+}
+
+/* 默认图标是装饰内容；隐藏文字为清除按钮提供可访问名称，且不改变命中区布局。 */
+.clearLabel {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* 粗指针设备保留紧凑桌面密度，同时把实际输入根节点扩展为触控尺寸。 */
 @media (any-pointer: coarse) {
   .root {
@@ -12,10 +35,8 @@
 
   /* 清除图标通过 AntD 公开 clearIcon 插槽注入标记，只扩大自身，不影响 suffix 里的其他按钮。 */
   .clearMarker {
-    display: inline-grid;
     min-inline-size: var(--lx-control-target-touch-min);
     min-block-size: var(--lx-control-target-touch-min);
-    place-items: center;
   }
 }
 

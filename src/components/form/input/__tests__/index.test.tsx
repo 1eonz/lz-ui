@@ -33,6 +33,7 @@ describe('Input', () => {
 
     const clearButton = screen.getByRole('button');
 
+    expect(clearButton).toHaveAccessibleName('清除输入内容');
     expect(document.querySelector('.caller-suffix')).toBeInTheDocument();
     expect(clearButton.querySelector(`.${styles.clearMarker}`)).toBeInTheDocument();
     expect(screen.getByRole('textbox')).toHaveClass('caller-input');
@@ -61,6 +62,7 @@ describe('Input', () => {
 
     const clearButton = screen.getByRole('button');
 
+    expect(clearButton).toHaveAccessibleName('清除输入内容');
     expect(document.querySelector('.caller-suffix')).toBeInTheDocument();
     expect(clearButton.querySelector(`.${styles.clearMarker}`)).toBeInTheDocument();
     expect(screen.getByRole('textbox')).toHaveClass('caller-textarea');

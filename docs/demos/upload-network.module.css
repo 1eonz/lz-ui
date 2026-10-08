@@ -106,8 +106,9 @@
   line-height: 1.35;
 }
 
-.description {
+.dropZone .description {
   max-inline-size: 62ch;
+  text-align: center;
 }
 
 .action {
@@ -216,6 +217,21 @@
   justify-content: flex-end;
 }
 
+.deleteConfirmation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--lx-space-sm);
+  padding: var(--lx-space-sm);
+  border-radius: 6px;
+  background: var(--lx-color-error-bg);
+}
+
+.deleteConfirmation p {
+  margin: 0;
+  color: var(--lx-color-error);
+}
+
 .progressGroup {
   display: grid;
   gap: var(--lx-space-xs);
@@ -280,6 +296,14 @@
 
   .actions {
     justify-content: flex-start;
+  }
+
+  .deleteConfirmation {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .deleteConfirmation .action {
+    inline-size: 100%;
   }
 }
 

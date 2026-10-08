@@ -64,27 +64,54 @@ export default function CustomerNameField() {
 
 其余原生输入属性及 AntD 公开 `InputProps` 继续透传；下表列出高频参数。API 不包含未导出的 `Input.Search/Password/Group`，原生补充组件可从 `lx-ui/antd` 使用。
 
-| 参数                       | 类型                                                     | 默认值              | 说明                                                                               |
-| -------------------------- | -------------------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------- |
-| `value`                    | `string \| number \| bigint \| readonly string[]`        | —                   | 受控值；编辑后需在 `onChange` 更新                                                 |
-| `defaultValue`             | `string \| number \| readonly string[]`                  | —                   | 非受控初始值，后续修改此参数不会重置输入                                           |
-| `size`                     | `'large' \| 'middle' \| 'small'`                         | Provider 尺寸或默认 | 大、中、小；默认密度由 lx 主题控制                                                 |
-| `status`                   | `'error' \| 'warning'`                                   | —                   | 视觉状态，不运行规则                                                               |
-| `disabled`                 | `boolean`                                                | `false`             | 禁用输入和操作，不进入常规 Tab 顺序                                                |
-| `readOnly`                 | `boolean`                                                | `false`             | 可聚焦和复制，禁止编辑                                                             |
-| `allowClear`               | `boolean \| { clearIcon: ReactNode }`                    | `false`             | 清除按钮；受控模式同步触发 `onChange`；可用公开 `clearIcon` 提供中文可访问名称     |
-| `prefix / suffix`          | `ReactNode`                                              | —                   | 输入内的前、后缀                                                                   |
-| `addonBefore / addonAfter` | `ReactNode`                                              | —                   | 仅兼容透传；AntD 5 的部分版本会提示迁移，外部组合优先由宿主 CSS Grid/Flex 布局负责 |
-| `showCount`                | `boolean \| { formatter: Function }`                     | `false`             | 显示字数，formatter 具体类型见 `InputProps`                                        |
-| `maxLength`                | `number`                                                 | —                   | 原生最大长度；受控外部值仍须由宿主保证限制                                         |
-| `type`                     | 原生输入类型                                             | `'text'`            | 可使用 email/password；密码可见切换不是当前 Input 的能力                           |
-| `id / aria-describedby`    | `string`                                                 | —                   | 关联 label、帮助与错误说明                                                         |
-| `autoComplete / inputMode` | 原生属性                                                 | —                   | 表单自动填充及输入键盘建议                                                         |
-| `variant`                  | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'` | `'outlined'`        | AntD 公开视觉变体；`underlined` 要求宿主 AntD 5.24+                                |
-| `className / style`        | `string / CSSProperties`                                 | —                   | 根节点样式，不增加额外焦点包装层                                                   |
-| `classNames / styles`      | AntD 公开语义槽映射                                      | —                   | 自定义 input/prefix/suffix/count 等语义区域                                        |
+<p id="input-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览。
+</p>
+
+<a className="lx-docs-table-jump" href="#input-main-api-table">
+  跳转到 Input 参数表起始位置
+</a>
+
+<div
+  id="input-main-api-table"
+  className="lx-docs-table lx-input-api-table"
+  role="region"
+  tabindex="0"
+  aria-label="Input 常用参数表"
+  aria-describedby="input-docs-table-hint"
+>
+
+| 参数                                                                            | 类型                                                                                                  | 默认值              | 说明                                                                                                                      |
+| ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `value`                                                                         | `string \| number \| bigint \| readonly string[]`                                                     | —                   | 受控值；编辑后需在 `onChange` 更新                                                                                        |
+| `defaultValue`                                                                  | `string \| number \| readonly string[]`                                                               | —                   | 非受控初始值，后续修改此参数不会重置输入                                                                                  |
+| `size`                                                                          | `'large' \| 'middle' \| 'small'`                                                                      | Provider 尺寸或默认 | 大、中、小；默认密度由 lx 主题控制                                                                                        |
+| `status`                                                                        | `'error' \| 'warning'`                                                                                | —                   | 视觉状态，不运行规则                                                                                                      |
+| `disabled`                                                                      | `boolean`                                                                                             | `false`             | 禁用输入和操作，不进入常规 Tab 顺序                                                                                       |
+| `readOnly`                                                                      | `boolean`                                                                                             | `false`             | 可聚焦和复制，禁止编辑                                                                                                    |
+| `allowClear`                                                                    | `boolean \| { clearIcon: ReactNode }`                                                                 | `false`             | 清除按钮；默认图标名称为“清除输入内容”；细指针目标至少 24×24px，粗指针按 `--lx-control-target-touch-min`（默认 44px）扩展 |
+| `prefix / suffix`                                                               | `ReactNode`                                                                                           | —                   | 输入内的前、后缀                                                                                                          |
+| `addonBefore / addonAfter`                                                      | `ReactNode`                                                                                           | —                   | 仅兼容透传；AntD 5 的部分版本会提示迁移，外部组合优先由宿主 CSS Grid/Flex 布局负责                                        |
+| `showCount`                                                                     | `boolean \| { formatter: (args: { value: string; count: number; maxLength?: number }) => ReactNode }` | `false`             | 显示字数；formatter 接收当前值、计数和可选的最大长度                                                                      |
+| `maxLength`                                                                     | `number`                                                                                              | —                   | 原生最大长度；受控外部值仍须由宿主保证限制                                                                                |
+| `type`                                                                          | 原生输入类型                                                                                          | `'text'`            | 可使用 email/password；密码可见切换不是当前 Input 的能力                                                                  |
+| <code>id</code> / <code class="lx-input-api-identifier">aria-describedby</code> | `string`                                                                                              | —                   | 关联 label、帮助与错误说明                                                                                                |
+| `autoComplete / inputMode`                                                      | 原生属性                                                                                              | —                   | 表单自动填充及输入键盘建议                                                                                                |
+| `variant`                                                                       | `'outlined' \| 'borderless' \| 'filled' \| 'underlined'`                                              | `'outlined'`        | AntD 公开视觉变体；`underlined` 要求宿主 AntD 5.24+                                                                       |
+| `className / style`                                                             | `string / CSSProperties`                                                                              | —                   | 根节点样式，不增加额外焦点包装层                                                                                          |
+| `classNames / styles`                                                           | AntD 公开语义槽映射                                                                                   | —                   | 自定义 input/prefix/suffix/count 等语义区域                                                                               |
+
+</div>
 
 **事件**
+
+<div
+  className="lx-docs-table lx-input-api-table"
+  role="region"
+  tabindex="0"
+  aria-label="Input 事件参数表"
+  aria-describedby="input-docs-table-hint"
+>
 
 | 事件                  | 参数                              | 触发时机                                                           |
 | --------------------- | --------------------------------- | ------------------------------------------------------------------ |
@@ -93,7 +120,17 @@ export default function CustomerNameField() {
 | `onFocus / onBlur`    | `FocusEvent<HTMLInputElement>`    | 实际输入获取、失去焦点                                             |
 | `onKeyDown / onKeyUp` | `KeyboardEvent<HTMLInputElement>` | 原生键盘事件；输入法组合阶段需由宿主识别                           |
 
+</div>
+
 **TextArea 参数**
+
+<div
+  className="lx-docs-table lx-input-api-table"
+  role="region"
+  tabindex="0"
+  aria-label="TextArea 参数表"
+  aria-describedby="input-docs-table-hint"
+>
 
 | 参数                                        | 类型                                                | 默认值      | 说明                                                 |
 | ------------------------------------------- | --------------------------------------------------- | ----------- | ---------------------------------------------------- |
@@ -105,9 +142,19 @@ export default function CustomerNameField() {
 | `allowClear / disabled / readOnly / status` | 同 Input                                            | 同 Input    | 清除、禁用、只读及视觉校验                           |
 | `onChange / onPressEnter`                   | textarea 对应事件                                   | —           | 原生事件；多行中的回车通常用于换行，不应直接触发保存 |
 
+</div>
+
 **实例方法**
 
 `InputRef` 与 `TextAreaRef` 是实例对象，不是 DOM 元素；挂载后可调用，隐藏/卸载后检查 `ref.current`。
+
+<div
+  className="lx-docs-table lx-input-api-table"
+  role="region"
+  tabindex="0"
+  aria-label="Input 实例方法表"
+  aria-describedby="input-docs-table-hint"
+>
 
 | 成员                | 用法                                                         | 说明                                                  |
 | ------------------- | ------------------------------------------------------------ | ----------------------------------------------------- |
@@ -117,10 +164,12 @@ export default function CustomerNameField() {
 | `nativeElement`     | `inputRef.current?.nativeElement`                            | Input 的展示根节点；有前后缀时不一定是 input          |
 | `resizableTextArea` | `textAreaRef.current?.resizableTextArea`                     | AntD 公开 textarea 访问对象；不要依赖它的私有布局 DOM |
 
+</div>
+
 ## 注意事项
 
 - 输入必须具有 label 或明确的 `aria-label`；错误同时提供文字说明，不能只靠红色边框。
-- `allowClear` 的清除按钮可由鼠标或触屏操作；组件通过 AntD 公开 `clearIcon` 插槽提供默认图标并标记触控区域，粗指针设备下清除按钮和输入控件会扩展到主题触控尺寸（默认 44px）。AntD 会将清除按钮设为 `tabIndex=-1`，因此不进入 Tab 顺序；键盘可聚焦输入框后按 Ctrl/Command+A，再按 Backspace 或 Delete 清空。调用方可通过公开 `clearIcon` 提供中文可访问名称；项目需安装 `@ant-design/icons`（它是 lx-ui 的 peer dependency）。组件不替宿主选择语言，也不改变焦点顺序。
+- `allowClear` 的清除按钮可由鼠标或触屏操作；组件通过 AntD 公开 `clearIcon` 插槽提供默认图标、通用中文可访问名称和操作区域，细指针下至少为 24×24px，粗指针设备下按 `--lx-control-target-touch-min` 扩展（默认 44×44px）。自定义 `clearIcon` 应包含适合当前语言和字段的可访问文本；组件无法从业务字段推断名称。AntD 会将清除按钮设为 `tabIndex=-1`，因此不进入 Tab 顺序；键盘可聚焦输入框后按 Ctrl/Command+A，再按 Backspace 或 Delete 清空。项目需安装 `@ant-design/icons`（它是 lx-ui 的 peer dependency），键盘焦点顺序保持 AntD 行为。
 - 动态添加或移除 prefix/suffix/showCount 可能改变 AntD 根结构和焦点。需要保持结构时保留占位节点，再更改内容。
 - 字符串金额不要直接用于财务计算；高精度数字使用 InputNumber 的 `stringMode`，解析和提交规则由宿主决定。
 - 异步搜索由宿主处理防抖、取消和旧响应丢弃；普通 Input 不保存远程列表或业务 loading 状态。
