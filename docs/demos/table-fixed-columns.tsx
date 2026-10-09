@@ -2,8 +2,9 @@ import { cloneElement, isValidElement, useEffect, useId, useRef, useState } from
 import type { AriaAttributes, ReactElement, ReactNode } from 'react';
 import type { CheckboxProps } from 'antd';
 import { Button, Table, Tag } from 'lx-ui';
-import type { LxTableColumns } from 'lx-ui';
+import type { ButtonRef, LxTableColumns } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
+import { focusDetailRegion } from './focus-detail-region';
 import styles from './table-demo.module.css';
 
 interface PurchaseOrder {
@@ -102,14 +103,24 @@ export default function TableFixedColumnsDemo() {
   const purchasingGroupId = useId();
   const approvalGroupId = useId();
   const sectionRef = useRef<HTMLElement>(null);
+  const orderDetailsRegionRef = useRef<HTMLElement>(null);
   const orderDetailsHeadingRef = useRef<HTMLHeadingElement>(null);
+  const orderDetailsFirstGroupRef = useRef<HTMLDivElement>(null);
+  const orderDetailsCloseActionRef = useRef<ButtonRef>(null);
   const orderDetailsTriggerRef = useRef<HTMLElement | null>(null);
   const [hasRoomForFixedColumns, setHasRoomForFixedColumns] = useState(false);
   const [activeBuyerFeedback, setActiveBuyerFeedback] = useState<PurchaseOrder | null>(null);
   const [activeOrderDetails, setActiveOrderDetails] = useState<PurchaseOrder | null>(null);
 
   useEffect(() => {
-    if (activeOrderDetails) orderDetailsHeadingRef.current?.focus();
+    if (!activeOrderDetails) return;
+
+    focusDetailRegion(
+      orderDetailsRegionRef.current,
+      orderDetailsHeadingRef.current,
+      orderDetailsFirstGroupRef.current,
+      orderDetailsCloseActionRef.current,
+    );
   }, [activeOrderDetails]);
 
   useEffect(() => {
@@ -251,6 +262,7 @@ export default function TableFixedColumnsDemo() {
         )}
         <section
           id={orderDetailsRegionId}
+          ref={orderDetailsRegionRef}
           className={styles.orderDetailsRegion}
           role="region"
           aria-labelledby={orderDetailsHeadingId}
@@ -263,10 +275,11 @@ export default function TableFixedColumnsDemo() {
               className={styles.orderDetailsTitle}
               tabIndex={-1}
             >
-              订单详情 <span className={styles.orderDetailsId}>{activeOrderDetails?.id}</span>
+              订单详情 <span className={styles.orderDetailsTitleId}>{activeOrderDetails?.id}</span>
             </h4>
             {activeOrderDetails && (
               <Button
+                ref={orderDetailsCloseActionRef}
                 type="link"
                 size="small"
                 className={styles.orderDetailsCloseAction}
@@ -283,6 +296,7 @@ export default function TableFixedColumnsDemo() {
           {activeOrderDetails && (
             <div className={styles.orderDetailsGroups}>
               <div
+                ref={orderDetailsFirstGroupRef}
                 className={styles.orderDetailsGroup}
                 role="group"
                 aria-labelledby={approvalGroupId}

@@ -38,6 +38,7 @@
   border: 1px solid var(--lx-color-border-secondary);
   border-radius: var(--lx-radius-panel);
   background-color: var(--lx-color-bg-container);
+  scroll-margin-block-start: 6rem;
 }
 
 .orderDetailsRegion[hidden] {
@@ -61,7 +62,7 @@
   overflow-wrap: anywhere;
 }
 
-.orderDetailsId {
+.orderDetailsTitleId {
   display: inline-block;
   white-space: nowrap;
 }
@@ -132,6 +133,12 @@
   line-height: var(--lx-line-height-heading-5);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 767px) {
+  .orderDetailsRegion {
+    scroll-margin-block-start: 8rem;
+  }
 }
 
 @media (min-width: 1200px) {

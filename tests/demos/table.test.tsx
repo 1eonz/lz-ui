@@ -258,9 +258,16 @@ describe('Table 文档示例', () => {
   it('同一订单详情再次查看时仍定位已有详情标题', () => {
     render(<TableDemo />);
     const trigger = screen.getByRole('button', { name: '查看 PO-2024-1881 详情' });
+    const detailPanelId = trigger.getAttribute('aria-controls');
+    expect(detailPanelId).toBeTruthy();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    expect(document.getElementById(detailPanelId!)).toHaveAttribute('hidden');
     fireEvent.click(trigger);
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
     const heading = screen.getByRole('heading', { name: '采购订单 PO-2024-1881 详情' });
     expect(heading).toHaveFocus();
+    expect(trigger).toHaveAttribute('aria-controls', detailPanelId);
+    expect(document.getElementById(detailPanelId!)).not.toHaveAttribute('hidden');
 
     trigger.focus();
     fireEvent.click(trigger);
@@ -271,10 +278,15 @@ describe('Table 文档示例', () => {
   it('打开详情后命名区域并聚焦详情标题，收起后回到原行详情按钮', () => {
     render(<TableDemo />);
     const trigger = screen.getByRole('button', { name: '查看 PO-2024-1881 详情' });
+    const detailPanelId = trigger.getAttribute('aria-controls');
+    expect(detailPanelId).toBeTruthy();
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
     trigger.focus();
     fireEvent.click(trigger);
 
     const region = screen.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
+    expect(trigger).toHaveAttribute('aria-expanded', 'true');
+    expect(trigger).toHaveAttribute('aria-controls', region.id);
     expect(
       within(region).getByRole('heading', { name: '采购订单 PO-2024-1881 详情' }),
     ).toHaveFocus();
@@ -283,77 +295,96 @@ describe('Table 文档示例', () => {
         .getAllByRole('group')
         .map((group) => group.getAttribute('aria-labelledby')),
     ).toHaveLength(3);
-    expect(within(region).getByRole('group', { name: '采购信息' })).toBeInTheDocument();
+    expect(
+      within(region)
+        .getAllByRole('group')
+        .map((group) => within(group).getByRole('heading', { level: 5 }).textContent),
+    ).toEqual(['审批与金额', '订单信息', '履约进度']);
+    expect(within(region).getByRole('group', { name: '审批与金额' })).toBeInTheDocument();
+    expect(within(region).getByRole('group', { name: '订单信息' })).toBeInTheDocument();
     expect(within(region).getByRole('group', { name: '履约进度' })).toBeInTheDocument();
-    expect(within(region).getByRole('group', { name: '审批与结算' })).toBeInTheDocument();
     expect(
       within(region)
         .getAllByRole('term')
         .map((field) => field.textContent),
-    ).toEqual(['订单编号', '供应商', '订单履约', '采购金额', '审批状态']);
+    ).toEqual([
+      '采购金额',
+      '审批状态',
+      '下单日期',
+      '采购员',
+      '所属部门',
+      '已完成订单项',
+      '计划到货日期',
+    ]);
     expect(
       within(region)
         .getAllByRole('definition')
         .map((field) => field.textContent?.replace(/\s+/g, ' ').trim()),
-    ).toEqual(['PO-2024-1881', '上海深蓝光电高新材料有限公司', '82%', '¥ 1,428,900.00', '已审批']);
-    expect(within(region).getByRole('progressbar', { name: '订单履约进度' })).toHaveAttribute(
-      'aria-valuenow',
-      '82',
-    );
+    ).toEqual([
+      '¥ 1,428,900.00',
+      '已审批',
+      '2024-09-18',
+      '周敏',
+      '精密制造中心',
+      '41 / 50 项 · 82%',
+      '2024-10-08',
+    ]);
     expect(within(region).getByText('¥ 1,428,900.00')).toBeInTheDocument();
     expect(within(region).getByText('已审批')).toBeInTheDocument();
-    fireEvent.click(within(region).getByRole('button', { name: '收起详情' }));
+    const closeAction = within(region).getByRole('button', { name: '关闭订单详情' });
+    expect(closeAction.parentElement).toBe(
+      within(region).getByRole('heading', { level: 4 }).parentElement,
+    );
+    fireEvent.click(closeAction);
 
-    expect(
-      screen.queryByRole('region', { name: '采购订单 PO-2024-1881 详情' }),
-    ).not.toBeInTheDocument();
+    expect(document.getElementById(detailPanelId!)).toHaveAttribute('hidden');
+    expect(trigger).toHaveAttribute('aria-expanded', 'false');
     expect(trigger).toHaveFocus();
   });
 
   it('翻页关闭详情并恢复已卸载焦点，分页控件主动获焦时保持其焦点', () => {
     render(<TableDemo />);
-    fireEvent.click(screen.getByRole('button', { name: '查看 PO-2024-1881 详情' }));
+    const firstTrigger = screen.getByRole('button', { name: '查看 PO-2024-1881 详情' });
+    const detailPanelId = firstTrigger.getAttribute('aria-controls');
+    fireEvent.click(firstTrigger);
     fireEvent.click(screen.getByRole('button', { name: /^下一页$/ }));
-    expect(
-      screen.queryByRole('region', { name: '采购订单 PO-2024-1881 详情' }),
-    ).not.toBeInTheDocument();
+    expect(document.getElementById(detailPanelId!)).toHaveAttribute('hidden');
     expect(screen.getByRole('heading', { name: '采购订单' })).toHaveFocus();
 
-    fireEvent.click(screen.getByRole('button', { name: '查看 PO-2024-1886 详情' }));
+    const secondTrigger = screen.getByRole('button', { name: '查看 PO-2024-1886 详情' });
+    fireEvent.click(secondTrigger);
     const nextPage = screen.getByRole('button', { name: /^下一页$/ });
     nextPage.focus();
     fireEvent.click(nextPage);
-    expect(
-      screen.queryByRole('region', { name: '采购订单 PO-2024-1886 详情' }),
-    ).not.toBeInTheDocument();
+    expect(document.getElementById(detailPanelId!)).toHaveAttribute('hidden');
     expect(nextPage).toHaveFocus();
   });
 
   it.each(['显示加载', '模拟失败', '显示空状态'])('%s 关闭详情且保留操作控件的焦点', (name) => {
     render(<TableDemo />);
-    fireEvent.click(screen.getByRole('button', { name: '查看 PO-2024-1881 详情' }));
+    const orderTrigger = screen.getByRole('button', { name: '查看 PO-2024-1881 详情' });
+    const detailPanelId = orderTrigger.getAttribute('aria-controls');
+    fireEvent.click(orderTrigger);
     fireEvent.click(screen.getByText('示例状态'));
     const trigger = screen.getByRole('button', { name });
     trigger.focus();
     fireEvent.click(trigger);
-    expect(
-      screen.queryByRole('region', { name: '采购订单 PO-2024-1881 详情' }),
-    ).not.toBeInTheDocument();
+    expect(document.getElementById(detailPanelId!)).toHaveAttribute('hidden');
     expect(trigger).toHaveFocus();
   });
 
   it('页大小变化关闭详情并保留页大小控件焦点', () => {
     render(<TableDemo />);
-    fireEvent.click(screen.getByRole('button', { name: '查看 PO-2024-1881 详情' }));
+    const orderTrigger = screen.getByRole('button', { name: '查看 PO-2024-1881 详情' });
+    const detailPanelId = orderTrigger.getAttribute('aria-controls');
+    fireEvent.click(orderTrigger);
     const pageSize = screen.getByRole('combobox', { name: '每页条数' });
     pageSize.focus();
     fireEvent.keyDown(pageSize, { key: 'ArrowDown', keyCode: 40 });
     fireEvent.keyDown(pageSize, { key: 'ArrowDown', keyCode: 40 });
     fireEvent.keyDown(pageSize, { key: 'Enter', keyCode: 13 });
     expect(screen.getByRole('status')).toHaveTextContent('每页 10 条');
-    expect(
-      screen.queryByRole('region', { name: '采购订单 PO-2024-1881 详情' }),
-    ).not.toBeInTheDocument();
+    expect(document.getElementById(detailPanelId!)).toHaveAttribute('hidden');
     expect(pageSize).toHaveFocus();
   });
 
@@ -457,7 +488,9 @@ describe('Table 文档示例', () => {
     expect(list).toHaveTextContent('PO-2024-1881 · 上海深蓝光电高新材料有限公司 · 已审批');
     expect(list).toHaveTextContent('¥ 1,428,900.00');
 
-    fireEvent.click(screen.getByRole('button', { name: '查看 PO-2024-1886 详情' }));
+    const orderTrigger = screen.getByRole('button', { name: '查看 PO-2024-1886 详情' });
+    const detailPanelId = orderTrigger.getAttribute('aria-controls');
+    fireEvent.click(orderTrigger);
     const filter = screen.getByRole('combobox', { name: '审批状态快速筛选' });
     filter.focus();
     fireEvent.keyDown(filter, { key: 'ArrowDown', keyCode: 40 });
@@ -465,9 +498,7 @@ describe('Table 文档示例', () => {
     fireEvent.keyDown(filter, { key: 'ArrowDown', keyCode: 40 });
     fireEvent.keyDown(filter, { key: 'Enter', keyCode: 13 });
     expect(filter).toHaveFocus();
-    expect(
-      screen.queryByRole('region', { name: '采购订单 PO-2024-1886 详情' }),
-    ).not.toBeInTheDocument();
+    expect(document.getElementById(detailPanelId!)).toHaveAttribute('hidden');
     expect(
       screen.queryByRole('checkbox', { name: '选择采购单 PO-2024-1881' }),
     ).not.toBeInTheDocument();

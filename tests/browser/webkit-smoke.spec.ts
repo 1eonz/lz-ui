@@ -43,8 +43,10 @@ test.describe('WebKit 桌面组件 smoke', () => {
     const detail = page.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
     await expect(detail).toBeVisible();
     await expect(detail.getByRole('heading', { level: 4 })).toBeFocused();
-    await detail.getByRole('button', { name: '收起详情' }).click();
-    await expect(detail).toHaveCount(0);
+    const detailPanelId = await detail.getAttribute('id');
+    expect(detailPanelId).toBeTruthy();
+    await detail.getByRole('button', { name: '关闭订单详情' }).click();
+    await expect(page.locator(`[id="${detailPanelId}"]`)).toHaveAttribute('hidden');
 
     for (const viewport of smokeViewports) {
       await expectNoRootHorizontalOverflow(page, viewport);

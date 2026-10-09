@@ -28,6 +28,9 @@
 
 .root .headerRow.headerRow > th,
 .root .headerRow.headerRow > td {
+  /* 表头颜色直接消费 lx 语义 token，避免 AntD 暗色算法对组件别名再次换算。 */
+  background-color: var(--lx-color-item-hover-bg);
+  color: var(--lx-color-text-secondary);
   /* 非粗指针下，全选 checkbox 的 24px 控件高于 18px 文字行高，需按控件高度分配内距。 */
   padding-block: max(
     0px,

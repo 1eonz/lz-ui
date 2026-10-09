@@ -73,9 +73,11 @@ test.describe('Playwright hasTouch 触控仿真 smoke', () => {
       const detail = page.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
       await expect(detail).toBeVisible();
       await expect(detail.getByRole('heading', { level: 4 })).toBeFocused();
-      const closeButton = detail.getByRole('button', { name: '收起详情' });
+      const detailPanelId = await detail.getAttribute('id');
+      expect(detailPanelId).toBeTruthy();
+      const closeButton = detail.getByRole('button', { name: '关闭订单详情' });
       await tapWithTouchscreen(page, closeButton);
-      await expect(detail).toHaveCount(0);
+      await expect(page.locator(`[id="${detailPanelId}"]`)).toHaveAttribute('hidden');
       await expect(openButton).toBeFocused();
 
       await expectNoRootHorizontalOverflow(page, 390);

@@ -150,6 +150,28 @@ function expectTableThemeStyles(snapshot: TableThemeSnapshot): void {
   expect(snapshot.visible.rowHeight).toBe(snapshot.tokens.rowHeight);
 }
 
+function tableThemeStylesMatch(snapshot: TableThemeSnapshot): boolean {
+  return (
+    snapshot.visible.tableBackground === cssHexToRgb(snapshot.tokens.surface) &&
+    snapshot.visible.headerBackground === cssHexToRgb(snapshot.tokens.headerBackground) &&
+    snapshot.visible.headerColor === cssHexToRgb(snapshot.tokens.textSecondary) &&
+    snapshot.visible.bodyColor === cssHexToRgb(snapshot.tokens.text) &&
+    snapshot.visible.tableSurfaceRadius === snapshot.tokens.panelRadius &&
+    snapshot.visible.rowHeight === snapshot.tokens.rowHeight
+  );
+}
+
+async function waitForTableThemeStyles(
+  themeRoot: Locator,
+  tableRegion: Locator,
+): Promise<TableThemeSnapshot> {
+  // 主题选择器更新后，等待 CSS 自定义属性与 AntD 计算样式落到同一帧。
+  await expect
+    .poll(async () => tableThemeStylesMatch(await readTableThemeSnapshot(themeRoot, tableRegion)))
+    .toBe(true);
+  return readTableThemeSnapshot(themeRoot, tableRegion);
+}
+
 async function chooseRadio(themeRoot: Locator, name: string): Promise<void> {
   const radio = themeRoot.getByRole('radio', { name, exact: true });
   await themeRoot.getByText(name, { exact: true }).click();
@@ -301,16 +323,26 @@ async function pressKeyAndReadDefault(
   page: Page,
   key: 'ArrowLeft' | 'ArrowRight',
 ): Promise<boolean> {
-  const defaultPrevented = page.evaluate(
-    () =>
-      new Promise<boolean>((resolve) => {
-        window.addEventListener('keydown', (event) => resolve(event.defaultPrevented), {
-          once: true,
-        });
-      }),
-  );
+  // 先等待页面安装监听器，再发送按键，避免异步 evaluate 与 keyboard.press 竞态导致 Promise 永远不完成。
+  await page.evaluate(() => {
+    // 每次按键先写入唯一标记，避免本次事件未触发时读取上一次结果。
+    (window as Window & { __lxDefaultPrevented?: boolean | symbol }).__lxDefaultPrevented =
+      Symbol('pending-keydown');
+    window.addEventListener(
+      'keydown',
+      (event) => {
+        (window as Window & { __lxDefaultPrevented?: boolean | symbol }).__lxDefaultPrevented =
+          event.defaultPrevented;
+      },
+      { once: true },
+    );
+  });
   await page.keyboard.press(key);
-  return defaultPrevented;
+  return page.evaluate(
+    () =>
+      (window as Window & { __lxDefaultPrevented?: boolean | symbol }).__lxDefaultPrevented ===
+      true,
+  );
 }
 
 test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见表格样式', async ({ page }) => {
@@ -329,7 +361,7 @@ test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见�
   const setMode = async (mode: 'light' | 'dark') => {
     if ((await themeRoot.getAttribute('data-lx-mode')) !== mode) await darkSwitch.click();
     await expect(themeRoot).toHaveAttribute('data-lx-mode', mode);
-    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    const snapshot = await waitForTableThemeStyles(themeRoot, tableRegion);
     expectTableThemeStyles(snapshot);
     return snapshot;
   };
@@ -349,7 +381,7 @@ test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见�
   ]) {
     await chooseRadio(themeRoot, appearance.label);
     await expect(themeRoot).toHaveAttribute('data-lx-appearance', appearance.value);
-    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    const snapshot = await waitForTableThemeStyles(themeRoot, tableRegion);
     expect(snapshot.tokens.panelRadius).toBe(appearance.radius);
     expectTableThemeStyles(snapshot);
   }
@@ -360,7 +392,7 @@ test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见�
   ]) {
     await chooseRadio(themeRoot, density.label);
     await expect(themeRoot).toHaveAttribute('data-lx-density', density.value);
-    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    const snapshot = await waitForTableThemeStyles(themeRoot, tableRegion);
     expect(snapshot.tokens.rowHeight).toBe(density.height);
     expectTableThemeStyles(snapshot);
   }
@@ -417,7 +449,7 @@ test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见�
   };
   await expect(themeRoot).toHaveAttribute('data-lx-color', 'blue');
   await expect(themeRoot.getByText('使用品牌色', { exact: true })).toBeVisible();
-  let previous = await readTableThemeSnapshot(themeRoot, tableRegion);
+  let previous = await waitForTableThemeStyles(themeRoot, tableRegion);
   expectTableThemeStyles(previous);
 
   for (const color of brandColors.slice(1)) {
@@ -426,7 +458,7 @@ test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见�
     await expect(themeRoot).toHaveAttribute('data-lx-appearance', 'business');
     await expect(themeRoot).toHaveAttribute('data-lx-density', 'comfortable');
     await expect(themeRoot).toHaveAttribute('data-lx-color', color.value);
-    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    const snapshot = await waitForTableThemeStyles(themeRoot, tableRegion);
     expectTableThemeStyles(snapshot);
     expect(snapshot.tokens.primary).not.toBe(previous.tokens.primary);
     expect(snapshot.visible.headerBackground).not.toBe(previous.visible.headerBackground);
@@ -440,7 +472,7 @@ test('Table 公开主题控件切换会更新 data-lx 状态、token 与可见�
     await expect(themeRoot).toHaveAttribute('data-lx-appearance', 'business');
     await expect(themeRoot).toHaveAttribute('data-lx-density', 'comfortable');
     await expect(themeRoot).toHaveAttribute('data-lx-color', palette.value);
-    const snapshot = await readTableThemeSnapshot(themeRoot, tableRegion);
+    const snapshot = await waitForTableThemeStyles(themeRoot, tableRegion);
     expectTableThemeStyles(snapshot);
     expect(snapshot.tokens.primary).not.toBe(previous.tokens.primary);
     expect(snapshot.visible.headerBackground).not.toBe(previous.visible.headerBackground);
@@ -671,6 +703,8 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
       await expect(pageAnnouncement).toHaveText('第 1 页，共 5 页');
       await pageJump.focus();
       await pageJump.press('Enter');
+      await expect(pageJump).toHaveAttribute('aria-expanded', 'true');
+      await expect(pageJump).toHaveAttribute('aria-activedescendant', /.+/);
       for (let index = 1; index < 5; index += 1) await pageJump.press('ArrowDown');
       await pageJump.press('Enter');
       await expect(pageAnnouncement).toHaveText('第 5 页，共 5 页');
@@ -745,25 +779,31 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
     expect(['auto', 'scroll']).toContain(scrollport.overflow);
     await expectNoDocumentOverflow(page);
 
-    await firstOrder.getByRole('button', { name: '查看 PO-2024-1881 详情' }).click();
+    const detailTrigger = firstOrder.getByRole('button', { name: '查看 PO-2024-1881 详情' });
+    const detailPanelId = await detailTrigger.getAttribute('aria-controls');
+    expect(detailPanelId).toBeTruthy();
+    await expect(detailTrigger).toHaveAttribute('aria-expanded', 'false');
+    await expect(themeRoot.locator(`[id="${detailPanelId}"]`)).toBeHidden();
+    await detailTrigger.click();
     const orderDetail = themeRoot.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
     await expect(orderDetail).toBeVisible();
+    await expect(detailTrigger).toHaveAttribute('aria-expanded', 'true');
+    await expect(detailTrigger).toHaveAttribute('aria-controls', detailPanelId!);
+    await expect(orderDetail).toHaveAttribute('id', detailPanelId!);
     await expect(orderDetail.getByRole('group')).toHaveCount(3);
-    await expect(orderDetail.getByRole('group', { name: '采购信息' })).toBeVisible();
-    await expect(orderDetail.getByRole('group', { name: '履约进度' })).toBeVisible();
-    await expect(orderDetail.getByRole('group', { name: '审批与结算' })).toBeVisible();
-    await expect(orderDetail.getByRole('progressbar', { name: '订单履约进度' })).toHaveAttribute(
-      'aria-valuenow',
-      '82',
-    );
+    await expect(orderDetail.getByRole('group').nth(0)).toHaveAccessibleName('审批与金额');
+    await expect(orderDetail.getByRole('group').nth(1)).toHaveAccessibleName('订单信息');
+    await expect(orderDetail.getByRole('group').nth(2)).toHaveAccessibleName('履约进度');
     await expect(orderDetail.getByRole('definition')).toHaveText([
-      'PO-2024-1881',
-      '上海深蓝光电高新材料有限公司',
-      '82%',
       '¥ 1,428,900.00',
       '已审批',
+      '2024-09-18',
+      '周敏',
+      '精密制造中心',
+      '41 / 50 项 · 82%',
+      '2024-10-08',
     ]);
-    await expect(orderDetail.getByRole('button', { name: '收起详情' })).toBeVisible();
+    await expect(orderDetail.getByRole('button', { name: '关闭订单详情' })).toBeVisible();
     const groupColumns = await orderDetail
       .getByRole('group')
       .first()
@@ -774,8 +814,9 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
       });
     expect(groupColumns).toBe(1);
     await expectNoDocumentOverflow(page);
-    await orderDetail.getByRole('button', { name: '收起详情' }).click();
-    await expect(orderDetail).toHaveCount(0);
+    await orderDetail.getByRole('button', { name: '关闭订单详情' }).click();
+    await expect(themeRoot.locator(`[id="${detailPanelId}"]`)).toHaveAttribute('hidden');
+    await expect(detailTrigger).toHaveAttribute('aria-expanded', 'false');
   }
 
   await page.setViewportSize({ width: 1280, height: 844 });
@@ -790,7 +831,7 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
       return window.getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/).length;
     });
   expect(desktopGroupColumns).toBe(3);
-  await desktopOrderDetail.getByRole('button', { name: '收起详情' }).click();
+  await desktopOrderDetail.getByRole('button', { name: '关闭订单详情' }).click();
 
   for (const containerWidth of [855, 856]) {
     await tableViewport.evaluate((node, inlineSize) => {
@@ -828,11 +869,51 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
   await tableViewport.evaluate((node) => {
     (node as HTMLElement).style.removeProperty('inline-size');
   });
-  await page.setViewportSize({ width: 320, height: 844 });
+  await page.setViewportSize({ width: 390, height: 844 });
   await expectNoDocumentOverflow(page);
   await firstOrder.getByRole('button', { name: '查看 PO-2024-1881 详情' }).click();
   const narrowOrderDetail = themeRoot.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
-  const detailTitleSuffix = narrowOrderDetail.getByRole('heading', { level: 4 }).locator('span');
+  const narrowHeading = narrowOrderDetail.getByRole('heading', { level: 4 });
+  await expect(narrowHeading).toBeFocused();
+  const narrowCloseAction = narrowOrderDetail.getByRole('button', { name: '关闭订单详情' });
+  const narrowFirstGroup = narrowOrderDetail.getByRole('group').first();
+  const firstGroupTerms = await narrowFirstGroup.getByRole('term').all();
+  const firstGroupValues = await narrowFirstGroup.getByRole('definition').all();
+  const [narrowViewportHeight, detailScrollMargin] = await Promise.all([
+    page.evaluate(() => document.documentElement.clientHeight),
+    narrowOrderDetail.evaluate((panel) =>
+      Number.parseFloat(window.getComputedStyle(panel).scrollMarginBlockStart),
+    ),
+  ]);
+  for (const introElement of [
+    narrowHeading,
+    narrowCloseAction,
+    ...firstGroupTerms,
+    ...firstGroupValues,
+  ]) {
+    const bounds = await readBounds(introElement);
+    expect(bounds.top).toBeGreaterThanOrEqual(detailScrollMargin - 1);
+    expect(bounds.bottom).toBeLessThanOrEqual(narrowViewportHeight + 1);
+  }
+  const narrowDetailHeader = narrowHeading.locator('xpath=..');
+  try {
+    for (const [panelWidth, flexDirection] of [
+      [220, 'column'],
+      [221, 'row'],
+    ] as const) {
+      await narrowOrderDetail.evaluate((panel, width) => {
+        (panel as HTMLElement).style.inlineSize = `${width}px`;
+      }, panelWidth);
+      await expect(narrowDetailHeader).toHaveCSS('flex-direction', flexDirection);
+    }
+  } finally {
+    await narrowOrderDetail.evaluate((panel) => {
+      (panel as HTMLElement).style.removeProperty('inline-size');
+    });
+  }
+  const detailTitle = narrowOrderDetail.getByRole('heading', { level: 4 });
+  const detailTitleSuffix = detailTitle.getByText('详情', { exact: true });
+  const detailTitleOrderId = detailTitle.locator('span').filter({ hasText: 'PO-2024-1881' });
   await detailTitleSuffix.evaluate((element) => {
     const heading = element.closest('h4');
     if (!heading) throw new Error('未能读取采购订单详情标题');
@@ -850,6 +931,14 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
     return range.getClientRects().length;
   });
   expect(detailTitleSuffixLineCount).toBe(1);
+  await expect(detailTitleOrderId).toHaveText('PO-2024-1881');
+  await expect(detailTitleOrderId).toHaveCSS('white-space', 'nowrap');
+  const detailTitleOrderIdLineCount = await detailTitleOrderId.evaluate((element) => {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    return range.getClientRects().length;
+  });
+  expect(detailTitleOrderIdLineCount).toBe(1);
   const narrowGroupColumns = await narrowOrderDetail
     .getByRole('group')
     .first()
@@ -860,7 +949,7 @@ test('主 Table 在 640px 与 320px CSS viewport 下仍能操作密度、详情�
     });
   expect(narrowGroupColumns).toBe(1);
   await expect(narrowOrderDetail.getByRole('group')).toHaveCount(3);
-  await narrowOrderDetail.getByRole('button', { name: '收起详情' }).click();
+  await narrowCloseAction.click();
   await expect(firstOrder.getByRole('button', { name: '查看 PO-2024-1881 详情' })).toBeFocused();
 
   await waitForBrowserQuiescence(page, browserHealth);
@@ -1155,6 +1244,19 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
         name: `订单详情 ${orderId}`,
       });
       await expect(detailsHeading).toBeFocused();
+      const detailsCloseAction = detailsPanel.getByRole('button', { name: '关闭订单详情' });
+      const detailsFirstGroup = detailsPanel.getByRole('group').first();
+      const [detailsViewportHeight, detailsScrollMargin] = await Promise.all([
+        page.evaluate(() => document.documentElement.clientHeight),
+        detailsPanel.evaluate((panel) =>
+          Number.parseFloat(window.getComputedStyle(panel).scrollMarginBlockStart),
+        ),
+      ]);
+      for (const introElement of [detailsHeading, detailsCloseAction, detailsFirstGroup]) {
+        const bounds = await readBounds(introElement);
+        expect(bounds.top).toBeGreaterThanOrEqual(detailsScrollMargin - 1);
+        expect(bounds.bottom).toBeLessThanOrEqual(detailsViewportHeight + 1);
+      }
       await expect(detailsPanel).toHaveAttribute(
         'aria-labelledby',
         (await detailsHeading.getAttribute('id'))!,
@@ -1403,6 +1505,21 @@ test('固定列按容器宽度释放空间，窄屏采购员可滚入并真实�
   await expect(narrowDetails).toBeVisible();
   await expect(narrowDetails.getByRole('heading', { level: 4 })).toBeFocused();
   await expect(detailGroups).toHaveCount(3);
+  const [narrowViewportHeight, narrowScrollMargin] = await Promise.all([
+    page.evaluate(() => document.documentElement.clientHeight),
+    narrowDetails.evaluate((panel) =>
+      Number.parseFloat(window.getComputedStyle(panel).scrollMarginBlockStart),
+    ),
+  ]);
+  for (const introElement of [
+    narrowDetails.getByRole('heading', { level: 4 }),
+    narrowCloseAction,
+    detailGroups.first(),
+  ]) {
+    const bounds = await readBounds(introElement);
+    expect(bounds.top).toBeGreaterThanOrEqual(narrowScrollMargin - 1);
+    expect(bounds.bottom).toBeLessThanOrEqual(narrowViewportHeight + 1);
+  }
   await expectNoDocumentOverflow(page);
   expect(
     await narrowDetails.evaluate((panel) => panel.scrollWidth - panel.clientWidth),
@@ -1532,7 +1649,7 @@ test('粗指针下 Table 与固定列示例的主要操作达到 44px 目标尺�
     await rowDetail.click();
     const tableDetails = page.getByRole('region', { name: '采购订单 PO-2024-1881 详情' });
     await expect(tableDetails).toBeVisible();
-    const closeDetails = tableDetails.getByRole('button', { name: '收起详情' });
+    const closeDetails = tableDetails.getByRole('button', { name: '关闭订单详情' });
     const closeDetailsBounds = await closeDetails.boundingBox();
     if (!closeDetailsBounds) throw new Error('未能测量粗指针下的详情关闭按钮');
     expect(closeDetailsBounds.width).toBeGreaterThanOrEqual(44);

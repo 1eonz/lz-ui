@@ -315,3 +315,9 @@
 - **API 表交互与布局：** 表格位于具名、可聚焦的横向滚动区域，方向键右移至少 30px、左移返回 `scrollLeft=0`；横移后属性首列保持粘滞。320px 下首列为 144px；`successPercent` 显示“已废弃”，`successPercent`、`aria-label`、`aria-labelledby` 和 `rootClassName` 保持单行。
 - **独立评审与复审：** Assessment A 为 **35/40（Good）**；Assessment B 技术评分 **17/20（Good）**。两组均无 P0、P1 或 P2。代码复审曾指出键盘滚动断言偏弱，已改为等待实际横移至少 30px，并验证可返回起点；复审结论 GO。保留 P3：320px 下阅读较长类型说明仍需横向滚动，这是保留完整属性名和可读列宽的代价。
 - **能力边界：** 这里的视口为浏览器 CSS viewport 仿真。真实读屏器、真实 200%/400% page zoom、Safari、实体触控设备和性能剖析仍未覆盖；局部证据不关闭 Progress 完整矩阵或全库 2B-1。
+
+### 2026-10-09 Table 订单详情最终浏览器复验
+
+- 最新 Dumi 静态导出通过 160 个 HTML、480 个本地资源引用、89 个嵌套 demo。Chromium Table 与触控专项 **12/12**，WebKit 桌面 smoke **2/2**；覆盖主 Table 与固定列详情的三组层级、履约 `完成项 / 总项 · 百分比` 一致口径、详情标题/首组/关闭操作首屏可见、关闭后焦点恢复、窄屏供应商换行、447/448px 固定列边界、粗指针目标和根无水平溢出。
+- browser-health 在这些用例中没有 pageerror、console error、requestfailed 或 HTTP 错误。测试使用公开 role/name、ARIA 关系和计算几何，不查询 AntD 私有 DOM。定向单测 demo 26/26、Table 适配层 21/21；jsdom 伪元素 `getComputedStyle` 告警不影响结果。
+- 这是 CSS viewport 和 Playwright 浏览器证据，不等同于真实屏幕阅读器、真实 page zoom、Safari 实机、实体设备或目标部署验收。Dumi dev 8000 的 `AtomRenderer` 错误属于独立开发服务运行时；本批验收基于最新 `docs-dist` Vite preview。全库 2B-1 继续开放。

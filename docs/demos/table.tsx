@@ -1,18 +1,33 @@
-import { cloneElement, isValidElement, useEffect, useId, useRef, useState } from 'react';
+import {
+  cloneElement,
+  isValidElement,
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+} from 'react';
 import type { AriaAttributes, Key, ReactElement, ReactNode } from 'react';
 import type { CheckboxProps } from 'antd';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Empty, Progress, RadioGroup, Result, Select, Table, Tag, useLxTheme } from 'lx-ui';
 import type { ButtonRef, LxDensity, LxTableColumns, LxTableProps } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
+import { focusDetailRegion } from './focus-detail-region';
 import { TableDemoScrollRegion } from './table-demo-scroll-region';
 import styles from './data-display-demo.module.css';
+import tableStyles from './table-demo.module.css';
 
 interface PurchaseOrder {
   id: string;
   vendor: string;
+  orderedAt: string;
+  buyer: string;
+  department: string;
+  plannedArrivalDate: string;
+  completedItems: number;
+  totalItems: number;
   amount: number;
-  fulfillmentPercent: number;
   approved: boolean;
 }
 type OrderStatusFilter = 'all' | 'approved' | 'pending';
@@ -27,6 +42,78 @@ const amountFormatter = new Intl.NumberFormat('zh-CN', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
+
+const orderDetailSamples = [
+  {
+    orderedAt: '2024-09-18',
+    buyer: '周敏',
+    department: '精密制造中心',
+    plannedArrivalDate: '2024-10-08',
+    completedItems: 41,
+    totalItems: 50,
+  },
+  {
+    orderedAt: '2024-09-19',
+    buyer: '陈立',
+    department: '半导体事业部',
+    plannedArrivalDate: '2024-10-12',
+    completedItems: 16,
+    totalItems: 25,
+  },
+  {
+    orderedAt: '2024-09-20',
+    buyer: '林悦',
+    department: '数字平台部',
+    plannedArrivalDate: '2024-10-15',
+    completedItems: 9,
+    totalItems: 20,
+  },
+  {
+    orderedAt: '2024-09-21',
+    buyer: '王晓',
+    department: '精密制造中心',
+    plannedArrivalDate: '2024-10-18',
+    completedItems: 28,
+    totalItems: 30,
+  },
+  {
+    orderedAt: '2024-09-22',
+    buyer: '赵宁',
+    department: '数字平台部',
+    plannedArrivalDate: '2024-10-22',
+    completedItems: 7,
+    totalItems: 25,
+  },
+  {
+    orderedAt: '2024-09-23',
+    buyer: '高远',
+    department: '采购运营部',
+    plannedArrivalDate: '2024-10-25',
+    completedItems: 19,
+    totalItems: 25,
+  },
+  {
+    orderedAt: '2024-09-24',
+    buyer: '许宁',
+    department: '智能仓储部',
+    plannedArrivalDate: '2024-10-28',
+    completedItems: 29,
+    totalItems: 50,
+  },
+  {
+    orderedAt: '2024-09-25',
+    buyer: '沈航',
+    department: '精密制造中心',
+    plannedArrivalDate: '2024-10-30',
+    completedItems: 30,
+    totalItems: 30,
+  },
+] as const;
+
+// 列表与详情使用同一项数口径计算百分比，避免演示数据出现无法解释的独立进度数字。
+function getFulfillmentPercent(order: PurchaseOrder): number {
+  return Math.round((order.completedItems / order.totalItems) * 100);
+}
 
 function getOrderCheckboxProps(order: PurchaseOrder): AccessibleCheckboxProps {
   return {
@@ -67,7 +154,6 @@ function renderExpandIcon({ expanded, expandable, onExpand, record }: ExpandIcon
   );
 }
 
-const fulfillmentPercents = [82, 64, 45, 93, 28, 76, 58, 100] as const;
 const orders: PurchaseOrder[] = Array.from({ length: 24 }, (_, index) => ({
   id: `PO-2024-${String(1881 + index)}`,
   vendor: [
@@ -75,8 +161,8 @@ const orders: PurchaseOrder[] = Array.from({ length: 24 }, (_, index) => ({
     '深圳创智精密半导体装备股份有限公司',
     '北京容芯万联软件系统集团',
   ][index % 3],
+  ...orderDetailSamples[index % orderDetailSamples.length],
   amount: 1428900 + index * 123450,
-  fulfillmentPercent: fulfillmentPercents[index % fulfillmentPercents.length],
   approved: index % 3 !== 1,
 }));
 
@@ -91,14 +177,17 @@ export default function TableDemo() {
 function TableDemoContent() {
   const { theme, setTheme } = useLxTheme();
   const densityLabelId = useId();
+  const detailRegionId = useId();
   const detailHeadingId = useId();
-  const purchaseInfoHeadingId = `${detailHeadingId}-purchase-info`;
+  const approvalHeadingId = `${detailHeadingId}-approval`;
+  const orderInfoHeadingId = `${detailHeadingId}-order-info`;
   const fulfillmentHeadingId = `${detailHeadingId}-fulfillment`;
-  const settlementHeadingId = `${detailHeadingId}-settlement`;
   const scrollHintId = useId();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const detailHeadingRef = useRef<HTMLHeadingElement>(null);
   const detailRegionRef = useRef<HTMLElement>(null);
+  const detailFirstGroupRef = useRef<HTMLDivElement>(null);
+  const detailCloseActionRef = useRef<ButtonRef>(null);
   const tableViewportRef = useRef<HTMLDivElement>(null);
   const scrollHintRef = useRef<HTMLParagraphElement>(null);
   const removedFocusRef = useRef<Element | null>(null);
@@ -112,6 +201,16 @@ function TableDemoContent() {
   const [sortOrder, setSortOrder] = useState<'ascend' | 'descend' | null>(null);
   const [detail, setDetail] = useState<PurchaseOrder | null>(null);
   const [compactPagination, setCompactPagination] = useState(false);
+
+  // 打开详情时先确保标题、首组与关闭入口可见，再把键盘焦点交给标题。
+  const focusDetailHeading = useCallback(() => {
+    focusDetailRegion(
+      detailRegionRef.current,
+      detailHeadingRef.current,
+      detailFirstGroupRef.current,
+      detailCloseActionRef.current,
+    );
+  }, []);
 
   // 窄屏容器查询写入标记；未加载 CSS 时标记为空，保留宽屏分页默认值。
   useEffect(() => {
@@ -142,24 +241,34 @@ function TableDemoContent() {
   // 详情是非模态区域；打开时提供阅读起点，关闭后的恢复只处理已卸载的焦点，避免抢走筛选或分页操作焦点。
   useEffect(() => {
     if (detail) {
-      detailHeadingRef.current?.focus();
+      focusDetailHeading();
     } else {
       const removedFocus = removedFocusRef.current;
-      if (removedFocus && !removedFocus.isConnected && document.activeElement === document.body) {
+      const focusIsInHiddenDetail = Boolean(
+        removedFocus &&
+        detailRegionRef.current?.hidden &&
+        detailRegionRef.current.contains(removedFocus),
+      );
+      if (
+        removedFocus &&
+        (focusIsInHiddenDetail || !removedFocus.isConnected) &&
+        (document.activeElement === document.body || document.activeElement === removedFocus)
+      ) {
         headingRef.current?.focus();
       }
       removedFocusRef.current = null;
     }
-  }, [detail]);
+  }, [detail, focusDetailHeading]);
 
   function openDetail(order: PurchaseOrder) {
     // 同一记录再次查看不会改变对象身份；直接定位现有标题，首次挂载则由 effect 定位。
-    if (detail === order) detailHeadingRef.current?.focus();
+    if (detail === order) focusDetailHeading();
     else setDetail(order);
   }
 
   function closeDetailForListChange() {
     const activeElement = document.activeElement;
+    // 详情区域保持在 DOM 中用 hidden 切换，列表变化时仍需从其中移走即将隐藏的焦点。
     removedFocusRef.current = detailRegionRef.current?.contains(activeElement)
       ? activeElement
       : null;
@@ -209,11 +318,15 @@ function TableDemoContent() {
     },
     {
       title: '履约达成进度',
-      dataIndex: 'fulfillmentPercent',
+      dataIndex: 'completedItems',
       key: 'fulfillment',
       width: 144,
-      render: (percent: number, order: PurchaseOrder) => (
-        <Progress size="small" percent={percent} aria-label={`采购单 ${order.id} 履约达成进度`} />
+      render: (_completedItems: number, order: PurchaseOrder) => (
+        <Progress
+          size="small"
+          percent={getFulfillmentPercent(order)}
+          aria-label={`采购单 ${order.id} 履约达成进度`}
+        />
       ),
     },
     {
@@ -239,6 +352,8 @@ function TableDemoContent() {
           size="small"
           className={styles.detailButton}
           aria-label={`查看 ${order.id} 详情`}
+          aria-expanded={detail?.id === order.id}
+          aria-controls={detailRegionId}
           onClick={() => openDetail(order)}
         >
           详情
@@ -513,69 +628,56 @@ function TableDemoContent() {
           )}
         </div>
       )}
-      {detail && (
-        <section ref={detailRegionRef} className={styles.note} aria-labelledby={detailHeadingId}>
+      <section
+        id={detailRegionId}
+        ref={detailRegionRef}
+        className={tableStyles.orderDetailsRegion}
+        role="region"
+        aria-labelledby={detailHeadingId}
+        hidden={!detail}
+      >
+        <div className={tableStyles.orderDetailsHeader}>
           <h4
             id={detailHeadingId}
             ref={detailHeadingRef}
             tabIndex={-1}
-            className={styles.tableTitle}
+            className={`${styles.tableTitle} ${tableStyles.orderDetailsTitle}`}
           >
-            采购订单 {detail.id} <span className={styles.detailTitleSuffix}>详情</span>
+            采购订单 <span className={tableStyles.orderDetailsTitleId}>{detail?.id}</span>{' '}
+            <span className={styles.detailTitleSuffix}>详情</span>
           </h4>
+          {detail && (
+            <Button
+              ref={detailCloseActionRef}
+              type="link"
+              size="small"
+              className={tableStyles.orderDetailsCloseAction}
+              aria-label="关闭订单详情"
+              onClick={() => {
+                // 翻页可能已卸载原行；不存在时回到始终可见的表格标题。
+                (detailRefs.current.get(detail.id) ?? headingRef.current)?.focus();
+                setDetail(null);
+              }}
+            >
+              关闭详情
+            </Button>
+          )}
+        </div>
+        {detail && (
           <div className={styles.orderDetailGroups}>
             <div
+              ref={detailFirstGroupRef}
               className={styles.orderDetailGroup}
               role="group"
-              aria-labelledby={purchaseInfoHeadingId}
+              aria-labelledby={approvalHeadingId}
             >
-              <h5 id={purchaseInfoHeadingId} className={styles.orderDetailGroupTitle}>
-                采购信息
-              </h5>
-              <dl className={styles.orderDetailList}>
-                <div className={styles.orderDetailField}>
-                  <dt className={styles.orderDetailTerm}>订单编号</dt>
-                  <dd className={styles.orderDetailValue}>{detail.id}</dd>
-                </div>
-                <div className={styles.orderDetailField}>
-                  <dt className={styles.orderDetailTerm}>供应商</dt>
-                  <dd className={styles.orderDetailValue}>{detail.vendor}</dd>
-                </div>
-              </dl>
-            </div>
-            <div
-              className={styles.orderDetailGroup}
-              role="group"
-              aria-labelledby={fulfillmentHeadingId}
-            >
-              <h5 id={fulfillmentHeadingId} className={styles.orderDetailGroupTitle}>
-                履约进度
-              </h5>
-              <dl className={styles.orderDetailList}>
-                <div className={styles.orderDetailField}>
-                  <dt className={styles.orderDetailTerm}>订单履约</dt>
-                  <dd className={styles.orderFulfillmentValue}>
-                    <Progress
-                      aria-label="订单履约进度"
-                      percent={detail.fulfillmentPercent}
-                      size="small"
-                    />
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            <div
-              className={styles.orderDetailGroup}
-              role="group"
-              aria-labelledby={settlementHeadingId}
-            >
-              <h5 id={settlementHeadingId} className={styles.orderDetailGroupTitle}>
-                审批与结算
+              <h5 id={approvalHeadingId} className={styles.orderDetailGroupTitle}>
+                审批与金额
               </h5>
               <dl className={styles.orderDetailList}>
                 <div className={styles.orderDetailField}>
                   <dt className={styles.orderDetailTerm}>采购金额</dt>
-                  <dd className={`${styles.orderDetailValue} ${styles.orderDetailAmount}`}>
+                  <dd className={`${styles.orderDetailValue} ${tableStyles.orderDetailsAmount}`}>
                     ¥ {amountFormatter.format(detail.amount)}
                   </dd>
                 </div>
@@ -589,19 +691,58 @@ function TableDemoContent() {
                 </div>
               </dl>
             </div>
+            <div
+              className={styles.orderDetailGroup}
+              role="group"
+              aria-labelledby={orderInfoHeadingId}
+            >
+              <h5 id={orderInfoHeadingId} className={styles.orderDetailGroupTitle}>
+                订单信息
+              </h5>
+              <dl className={styles.orderDetailList}>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>下单日期</dt>
+                  <dd className={styles.orderDetailValue}>
+                    <time dateTime={detail.orderedAt}>{detail.orderedAt}</time>
+                  </dd>
+                </div>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>采购员</dt>
+                  <dd className={styles.orderDetailValue}>{detail.buyer}</dd>
+                </div>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>所属部门</dt>
+                  <dd className={styles.orderDetailValue}>{detail.department}</dd>
+                </div>
+              </dl>
+            </div>
+            <div
+              className={styles.orderDetailGroup}
+              role="group"
+              aria-labelledby={fulfillmentHeadingId}
+            >
+              <h5 id={fulfillmentHeadingId} className={styles.orderDetailGroupTitle}>
+                履约进度
+              </h5>
+              <dl className={styles.orderDetailList}>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>已完成订单项</dt>
+                  <dd className={styles.orderDetailValue}>
+                    {detail.completedItems} / {detail.totalItems} 项 ·{' '}
+                    {getFulfillmentPercent(detail)}%
+                  </dd>
+                </div>
+                <div className={styles.orderDetailField}>
+                  <dt className={styles.orderDetailTerm}>计划到货日期</dt>
+                  <dd className={styles.orderDetailValue}>
+                    <time dateTime={detail.plannedArrivalDate}>{detail.plannedArrivalDate}</time>
+                  </dd>
+                </div>
+              </dl>
+            </div>
           </div>
-          <Button
-            className={styles.detailCloseButton}
-            onClick={() => {
-              // 翻页可能已卸载原行；不存在时回到始终可见的表格标题。
-              (detailRefs.current.get(detail.id) ?? headingRef.current)?.focus();
-              setDetail(null);
-            }}
-          >
-            收起详情
-          </Button>
-        </section>
-      )}
+        )}
+      </section>
       <p role="status" className={styles.muted}>
         {state === 'error'
           ? '订单读取失败'
