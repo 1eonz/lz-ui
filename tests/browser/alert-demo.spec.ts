@@ -31,6 +31,10 @@ test('Alert 键盘关闭立即恢复焦点并在退出动效后移除', async ({
   const close = demo.getByRole('button', { name: '关闭', exact: true });
 
   await expect(failure).toContainText('同步失败，数据已保留');
+  const restoreBox = await restore.boundingBox();
+  expect(restoreBox).not.toBeNull();
+  // 细指针桌面保留组件自身尺寸，44px 仅属于粗指针触控命中区。
+  expect(restoreBox!.height).toBeLessThan(44);
   const closeBox = await close.boundingBox();
   expect(closeBox).not.toBeNull();
   expect(closeBox!.width).toBeGreaterThanOrEqual(24);

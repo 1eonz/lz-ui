@@ -44,7 +44,14 @@ export default function AlertInteractionDemo() {
       <p className={styles.note} role="note">
         本示例只切换本地状态，不会发起同步请求。
       </p>
-      <Button className={styles.reset} ref={restoreRef} type="link" onClick={resetDemo}>
+      <Button
+        className={styles.reset}
+        ref={restoreRef}
+        type="link"
+        onClick={resetDemo}
+        // 恢复焦点落点跟随密度，粗指针时由局部 token 放大到触控命中尺寸。
+        style={{ minHeight: 'var(--lx-alert-reset-min-height, var(--lx-control-height, 40px))' }}
+      >
         重置失败演示
       </Button>
       {visible && (

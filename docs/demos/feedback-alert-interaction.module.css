@@ -1,6 +1,8 @@
 .reset {
   justify-self: start;
   max-inline-size: 100%;
+  /* 通过局部 token 让 inline minHeight 保持可配置，避免直接写死密度值。 */
+  --lx-alert-reset-min-height: var(--lx-control-height, 40px);
 }
 
 .alertGroup {
@@ -43,5 +45,10 @@
   .action {
     min-inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
     min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
+
+  .reset {
+    /* 仅粗指针放大恢复焦点落点，细指针和紧凑密度继续使用组件尺寸。 */
+    --lx-alert-reset-min-height: max(44px, var(--lx-control-target-touch-min, 44px));
   }
 }
