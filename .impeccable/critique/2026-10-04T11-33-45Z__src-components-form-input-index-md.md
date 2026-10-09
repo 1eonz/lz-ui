@@ -10,6 +10,7 @@ target_fingerprint: "sha256:be6816253845f7ba3b65798a62e07cbcb25533acb9bf4de972d9
 target_path: "F:\\work\\lz-ui\\src\\components\\form\\input\\index.md"
 timestamp: 2026-10-04T11-33-45Z
 slug: src-components-form-input-index-md
+closed: true
 ---
 Method: dual-agent (A: /root/input_critique_a · B: /root/input_critique_b)
 

@@ -16,6 +16,8 @@ export default defineConfig({
   // 静态文档按根路径部署，确保深路由的异步 chunk 使用根资源前缀。
   base: '/',
   publicPath: '/',
+  // Dumi 默认视口会禁止用户缩放；统一由本地插件改成允许放大的声明。
+  plugins: [resolve(process.cwd(), 'docs/plugins/accessible-viewport.ts')],
   // 仅公开已有完整文档路由的语言，避免语言切换跳转到未翻译页面。
   locales: [{ id: 'zh-CN', name: '中文' }],
   themeConfig: {

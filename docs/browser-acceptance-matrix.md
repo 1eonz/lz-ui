@@ -1,6 +1,6 @@
 # 组件浏览器验收矩阵
 
-更新时间：2026-10-08
+更新时间：2026-10-09
 适用范围：现有 32 个公开组件；仅记录浏览器实际观察到的范围。
 
 本矩阵是批次 2B-1 的持续验收台账。历史路由 smoke 只说明组件文档路由可以访问，不代表其完整外观、交互、键盘、主题或响应式行为已通过。空白、未测和局部通过均需按下面的具体记录理解。下方历史组件清单中的“完整矩阵待验收”保留为组件自身完整交互状态；统一主题矩阵结果以本节及末尾收口记录为准。历史条目中的 P2 表述保留当时状态；Table 方向键网格导航的当前分类以 [ADR-0005](./adr/0005-table-keyboard-model.md) 为准。
@@ -321,3 +321,20 @@
 - 最新 Dumi 静态导出通过 160 个 HTML、480 个本地资源引用、89 个嵌套 demo。Chromium Table 与触控专项 **12/12**，WebKit 桌面 smoke **2/2**；覆盖主 Table 与固定列详情的三组层级、履约 `完成项 / 总项 · 百分比` 一致口径、详情标题/首组/关闭操作首屏可见、关闭后焦点恢复、窄屏供应商换行、447/448px 固定列边界、粗指针目标和根无水平溢出。
 - browser-health 在这些用例中没有 pageerror、console error、requestfailed 或 HTTP 错误。测试使用公开 role/name、ARIA 关系和计算几何，不查询 AntD 私有 DOM。定向单测 demo 26/26、Table 适配层 21/21；jsdom 伪元素 `getComputedStyle` 告警不影响结果。
 - 这是 CSS viewport 和 Playwright 浏览器证据，不等同于真实屏幕阅读器、真实 page zoom、Safari 实机、实体设备或目标部署验收。Dumi dev 8000 的 `AtomRenderer` 错误属于独立开发服务运行时；本批验收基于最新 `docs-dist` Vite preview。全库 2B-1 继续开放。
+
+### 2026-10-09 General 五个基础组件局部复验
+
+- **设计依据与范围：** 对照 `UI/P0 基础组件-General/DESIGN.md` 和专用 General Button 规格，覆盖 Button、Icon、Typography、Space、Divider 的现有演示及 API 文档。本批新增 `tests/browser/general-demo.spec.ts`，为 15 个演示容器加入稳定测试标识；Playwright 使用公开 role/name、ARIA 状态和计算布局，不依赖 Dumi 私有 class 或 AntD 私有 DOM。
+- **Chromium 交互：** 六条用例 **6/6** 通过。Button 实测 comfortable/compact 下未指定 `size` 为 40/32px、显式 `middle` 始终 32px、`large` 为 40px、`small` 为 24px；宿主 `ConfigProvider.componentSize=small/large` 不改变未指定尺寸，并验证 Enter、焦点轮廓、禁用、异步 loading、失败保留输入及恢复重试。Icon 验证图标名称、键盘收藏、缩放恢复和操作反馈；Typography 验证五级标题语义、剪贴板复制和禁用链接；Space 逐项改变间距、宽度、排列方向、对齐与窄屏折行；Divider 验证 separator 语义以及实际线型由 dashed 切换到 dotted。
+- **布局、主题和错误：** 五页均在 930/390/320px CSS viewport 验证根节点无水平溢出；Space 在 320px、180px 预览宽度、40px gap 且关闭换行时，子项保持单行，键盘和鼠标可在预览区横向滚动，document/body 无页面级水平溢出。各组件演示在代表路径验证 dark/compact 状态。14 组属性、事件、Ref 表在 320px 维持至少 52px 的列宽，并由具名可聚焦区域承接横向滚动；五页各抽查第一张表，以 ArrowRight/ArrowLeft 验证横向滚动和返回起点，其余表格验证区域可聚焦、内容确实横向溢出且页面根节点不横滚。六条用例均通过 browser-health，未报告 pageerror、console error、requestfailed 或 HTTP 错误。
+- **其他验证：** Button token 单测覆盖 Button 专属 large 40px 和共享 global `controlHeightLG` 48px；105 个 demo 源码的 `npm run typecheck:docs` 通过。最新 General Dumi 静态导出为 161 个 HTML 页面、483 个本地 JS/CSS 引用和 89 个嵌套 demo，导出门禁通过。Impeccable detector 只作为最后的确定性规则检查，不代替本段实际浏览器和独立评审结论。
+- **未覆盖：** 该结果是 Chromium 局部组件与文档路径，不代表 General 完整 appearance/品牌色/东方配色矩阵、真实 200%/400% page zoom、真实屏幕阅读器、Safari、实体设备或目标部署已验收；不关闭 General 完整矩阵或全库 2B-1。Dumi 冷加载脚本体积另列为性能 P2，测量边界和后续方案见 [性能与包体规则](./performance.md) 与 [roadmap](./roadmap.md)。
+
+### 2026-10-10 General viewport 可缩放修复复验
+
+- **修复范围：** Dumi 通过 `docs/plugins/accessible-viewport.ts` 将默认 viewport 替换为唯一的 `width=device-width, initial-scale=1.0`；静态导出门禁按完整指令解析，拒绝缺失、重复、`maximum-scale`、`user-scalable=no/0`、非十进制 `initial-scale` 和非 1 数值。五个 General 路由的浏览器用例均断言页面只有一个允许缩放的 viewport。
+- **构建与门禁：** 最新 `npm run build:docs` 通过，静态导出为 161 个 HTML、483 个本地 JS/CSS 引用和 89 个嵌套 demo；`npm run check:docs-export` 通过。门禁单测 7/7，新增覆盖 `1.5`、`0x1`、非精确 width 和重复指令。
+- **真实浏览器：** 最新静态 preview `http://127.0.0.1:4173` 上 `tests/browser/general-demo.spec.ts --project=chromium` 通过 **6/6**；独立 UX 复审逐页在 320×800 与 1280×800 复核 viewport、根节点无横向溢出、API 表局部横滚和页面健康，browser-health 无 pageerror、console error、requestfailed 或 HTTP 错误。该 viewport 断言证明页面声明允许缩放，但不等同于真实 200%/400% page zoom 测试。
+- **Impeccable 与复审：** 对本批 demo/CSS/组件源码执行 `detect.mjs --json`，原始 stdout 为 `[]`、退出码 0；该结果仅表示确定性规则未命中。viewport 修复后的独立代码复审发现的两项门禁解析边界（`1.5`、`0x1`）已修复并补测；最终 UX 复审 **GO**，无 P0-P2。通过依据来自真实浏览器和独立复审，不把 `[]` 当成设计通过。
+- **工程门禁：** `npm run check` 通过 55 个测试文件、609 项测试和 105 个 demo 类型检查；`npm run check:scaffold`、`npm run build:lib`、Prettier、lint 和 TypeScript 检查通过。全量测试中的 jsdom 伪元素、AntD 弃用和测试模拟循环引用提示为既有 stderr 噪声，不影响通过。
+- **边界：** 真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机、实体设备、设备性能、部署环境及完整主题/风格/色板矩阵仍未验收；本记录只关闭 General 局部 viewport 和交互证据，不关闭全库 2B-1。

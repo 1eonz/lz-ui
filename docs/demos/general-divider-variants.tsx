@@ -11,7 +11,7 @@ export default function GeneralDividerVariantsDemo() {
   const [title, setTitle] = useState('安全策略审计');
   const [plain, setPlain] = useState(false);
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="divider-variants">
       <div className={styles.fields}>
         <label className={styles.field}>
           线型

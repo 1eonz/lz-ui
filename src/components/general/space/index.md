@@ -37,7 +37,7 @@ export default function CustomerActions() {
 
 ## 方向、对齐与换行
 
-调整 gap、容器宽度、排列方向、交叉轴对齐和 wrap。宽度限制只作用于示例预览，窄屏下不超过父容器。关闭 wrap 时业务需自行处理过宽子节点；本例仅在预览容器内横向滚动，不让整页溢出。
+调整 gap、容器宽度、排列方向、交叉轴对齐和 wrap。宽度限制只作用于示例预览，窄屏下不超过父容器。关闭 wrap 时示例保持子项单行和原始宽度，由可聚焦的预览区域承接横向滚动，不将内容压成逐字窄列或让整页溢出；业务可按场景选择换行或局部滚动。
 
 <code src="../../../../docs/demos/general-space-options.tsx"></code>
 
@@ -51,6 +51,12 @@ export default function CustomerActions() {
 
 从根入口命名导入 `Space`、`SpaceProps`、`SpaceSize`。SpaceProps 继承 `HTMLAttributes<HTMLDivElement>`，原生 role、aria 属性、事件和 style 作用于根 div。
 
+<p id="space-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览。
+</p>
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Space 参数表" aria-describedby="space-docs-table-hint">
+
 | 参数        | 类型                                           | 默认值                   | 说明                                                |
 | ----------- | ---------------------------------------------- | ------------------------ | --------------------------------------------------- |
 | `children`  | `ReactNode`                                    | —                        | 排列内容；空、undefined、布尔条件节点不占间距       |
@@ -63,17 +69,23 @@ export default function CustomerActions() {
 | `className` | `string`                                       | —                        | 根 div 类名                                         |
 | `style`     | `CSSProperties`                                | —                        | 最后合并，可覆盖 gap、alignItems、flexWrap 等计算值 |
 
+</div>
+
 `SpaceSize = 'small' | 'middle' | 'large' | number`。数值应为有限非负值，负值按 0 处理。named token 随主题覆盖，但当前 density 不会自动改变 8/16/24 这三档固定间距。
 
 ## 事件、Ref 与语义
 
 没有 onChange 或布局专用事件；原生 `onClick` 为 `MouseEventHandler<HTMLDivElement>`，`onFocus/onBlur` 为 `FocusEventHandler<HTMLDivElement>`，子元素事件可能冒泡至根节点。ref 为 `HTMLDivElement`，可读取 `getBoundingClientRect()`、调用 `scrollIntoView()`；默认不可聚焦，没有 measure/reflow 等封装方法。
 
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Space Ref 成员表" aria-describedby="space-docs-table-hint">
+
 | Ref 成员                   | 用法                                                | 边界                                     |
 | -------------------------- | --------------------------------------------------- | ---------------------------------------- |
 | `getBoundingClientRect()`  | 读取排列容器的位置与宽高                            | 只测量根 div，不返回每项坐标或计算 gap   |
 | `scrollIntoView(options?)` | `ref.current?.scrollIntoView({ block: 'nearest' })` | 原生滚动，不代替布局计算                 |
 | `focus(options?) / blur()` | 原生 div 方法                                       | 默认不可聚焦；业务焦点通常应落在内部控件 |
+
+</div>
 
 使用 `useRef<HTMLDivElement>(null)`，在挂载后的事件或 effect 中测量。子节点列表和 Space 外部宽度由宿主控制，不通过 ref 调整组件内部状态。
 

@@ -8,6 +8,8 @@ import styles from './data-display-demo.module.css';
 
 interface DataDisplayDemoFrameProps {
   children: ReactNode;
+  /** 稳定的示例选择标识；省略时不添加测试属性。 */
+  demoId?: string;
   /** 当示例自身提供密度控件时设为 false；默认保留通用主题设置中的开关。 */
   showDensitySwitch?: boolean;
 }
@@ -15,6 +17,7 @@ interface DataDisplayDemoFrameProps {
 /** 让示例跟随文档站明暗模式；示例内的其他主题选择仍彼此隔离且不持久化。 */
 export function DataDisplayDemoFrame({
   children,
+  demoId,
   showDensitySwitch = true,
 }: DataDisplayDemoFrameProps) {
   const [preferredColor] = usePrefersColor();
@@ -24,7 +27,7 @@ export function DataDisplayDemoFrame({
 
   return (
     <LxConfigProvider theme={{ mode: docsMode, persist: false }}>
-      <DemoSurface docsMode={docsMode} showDensitySwitch={showDensitySwitch}>
+      <DemoSurface docsMode={docsMode} demoId={demoId} showDensitySwitch={showDensitySwitch}>
         {children}
       </DemoSurface>
     </LxConfigProvider>
@@ -34,10 +37,12 @@ export function DataDisplayDemoFrame({
 function DemoSurface({
   children,
   docsMode,
+  demoId,
   showDensitySwitch,
 }: {
   children: ReactNode;
   docsMode: 'light' | 'dark';
+  demoId?: string;
   showDensitySwitch: boolean;
 }) {
   const { theme, resolvedMode, setTheme } = useLxTheme();
@@ -48,7 +53,7 @@ function DemoSurface({
   }, [docsMode, setTheme]);
 
   return (
-    <div className={styles.surface}>
+    <div className={styles.surface} data-testid={demoId}>
       <details className={styles.themeSettings}>
         <summary>主题设置</summary>
         <div className={styles.toolbar}>

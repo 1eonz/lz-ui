@@ -84,11 +84,18 @@
 
 .preview {
   box-sizing: border-box;
+  /* 隔离可滚动内容的布局溢出，避免预览的滚动范围扩展文档根节点。 */
+  contain: layout;
   min-block-size: 160px;
   max-inline-size: 100%;
   padding-block: var(--lx-space-lg);
   border-block: 1px solid var(--lx-color-split);
   overflow-x: auto;
+}
+
+.spacePreview > * {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .clipped {

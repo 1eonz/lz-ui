@@ -9,7 +9,7 @@ export default function GeneralDividerSectionsDemo() {
   const [showDelivery, setShowDelivery] = useState(true);
   const [archived, setArchived] = useState(false);
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="divider-sections">
       <div className={styles.content}>
         <Space wrap align="center" role="group" aria-label="采购订单操作">
           <Button

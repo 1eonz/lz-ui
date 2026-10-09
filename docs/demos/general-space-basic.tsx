@@ -6,7 +6,7 @@ import styles from './general-demo.module.css';
 export default function GeneralSpaceBasicDemo() {
   const [action, setAction] = useState('配置尚未修改');
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="space-basic">
       {(['small', 'middle', 'large'] as const).map((size) => (
         <div className={styles.group} key={size}>
           <p className={styles.label}>

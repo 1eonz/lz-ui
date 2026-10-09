@@ -9,7 +9,7 @@ import styles from './general-demo.module.css';
 
 export default function GeneralIconBasicDemo() {
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="icon-basic">
       <div className={styles.row}>
         <span className={styles.iconSample}>
           <Icon component={SearchOutlined} size={20} />

@@ -38,6 +38,8 @@ async function collectFiles(directory) {
 function parseHtmlReferences(html) {
   const document = new htmlDocumentParser().parseFromString(html, 'text/html');
   const baseHref = document.querySelector('base[href]')?.getAttribute('href') ?? null;
+  const viewports = [...document.querySelectorAll('meta[name="viewport"]')];
+  const viewportContent = viewports[0]?.getAttribute('content') ?? '';
   const references = [];
 
   for (const element of document.querySelectorAll('[href], [src]')) {
@@ -48,7 +50,53 @@ function parseHtmlReferences(html) {
     }
   }
 
-  return { baseHref, references };
+  return { baseHref, references, viewports, viewportContent };
+}
+
+/**
+ * 按完整指令解析视口配置，避免从其他值中误匹配 width 或 initial-scale。
+ * 重复指令的浏览器处理存在差异，门禁要求唯一值以保证导出结果可预测。
+ */
+function parseViewportDirectives(content) {
+  const directives = new Map();
+  let hasDuplicates = false;
+
+  for (const part of content.split(',')) {
+    const separatorIndex = part.indexOf('=');
+    if (separatorIndex < 0) continue;
+
+    const name = part.slice(0, separatorIndex).trim().toLowerCase();
+    const value = part
+      .slice(separatorIndex + 1)
+      .trim()
+      .toLowerCase();
+    if (!name) continue;
+
+    if (directives.has(name)) hasDuplicates = true;
+    directives.set(name, value);
+  }
+
+  return { directives, hasDuplicates };
+}
+
+/**
+ * 文档统一采用初始比例 1 的十进制声明，且不设置缩放上限。
+ * 这是本站的导出契约，不尝试接受所有浏览器容错写法；升级时先评审再扩展。
+ */
+function hasAccessibleViewport(viewports, content) {
+  if (viewports.length !== 1) return false;
+
+  const { directives, hasDuplicates } = parseViewportDirectives(content);
+  const initialScale = directives.get('initial-scale') ?? '';
+  const userScalable = directives.get('user-scalable');
+
+  return (
+    !hasDuplicates &&
+    directives.get('width') === 'device-width' &&
+    /^1(?:\.0+)?$/.test(initialScale) &&
+    !directives.has('maximum-scale') &&
+    !['no', '0'].includes(userScalable)
+  );
 }
 
 /**
@@ -145,7 +193,10 @@ export async function validateDocsExport(docsDistPath = defaultDocsDistPath) {
   for (const pagePath of htmlFiles) {
     const page = relative(docsDistRoot, pagePath).split(sep).join('/');
     const html = await readFile(pagePath, 'utf8');
-    const { baseHref, references } = parseHtmlReferences(html);
+    const { baseHref, references, viewports, viewportContent } = parseHtmlReferences(html);
+    if (!hasAccessibleViewport(viewports, viewportContent)) {
+      errors.push(`${page} 的 viewport meta 缺失、重复或限制用户缩放`);
+    }
     const pageUrl = resolvePageUrl(pagePath, docsDistRoot);
     const baseUrl = resolveDocumentBase(baseHref, pageUrl);
     for (const reference of references) {

@@ -10,7 +10,7 @@ export default function GeneralTypographyCopyDemo() {
   const [copied, setCopied] = useState('');
   const [enabled, setEnabled] = useState(true);
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="typography-copy">
       <div className={`${styles.field} ${styles.content}`}>
         <label htmlFor={`${id}-code`}>客户编号</label>
         <Input

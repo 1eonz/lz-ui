@@ -6,7 +6,7 @@ import styles from './general-demo.module.css';
 export default function GeneralButtonBasicDemo() {
   const [action, setAction] = useState('尚未执行操作');
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="button-basic">
       <Space wrap align="center">
         <Button type="primary" onClick={() => setAction('已创建客户草稿')}>
           新建客户

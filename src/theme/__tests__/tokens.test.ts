@@ -67,13 +67,16 @@ describe('resolved theme tokens', () => {
   });
 
   it.each(['comfortable', 'compact'] as const)('shares explicit sizes at %s density', (density) => {
-    const { css, components } = resolveLxTokens({ ...defaults, density });
+    const { css, token, components } = resolveLxTokens({ ...defaults, density });
     const compact = density === 'compact';
     expect(components.Button).toMatchObject({
       controlHeight: compact ? 32 : 40,
       controlHeightSM: 24,
-      controlHeightLG: 48,
+      controlHeightLG: 40,
     });
+    expect(token.controlHeightLG).toBe(48);
+    expect(css['--lx-control-height-large']).toBe('48px');
+    expect(css['--lx-button-middle-height']).toBe('32px');
     expect(components.Table).toMatchObject({
       cellPaddingBlock: compact ? 9 : 15,
       cellPaddingBlockMD: compact ? 7 : 12,

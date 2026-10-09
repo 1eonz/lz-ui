@@ -851,3 +851,11 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **真实浏览器证据：** 最新 `build:docs` 导出 160 个 HTML、480 个本地 JS/CSS 引用和 89 个嵌套 demo。`npx playwright test tests/browser/table-demo.spec.ts tests/browser/touch-smoke.spec.ts --project=chromium` 通过 **12/12**；`npx playwright test tests/browser/webkit-smoke.spec.ts --project=webkit` 通过 **2/2**。覆盖详情分组、项数/百分比口径、焦点打开/关闭恢复、固定列 447/448px 边界、窄屏长供应商、粗指针和根节点溢出；browser-health 无 pageerror、console error、requestfailed 或 HTTP 错误。
 - **工程证据：** `npm run typecheck`、定向 Vitest（demo 26/26、Table 适配层 21/21）、`npm run build:docs` 与文档导出门禁通过；定向 Prettier 无差异。jsdom 对伪元素 `getComputedStyle` 的 stderr 是 rc-table 测试环境既有噪声。
 - **未覆盖：** 真实屏幕阅读器、200%/400% page zoom、Safari 实机、实体触控、设备性能与目标部署仍未验收；Dumi dev 8000 端口的独立 `AtomRenderer` 客户端错误不代表生产静态导出。宽屏重复详情入口、手机完整宽表需横向寻找入口和示例选择未配套批量动作保留为 P3，不阻断本批；全库 2B-1 继续开放。评审快照见 [Table 订单详情 critique](../.impeccable/critique/2026-10-09T00-09-29Z__docs-demos-table-tsx.md)。
+
+### 2026-10-10 General viewport 修复最终复审
+
+- **目标与方法：** Impeccable 4.1.3，Read 模式；目标为 Dumi viewport 插件、静态导出门禁、General 五页 demo 和 `tests/browser/general-demo.spec.ts`。依据 `AGENTS.md`、`docs/impeccable-workflow.md`、General 设计稿和 `docs/project-rules.md`。本轮先修复 UX 终审发现的 viewport 缩放限制，再执行构建、导出门禁、detector 和浏览器复验。
+- **首轮问题与修复：** 独立 UX 复审确认 Dumi 默认声明包含 `user-scalable=no` 与 `maximum-scale=1.0`，判定为 P1；插件现统一替换为允许缩放的声明。独立代码复审随后发现导出门禁正则会误接收 `initial-scale=1.5`，修复为按逗号拆分并解析完整指令；复审再次发现 JavaScript `Number()` 会接受 `0x1`，现改为严格十进制 `1` 或 `1.0…` 匹配并增加回归用例。
+- **最终证据：** `npm run build:docs` 与导出门禁通过，161 HTML/483 本地资源/89 嵌套 demo；门禁测试 7/7。Impeccable detector 原始 stdout 为 `[]`、stderr 为空、退出码 0，仅表示确定性规则未命中。Chromium General 专项 6/6，五个路由均断言唯一 viewport 为 `width=device-width, initial-scale=1.0`，并复验 930/390/320px、页面无根横向溢出、Space 局部横滚、Button 尺寸、键盘焦点、dark/compact 和 browser-health。
+- **独立结论：** viewport 修复后的代码复审为 GO，无遗留 P0/P1/P2；UX 复审在 320×800 与 1280×800 独立复核为 GO，确认 API 表局部滚动和 Space 键盘往返。通过依据来自真实浏览器和独立复审，不把构建、测试或 `[]` 扩展为完整视觉验收。
+- **评分与边界：** 本批没有新增阻断项。完整 General 主题/风格/色板矩阵、真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机、实体设备、设备性能和部署环境仍开放；该记录关闭 viewport P1 和本批导出门禁边界，不关闭全库 2B-1。

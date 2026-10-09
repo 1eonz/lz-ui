@@ -9,7 +9,7 @@ const initial = ['客户等级：A', '状态：待审核', '负责人：陈晨']
 export default function GeneralSpaceFiltersDemo() {
   const [filters, setFilters] = useState(initial);
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="space-filters">
       <Space wrap>
         <Button
           onClick={() => setFilters((current) => [...current, '创建时间：本月'])}

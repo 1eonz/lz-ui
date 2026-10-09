@@ -12,7 +12,7 @@ export default function GeneralSpaceOptionsDemo() {
   const [align, setAlign] = useState<SpaceProps['align']>('center');
   const [wrap, setWrap] = useState(true);
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="space-options">
       <div className={styles.fields}>
         <div className={styles.field}>
           <label htmlFor={`${id}-gap`}>间距</label>
@@ -68,8 +68,22 @@ export default function GeneralSpaceOptionsDemo() {
         <label htmlFor={`${id}-wrap`}>允许换行</label>
         <Switch id={`${id}-wrap`} checked={wrap} onChange={setWrap} />
       </Space>
-      <div className={styles.preview} style={{ inlineSize: `min(100%, ${width}px)` }}>
-        <Space size={gap} direction={direction} align={align} wrap={wrap} block>
+      <div
+        className={styles.preview}
+        role="region"
+        aria-label="Space 排列预览"
+        tabIndex={0}
+        style={{ inlineSize: `min(100%, ${width}px)` }}
+      >
+        <Space
+          data-testid="space-options-preview"
+          className={styles.spacePreview}
+          size={gap}
+          direction={direction}
+          align={align}
+          wrap={wrap}
+          block
+        >
           <Text strong>¥ 8,920.00</Text>
           <Text type="secondary">本月采购</Text>
           <Text code>PO-20261001</Text>

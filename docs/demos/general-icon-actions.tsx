@@ -12,7 +12,7 @@ export default function GeneralIconActionsDemo() {
   const [saved, setSaved] = useState(false);
   const [zoom, setZoom] = useState(100);
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="icon-actions">
       <Space wrap align="center" role="group" aria-label="合同查看操作">
         <Button
           icon={<Icon component={saved ? StarFilled : StarOutlined} />}

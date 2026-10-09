@@ -27,7 +27,7 @@ export default function GeneralButtonAsyncDemo() {
     }, 900);
   };
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="button-async">
       <form
         className={`${styles.stack} ${styles.content}`}
         onSubmit={(event) => {
@@ -61,7 +61,7 @@ export default function GeneralButtonAsyncDemo() {
           <Button
             type="primary"
             htmlType="submit"
-            icon={<SaveOutlined />}
+            icon={<SaveOutlined aria-hidden="true" />}
             loading={state === 'saving'}
             disabled={!name.trim()}
           >

@@ -10,6 +10,7 @@ target_fingerprint: "sha256:87dc5e892067ae133a69709c3a57a7c423931a06b673aa919676
 target_path: "F:\\work\\lz-ui\\docs\\demos\\general-space-options.tsx"
 timestamp: 2026-10-06T12-20-23Z
 slug: docs-demos-general-space-options-tsx
+closed: true
 ---
 Method: dual-agent (A: isolated space_card_design_review; B: isolated space_card_detector_review)
 

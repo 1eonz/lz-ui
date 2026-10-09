@@ -50,6 +50,12 @@ export default function CustomerSummary() {
 
 Text/Title/Paragraph 共用 `TypographyBaseProps`；Link 共用除 `copyable` 外的选项。其他属性分别继承对应根元素的原生 HTML 属性，`style` 与 `className` 直接作用于根节点。
 
+<p id="typography-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览。
+</p>
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Typography 共享参数表" aria-describedby="typography-docs-table-hint">
+
 | 参数        | 类型                                                             | 默认值      | 说明                                                    |
 | ----------- | ---------------------------------------------------------------- | ----------- | ------------------------------------------------------- |
 | `children`  | `ReactNode`                                                      | —           | 文字或富文本，避免嵌套不合法的段落/交互元素             |
@@ -65,7 +71,11 @@ Text/Title/Paragraph 共用 `TypographyBaseProps`；Link 共用除 `copyable` �
 | `className` | `string`                                                         | —           | 根元素类名                                              |
 | `style`     | `CSSProperties`                                                  | —           | 根元素样式，宿主可限制文本宽度                          |
 
+</div>
+
 ### Title 与 Link
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Typography Title 与 Link 参数表" aria-describedby="typography-docs-table-hint">
 
 | 组件参数            | 类型                    | 默认值   | 说明                                   |
 | ------------------- | ----------------------- | -------- | -------------------------------------- |
@@ -74,16 +84,24 @@ Text/Title/Paragraph 共用 `TypographyBaseProps`；Link 共用除 `copyable` �
 | `Link.target / rel` | 原生 anchor 属性        | —        | 打开方式与链接关系；外部链接由宿主配置 |
 | `Link.tabIndex`     | `number`                | 原生行为 | disabled 时强制 -1                     |
 
+</div>
+
 ### CopyableOptions
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Typography CopyableOptions 参数表" aria-describedby="typography-docs-table-hint">
 
 | 参数     | 类型                     | 默认值                          | 说明                                     |
 | -------- | ------------------------ | ------------------------------- | ---------------------------------------- |
 | `text`   | `string`                 | 字符串/数字 children 转为字符串 | 富文本必须显式提供；空文本不渲染复制按钮 |
 | `onCopy` | `(text: string) => void` | —                               | Clipboard 写入成功后调用，不是点击事件   |
 
+</div>
+
 `copyable=true` 使用默认复制配置。Clipboard 需要浏览器允许的安全上下文与权限；失败会提供重试反馈。来源变更会使旧异步结果失效，连续成功仍会播报。宿主 onCopy 异常独立报告，不会把成功写入误报为复制失败。
 
 ## 事件与 Ref
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Typography 事件与 Ref 类型表" aria-describedby="typography-docs-table-hint">
 
 | 导出        | Ref                    | 事件类型                                                             |
 | ----------- | ---------------------- | -------------------------------------------------------------------- |
@@ -92,7 +110,11 @@ Text/Title/Paragraph 共用 `TypographyBaseProps`；Link 共用除 `copyable` �
 | `Paragraph` | `HTMLParagraphElement` | 对应 `HTMLAttributes<HTMLParagraphElement>`                          |
 | `Link`      | `HTMLAnchorElement`    | 对应 `AnchorHTMLAttributes<HTMLAnchorElement>`，禁用时不调用 onClick |
 
+</div>
+
 ref 是实际原生节点，可读取 `getBoundingClientRect()`、调用 `scrollIntoView()`。Link 在有 href 且未禁用时可 `focus()`/`blur()`；其他文字默认不可聚焦。没有 AntD 的 editable、复制状态 ref 方法、自动 tooltip、展开回调或 `{ suffix, symbol, expandable }` 等截断配置。
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Typography Ref 方法表" aria-describedby="typography-docs-table-hint">
 
 | Ref 成员                        | 用法                                                | 边界                                                       |
 | ------------------------------- | --------------------------------------------------- | ---------------------------------------------------------- |
@@ -100,6 +122,8 @@ ref 是实际原生节点，可读取 `getBoundingClientRect()`、调用 `scroll
 | `scrollIntoView(options?)`      | `ref.current?.scrollIntoView({ block: 'nearest' })` | 原生节点滚动；SSR 阶段无布局                               |
 | `Link.focus(options?) / blur()` | `linkRef.current?.focus()`                          | 实际 HTMLAnchorElement；有 href 且未禁用时才有正常链接焦点 |
 | `Link.click()`                  | `linkRef.current?.click()`                          | 原生 anchor 激活，遵循 href/禁用状态，不是路由器专用方法   |
+
+</div>
 
 例如 Link 使用 `useRef<HTMLAnchorElement>(null)`，Paragraph 使用 `useRef<HTMLParagraphElement>(null)`；不要把各组件 ref 统一断言为 AntD Typography 实例。
 

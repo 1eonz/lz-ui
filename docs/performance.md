@@ -50,3 +50,5 @@ React、ReactDOM 和 antd 使用 peer dependency。图标包、日期库、拖�
 - 文档站和 examples 用 Lighthouse 或 Playwright 记录 LCP、INP、CLS。
 - 关键交互用浏览器 Performance 面板验证长任务和布局抖动。
 - 性能结论写入变更记录，避免只凭“感觉变快了”。
+
+文档站与 npm 组件产物使用不同预算，不能把组件 gzip 预算直接套到 Dumi 页面。2026-10-09 的本地冷加载复测中，Button 文档路由请求 13 个 JavaScript 文件：解码内容共 5,030,774 B，本地 gzip 模拟内容共 1,308,345 B；主要共享资源包括 `7953` chunk（2,340,623 B 解码）、组件 metadata（1,302,906 B）和 Umi（1,055,237 B）。gzip 由临时本地静态服务提供，尚未验证目标部署的 gzip/Brotli，也没有真实网络、移动设备执行时间或 LCP/INP/CLS 数据，因此这里只记录为文档站性能 P2，不代表线上 Web Vitals 超标。优化前先分析共享 chunk 和路由/示例加载边界，再以目标部署环境复测，详见 [roadmap.md](./roadmap.md)。

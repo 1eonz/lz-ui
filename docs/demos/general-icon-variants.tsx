@@ -11,7 +11,7 @@ export default function GeneralIconVariantsDemo() {
   const [rotate, setRotate] = useState(90);
   const [spin, setSpin] = useState(true);
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="icon-variants">
       <div className={styles.fields}>
         <label className={styles.field}>
           图标尺寸

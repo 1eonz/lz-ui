@@ -10,6 +10,7 @@ target_fingerprint: "sha256:b8a3e2f0b7b356bbd62102420bc0bd736e74ae8eb93529ac913b
 target_path: "F:\\work\\lz-ui\\docs\\docs-shell.css"
 timestamp: 2026-10-05T17-23-09Z
 slug: docs-docs-shell-css
+closed: true
 ---
 Method: dual-agent (A: /root/table_docs_ux_assessment · B: /root/table_impeccable_assessment_b)
 

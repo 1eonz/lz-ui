@@ -27,6 +27,7 @@
 5. Layout、Flex、Grid 尚未实现。
 6. SearchForm、QuickField、PageContainer、ProTable 尚未实现。
 7. React 19、UMD、直引脚本、私库发布和独立包体报告尚未闭合。
+8. Dumi 文档站冷加载资源较重：2026-10-09 Button 路由本地测得 13 个 JS 共 1,308,345 B gzip 模拟内容（5,030,774 B 解码）；目标部署压缩与 Core Web Vitals 未测。先分析 `7953` 共享 chunk、组件 metadata 与当前路由 demo 的依赖和加载方式，再确定预算并在隔离构建中验证拆分收益；不将 npm 单组件预算套用于文档站。
 
 ## 二、依赖关系和批次顺序
 
@@ -171,15 +172,15 @@ flowchart TD
 
 ### 实现中
 
-1. 主代理先锁协议，`gpt-6-luna` max 子代理在明确边界内实现代码。
+1. 主代理先锁协议，`gpt-6.1-sol` medium 子代理在明确边界内实现代码；关键逻辑使用 high。
 2. 所有注释和 JSDoc 使用中文；组件目录必须有 `index.tsx`、`index.module.css`、`index.md`、`types.ts` 和测试。
 3. 每个 demo 必须可运行，展示样式、使用方法、Props、事件、ref、边界和恢复路径。
 4. 运行 Impeccable context、audit、critique、polish；`detect []` 只作机械记录。
 
 ### 交付前
 
-1. `gpt-6-luna` max 独立 code review；UX 与证据分别由隔离代理审查。
-2. P0/P1/P2 修复后再次使用 `gpt-6-luna` max 复审；模型服务失败要记录，不能虚构结论。
+1. `gpt-6.1-sol` high 独立 code review；UX 与证据分别由 medium 隔离代理审查。
+2. P0/P1/P2 修复后再次使用 `gpt-6.1-sol` high 复审；模型服务失败要记录，不能虚构结论。
 3. 自动格式化本批文件，再运行 scaffold、format、typecheck、demo typecheck、lint、test、lib build、docs build 和包体检查。
 4. 主代理检查 diff、审计记录、未覆盖范围和公开出口。
 5. 提交 Conventional Commit 并普通 push；禁止强推和混入无关改动。
@@ -262,3 +263,5 @@ flowchart TD
 
 2026-10-08 Upload 状态播报与远端删除确认收口：修复自动上传失败后 live status 仍显示“正在发送”的 P2；新增自动上传 201 成功用例，验证成功状态、fileId、操作切换和全局播报。远端删除首次操作增加确认，取消不发请求并恢复焦点；确认后发送 DELETE，失败保留记录并支持重试。最新隔离 Dumi 构建在 Chromium Upload 专项 16/16，覆盖 multipart、成功/失败/取消、重试、地址校验、安全 fileId、删除恢复、并发焦点与键盘/拖放；1280/930/390/320px 无根横向溢出，暗色窄屏与 reduced-motion 复核通过。UX 终审 34/40（Good，分项 `4,3,3,4,3,4,3,3,4,3`），技术/代码终审 GO；无 P0–P2，过期播报问题关闭。保留 P3：320px 内容约 190px 宽、说明较密及主题色选项缺少色样。`npm run check` 为 55 文件/606 项、104 个 demo 类型检查；格式、脚手架、库构建及隔离文档构建通过。生产后端、真实系统文件选择器取消、读屏、高倍缩放、Safari、实体设备和目标部署仍未验收；局部 Upload 结果不关闭全库 2B-1。详见 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md) 与 [impeccable-audit.md](./impeccable-audit.md)。
 2026-10-09 Table 订单详情层级与焦点定位收口：按用户确认的“同时优化层级与分组”完成主 Table 与固定列详情的共享聚焦工具。详情在桌面按三组并列、窄屏单列，打开时按 `scroll-margin-block-start` 和首组/关闭按钮几何确保阅读起点，关闭后恢复原操作焦点；固定列订单号统一使用不可拆分 CSS Module 类。表格与详情共用完成项比值，详情显示 `41 / 50 项 · 82%`。Chromium Table/触控 12/12、WebKit smoke 2/2，定向 Vitest 47/47，Dumi 160 HTML/480 资源/89 demo 导出通过。Impeccable detector 原始输出 `[]` 只代表确定性规则无命中；真实读屏、高倍缩放、Safari 实机、实体设备、设备性能和部署环境仍待验收，全库 2B-1 不关闭。评审快照见 `.impeccable/critique/2026-10-09T00-09-29Z__docs-demos-table-tsx.md`。
+
+2026-10-09 General 浏览器局部验收：对 Button、Icon、Typography、Space、Divider 的 15 个可运行示例建立稳定测试定位，补齐六条 Chromium 用例，实测按钮密度尺寸、Icon 键盘收藏、Typography 复制/禁用链接、Space 全部控制和真实折行、Divider 实际线型切换；五页覆盖 930/390/320px 根溢出，14 组 API/事件/Ref 表在 320px 可聚焦横向滚动。六条用例、105 个 demo 严格类型检查和 Dumi 当前页面构建通过。此记录仅关闭 General 局部证据，不关闭全主题、缩放、真实读屏、Safari/设备和部署矩阵；Button 尺寸裁决见 ADR-0006。Dumi 资源 P2 与本批性能测量分开排期。

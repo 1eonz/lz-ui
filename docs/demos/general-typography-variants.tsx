@@ -10,7 +10,7 @@ export default function GeneralTypographyVariantsDemo() {
   const id = useId();
   const [expanded, setExpanded] = useState(false);
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="typography-variants">
       <Space wrap>
         <Text>普通信息</Text>
         <Text type="secondary">次要说明</Text>

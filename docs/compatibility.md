@@ -14,6 +14,10 @@
 
 Table 的默认/large 行高和 36px 表头 token 仅由非虚拟表格使用；有效尺寸按显式 `size` 优先、其次 AntD `ConfigProvider.componentSize` 继承解析。显式或继承的 `middle`/`small` 与 `virtual` 保留 AntD/宿主尺寸责任。宿主可按主题子树覆盖 `--lx-table-row-height`、`--lx-table-header-height` 和 `--lx-tag-height`，无需增加组件属性。Table 受控选择搭配 `preserveSelectedRowKeys` 时，筛选隐藏的 key 仍会计入完整选择数；宿主可提供清除选择动作。
 
+## Button 尺寸映射
+
+lx-ui 将 Button 的 AntD `controlHeightLG` 设为 40px，以对齐 General 专用设计；同一主题返回的全局 `token.controlHeightLG` 仍为 48px，其他 AntD 组件不受影响。省略 `size` 时由 lx 包装层按 density 使用 comfortable 40px、compact 32px，并显式使用自己的默认档位，因此宿主 `ConfigProvider.componentSize` 不覆盖省略解析；显式 `size="middle"` 固定 32px，`small` 固定 24px，`large` 固定 40px。若宿主曾依赖 AntD Button 默认 middle 的 comfortable 高度或 large 的其他高度，升级后应显式检查并按组件 `style` 或宿主主题调整；不要修改全局 `controlHeightLG` 来影响所有组件。迁移前检查固定高度容器、垂直对齐和连续按钮组。
+
 | 组合                     | 验证状态       | 必须包含的证据                              |
 | ------------------------ | -------------- | ------------------------------------------- |
 | React 18 + 当前锁定 AntD | 待本轮全量门禁 | 类型、行为测试、库与文档构建、消费 smoke    |

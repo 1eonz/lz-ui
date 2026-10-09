@@ -36,7 +36,7 @@ export default function SaveButton() {
 
 ## 尺寸、形状与状态
 
-small 为 24px，large 为 48px，默认/middle 随 density 使用 40/32px。纯图标操作有独立名称和悬停提示；禁用操作保留可见标签。归档按钮可恢复状态，ghost 用于有色背景，block 占满可用宽度。
+Button 使用固定三档和一个未指定档位：省略 `size` 时由 lx density 映射为 comfortable 40px、compact 32px；显式 `size="middle"` 始终为 32px，`small` 为 24px，`large` 为 40px。省略 `size` 由包装层显式解析为 lx 默认档位，因此宿主 `ConfigProvider.componentSize` 不会覆盖该解析；显式尺寸仍按 Button 自身协议生效。设计稿的 Middle 32px 是固定规格，comfortable 下也不改为 40px。提供 `style.height` 时使用调用方高度且不补默认 `height`/`minHeight`；未提供时按解析档位补 `height`。仅当未提供 `style.minHeight` 时才补档位 `minHeight`，自定义的较大最小高度可有意增高按钮。全局 `controlHeightLG` 仍为 48px，供其他大尺寸控件使用。纯图标操作有独立名称和悬停提示；禁用操作保留可见标签。归档按钮可恢复状态，ghost 用于有色背景，block 占满可用宽度。尺寸差异和升级边界见 [ADR-0006](../../../../docs/adr/0006-button-size-density.md) 与 [兼容说明](../../../../docs/compatibility.md#button-尺寸映射)。
 
 <code src="../../../../docs/demos/general-button-variants.tsx"></code>
 
@@ -50,32 +50,42 @@ small 为 24px，large 为 48px，默认/middle 随 density 使用 40/32px。纯
 
 从根入口命名导入 `Button`、`ButtonProps`、`ButtonRef`。下表覆盖按钮公开的组件参数；其他原生 button/anchor 属性沿用 `ButtonProps`，可传入 `id`、`title`、`aria-*`、`data-*`、表单属性与链接属性。AntD 版本新增能力以宿主安装的 [公开类型](https://ant.design/components/button/cn/) 为准。
 
-| 参数                        | 类型                                                                | 默认值                    | 说明                                                          |
-| --------------------------- | ------------------------------------------------------------------- | ------------------------- | ------------------------------------------------------------- |
-| `children`                  | `ReactNode`                                                         | —                         | 操作标签；纯图标时提供 `aria-label`                           |
-| `type`                      | `'default' \| 'primary' \| 'dashed' \| 'text' \| 'link'`            | `'default'`               | 常用操作外观                                                  |
-| `color`                     | `ButtonProps['color']`                                              | 由 type/danger 推导       | AntD 公开颜色配置；可选预设随版本，主题品牌色优先使用 primary |
-| `variant`                   | `'outlined' \| 'dashed' \| 'solid' \| 'filled' \| 'text' \| 'link'` | 由 type 推导              | 配合 color 使用的公开变体                                     |
-| `size`                      | `'small' \| 'middle' \| 'large'`                                    | 继承宿主尺寸；否则 middle | 默认高度随 lx density；显式 small/large 保留固定规格          |
-| `shape`                     | `'default' \| 'circle' \| 'round'`                                  | `'default'`               | 原生 AntD 形状                                                |
-| `icon`                      | `ReactNode`                                                         | —                         | 前后位置由 iconPosition 指定                                  |
-| `iconPosition`              | `'start' \| 'end'`                                                  | `'start'`                 | 图标相对标签的位置                                            |
-| `loading`                   | `boolean \| { delay?: number; icon?: ReactNode }`                   | `false`                   | 加载态；delay 单位 ms，仍由宿主更新                           |
-| `disabled`                  | `boolean`                                                           | `false`                   | 阻止激活；不进入常规 Tab 顺序                                 |
-| `danger`                    | `boolean`                                                           | `false`                   | 强调破坏性操作，不自动弹确认框                                |
-| `ghost`                     | `boolean`                                                           | `false`                   | 透明背景外观，宿主须保证背景对比度                            |
-| `block`                     | `boolean`                                                           | `false`                   | 占满父容器宽度                                                |
-| `href`                      | `string`                                                            | —                         | 存在时渲染 anchor；配合 target/rel 等原生链接属性             |
-| `htmlType`                  | `'button' \| 'submit' \| 'reset'`                                   | `'button'`                | 原生按钮类型，不是视觉 type                                   |
-| `autoInsertSpace`           | `boolean`                                                           | `false`                   | 两字中文标签自动插空格；lx 默认值与 AntD 不同                 |
-| `className / rootClassName` | `string`                                                            | —                         | 公开根节点类名                                                |
-| `style`                     | `CSSProperties`                                                     | —                         | 根节点内联样式                                                |
-| `classNames / styles`       | `ButtonProps['classNames'] / ButtonProps['styles']`                 | —                         | AntD 公开 icon 语义槽样式；以当前版本类型为准                 |
-| `prefixCls`                 | `string`                                                            | 宿主 AntD 前缀            | 原生样式前缀；不要依赖私有 DOM                                |
+<p id="button-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览。
+</p>
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Button 参数表" aria-describedby="button-docs-table-hint">
+
+| 参数                        | 类型                                                                | 默认值                | 说明                                                                                                                         |
+| --------------------------- | ------------------------------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `children`                  | `ReactNode`                                                         | —                     | 操作标签；纯图标时提供 `aria-label`                                                                                          |
+| `type`                      | `'default' \| 'primary' \| 'dashed' \| 'text' \| 'link'`            | `'default'`           | 常用操作外观                                                                                                                 |
+| `color`                     | `ButtonProps['color']`                                              | 由 type/danger 推导   | AntD 公开颜色配置；可选预设随版本，主题品牌色优先使用 primary                                                                |
+| `variant`                   | `'outlined' \| 'dashed' \| 'solid' \| 'filled' \| 'text' \| 'link'` | 由 type 推导          | 配合 color 使用的公开变体                                                                                                    |
+| `size`                      | `'small' \| 'middle' \| 'large'`                                    | 未指定时按 lx density | 未指定 comfortable/compact 为 40/32px；middle 固定 32px，small 为 24px，large 为 40px；宿主 `componentSize` 不覆盖未指定解析 |
+| `shape`                     | `'default' \| 'circle' \| 'round'`                                  | `'default'`           | 原生 AntD 形状                                                                                                               |
+| `icon`                      | `ReactNode`                                                         | —                     | 前后位置由 iconPosition 指定                                                                                                 |
+| `iconPosition`              | `'start' \| 'end'`                                                  | `'start'`             | 图标相对标签的位置                                                                                                           |
+| `loading`                   | `boolean \| { delay?: number; icon?: ReactNode }`                   | `false`               | 加载态；delay 单位 ms，仍由宿主更新                                                                                          |
+| `disabled`                  | `boolean`                                                           | `false`               | 阻止激活；不进入常规 Tab 顺序                                                                                                |
+| `danger`                    | `boolean`                                                           | `false`               | 强调破坏性操作，不自动弹确认框                                                                                               |
+| `ghost`                     | `boolean`                                                           | `false`               | 透明背景外观，宿主须保证背景对比度                                                                                           |
+| `block`                     | `boolean`                                                           | `false`               | 占满父容器宽度                                                                                                               |
+| `href`                      | `string`                                                            | —                     | 存在时渲染 anchor；配合 target/rel 等原生链接属性                                                                            |
+| `htmlType`                  | `'button' \| 'submit' \| 'reset'`                                   | `'button'`            | 原生按钮类型，不是视觉 type                                                                                                  |
+| `autoInsertSpace`           | `boolean`                                                           | `false`               | 两字中文标签自动插空格；lx 默认值与 AntD 不同                                                                                |
+| `className / rootClassName` | `string`                                                            | —                     | 公开根节点类名                                                                                                               |
+| `style`                     | `CSSProperties`                                                     | —                     | 根节点内联样式                                                                                                               |
+| `classNames / styles`       | `ButtonProps['classNames'] / ButtonProps['styles']`                 | —                     | AntD 公开 icon 语义槽样式；以当前版本类型为准                                                                                |
+| `prefixCls`                 | `string`                                                            | 宿主 AntD 前缀        | 原生样式前缀；不要依赖私有 DOM                                                                                               |
+
+</div>
 
 lx 只导出独立 `Button`，不提供 `Button.Group` 或 `SplitButton`。分组可组合 `Space`；需要原生 AntD 额外能力时从 `lx-ui/antd` 使用对应组件，不能把设计稿中的名称当作已实现 API。
 
 ## 事件与 Ref
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Button 事件表" aria-describedby="button-docs-table-hint">
 
 | 事件                  | 类型                                | 行为                                          |
 | --------------------- | ----------------------------------- | --------------------------------------------- |
@@ -83,7 +93,11 @@ lx 只导出独立 `Button`，不提供 `Button.Group` 或 `SplitButton`。分�
 | `onFocus / onBlur`    | `FocusEventHandler<HTMLElement>`    | 实际根元素获取、失去焦点                      |
 | `onKeyDown / onKeyUp` | `KeyboardEventHandler<HTMLElement>` | 原生键盘事件；通常不需要重复模拟 Enter/Space  |
 
+</div>
+
 `ButtonRef` 是 `HTMLButtonElement | HTMLAnchorElement`，取决于 `href`。可调用原生 `focus(options?)`、`blur()`、`click()`、`getBoundingClientRect()`；没有包装层的 loading/reset 方法。按钮支持 Enter/Space，anchor 保留链接的原生键盘行为。纯图标操作同时设置 `aria-label` 和 `title`，可见提示不能代替可访问名称。
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Button Ref 成员表" aria-describedby="button-docs-table-hint">
 
 | Ref 成员                        | 用法                                          | 边界                                                          |
 | ------------------------------- | --------------------------------------------- | ------------------------------------------------------------- |
@@ -91,6 +105,8 @@ lx 只导出独立 `Button`，不提供 `Button.Group` 或 `SplitButton`。分�
 | `blur()`                        | `ref.current?.blur()`                         | 移除当前焦点；通常在宿主确定下一焦点目标后使用                |
 | `click()`                       | `ref.current?.click()`                        | 原生程序化激活，不是请求完成或 loading 方法；仍需宿主处理操作 |
 | `getBoundingClientRect()`       | 读取 `width/height/top/left`                  | 浏览器布局测量，不在 SSR 渲染阶段调用                         |
+
+</div>
 
 使用 `useRef<ButtonRef>(null)`，组件挂载后访问；根类型随 href 变化，需要按钮专有字段时先收窄实际节点类型。
 

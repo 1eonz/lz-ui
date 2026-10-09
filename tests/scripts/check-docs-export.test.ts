@@ -19,14 +19,16 @@ async function createTemporaryDirectory() {
 async function writeHtml(
   root: string,
   relativePath: string,
-  html = '<!doctype html><html></html>',
+  html = '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head></html>',
 ) {
   const filePath = join(root, relativePath);
   await mkdir(dirname(filePath), { recursive: true });
   await writeFile(filePath, html, 'utf8');
 }
 
-async function createCompleteDocsExport(tableHtml = '<!doctype html><html></html>') {
+async function createCompleteDocsExport(
+  tableHtml = '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head></html>',
+) {
   const docsDistPath = await createTemporaryDirectory();
 
   await Promise.all(
@@ -63,6 +65,27 @@ describe('静态文档导出门禁', () => {
     ]);
   });
 
+  it('拒绝缺失、重复、限制缩放或数值不正确的 viewport 声明', async () => {
+    const invalidDocuments = [
+      '<!doctype html><html></html>',
+      '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head></html>',
+      '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></head></html>',
+      '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.5"></head></html>',
+      '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=0x1"></head></html>',
+      '<!doctype html><html><head><meta name="viewport" content="initial-scale=1, width=device-width-extra"></head></html>',
+      '<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=2"></head></html>',
+    ];
+
+    for (const invalidDocument of invalidDocuments) {
+      const docsDistPath = await createCompleteDocsExport(invalidDocument);
+      const result = await validateDocsExport(docsDistPath);
+
+      expect(result.errors).toContain(
+        'components/data-display/table/index.html 的 viewport meta 缺失、重复或限制用户缩放',
+      );
+    }
+  });
+
   it('要求关键 demo 路由存在，即使其他嵌套 demo 数量足够', async () => {
     const docsDistPath = await createTemporaryDirectory();
     const customerDemoPage = '~demos/components/form/dynamic-form-demo-dynamic-form/index.html';
@@ -84,7 +107,7 @@ describe('静态文档导出门禁', () => {
 
   it('依据本地 base href 解析相对脚本和样式资源', async () => {
     const docsDistPath = await createCompleteDocsExport(
-      '<base href="../assets/"><script src="bundle.js"></script><link rel="stylesheet" href="theme.css">',
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0"><base href="../assets/"><script src="bundle.js"></script><link rel="stylesheet" href="theme.css">',
     );
     const assetDirectory = join(docsDistPath, 'components', 'data-display', 'assets');
 
@@ -102,7 +125,7 @@ describe('静态文档导出门禁', () => {
 
   it('遇到外链 base href 时跳过相对资源的本地存在性检查', async () => {
     const docsDistPath = await createCompleteDocsExport(
-      '<base href="https://cdn.example.test/assets/"><script src="bundle.js"></script><link rel="stylesheet" href="theme.css">',
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0"><base href="https://cdn.example.test/assets/"><script src="bundle.js"></script><link rel="stylesheet" href="theme.css">',
     );
 
     const result = await validateDocsExport(docsDistPath);
@@ -113,7 +136,7 @@ describe('静态文档导出门禁', () => {
 
   it('遇到无效 base href 时回退到当前文档 URL', async () => {
     const docsDistPath = await createCompleteDocsExport(
-      '<base href="http://["><script src="../../../umi.js"></script>',
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0"><base href="http://["><script src="../../../umi.js"></script>',
     );
     await writeFile(join(docsDistPath, 'umi.js'), '', 'utf8');
 

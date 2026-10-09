@@ -13,6 +13,7 @@ target_fingerprint: "sha256:7fb863c56371fad29383810c1914e91050343b6334c8e253f462
 target_path: "F:\\work\\lz-ui\\docs\\demos\\upload-network.tsx"
 timestamp: 2026-10-07T18-42-58Z
 slug: docs-demos-upload-network-tsx
+closed: true
 ---
 ## Assessment A：独立设计评审
 

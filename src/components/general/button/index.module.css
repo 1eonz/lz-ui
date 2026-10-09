@@ -1,5 +1,5 @@
 .root {
-  /* 尺寸交由公开 Button token 和显式 size 决定，不能用统一最小高度抹平 small/large。 */
+  /* 尺寸由公开 Button token 和固定档位 token 决定，不能用统一最小高度抹平 small/large。 */
   border-radius: var(--lx-radius-control);
   transition-duration: var(--lx-motion-duration);
 }

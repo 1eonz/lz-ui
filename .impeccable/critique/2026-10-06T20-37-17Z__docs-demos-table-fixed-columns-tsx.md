@@ -10,6 +10,7 @@ target_fingerprint: "sha256:2f41976fc243c3c818f17358e95f675deef0fc2e28b6f17b7847
 target_path: "F:\\work\\lz-ui\\docs\\demos\\table-fixed-columns.tsx"
 timestamp: 2026-10-06T20-37-17Z
 slug: docs-demos-table-fixed-columns-tsx
+closed: true
 ---
 # Impeccable Critique: Table 固定列订单详情
 

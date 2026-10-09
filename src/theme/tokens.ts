@@ -43,6 +43,9 @@ const caption = { size: 12, lineHeight: 20 };
 const sizes = {
   controlSmall: 24,
   controlLarge: 48,
+  buttonMiddle: 32,
+  // Button 稿件规定 large 为 40px，单独映射以保留全局大控件的 48px。
+  buttonLarge: 40,
   tableHeader: 36,
   tableFont: 12,
   tableLineHeight: 18,
@@ -231,6 +234,7 @@ export function resolveLxTokens(options: {
     '--lx-control-height': px(controlHeight),
     '--lx-control-height-small': px(sizes.controlSmall),
     '--lx-control-height-large': px(sizes.controlLarge),
+    '--lx-button-middle-height': px(sizes.buttonMiddle),
     '--lx-table-row-height': px(tableRow),
     '--lx-table-header-height': px(sizes.tableHeader),
     '--lx-table-font-size': px(sizes.tableFont),
@@ -392,7 +396,7 @@ export function resolveLxTokens(options: {
     Button: {
       controlHeight,
       controlHeightSM: sizes.controlSmall,
-      controlHeightLG: sizes.controlLarge,
+      controlHeightLG: sizes.buttonLarge,
       borderRadius: radius,
       borderRadiusSM: radius,
       borderRadiusLG: radius,

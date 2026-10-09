@@ -4,7 +4,7 @@ import styles from './general-demo.module.css';
 
 export default function GeneralDividerBasicDemo() {
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="divider-basic">
       <div className={styles.content}>
         <Paragraph>杭州云栖科技已完成客户信息核对。</Paragraph>
         <Divider />

@@ -51,6 +51,12 @@ export default function CustomerSections() {
 
 从根入口命名导入 `Divider` 与 `DividerProps`。DividerProps 继承 `HTMLAttributes<HTMLElement>`，原生属性与事件作用于实际根节点。
 
+<p id="divider-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览。
+</p>
+
+<div className="lx-docs-table" role="region" tabIndex="0" aria-label="Divider 参数表" aria-describedby="divider-docs-table-hint">
+
 | 参数                           | 类型                              | 默认值                   | 说明                                      |
 | ------------------------------ | --------------------------------- | ------------------------ | ----------------------------------------- |
 | `children`                     | `ReactNode`                       | —                        | 水平线可见标题；垂直线忽略标题            |
@@ -62,6 +68,8 @@ export default function CustomerSections() {
 | `className`                    | `string`                          | —                        | 实际根节点类名                            |
 | `style`                        | `CSSProperties`                   | —                        | 实际根节点样式                            |
 
+</div>
+
 无标题以 `children == null` 判断，空字符串仍是标题分支；需要无标题时传 undefined/null 或省略 children。垂直 type 忽略 children，不会把内容放进窄线条。
 
 ## 事件与 Ref
@@ -70,11 +78,15 @@ export default function CustomerSections() {
 
 ref 为 `HTMLElement`，实际节点随内容变化：无标题水平线是 `HTMLHRElement`，带标题水平线是 `HTMLDivElement`，垂直线是 `HTMLSpanElement`。可读 `getBoundingClientRect()`、调用 `scrollIntoView()`；没有 focus/折叠专用协议，不把 ref 固定断言为 div。改变 type 或有无标题可能替换节点。
 
+<div className="lx-docs-table" role="region" aria-label="Divider Ref 成员表" tabIndex="0" aria-describedby="divider-docs-table-hint">
+
 | Ref 成员                   | 用法                                                | 边界                                                     |
 | -------------------------- | --------------------------------------------------- | -------------------------------------------------------- |
 | `getBoundingClientRect()`  | 读取当前分隔节点位置与尺寸                          | 根可能是 hr/div/span，不能假设标题宽度等于根宽度         |
 | `scrollIntoView(options?)` | `ref.current?.scrollIntoView({ block: 'nearest' })` | 定位到当前分隔节点，不会展开宿主隐藏内容                 |
 | `focus(options?) / blur()` | HTMLElement 的原生方法                              | separator 默认不可聚焦；不提供可交互分隔条或 resize 行为 |
+
+</div>
 
 使用 `useRef<HTMLElement>(null)`，需要某种原生节点专有字段时先根据 tagName/节点类型收窄。布局测量只在浏览器挂载后执行。
 

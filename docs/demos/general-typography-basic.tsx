@@ -4,7 +4,7 @@ import styles from './general-demo.module.css';
 
 export default function GeneralTypographyBasicDemo() {
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="typography-basic">
       <div className={styles.content}>
         <Title level={1}>客户管理</Title>
         <Title level={2}>华东区域</Title>

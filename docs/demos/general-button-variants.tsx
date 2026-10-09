@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import PlusOutlined from '@ant-design/icons/PlusOutlined';
 import SearchOutlined from '@ant-design/icons/SearchOutlined';
 import { Button, Space, Text } from 'lx-ui';
+import { ConfigProvider } from 'lx-ui/antd';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import styles from './general-demo.module.css';
 
@@ -16,14 +17,17 @@ export default function GeneralButtonVariantsDemo() {
     borderColor: 'var(--lx-color-on-primary)',
   };
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="button-variants">
       <div className={styles.group}>
         <p className={styles.label}>操作尺寸</p>
         <Space wrap align="center">
+          <Button onClick={() => setAction('已使用默认尺寸')}>默认尺寸</Button>
           <Button size="small" onClick={() => setAction('已添加备注')}>
             添加备注
           </Button>
-          <Button onClick={() => setAction('已保存客户资料')}>保存资料</Button>
+          <Button size="middle" onClick={() => setAction('已保存客户资料')}>
+            保存资料
+          </Button>
           <Button
             size="large"
             type="primary"
@@ -32,6 +36,17 @@ export default function GeneralButtonVariantsDemo() {
           >
             创建合同
           </Button>
+        </Space>
+      </div>
+      <div className={styles.group} data-testid="button-host-size-scope">
+        <p className={styles.label}>宿主 componentSize 不改变 lx 默认档位</p>
+        <Space wrap align="center">
+          <ConfigProvider componentSize="small">
+            <Button data-testid="button-default-under-host-small">宿主 small 下的默认尺寸</Button>
+          </ConfigProvider>
+          <ConfigProvider componentSize="large">
+            <Button data-testid="button-default-under-host-large">宿主 large 下的默认尺寸</Button>
+          </ConfigProvider>
         </Space>
       </div>
       <div className={styles.group}>

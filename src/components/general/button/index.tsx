@@ -9,15 +9,35 @@ import type { ButtonProps, ButtonRef } from './types';
  * 此处默认关闭以保持朗读名称稳定，调用方仍可通过 autoInsertSpace 开启。
  */
 export const Button = forwardRef<ButtonRef, ButtonProps>(function Button(
-  { className, htmlType = 'button', autoInsertSpace = false, ...props },
+  { className, htmlType = 'button', autoInsertSpace = false, size, style, ...props },
   ref,
 ) {
+  const resolvedSize = size ?? 'middle';
+  const resolvedHeight =
+    size === undefined
+      ? 'var(--lx-control-height, 40px)'
+      : size === 'middle'
+        ? 'var(--lx-button-middle-height, 32px)'
+        : undefined;
+  // 显式 height 完全控制默认补值；自定义 minHeight 只覆盖对应字段。
+  const defaultHeightStyles =
+    resolvedHeight && style?.height === undefined
+      ? {
+          height: resolvedHeight,
+          ...(style?.minHeight === undefined ? { minHeight: resolvedHeight } : {}),
+        }
+      : undefined;
   return (
     <AntButton
       {...props}
+      size={resolvedSize}
       htmlType={htmlType}
       autoInsertSpace={autoInsertSpace}
       ref={ref}
+      style={{
+        ...style,
+        ...defaultHeightStyles,
+      }}
       className={[styles.root, className].filter(Boolean).join(' ')}
     />
   );
