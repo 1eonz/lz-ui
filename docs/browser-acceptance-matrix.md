@@ -344,3 +344,12 @@
 - **Impeccable 与复审：** 对本批 demo/CSS/组件源码执行 `detect.mjs --json`，原始 stdout 为 `[]`、退出码 0；该结果仅表示确定性规则未命中。viewport 修复后的独立代码复审发现的两项门禁解析边界（`1.5`、`0x1`）已修复并补测；最终 UX 复审 **GO**，无 P0-P2。通过依据来自真实浏览器和独立复审，不把 `[]` 当成设计通过。
 - **工程门禁：** `npm run check` 通过 55 个测试文件、609 项测试和 105 个 demo 类型检查；`npm run check:scaffold`、`npm run build:lib`、Prettier、lint 和 TypeScript 检查通过。全量测试中的 jsdom 伪元素、AntD 弃用和测试模拟循环引用提示为既有 stderr 噪声，不影响通过。
 - **边界：** 真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机、实体设备、设备性能、部署环境及完整主题/风格/色板矩阵仍未验收；本记录只关闭 General 局部 viewport 和交互证据，不关闭全库 2B-1。
+
+### 2026-10-10 Form 基础控件浏览器局部验收
+
+- **设计依据与范围：** 对照 Form 组件设计稿和各页面现有可运行 demo，新增 `tests/browser/form-basic.spec.ts`，覆盖 InputNumber、Select、DatePicker、Checkbox、Switch、Radio 的公开交互路径。本批只补充浏览器证据，不变更组件运行时、公开 API 或 demo 结构。
+- **浏览器结果：** Chromium 与 Microsoft Edge 各通过 **6/6**，合计 12/12。每个路由在 930×720、390×844、320×740 CSS viewport 检查 document/body 无根级横向溢出，并通过 browser-health 确认无 pageerror、console error、requestfailed 或 HTTP 错误。
+- **交互覆盖：** InputNumber 验证键盘步进、清空和禁用；Select 验证 Enter 打开、公开选项文字、方向键跳过禁用项、Enter 选择、Escape 关闭和禁用控件；DatePicker 验证打开日历、公开 Today 文案、Escape 关闭和禁用输入；Checkbox 验证 Space 切换与禁用；Switch 验证 Space 切换、loading 和 disabled；Radio 验证方向键移动选择及 disabled 选项保持禁用。
+- **公开语义边界：** Select 禁用项不会进入 AntD 5 的可访问 option 集合，因此使用公开可见文字和键盘跳过结果验证；DatePicker 的公共输出没有稳定 dialog/grid role，因此使用公开 placeholder、Today 文案和 Escape 后隐藏验证；RadioGroup 当前没有稳定 `radiogroup` role，因此使用原生公开 `input[type="radio"]` 的 value、checked、disabled 语义验证。测试不查询 AntD 私有 class、私有 DOM 或运行时改写 role。
+- **代码复审：** 已尝试调度独立 `gpt-6-luna max` 代理，但服务端连续返回 `503 Service Unavailable: No available channel`，因此不采纳不存在的代理结论；主代理按项目 Code Reviewer 标准完成工作树复审，未发现 P0/P1/P2 问题。
+- **未覆盖：** 本批不代表 Form 全量组件矩阵、全部主题/色板组合、真实 200%/400% page zoom、真实屏幕阅读器、Safari 实机、实体触控、设备性能或目标部署环境已验收；Input、Upload、DynamicForm 的既有局部证据仍需与本批分别阅读。2B-1 全库关闭条件仍未满足。
