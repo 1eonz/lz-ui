@@ -365,6 +365,12 @@
   --lx-docs-search-active-surface: #004b9b;
 }
 
+/* WebKit 在平板宽度下会把顶部导航内部的隐藏内容宽度传播到文档根节点；
+   只裁剪导航自身的水平溢出，保留搜索结果和正文表格的独立滚动区域。 */
+.dumi-default-header-content {
+  overflow-x: clip;
+}
+
 /* Dumi 2.4.49 的 preview 操作栏固定为 32px；粗指针下扩容行高与点击区。 */
 @media (max-width: 767px) and (any-pointer: coarse) {
   :root .dumi-default-previewer-actions {
@@ -472,7 +478,7 @@
   margin-block: 8px;
 }
 
-/* 主参数表行数较多；键盘聚焦时显示原生跳转链接，帮助用户从表格起点进入。 */
+/* 表格跳转入口只在获得焦点时显现；文档级跳转链接移出视口以保留自然键盘顺序。 */
 .lx-docs-table-jump {
   position: absolute;
   inline-size: 1px;
@@ -484,12 +490,20 @@
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
-  scroll-margin-block-start: 5rem;
 }
 
+.lx-docs-skip-link {
+  font: inherit;
+  font-family: sans-serif;
+  position: fixed;
+  z-index: 10000;
+  inset-block-start: 8px;
+  inset-inline-start: 82px;
+  clip-path: inset(50%);
+}
+
+.lx-docs-skip-link:focus-visible,
 .lx-docs-table-jump:focus-visible {
-  position: relative;
-  z-index: 1;
   display: inline-flex;
   box-sizing: border-box;
   align-items: center;
@@ -513,15 +527,75 @@
   text-underline-offset: 2px;
 }
 
-.markdown #input-main-api-table {
+.lx-docs-main-content:focus-visible h1:first-of-type {
+  outline: 2px solid var(--lx-focus-ring, #146ce8);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.lx-docs-main-content:focus-visible {
+  outline: none;
+}
+
+.lx-docs-skip-link:focus-visible {
+  position: fixed;
+  z-index: 10000;
+  inset-block-start: 8px;
+  inset-inline-start: 82px;
+  clip-path: none;
+  inline-size: 118px;
+  padding: 8px;
+  font-size: 14px;
+  line-height: 20px;
+  margin-block: 0;
+  margin-inline: 0;
+}
+
+.lx-docs-table-jump:focus-visible {
+  position: relative;
+  z-index: 1;
+}
+
+#lx-docs-main-content {
   scroll-margin-block-start: 5rem;
 }
 
+.markdown #input-main-api-table {
+  scroll-margin-block-start: 7.5rem;
+}
+
 @media (max-width: 767px) {
-  /* 移动端有两层固定导航，起点留白确保表头和首行不被遮住。 */
-  .lx-docs-table-jump,
-  .markdown #input-main-api-table {
+  /* 将跳转入口留在第一层导航内；焦点环不覆盖下方菜单栏或正文标题。 */
+  .lx-docs-skip-link:focus-visible {
+    inset-block-start: 4px;
+    inset-inline-start: 74px;
+    inline-size: min(138px, calc(100vw - 248px));
+    min-inline-size: 64px;
+    padding: 6px 8px;
+    font-size: 12px;
+    line-height: 16px;
+    outline-offset: 0;
+  }
+
+  /* 极窄视口调整链接位置和宽度，为 Logo 与搜索控件保留焦点环净距。 */
+  @media (max-width: 319px) {
+    .lx-docs-skip-link:focus-visible {
+      inset-inline-start: 72px;
+      inline-size: min(56px, max(48px, calc(100vw - 244px)));
+      min-inline-size: 0;
+      padding: 4px;
+      font-size: 11px;
+      line-height: 14px;
+    }
+  }
+
+  #lx-docs-main-content {
     scroll-margin-block-start: 8rem;
+  }
+
+  /* 为两层移动导航与表格提示之间保留可见净距，避免焦点滚动贴住导航。 */
+  .markdown #input-main-api-table {
+    scroll-margin-block-start: 12.25rem;
   }
 }
 

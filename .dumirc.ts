@@ -13,6 +13,8 @@ export default defineConfig({
   hash: true,
   // 第三方 Dumi 文档壳调整不进入发布的组件库 CSS。
   styles: [{ content: readFileSync(resolve(process.cwd(), 'docs/docs-shell.css'), 'utf8') }],
+  // Markdown 原生锚点的焦点交接逻辑只加载到文档站，不进入组件包。
+  scripts: ['/docs-table-jump-focus.js'],
   // 静态文档按根路径部署，确保深路由的异步 chunk 使用根资源前缀。
   base: '/',
   publicPath: '/',

@@ -5,6 +5,7 @@ coverage/
 playwright-report/
 test-results/
 .cache/
+.codex/
 .dumi/
 .umi/
 .DS_Store

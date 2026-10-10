@@ -9,6 +9,11 @@ demo:
 
 用于客户名称、编号、邮箱等单行文本；长备注使用独立命名导出的 `TextArea`。保留 AntD 5.24+ 的公开参数和实例方法，业务校验、请求和查询结果由宿主控制。
 
+<!-- 将 API 表跳转入口放在文档开头，避免键盘用户逐项经过所有示例后才能到达参数说明。 -->
+<a className="lx-docs-table-jump" href="#input-main-api-table" tabIndex="0">
+  跳转到 Input 参数表起始位置
+</a>
+
 ## 可运行示例
 
 ### 基础与受控输入
@@ -67,10 +72,6 @@ export default function CustomerNameField() {
 <p id="input-docs-table-hint" className="lx-docs-table-hint">
   窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览。
 </p>
-
-<a className="lx-docs-table-jump" href="#input-main-api-table">
-  跳转到 Input 参数表起始位置
-</a>
 
 <div
   id="input-main-api-table"

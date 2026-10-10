@@ -859,3 +859,18 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **最终证据：** `npm run build:docs` 与导出门禁通过，161 HTML/483 本地资源/89 嵌套 demo；门禁测试 7/7。Impeccable detector 原始 stdout 为 `[]`、stderr 为空、退出码 0，仅表示确定性规则未命中。Chromium General 专项 6/6，五个路由均断言唯一 viewport 为 `width=device-width, initial-scale=1.0`，并复验 930/390/320px、页面无根横向溢出、Space 局部横滚、Button 尺寸、键盘焦点、dark/compact 和 browser-health。
 - **独立结论：** viewport 修复后的代码复审为 GO，无遗留 P0/P1/P2；UX 复审在 320×800 与 1280×800 独立复核为 GO，确认 API 表局部滚动和 Space 键盘往返。通过依据来自真实浏览器和独立复审，不把构建、测试或 `[]` 扩展为完整视觉验收。
 - **评分与边界：** 本批没有新增阻断项。完整 General 主题/风格/色板矩阵、真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机、实体设备、设备性能和部署环境仍开放；该记录关闭 viewport P1 和本批导出门禁边界，不关闭全库 2B-1。
+
+### 2026-10-11 文档主要内容跳转入口焦点打磨复验
+
+- **目标与依据：** 继续打磨 Dumi 文档壳的“跳转到主要内容”入口、Input API 表键盘入口和正文焦点反馈。依据 `UI/DESIGN.md`、`docs/impeccable-workflow.md`、`frontend-ui-ux` 与 Impeccable 4.1.3 `polish` 规则；保持现有 Read 型文档壳，使用原生锚点语义，不改变组件包公开 API。
+- **首轮 P3 修复：** 独立 UX 复核发现主内容链接首次聚焦时覆盖品牌 Logo，且文章目标同时显示浏览器默认长轮廓和标题焦点环。本轮将链接移到 Logo 与 Header 导航/搜索控件之间，桌面和 320px 分别保留焦点环外扩后的 4px 净距；文章目标取消默认轮廓，保留页面 H1 的 2px 主题焦点环。窄屏链接使用受限宽度和换行，避免挤压搜索与菜单入口。
+- **静态与代码审查：** 按 skill 要求先执行 `context.mjs --target docs/docs-shell.css`，编辑前读取 `craft-floor.md`；另对 Input 的 MDX 标记运行 `detect.mjs --json src/components/form/input/index.md`，原始 stdout 为 `[]`、退出码 0；这只表示确定性规则未命中，不替代浏览器和人工审查。独立代码复核发现验收文档把两个原生链接的修饰键行为混写，现已按实现修正。两次新子代理调用均未形成可核验的 `gpt-6-luna max` 复审：一次返回 GO，但代理报告实际模型为 GPT-6；另一次报告模型及强度不可核验并因此没有检查文件。主代理已完成代码复核，不把子代理结果记作指定模型通过。
+- **真实浏览器证据：** 最新静态导出为 161 个 HTML、644 个本地 JS/CSS 引用和 89 个嵌套 demo。Input 专项在 Chromium、Microsoft Edge、Windows Playwright WebKit 共运行 33 项：Chromium 11/11、Edge 11/11、WebKit 10 项通过、1 项跳过，合计 32 项通过、1 项因 Windows WebKit `hasTouch=true` 仍暴露 `navigator.maxTouchPoints=0` 而跳过；该结果不代表 WebKit 触控通过。1280px、320px 与 300px 截图及几何断言确认两个跳转链接与 Logo、导航、搜索、菜单和 H1 无相交；跳转后文章无默认长轮廓且 H1 焦点环可见。browser-health 无页面错误、console error、失败请求或 HTTP 错误。
+- **独立评审与工程门禁：** Impeccable 4.1.3 Read 模式的独立 UX 终审为 **37/40**，无遗留 P0-P3。工程复核结果为 `npm run check` 通过 55 个测试文件、609 项测试及 105 个 demo 类型检查；`npm run check:scaffold`、`npm run build:lib`、`npm run build:docs` 和静态导出门禁通过（161 个 HTML、644 个本地 JS/CSS 引用、89 个嵌套 demo）。Input 专项 Chromium/Edge 各 11/11；Windows Playwright WebKit Input 10 项通过、1 项因 `maxTouchPoints=0` 跳过，另 WebKit smoke 2/2。最新实现保留两个原生同页链接；子代理运行时未能核验用户指定模型，指定模型专属的最终 code review 尚未完成，主代理复核未发现剩余 P0-P2。真实屏幕阅读器、强制颜色、真实 200%/400% page zoom、Safari 实机、实体触控、性能剖析和目标部署仍未覆盖；本记录只关闭文档跳转入口的局部 P3，不关闭全库 2B-1。
+
+### 2026-10-11 文档跳转最终回归与修复收口
+
+- **修复：** 首次正向 Tab 仅在跳转链接已注入且当前焦点仍在 body 时消费兜底；补充延迟注入回归。主内容跳转链接的跨引擎新页面验证改用真实平台修饰键 + Enter，API 表链接保留真实平台修饰键点击，避免把合成事件当作浏览器新页证据。
+- **Impeccable 复核：** 按 4.1.3 `polish` 流程读取 `craft-floor.md` 并运行一次 detector；`docs/docs-shell.css`、`public/docs-table-jump-focus.js` 与 Input MDX 扫描原始 stdout 为 `[]`，stderr 为空、退出码 0。该结果只表示静态规则未命中；桌面/320px/300px 实际渲染截图和三引擎交互才是本批主要证据。
+- **浏览器证据：** Input 测试共 15 项，在 Chromium、Edge、WebKit 共运行 45 项，44 项通过、1 项跳过；Chromium/Edge 各 15/15，WebKit 14/15，粗指针测试因 `maxTouchPoints=0` 跳过。延迟注入、主内容新页面、API 表新页面、焦点/Hash/窄屏几何和 browser-health 均通过；没有 pageerror、console error、失败请求或 HTTP 错误。
+- **门禁与边界：** `npm run check`（55 个文件、609 项测试、105 个 Dumi demo 类型检查）、`npm run check:scaffold`、`npm run build:lib`、Prettier 和 `git diff --check` 通过。独立代理运行身份无法核验为用户指定的 `gpt-6-luna max`，因此不冒称指定模型复审；主代理完成最终代码复核，未发现 P0-P2。真实读屏、page zoom、Safari 实机、实体触控、强制颜色、设备性能、目标部署和全库 2B-1 仍开放。

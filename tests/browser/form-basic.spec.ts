@@ -132,7 +132,7 @@ test.describe('Form 基础控件浏览器验收', () => {
 
   test('Radio 支持方向键移动选择并跳过禁用选项', async ({ page }) => {
     const errors = collectBrowserErrors(page);
-    const frame = await expectFormPage(page, 'Radio 单选', routes.radio);
+    await expectFormPage(page, 'Radio 单选', routes.radio);
     // RadioGroup 的 AntD 5 公共输出没有 radiogroup role，使用公开原生 value/checked 语义。
     const standard = page.locator('input[type="radio"][value="standard"]');
     const express = page.locator('input[type="radio"][value="express"]');

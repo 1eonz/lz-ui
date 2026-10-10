@@ -359,3 +359,30 @@
 - **浏览器结果：** 在当前 Windows Playwright WebKit 运行时执行 `npx playwright test tests/browser/form-basic.spec.ts --project=webkit`，6/6 通过。该运行时覆盖 InputNumber、Select、DatePicker、Checkbox、Switch、Radio 的同一公开交互路径，未出现 pageerror、console error、requestfailed 或 HTTP 错误。
 - **视口与边界：** 每个路由均检查 930×720、390×844、320×740 CSS viewport 的 document/body 根节点无横向溢出；WebKit 结果补充 Chromium 与 Edge 证据，但不等同于 Safari 真机或 iOS 实体设备兼容。
 - **语义边界：** 测试继续使用 AntD 5 公共 role、可见文案、原生 input 语义和文档化主题标记，不查询私有 class/DOM，不运行时改写 role。真实 page zoom、屏幕阅读器、Safari 真机、实体触控、设备性能和目标部署仍未覆盖。
+
+### 2026-10-11 Input API 表键盘跳转与三引擎复验
+
+- **交互调整：** 将原生 API 表跳转链接移到 Input 文档简介后，使键盘用户不必先经过所有示例控件。链接获得键盘焦点时显示明确文字和焦点环；Enter 更新原生 URL hash，将焦点交给具名 API 表区域并确保首行进入视口。主内容链接和 API 表链接都保留原生锚点；文档站脚本只对无修饰左键补充焦点/滚动，Ctrl/Command/Shift/Alt 与中键点击都交由浏览器处理。
+- **浏览器结果：** `tests/browser/input-demo.spec.ts` 在 Chromium、Microsoft Edge、Windows Playwright WebKit 各运行 8 项：Chromium 8/8、Edge 8/8、WebKit 7 项通过、1 项跳过。跳过项在启用 `hasTouch` 后仍报告 `navigator.maxTouchPoints=0`，因此不构成 WebKit 触控通过。API 表用例验证跳转链接不超过 12 次 Tab 可达、Enter 后 hash/区域焦点/首行位置正确、方向键可横向滚动及复合参数标识符完整。
+- **视口和错误：** Input 文档在 320/390/930/1280px CSS viewport 检查无根级水平溢出；交互测试检查 browser-health，未发现页面错误、console error、失败请求或 HTTP 错误。CSS viewport 仿真不代表真实页面缩放或实体设备。
+- **工程门禁：** `npm run check` 通过，55 个测试文件、609 项测试、105 个 Dumi 示例类型检查通过；`npm run check:scaffold`、`npm run build:lib`、Prettier 和 Dumi 静态构建/导出检查通过，产物含 161 个 HTML 页面、644 个本地 JS/CSS 引用及 89 个嵌套 demo。独立代理运行身份无法核验；主代理复核未发现 P0–P2，不将其记作指定模型复审通过。
+- **未覆盖：** 该结果只关闭本次 Input 文档入口及既有 Input 浏览器用例的局部回归，不等于 Input 全主题/状态矩阵、真实屏幕阅读器、真实 200%/400% 缩放、Safari 实机、实体触控、性能剖析或目标部署通过；全库 2B-1 继续开放。
+
+### 2026-10-11 文档链接修饰键新标签与窄屏提示最终复验
+
+- **修复复审意见：** 独立代码复审指出验收记录曾误称主内容链接的 Ctrl 点击由脚本接管，且原测试派发的合成事件不足以证明浏览器新标签行为。现已更正文案，并为主内容链接和 Input API 表链接分别加入真实平台修饰键新开页测试。
+- **窄屏结果：** 320px 与 300px 下通过 API 表链接跳转后，操作提示完整位于移动导航下方、表头上方，表头和首行在视口内；页面根节点无横向溢出。
+- **边界：** 脚本只增强无修饰左键的焦点交接；修饰键及中键点击保持原生链接行为。CSS viewport 不能替代真实浏览器缩放、Safari 设备或屏幕阅读器验收。
+
+### 2026-10-11 文档主要内容链接焦点样式复验
+
+- **范围：** 复核 `docs/docs-shell.css` 与 `public/docs-table-jump-focus.js` 的文档级跳转入口，覆盖 1280×720、320×740 和 300×740 CSS viewport；两个入口均保留原生同页链接语义，未依赖 AntD 私有 DOM。
+- **结果：** 聚焦链接现在位于 Logo 与桌面导航/移动搜索之间，并为焦点轮廓外扩保留至少 4px 净距；320px 和 300px 下链接在可用宽度内换行且不与搜索框、菜单或 H1 相交。激活后 URL hash、文章焦点、`aria-labelledby` 和 H1 2px 焦点环保持正确，文章本身不再渲染浏览器默认长轮廓。Input 专项 Chromium 11/11、Edge 11/11、Windows WebKit 10 项通过、1 项因运行时 `maxTouchPoints=0` 跳过，合计 32 项通过、1 项跳过；跳过不构成 WebKit 触控验收。browser-health 无页面错误、console error、失败请求或 HTTP 错误。
+- **独立复审与边界：** UX 终审 37/40，无遗留 P0-P3；代码复审需与实际使用的子代理模型一致记录，不能仅凭分配参数标记为 `gpt-6-luna max`。CSS viewport 不是 page zoom；未覆盖真实读屏、强制颜色、Safari 实机、实体触控、200%/400% 缩放和部署环境。
+
+### 2026-10-11 Input 文档跳转最终三引擎回归
+
+- **测试结果：** `tests/browser/input-demo.spec.ts` 共 15 项测试，在 Chromium、Microsoft Edge、Windows Playwright WebKit 各执行一次，共 45 个项目；44 项通过，1 项跳过。Chromium 15/15、Edge 15/15、WebKit 14 项通过、1 项跳过。跳过项是粗指针清除命中区检查，运行时虽启用 `hasTouch` 仍报告 `navigator.maxTouchPoints=0`，不构成触控通过。
+- **新增路径：** 延迟注入时首次正向 Tab 不再消耗跳转兜底；主内容链接以平台修饰键 + Enter 在新页面打开并保留 `#lx-docs-main-content`；Input API 表链接继续以平台修饰键点击打开新页面。三条路径在三引擎均通过；方向键横向滚动、焦点交接、路由标题重绑、窄屏几何和 browser-health 也均通过。
+- **静态与工程门禁：** Impeccable detector 4.1.3 原始 stdout 为 `[]`、stderr 为空、退出码 0；它只表示确定性规则未命中。`npm run check`、`npm run check:scaffold`、`npm run build:lib`、Prettier 和 `git diff --check` 通过。测试文件当前包含 15 个 `test()` 声明。
+- **边界：** CSS viewport 不替代真实 page zoom、屏幕阅读器、Safari 实机、实体触控、强制颜色、设备性能和目标部署验收；全库主题/状态矩阵与 2B-1 仍开放。子代理运行时只能核验为 GPT-6，无法确认 `gpt-6-luna max` 变体，因此最终记录采用主代理复核结论，不冒称指定模型复审。
