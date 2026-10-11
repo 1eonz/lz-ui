@@ -98,17 +98,32 @@
     resolveMainTarget();
   });
 
-  const addSkipLink = () => {
-    const main = resolveMainTarget();
-    if (!main || !document.body) return false;
+  const ensureSkipLink = () => {
+    if (!document.body) return null;
 
-    if (!document.querySelector('a.lx-docs-skip-link')) {
+    let skipLink = document.querySelector('a.lx-docs-skip-link');
+    if (!(skipLink instanceof HTMLAnchorElement)) {
       const link = document.createElement('a');
       link.href = '#lx-docs-main-content';
       link.className = 'lx-docs-skip-link';
-      link.textContent = '跳转到主要内容';
       document.body.prepend(link);
+      skipLink = link;
     }
+
+    // 无障碍名称包含可见短文案和完整目标含义，确保标签名称符合可见名称要求。
+    if (skipLink.textContent !== '跳至正文') skipLink.textContent = '跳至正文';
+    if (skipLink.getAttribute('aria-label') !== '跳至正文，跳转到主要内容') {
+      skipLink.setAttribute('aria-label', '跳至正文，跳转到主要内容');
+    }
+
+    return skipLink;
+  };
+
+  const addSkipLink = () => {
+    // 跳转入口不依赖 Dumi 正文；正文尚未渲染时也应先进入浏览器的原生 Tab 顺序。
+    const skipLink = ensureSkipLink();
+    const main = resolveMainTarget();
+    if (!skipLink || !main) return false;
 
     observeMainContent(document.querySelector('main'), main, main.querySelector('h1'));
     return true;
@@ -127,9 +142,9 @@
     }
     if (event.shiftKey || document.activeElement !== document.body) return;
 
-    // WebKit 可能在链接运行时插入后仍沿用旧的 Tab 顺序；仅在首次正向 Tab 时补上跳转入口。
-    const skipLink = document.querySelector('a.lx-docs-skip-link');
-    if (!(skipLink instanceof HTMLAnchorElement)) return;
+    // keydown 默认行为会在监听器返回后移动焦点；缺链时必须在同一事件中补建并接管，避免越过入口。
+    const skipLink = ensureSkipLink();
+    if (!skipLink) return;
 
     event.preventDefault();
     skipLink.focus();

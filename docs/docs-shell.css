@@ -577,15 +577,17 @@
     outline-offset: 0;
   }
 
-  /* 极窄视口调整链接位置和宽度，为 Logo 与搜索控件保留焦点环净距。 */
+  /* 极窄视口用 56px 单行短文案区，焦点环与 Logo、搜索和菜单保持净距。 */
   @media (max-width: 319px) {
     .lx-docs-skip-link:focus-visible {
       inset-inline-start: 72px;
-      inline-size: min(56px, max(48px, calc(100vw - 244px)));
-      min-inline-size: 0;
-      padding: 4px;
-      font-size: 11px;
-      line-height: 14px;
+      inline-size: 56px;
+      min-inline-size: 56px;
+      padding-block: 4px;
+      padding-inline: 2px;
+      font-size: 12px;
+      line-height: 16px;
+      white-space: nowrap;
     }
   }
 

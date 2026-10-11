@@ -873,7 +873,10 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **修复：** 首次正向 Tab 仅在跳转链接已注入且当前焦点仍在 body 时消费兜底；补充延迟注入回归。主内容跳转链接的跨引擎新页面验证改用真实平台修饰键 + Enter，API 表链接保留真实平台修饰键点击，避免把合成事件当作浏览器新页证据。
 - **Impeccable 复核：** 按 4.1.3 `polish` 流程读取 `craft-floor.md` 并运行一次 detector；`docs/docs-shell.css`、`public/docs-table-jump-focus.js` 与 Input MDX 扫描原始 stdout 为 `[]`，stderr 为空、退出码 0。该结果只表示静态规则未命中；桌面/320px/300px 实际渲染截图和三引擎交互才是本批主要证据。
 - **浏览器证据：** Input 测试共 15 项，在 Chromium、Edge、WebKit 共运行 45 项，44 项通过、1 项跳过；Chromium/Edge 各 15/15，WebKit 14/15，粗指针测试因 `maxTouchPoints=0` 跳过。延迟注入、主内容新页面、API 表新页面、焦点/Hash/窄屏几何和 browser-health 均通过；没有 pageerror、console error、失败请求或 HTTP 错误。
-- **门禁与边界：** `npm run check`（55 个文件、609 项测试、105 个 Dumi demo 类型检查）、`npm run check:scaffold`、`npm run build:lib`、Prettier 和 `git diff --check` 通过。独立代理运行身份无法核验为用户指定的 `gpt-6-luna max`，因此不冒称指定模型复审；主代理完成最终代码复核，未发现 P0-P2。真实读屏、page zoom、Safari 实机、实体触控、强制颜色、设备性能、目标部署和全库 2B-1 仍开放。
+- **API 表真实新页用例就绪等待补充：** 最终复审发现平台修饰键点击用例在 `goto` 后立即用 `tableJumpLink.evaluate` 探测焦点并循环按 Tab，尚未等待 Dumi 标题和链接可见。本次在该用例先等待 H1“Input 输入框”和 API 表跳转链接可见，再开始同步焦点探测与 Tab 循环，覆盖同类骨架/hydration 延迟。复用现有 `127.0.0.1:4176` 预览定向运行该真实新页用例，Chromium、Edge、WebKit 各通过一次（3/3）；没有运行 `build:docs`。
+- **最终完整矩阵复跑：** 在真实新页用例补上 H1 与链接就绪等待后，对当前同一测试文件再次运行 Chromium、Edge、Windows Playwright WebKit，共 45 项：44 项通过、1 项跳过。Chromium/Edge 各 15/15，WebKit 14 项通过、1 项因运行时 `maxTouchPoints=0` 跳过；该跳过不代表 WebKit 触控通过。此前首次骨架态等待波动及隔离复测记录保留，未推断根因。
+- **独立代码复审：** 最新只读复审在当前修复、记录和 45 项完整矩阵结果上给出 **GO**，未发现 P0-P2。复审代理按 `gpt-6-luna max` 配置，运行时身份无法核验，因此只记录配置，不声称已确认实际变体。
+- **门禁与边界：** `npm run check`（55 个测试文件、609 项测试、106 个 Dumi demo 类型检查）、`npm run check:scaffold`、`npm run build:lib`、Prettier 和 `git diff --check` 通过。真实读屏、page zoom、Safari 实机、实体触控、强制颜色、设备性能、目标部署和全库 2B-1 仍开放。
 
 ### 2026-10-11：Pagination 与 Tree 文档交互收口
 
@@ -903,4 +906,29 @@ Pagination 将页大小和跳页拆成可见的 Select、Input、Button，窄屏
 
 #### 工程状态
 
-最新 Dumi 构建和导出门禁通过：161 个 HTML 页面、644 个本地 JS/CSS 引用、89 个嵌套 `~demos/` 页面。浏览器用例修复了 AntD 分页项错误使用 `button` 定位以及分页循环切换 Tree 后复用旧 locator 的问题；修复后 Chromium 3/3 通过。完整 `npm run check`、`check:scaffold`、`build:lib` 和最终 `git diff --check` 将在本批提交前再次执行。
+当时的最新 Dumi 构建和导出门禁通过：161 个 HTML 页面、644 个本地 JS/CSS 引用、89 个嵌套 `~demos/` 页面。浏览器用例修复了 AntD 分页项错误使用 `button` 定位以及分页循环切换 Tree 后复用旧 locator 的问题；修复后 Chromium 3/3 通过。后续 Input 文档跳转批次的全量检查与构建结果见下方最终记录。
+
+### 2026-10-11 Input 文档跳转可见标签与首次 Tab 收口
+
+- **目标与依据：** Dumi Read 型文档壳中的“跳至正文”入口，目标文件为 `docs/docs-shell.css`、`public/docs-table-jump-focus.js`、`tests/browser/input-demo.spec.ts` 和对应验收文档。遵循 `UI/DESIGN.md`、`AGENTS.md`、`docs/impeccable-workflow.md`、`frontend-ui-ux` 与 Impeccable 4.1.3。仅改文档级辅助导航，不改组件库公开 API 或新增依赖。本会话已初始化 Impeccable 上下文；编辑前已读取 craft floor 与 frontend-ui-ux 指南。
+- **首轮问题与修复：** 代码复审发现 `aria-label` 覆盖可见短标签，存在 WCAG 2.5.3 Label in Name 风险；现将名称改为“跳至正文，跳转到主要内容”。缺链同步兜底由同一同步任务派发可取消的合成 `KeyboardEvent`，立即断言入口创建、焦点和 `defaultPrevented`；另用 Playwright 真实 Tab 验证正常已建入口是文档页首个键盘焦点。Input suite-level route 为全部浏览器用例提供当前源码脚本，避免读取过期 `docs-dist` 脚本。
+- **第二轮 UX 修复：** UX 初审 **37/40（Excellent）**，十项依次 `4,4,4,4,4,3,4,4,3,3`。初审 P3 指出可见短标签断言仅限 319px 以下；现把可见文本和完整 accessible name 断言移至视口分支外，覆盖 300/320/1280px。独立复审确认 P3 已关闭。旧快照 `.impeccable/critique/2026-10-11T07-45-44Z__public-docs-table-jump-focus-js.md` 的 34/40 及“300px 下文案换行”属于短文案修改前的历史基线；当前最终快照为 `.impeccable/critique/2026-10-11T08-44-42Z__public-docs-table-jump-focus-js.md`。
+- **五维技术审计：**
+
+  | 维度       |      分数 | 依据                                                                                           |
+  | ---------- | --------: | ---------------------------------------------------------------------------------------------- |
+  | 无障碍     |       3/4 | 可见名一致、键盘路径和焦点交接有实测；真实读屏与强制颜色未测。                                 |
+  | 性能       |       3/4 | 无新依赖或组件运行时代码；文档脚本的 DOM 观察成本未做设备性能剖析。                            |
+  | 主题       |       3/4 | 使用现有语义焦点/表面 token 并覆盖暗色；未遍历全部主题色、风格和密度组合。                     |
+  | 响应式     |       4/4 | 320/390/930/1280px 页面无横向溢出；300px 入口宽高、单行文案及导航间距有浏览器断言。            |
+  | 实现完整性 |       4/4 | 覆盖缺链同步兜底、真实已建入口首焦、分阶段挂载、路由标题更新及源码映射；代码复审无当前 P0-P2。 |
+  | **合计**   | **17/20** | **局部目标达到良好；未验证平台辅助技术和真实设备矩阵。**                                       |
+
+- **独立代码复审：** 两轮按 `gpt-6-luna max` 配置派发，代码复审检查 Label-in-Name、同步首次 Tab、源码路由和验收记录。首轮要求刷新旧评审基线并补跑最终测试文件上的 Edge/WebKit；上述记录已修正，Chromium/Edge/WebKit 均已按最终断言运行。运行时模型身份不可核验，故只记录派发配置，不声称已确认实际变体。
+- **Impeccable detector：** 最终命令为 `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json docs/docs-shell.css public/docs-table-jump-focus.js src/components/form/input/index.md tests/browser/input-demo.spec.ts`；原始 stdout `[]`、stderr 为空、退出码 0。它仅表示确定性规则未命中，不是视觉或可访问性通过结论。
+- **此前完整浏览器矩阵：** `tests/browser/input-demo.spec.ts` 在 Chromium/Edge 各 **15/15**；Windows Playwright WebKit **14 项通过、1 项跳过**，总计 45 项中 44 项通过、1 项跳过。跳过项是粗指针命中区检查，运行时 `navigator.maxTouchPoints=0`，不代表 WebKit 触控通过。输入页在 390px 有常规响应式覆盖，但跳转入口 390px 专属几何仍未单独断言。
+- **最终复验与波动记录：** 首次三引擎并发执行时，WebKit 的跳转入口几何用例读到骨架态，API 锚点定位用例超时；两个失败用例隔离运行后 **2/2 通过**，随后完整 WebKit 单引擎运行 **14 项通过、1 项因触点能力跳过**。跳转入口几何断言前等待 Input 标题可见；API 锚点定位在操作前等待标题和参数表跳转链接可见，API 几何用例另在各视口重载后等待标题和表格提示可见。最终复审另发现“参数表链接按平台修饰键点击会在新页面打开参数表”用例在 `goto` 后、首次 `evaluate`/Tab 前缺少就绪等待；现已补充等待 Input H1 与该链接可见。该真实新页用例在现有预览的 Chromium、Edge、WebKit 定向复验 **3/3**，随后当前最终测试文件完整复跑 **45 项，44 项通过、1 项跳过**（Chromium/Edge 各 **15/15**，WebKit **14 项通过、1 项因触点能力跳过**）。未重建文档；首次波动的根因仍未确认。
+- **浏览器覆盖：** 入口键盘路径及 300/320/1280px 标签/几何、Input API 横向滚动和 browser-health 均有断言。
+- **工程门禁：** 最终 `npm run check` 通过：55 个测试文件、609 项测试、106 个 Dumi demo 类型检查；`npm run check:scaffold`、`npm run build:lib`、全仓 Prettier 检查和 `git diff --check` 通过。库构建 ESM/CJS 各 111 个源码文件；本轮 `npm pack --dry-run` 报告 522 个文件，压缩包 165,997 bytes，解包 766,168 bytes。没有改变 package 依赖或组件包 API。
+- **文档构建边界：** 本轮没有运行 `build:docs`。仍有 Dumi 开发进程使用项目共享 `.dumi/tmp`，为避免改写其运行缓存，浏览器测试使用现有 `docs-dist` 启动 Vite preview；Playwright 映射当前 JS 并在跳转入口用例注入当前 CSS。该证据不代表新生成的 Dumi 资产或当前开发服务器路由已经验收。
+- **未覆盖范围：** 真实屏幕阅读器、390px 入口专属几何、200%/400% page zoom、Safari 实机、实体触控、强制颜色、设备性能、目标部署及全库 2B-1 仍开放。没有新增依赖。

@@ -394,3 +394,14 @@
 - **实现要点：** Pagination 的页大小与跳页策略采用公开控件组合，避免把可操作性寄托在 AntD 隐藏窄屏选项；Pagination、Table、Tree 共用具名滚动区方向键处理，只有实际发生横移时才消费默认行为；Tree 的焦点样式通过公开焦点状态和组件根节点增强，超宽标题在局部区域滚动。
 - **Impeccable 与复审：** Impeccable 4.1.3 `detect.mjs --json` 对本批 JSX 目标输出 `[]`、退出码 0；这只表示确定性扫描未命中，不能替代视觉或真实设备验收。`gpt-6-luna max` 复审代理针对最新工作树检查了公开语义、窄屏、粗指针与测试结构，未提出新的 P0/P1；其余 P2/P3 属于完整矩阵、真实读屏、虚拟大数据和跨设备范围，不阻断本批。
 - **边界：** 当前证据是 Chromium CSS viewport 与触控仿真，不代表真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机、实体触控、设备性能或目标部署；Pagination/Tree 完整主题色板及大数据虚拟化仍待后续专项。全库 2B-1 保持开放。
+
+### 2026-10-11 Input 文档跳转缺链与分阶段延迟挂载最终复验
+
+- **修复与用例：** `public/docs-table-jump-focus.js` 的可见短文案为“跳至正文”，`aria-label` 为“跳至正文，跳转到主要内容”，保留可见标签并说明目标。若入口缺失，首次正向 Tab 会在同一同步事件中创建入口、取消默认移焦并聚焦它。`tests/browser/input-demo.spec.ts` 的 suite-level route 对全部用例映射当前脚本源码；独立缺链用例直接加载当前脚本，在同步派发的可取消 Tab 事件中断言补链、焦点和 `defaultPrevented`，并保留页面上的真实首次 Tab 操作。延迟挂载测试分阶段加入 `main`、`article` 和 `h1`，验证无标题时的命名、标题出现后的 `aria-labelledby` 及标题 ID 变化。
+- **窄屏与文案证据：** 聚焦链接在 300px 使用 56px 宽、至少 44px 高、12px 单行样式。最新测试在 300px、320px 和 1280px 均断言可见文案和 accessible name；300px 另验证链接不与 Logo、搜索、菜单、标题重叠，宽度和高度符合规则。跳转后的 hash、文章焦点、标题焦点环和后续 Tab 路径均有断言。
+- **此前完整浏览器结果（补充本次新页等待前）：** 上一轮加入入口几何和 API 锚点就绪等待后，对当时版本的完整测试文件在 Chromium、Microsoft Edge 和 Windows Playwright WebKit 共运行 45 项；44 项通过、1 项跳过。Chromium 15/15，Edge 15/15，WebKit 14 项通过、1 项跳过。跳过的是 WebKit 粗指针命中区用例：虽然 `hasTouch` 已设置，Windows WebKit 运行时仍报告 `navigator.maxTouchPoints=0`；这不构成 WebKit 触控通过。首次并发执行曾出现 WebKit 骨架态几何与 API 锚点等待失败，隔离复跑 2/2 通过。测试还覆盖 Input 的 320/390/930/1280px 页面溢出、API 表键盘滚动、主题代表状态及 reduced-motion。
+- **真实新页用例就绪等待补充：** 复审发现“Input 参数表链接按平台修饰键点击会在新页面打开参数表”在 `goto` 后立即执行焦点 `evaluate` 和 Tab 循环，没有先等 Dumi 内容就绪。现先等待 H1“Input 输入框”和参数表跳转链接可见，再探测焦点、循环 Tab 并以平台修饰键点击打开新页，覆盖同类骨架/hydration 延迟。使用现有 `127.0.0.1:4176` 预览只运行该用例，Chromium、Edge、WebKit 各通过一次（3/3）；没有运行 `build:docs`。
+- **最终完整矩阵复跑：** 定向用例通过后，在当前工作树再次运行完整 `tests/browser/input-demo.spec.ts`：Chromium/Edge 各 15/15，Windows Playwright WebKit 14 项通过、1 项因 `navigator.maxTouchPoints=0` 跳过；共 45 项，44 通过、1 跳过。此结果覆盖新增的新页就绪等待；触点跳过仍不代表 WebKit 触控通过。
+- **独立复审：** UX 终审 **37/40（Excellent）**，十项依次 `4,4,4,4,4,3,4,4,3,3`，无 P0/P1/P2。复审发现 visible-label 断言最初仅覆盖 319px 以下；断言已扩展至 300/320/1280px，复审确认该 P3 已关闭。最终代码复审针对新增新页等待、完整矩阵和记录给出 **GO**，未发现 P0-P2。审计快照 `.impeccable/critique/2026-10-11T07-45-44Z__public-docs-table-jump-focus-js.md` 的 **34/40** 与 300px 换行 P3 是短文案修复前基线，不代表当前实现；本次最终评审另存新快照。子代理按 `gpt-6-luna max` 配置派发，运行时身份不可核验，不将配置冒称为身份确认。
+- **Impeccable 与工程结果：** 4.1.3 detector 的原始 stdout 为 `[]`、stderr 为空、退出码 0；该结果只表示确定性规则未命中，不替代实际浏览器或独立评审。最终 `npm run check`、`npm run check:scaffold`、库构建、包 dry-run、Prettier 和 `git diff --check` 在完成后记录于审计附录。未运行 `build:docs`：Dumi 开发进程使用共享 `.dumi/tmp`，Playwright 通过现有 `docs-dist` 的 Vite preview 测试，并映射当前 JS、注入当前 CSS；因此不宣称新 Dumi 构建产物或当前开发路由已验收。
+- **未覆盖：** 跳转链接在 390px 的专属几何、真实读屏、200%/400% page zoom、Safari 实机、实体触控、强制颜色、设备性能和目标部署尚未验收。局部证据不关闭全库 2B-1。

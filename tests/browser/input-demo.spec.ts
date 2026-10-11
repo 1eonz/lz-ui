@@ -11,6 +11,15 @@ const viewports = [
   { width: 1280, height: 720 },
 ] as const;
 
+test.beforeEach(async ({ page }) => {
+  await page.route('**/docs-table-jump-focus.js*', (route) =>
+    route.fulfill({
+      path: resolve(process.cwd(), 'public/docs-table-jump-focus.js'),
+      contentType: 'application/javascript',
+    }),
+  );
+});
+
 async function readInputColor(input: Locator): Promise<string> {
   return input.evaluate((element) => window.getComputedStyle(element).color);
 }
@@ -75,9 +84,12 @@ test('Dumi 文档首个键盘停靠点可跳过导航并聚焦主要内容', asy
   ]) {
     await page.setViewportSize(scenario.viewport);
     await page.goto(inputRoute);
+    await expect(page.getByRole('heading', { name: 'Input 输入框', level: 1 })).toBeVisible();
+    // 当前静态 docs-dist 可能早于工作树 CSS；定向用例显式加载源码样式以验证本轮窄屏规则。
+    await page.addStyleTag({ path: resolve(process.cwd(), 'docs/docs-shell.css') });
     await waitForBrowserQuiescence(page, browserHealth);
 
-    const skipLink = page.getByRole('link', { name: '跳转到主要内容', exact: true });
+    const skipLink = page.getByRole('link', { name: '跳至正文，跳转到主要内容', exact: true });
     await expect(skipLink).toHaveAttribute('href', '#lx-docs-main-content');
     for (const modifier of ['ctrlKey', 'shiftKey'] as const) {
       const modifiedTabWasCancelled = await page.evaluate((key) => {
@@ -146,6 +158,13 @@ test('Dumi 文档首个键盘停靠点可跳过导航并聚焦主要内容', asy
     });
     expect(clearOfBrandingAndHeaderControls).toBe(true);
     expect(skipLinkBounds?.y).toBe(scenario.viewport.width <= 767 ? 4 : 8);
+    await expect(skipLink).toHaveText('跳至正文');
+    await expect(skipLink).toHaveAccessibleName('跳至正文，跳转到主要内容');
+    if (scenario.viewport.width <= 319) {
+      expect(skipLinkBounds?.width).toBe(56);
+      expect(skipLinkBounds?.height).toBeGreaterThanOrEqual(44);
+      await expect(skipLink).toHaveCSS('font-size', '12px');
+    }
 
     await page.keyboard.press(scenario.activationKey);
     await expect(page).toHaveURL(/#lx-docs-main-content$/);
@@ -170,42 +189,106 @@ test('Dumi 文档首个键盘停靠点可跳过导航并聚焦主要内容', asy
   expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
 });
 
-test('跳转链接尚未注入时的首次 Tab 不消耗兜底', async ({ page }) => {
+test('合成缺链事件验证同步兜底，Playwright Tab 验证已建入口首焦', async ({ page }) => {
   const browserHealth = collectBrowserErrors(page);
-  await page.route('**/docs-table-jump-focus.js*', (route) =>
-    route.fulfill({
-      path: resolve(process.cwd(), 'public/docs-table-jump-focus.js'),
-      contentType: 'application/javascript',
-    }),
+  await page.goto('about:blank');
+  await page.setContent(
+    '<!doctype html><html><body><header><a class="dumi-default-logo" href="/">文档首页</a></header></body></html>',
   );
-  await page.goto(inputRoute);
-  await waitForBrowserQuiescence(page, browserHealth);
+  await page.addScriptTag({ path: resolve(process.cwd(), 'public/docs-table-jump-focus.js') });
+  const earlyLinkState = await page.evaluate(() => {
+    const skipLink = document.querySelector('a.lx-docs-skip-link');
+    return {
+      linkExistsWithoutMain:
+        skipLink instanceof HTMLAnchorElement && !document.querySelector('main'),
+      linkIsFirstBodyChild: document.body.firstElementChild === skipLink,
+    };
+  });
+  expect(earlyLinkState).toEqual({ linkExistsWithoutMain: true, linkIsFirstBodyChild: true });
 
-  const firstTabState = await page.evaluate(() => {
-    const initialLink = document.querySelector('a.lx-docs-skip-link');
-    if (!(initialLink instanceof HTMLAnchorElement)) {
-      throw new Error('未找到初始的主要内容跳转链接');
-    }
-    initialLink.remove();
-    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+  const earlySkipLink = page.getByRole('link', {
+    name: '跳至正文，跳转到主要内容',
+    exact: true,
+  });
+  await expect(earlySkipLink).toHaveText('跳至正文');
+  await page.evaluate(() => {
+    const skipLink = document.querySelector('a.lx-docs-skip-link');
+    if (!(skipLink instanceof HTMLAnchorElement)) throw new Error('未找到已建立的跳转链接');
+    skipLink.textContent = '旧版跳转文案';
+    skipLink.setAttribute('aria-label', '旧版跳转名称');
+  });
+  await expect(earlySkipLink).toHaveText('跳至正文');
+  await expect(earlySkipLink).toHaveAccessibleName('跳至正文，跳转到主要内容');
 
+  const missingEarlyLinkTabState = await page.evaluate(() => {
+    document.querySelector('a.lx-docs-skip-link')?.remove();
     const event = new KeyboardEvent('keydown', {
       key: 'Tab',
       bubbles: true,
       cancelable: true,
     });
     document.body.dispatchEvent(event);
+    const skipLink = document.querySelector('a.lx-docs-skip-link');
 
-    const delayedLink = document.createElement('a');
-    delayedLink.href = '#lx-docs-main-content';
-    delayedLink.className = 'lx-docs-skip-link';
-    delayedLink.textContent = '跳转到主要内容';
-    document.body.prepend(delayedLink);
+    return {
+      defaultPrevented: event.defaultPrevented,
+      linkCreated: skipLink instanceof HTMLAnchorElement,
+      linkFocused: document.activeElement === skipLink,
+      mainMissing: !document.querySelector('main'),
+    };
+  });
+  expect(missingEarlyLinkTabState).toEqual({
+    defaultPrevented: true,
+    linkCreated: true,
+    linkFocused: true,
+    mainMissing: true,
+  });
+
+  await expect(earlySkipLink).toBeFocused();
+  await expect(earlySkipLink).toBeVisible();
+  await expect(earlySkipLink).toHaveText('跳至正文');
+  await expect(earlySkipLink).toHaveAccessibleName('跳至正文，跳转到主要内容');
+  await expect(page.locator('main')).toHaveCount(0);
+
+  await page.evaluate(() => document.body.append(document.createElement('main')));
+  await expect(page.locator('main')).toHaveCount(1);
+  await expect(page.locator('main article')).toHaveCount(0);
+
+  await page.evaluate(() => {
+    const article = document.createElement('article');
+    document.querySelector('main')?.append(article);
+  });
+  const delayedArticle = page.locator('main article');
+  await expect(delayedArticle).toHaveAttribute('id', 'lx-docs-main-content');
+  await expect(delayedArticle).toHaveAttribute('tabindex', '-1');
+  await expect(delayedArticle).toHaveAttribute('aria-label', '主要内容');
+
+  await page.evaluate(() => {
+    const heading = document.createElement('h1');
+    heading.id = 'delayed-main-heading';
+    heading.textContent = '延迟渲染的文档标题';
+    document.querySelector('main article')?.append(heading);
+  });
+  await expect(delayedArticle).toHaveAttribute('aria-labelledby', 'delayed-main-heading');
+
+  await page
+    .getByRole('heading', { name: '延迟渲染的文档标题', exact: true })
+    .evaluate((heading) => {
+      heading.id = 'delayed-main-heading-updated';
+    });
+  await expect(delayedArticle).toHaveAttribute('aria-labelledby', 'delayed-main-heading-updated');
+
+  await page.goto(inputRoute);
+  await waitForBrowserQuiescence(page, browserHealth);
+
+  const missingLinkState = await page.evaluate(() => {
+    document.querySelector('a.lx-docs-skip-link')?.remove();
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     document.addEventListener(
       'keydown',
       (nextEvent) => {
         if (nextEvent.key === 'Tab') {
-          document.documentElement.dataset.firstInjectedTabPrevented = String(
+          document.documentElement.dataset.firstMissingLinkTabPrevented = String(
             nextEvent.defaultPrevented,
           );
         }
@@ -214,17 +297,20 @@ test('跳转链接尚未注入时的首次 Tab 不消耗兜底', async ({ page }
     );
 
     return {
-      defaultPrevented: event.defaultPrevented,
+      linkMissing: !document.querySelector('a.lx-docs-skip-link'),
       bodyStillFocused: document.activeElement === document.body,
     };
   });
-  expect(firstTabState).toEqual({ defaultPrevented: false, bodyStillFocused: true });
+  expect(missingLinkState).toEqual({ linkMissing: true, bodyStillFocused: true });
 
-  const skipLink = page.getByRole('link', { name: '跳转到主要内容', exact: true });
+  const skipLink = page.getByRole('link', { name: '跳至正文，跳转到主要内容', exact: true });
   await page.keyboard.press('Tab');
   await expect(skipLink).toBeFocused();
   await expect(skipLink).toBeVisible();
-  await expect(page.locator('html')).toHaveAttribute('data-first-injected-tab-prevented', 'true');
+  await expect(page.locator('html')).toHaveAttribute(
+    'data-first-missing-link-tab-prevented',
+    'true',
+  );
 
   await waitForBrowserQuiescence(page, browserHealth);
   expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
@@ -241,15 +327,9 @@ test('主内容链接按平台修饰键 Enter 激活会在新页面打开目标'
   context.on('page', collectOpenedPage);
 
   try {
-    await page.route('**/docs-table-jump-focus.js*', (route) =>
-      route.fulfill({
-        path: resolve(process.cwd(), 'public/docs-table-jump-focus.js'),
-        contentType: 'application/javascript',
-      }),
-    );
     await page.goto(inputRoute);
     await waitForBrowserQuiescence(page, browserHealth);
-    const skipLink = page.getByRole('link', { name: '跳转到主要内容', exact: true });
+    const skipLink = page.getByRole('link', { name: '跳至正文，跳转到主要内容', exact: true });
     await page.keyboard.press('Tab');
     await expect(skipLink).toBeFocused();
     await expect(skipLink).toBeVisible();
@@ -279,11 +359,13 @@ test('主内容链接按平台修饰键 Enter 激活会在新页面打开目标'
 test('Input API 表修饰键点击不会触发文档焦点跳转', async ({ page }) => {
   const browserHealth = collectBrowserErrors(page);
   await page.goto(inputRoute);
+  await expect(page.getByRole('heading', { name: 'Input 输入框', level: 1 })).toBeVisible();
 
   const tableJumpLink = page.getByRole('link', {
     name: '跳转到 Input 参数表起始位置',
     exact: true,
   });
+  await expect(tableJumpLink).toBeVisible();
   const modifiedClick = await tableJumpLink.evaluate((element) => {
     if (!(element instanceof HTMLAnchorElement)) {
       throw new Error('表格跳转控件不是原生链接');
@@ -341,12 +423,15 @@ test('Input 参数表链接按平台修饰键点击会在新页面打开参数�
   try {
     await page.setViewportSize({ width: 320, height: 740 });
     await page.goto(inputRoute);
-    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
-
+    const inputHeading = page.getByRole('heading', { name: 'Input 输入框', exact: true });
     const tableJumpLink = page.getByRole('link', {
       name: '跳转到 Input 参数表起始位置',
       exact: true,
     });
+    await expect(inputHeading).toBeVisible();
+    await expect(tableJumpLink).toBeVisible();
+
+    const modifier = process.platform === 'darwin' ? 'Meta' : 'Control';
     let tableJumpTabCount = 0;
     while (
       tableJumpTabCount < 12 &&
@@ -357,7 +442,6 @@ test('Input 参数表链接按平台修饰键点击会在新页面打开参数�
     }
     expect(tableJumpTabCount).toBeLessThanOrEqual(12);
     await expect(tableJumpLink).toBeFocused();
-    await expect(tableJumpLink).toBeVisible();
 
     const [openedPage] = await Promise.all([
       context.waitForEvent('page'),
@@ -394,7 +478,7 @@ test('Dumi 路由切换后重新绑定当前页面标题', async ({ page }) => {
   await expect(mainContent).toHaveAttribute('aria-labelledby', 'checkbox-复选框');
   await expect(mainContent).toHaveAccessibleName('Checkbox 复选框');
 
-  const skipLink = page.getByRole('link', { name: '跳转到主要内容', exact: true });
+  const skipLink = page.getByRole('link', { name: '跳至正文，跳转到主要内容', exact: true });
   await skipLink.focus();
   await page.keyboard.press('Enter');
   await expect(mainContent).toBeFocused();
@@ -626,12 +710,14 @@ test('Input 文档在窄屏和桌面 CSS 视口均无横向溢出', async ({ pag
 test('Input API 表跳转避开固定导航，窄屏方向键滚动且标识符保持完整', async ({ page }) => {
   const browserHealth = collectBrowserErrors(page);
   await page.goto(inputRoute);
+  await expect(page.getByRole('heading', { name: 'Input 输入框', level: 1 })).toBeVisible();
 
   const tableRegion = page.getByRole('region', { name: 'Input 常用参数表', exact: true });
   await expect(tableRegion).toBeVisible();
   await expect(tableRegion).toHaveAttribute('tabindex', '0');
   const tableHint = page.getByText(/窄屏下可左右滑动参数表/);
-  const skipLink = page.getByRole('link', { name: '跳转到主要内容', exact: true });
+  await expect(tableHint).toBeVisible();
+  const skipLink = page.getByRole('link', { name: '跳至正文，跳转到主要内容', exact: true });
   const tableJumpLink = page.getByRole('link', {
     name: '跳转到 Input 参数表起始位置',
     exact: true,
@@ -684,6 +770,7 @@ test('Input API 表跳转避开固定导航，窄屏方向键滚动且标识符�
 
   for (const width of [1280, 320, 300]) {
     await page.goto(inputRoute);
+    await expect(page.getByRole('heading', { name: 'Input 输入框', level: 1 })).toBeVisible();
     await page.setViewportSize({ width, height: 740 });
     await page.evaluate(() => {
       if (document.activeElement instanceof HTMLElement) document.activeElement.blur();

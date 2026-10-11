@@ -1,10 +1,18 @@
 # lx-ui 后续实施总计划
 
-更新时间：2026-10-06
+更新时间：2026-10-11
 适用范围：React 18/19、Ant Design 5、PC 中后台组件库  
 维护人：主代理负责架构、边界、验收和交付；子代理负责在明确边界内实现与复审
 
 这份文档是 Tooltip 之后的执行计划。它把已经存在的代码、尚未完成的浏览器证据和待实现模块排成有依赖关系的批次。每个批次必须关闭自己的问题后才能进入下一批；“代码已经存在”不等于“组件已经交付”。
+
+## 当前执行状态（2026-10-11）
+
+- **批次 2B-1 仍开放。** 2026-10-06 的 NO-GO 是当时针对全库验收缺口的历史结论；其后组件级浏览器证据持续增加，但尚未逐项覆盖本计划要求的公开组件与未验收范围。Input 文档跳转入口此次局部回归通过，不构成全库关闭证据。
+- **当前局部收口：** Input 文档跳转入口显示“跳至正文”，可访问名称为“跳至正文，跳转到主要内容”。缺链首次正向 Tab 会在同一事件中同步补链、阻止默认移焦并聚焦入口；延迟挂载测试分阶段验证 `main`、`article`、`h1`。真实的参数表修饰键新页用例先等待 Input H1 与跳转链接可见，再进行焦点探测和 Tab 循环；复用现有预览在 Chromium、Edge、WebKit 定向通过 3/3。首次 Tab、焦点/Hash、三种视口文案与 300px 几何均有浏览器断言。
+- **当前评审与浏览器结果：** UX 终审 **37/40**，此前发现的标签回归覆盖缺口已补齐；修复真实参数表新页用例的路由就绪等待后，完整 Input 专项 Chromium、Edge、Windows Playwright WebKit 再运行共 45 项，44 项通过、1 项因 Windows WebKit 未暴露触点能力跳过。跳过项不代表触控通过。最终独立代码复审 **GO**，未发现 P0-P2；子代理按 `gpt-6-luna max` 配置，运行时身份无法核验。评审快照和边界详见 `docs/impeccable-audit.md` 与 `docs/browser-acceptance-matrix.md`。
+- **当前环境限制：** Dumi 开发进程仍使用本项目 `.dumi/tmp`，本轮未运行会覆盖该共享缓存的 `build:docs`。Playwright 使用现有 `docs-dist` 启动本地 Vite preview，并将脚本请求映射到当前源码；跳转样式用例显式注入当前 CSS。因此本轮验证不代表最新 Dumi 构建资产，也未验证开发服务器路由。
+- **下一步边界：** 继续按批次 2B-1 补齐浏览器证据并记录真实未覆盖项；只有满足本节关闭条件后，才进入 2B-2 锚定对话框原语实现。ADR-0004 已接受不代表实现门禁已解除。
 
 ## 一、当前基线
 
@@ -275,5 +283,9 @@ flowchart TD
 2026-10-11 文档跳转链接焦点打磨：按独立 UX 复核意见修复首次聚焦覆盖 Logo 与文章默认长轮廓两个 P3；桌面链接在 Logo 与导航之间保留焦点环净距，320px/300px 按可用宽度换行，文章保留 H1 主题焦点提示。Input 专项在 Chromium/Edge/WebKit 共 33 项中 32 项通过、1 项因 WebKit 运行时没有触控点跳过；WebKit smoke 另 2/2。全量检查为 55 个测试文件、609 项及 105 个 demo 类型检查通过；脚手架、库构建、Dumi 161 HTML/644 本地资源/89 demo 导出通过。检测器原始结果 `[]` 仅表示确定性规则未命中。因当前子代理运行时无法核验用户指定的 `gpt-6-luna max`，该模型专属 code review 未完成；主代理复核未发现 P0-P2，不冒称子代理指定模型通过。真实读屏、缩放、Safari 实机、实体触控和全库 2B-1 继续开放。
 
 2026-10-11 文档跳转最终三引擎回归：Input 浏览器测试扩展为 15 项，在 Chromium、Edge、Windows Playwright WebKit 共运行 45 项，44 项通过、1 项因 WebKit 运行时 `maxTouchPoints=0` 跳过；Chromium/Edge 各 15/15，WebKit 14/15。新增延迟注入首次 Tab 回归，主内容链接使用真实平台修饰键 + Enter 验证新页面，API 表继续验证平台修饰键点击；三引擎均通过。Impeccable detector 原始结果 `[]` 仅表示静态规则未命中；`npm run check`、脚手架检查、库构建、Prettier 和 `git diff --check` 通过。子代理运行身份无法核验为 `gpt-6-luna max`，主代理最终复核未发现 P0-P2；真实读屏、page zoom、Safari 实机、实体触控、设备性能、目标部署和全库 2B-1 继续开放。
+
+2026-10-11 Input 文档跳转入口最终修复：`aria-label` 纳入可见文案“跳至正文”，缺链首次 Tab 在一个同步任务中验证补链、默认行为取消和焦点交接；Playwright suite-level 路由对全部 Input 用例映射当前脚本。新增 300/320/1280px 均断言可见文案与完整 accessible name，窄屏尺寸断言保留于 319px 及以下。最终三引擎同版测试 Chromium 15/15、Edge 15/15、Windows Playwright WebKit 14 通过/1 跳过；触点能力缺失导致的跳过不代表 WebKit 触控验收。UX 终审 37/40，首轮标签断言范围 P3 已关闭；技术审查 17/20、代码复审 GO，无 P0-P2。Dumi `build:docs` 因开发服务使用共享 `.dumi/tmp` 未运行；Playwright 使用既有 `docs-dist` 加当前 JS 路由映射及当前 CSS 注入，不作为新 Dumi 产物证据。评审身份按 `gpt-6-luna max` 配置派发，但运行时身份不可核验。真实读屏、390px 跳转几何、page zoom、Safari 实机、实体触控、强制颜色、设备性能、目标部署和全库 2B-1 仍开放。
+
+2026-10-11 Input 文档跳转就绪等待最终复验：首次三引擎并发时 WebKit 曾在骨架态读取几何、API 锚点定位超时；隔离复跑 2/2 通过。此前为入口几何、API 锚点定位和其合成修饰键点击断言补充标题、表格区域及提示可见等待后，完整 45 项曾通过 44、跳过 1。最终复审又发现真实参数表新页用例在首次同步焦点探测前缺少等待；现补充等待 Input H1 和参数链接可见，该用例 Chromium/Edge/WebKit 定向 3/3。随后在包含此修复的工作树完整复跑 45 项：Chromium 15/15、Edge 15/15、WebKit 14 通过/1 跳过；跳过仍是 Windows WebKit 不暴露触点能力。最终独立代码复审 GO、未发现 P0-P2；保留首次波动及未确认根因，不把局部复验扩大为全库 2B-1 关闭证据。
 
 2026-10-11 Pagination/Tree 文档交互批次：新增公开页大小与跳页控件、受控空状态恢复、具名分页/组织树横向滚动区、方向键边界处理、Tree 深层标题状态播报和粗指针 44px 目标；`tests/browser/data-display-basic.spec.ts` Chromium 3/3，覆盖 930/390/320px、reduced-motion、dark/compact、根溢出和 coarse pointer。首轮复审修复了 AntD 分页项错误按钮定位及分页循环切页后复用 Tree locator 的测试问题；最新 `gpt-6-luna max` 复审未发现 P0/P1。Dumi 构建导出 161 HTML/644 本地资源/89 demo；Impeccable detector `[]` 仅表示静态规则无命中。保留真实读屏、page zoom、Safari、实体设备、大数据虚拟化、性能和部署矩阵，2B-1 不关闭。
