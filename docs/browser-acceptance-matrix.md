@@ -345,6 +345,14 @@
 - **工程门禁：** `npm run check` 通过 55 个测试文件、609 项测试和 105 个 demo 类型检查；`npm run check:scaffold`、`npm run build:lib`、Prettier、lint 和 TypeScript 检查通过。全量测试中的 jsdom 伪元素、AntD 弃用和测试模拟循环引用提示为既有 stderr 噪声，不影响通过。
 - **边界：** 真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机、实体设备、设备性能、部署环境及完整主题/风格/色板矩阵仍未验收；本记录只关闭 General 局部 viewport 和交互证据，不关闭全库 2B-1。
 
+### 2026-10-12 General Icon 无障碍与减少动效复验
+
+- **实现修复：** `Icon` 现在按第一个 trim 后非空的 `label`、`title`、宿主原生 `aria-label` 生成图片名称；空字符串和纯空白均回退，三者都无有效值时设为 `aria-hidden="true"`。没有新增公共 API，也没有依赖 AntD 私有 DOM。组件单测覆盖名称优先级、空值回退及全空白状态。
+- **浏览器范围与结果：** `tests/browser/general-demo.spec.ts` 的 7 项，加 `tests/browser/theme-settings.spec.ts` 中 Button、Icon、Typography、Space、Divider 五个 General 路由的 5 项；使用 `.codex/general-playwright.config.ts` 直连 `http://127.0.0.1:8001`，不启动或重建 Dumi preview。Chromium 12/12、Windows Playwright WebKit 12/12，Edge 不在范围内。主题路径覆盖 light/dark、business/soft/glass、comfortable/compact、6 个品牌色和 7 个东方配色；demo 路径验证 no-preference 下 Icon 动画和 Button 过渡非零，再切换 reduce 验证动画名为 none 且动效时长为 0s，并覆盖 930/390/320px 根溢出、交互和 browser-health。该专项结果不代表 Safari 实机、其他浏览器测试文件或全库通过。
+- **构建与记录：** 本批此前的 `npm run build:docs` 与导出门禁已通过，报告 161 个 HTML、644 个本地 JS/CSS 引用、89 个嵌套 demo；它早于本次纯空白名称边界修复，不据此声称本次源码已重新生成文档导出。浏览器原始命令输出保存在 `.codex/test-results/general-chromium-20261012.log` 与 `.codex/test-results/general-webkit-20261012.log`。
+- **工程门禁与 Impeccable：** `npm run check` 通过格式、TypeScript、106 个 Dumi demo 源码文件检查、ESLint，以及 55 个测试文件/610 项测试；`npm run check:scaffold` 和 `npm run build:lib` 通过。Impeccable 4.1.3 detector 使用 `node "C:/Users/Administrator/.codex/skills/impeccable/scripts/detect.mjs" --json src/components/general/icon`，原始 stdout 为 `[]`、stderr 无输出、退出码 0；这只表示确定性规则未命中，不代替浏览器结果或人工复审。Icon 单测、全量工程检查、脚手架检查、库构建的原始输出分别保存在 `.codex/test-results/general-icon-vitest-20261012.log`、`general-check-20261012.log`、`general-scaffold-20261012.log`、`general-build-lib-20261012.log`；detector stdout 保存在 `general-icon-impeccable-20261012.log`。
+- **未覆盖：** 真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机、实体触控、设备性能、目标部署及真实操作系统减少动效偏好仍未验收；该记录不关闭 General 完整矩阵或全库 2B-1。
+
 ### 2026-10-10 Form 基础控件浏览器局部验收
 
 - **设计依据与范围：** 对照 Form 组件设计稿和各页面现有可运行 demo，新增 `tests/browser/form-basic.spec.ts`，覆盖 InputNumber、Select、DatePicker、Checkbox、Switch、Radio 的公开交互路径。本批只补充浏览器证据，不变更组件运行时、公开 API 或 demo 结构。

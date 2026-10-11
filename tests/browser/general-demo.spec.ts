@@ -383,9 +383,66 @@ test('Icon 操作图标有名称、键盘焦点与可用边界', async ({ page }
   await expectBrowserHealthy(page, health);
 });
 
-test('Typography 标题语义、复制与链接禁用行为', async ({ page, context }) => {
+test('General 组件在减少动效偏好下停用旋转与过渡', async ({ page }) => {
   const health = collectBrowserErrors(page);
-  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto(generalRoutes.icon);
+  await expectGeneralPage(page, 'Icon 图标', ['icon-basic', 'icon-variants', 'icon-actions']);
+
+  const spinningIcon = page
+    .getByTestId('icon-variants')
+    .getByRole('img', { name: '持续同步', exact: true });
+  await expect
+    .poll(() => spinningIcon.evaluate((element) => getComputedStyle(element).animationName))
+    .not.toBe('none');
+  await expect
+    .poll(() => spinningIcon.evaluate((element) => getComputedStyle(element).animationDuration))
+    .not.toBe('0s');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect
+    .poll(() => spinningIcon.evaluate((element) => getComputedStyle(element).animationName))
+    .toBe('none');
+  await expect
+    .poll(() => spinningIcon.evaluate((element) => getComputedStyle(element).animationDuration))
+    .toBe('0s');
+
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto(generalRoutes.button);
+  await expectGeneralPage(page, 'Button 按钮', ['button-basic', 'button-variants', 'button-async']);
+  const button = page
+    .getByTestId('button-basic')
+    .getByRole('button', { name: '新建客户', exact: true });
+  await expect
+    .poll(() => button.evaluate((element) => getComputedStyle(element).transitionDuration))
+    .not.toBe('0s');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect
+    .poll(() => button.evaluate((element) => getComputedStyle(element).transitionDuration))
+    .toBe('0s');
+  await expectViewportMatrix(page);
+  await expectBrowserHealthy(page, health);
+});
+
+test('Typography 标题语义、复制与链接禁用行为', async ({ page, context }, testInfo) => {
+  const health = collectBrowserErrors(page);
+  if (testInfo.project.name === 'webkit') {
+    // WebKit Playwright 不接受 clipboard-write 权限名；用公开 Clipboard API 做最小测试替身，仍验证组件的写入和读取协议。
+    await page.addInitScript(() => {
+      let clipboardValue = '';
+      const clipboard = {
+        writeText: async (value: string) => {
+          clipboardValue = value;
+        },
+        readText: async () => clipboardValue,
+      };
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: clipboard,
+      });
+    });
+  } else {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  }
   await page.goto(generalRoutes.typography);
   await expectGeneralPage(page, 'Typography 排版', [
     'typography-basic',

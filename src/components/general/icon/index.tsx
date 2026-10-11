@@ -18,7 +18,8 @@ export const Icon = forwardRef<HTMLSpanElement, IconProps>(function Icon(
   },
   ref,
 ) {
-  const accessibleName = label ?? title;
+  // 空串和纯空白都不能遮住后续名称；宿主 aria-label 是最后一个公开回退来源。
+  const accessibleName = [label, title, props['aria-label']].find((value) => value?.trim())?.trim();
   return (
     <span
       {...props}

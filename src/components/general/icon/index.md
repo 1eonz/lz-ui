@@ -7,7 +7,7 @@ demo:
 
 # Icon 图标
 
-用于识别操作、文件与业务状态。图标由宿主按需导入并通过 `component` 注入，lx-ui 不包含完整图标集合。装饰图标保持隐藏语义；独立传达含义时提供 `label`。交互放在 Button 或链接中，由父控件负责名称、键盘与焦点。
+用于识别操作、文件与业务状态。图标由宿主按需导入并通过 `component` 注入，lx-ui 不包含完整图标集合。装饰图标保持隐藏语义；独立传达含义时提供 `label`、`title` 或原生 `aria-label`。交互放在 Button 或链接中，由父控件负责名称、键盘与焦点。
 
 ## 使用方法
 
@@ -58,19 +58,19 @@ export default function SearchIcon() {
 | 参数                     | 类型                              | 默认值         | 说明                                                              |
 | ------------------------ | --------------------------------- | -------------- | ----------------------------------------------------------------- |
 | `component`              | `IconComponent`                   | 必填           | 接受 className/style/aria-hidden 的 React 组件                    |
-| `label`                  | `string`                          | —              | 独立图片的可访问名称，优先于 title                                |
-| `title`                  | `string`                          | —              | 原生悬停提示；没有 label 时也用作可访问名称                       |
+| `label`                  | `string`                          | —              | 独立图片的可访问名称，trim 后非空时优先于 title 和原生 aria-label |
+| `title`                  | `string`                          | —              | 原生悬停提示；label 为空或纯空白时作为可访问名称                  |
 | `size`                   | `number \| string`                | 继承 font-size | number 按 px；string 可使用 em/rem 等 CSS 长度                    |
 | `color`                  | `CSSProperties['color']`          | `'inherit'`    | currentColor 颜色；优先于 style.color                             |
 | `spin`                   | `boolean`                         | `false`        | 外层持续旋转，尊重 reduced-motion                                 |
 | `rotate`                 | `number`                          | —              | 内层角度，单位 deg，不改变占位尺寸                                |
 | `className`              | `string`                          | —              | 外层 span 类名                                                    |
 | `style`                  | `CSSProperties`                   | —              | 外层样式；size/color 参数优先于相应 style 值                      |
-| `id / data-* / 原生属性` | `HTMLAttributes<HTMLSpanElement>` | —              | 转发至外层；role、aria-label、aria-hidden 由 label/title 语义决定 |
+| `id / data-* / 原生属性` | `HTMLAttributes<HTMLSpanElement>` | —              | 转发至外层；label/title 为空或纯空白时保留原生 aria-label         |
 
 </div>
 
-`IconComponent` 的最小属性为 `{ className?: string; style?: CSSProperties; 'aria-hidden'?: AriaAttributes['aria-hidden'] }`。没有 label/title 时外层 `aria-hidden=true`；有有效名称时外层 `role="img"`。内部图标始终隐藏，避免重复播报。
+`IconComponent` 的最小属性为 `{ className?: string; style?: CSSProperties; 'aria-hidden'?: AriaAttributes['aria-hidden'] }`。名称按第一个 trim 后非空值回退，优先级为 `label`、`title`、原生 `aria-label`；空字符串和纯空白都按空值处理。没有有效名称时外层 `aria-hidden=true`，有名称时外层 `role="img"`。内部图标始终隐藏，避免重复播报。
 
 ## 事件与 Ref
 
