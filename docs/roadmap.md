@@ -1,6 +1,6 @@
 # lx-ui 后续实施总计划
 
-更新时间：2026-10-11
+更新时间：2026-10-12
 适用范围：React 18/19、Ant Design 5、PC 中后台组件库  
 维护人：主代理负责架构、边界、验收和交付；子代理负责在明确边界内实现与复审
 
@@ -289,3 +289,5 @@ flowchart TD
 2026-10-11 Input 文档跳转就绪等待最终复验：首次三引擎并发时 WebKit 曾在骨架态读取几何、API 锚点定位超时；隔离复跑 2/2 通过。此前为入口几何、API 锚点定位和其合成修饰键点击断言补充标题、表格区域及提示可见等待后，完整 45 项曾通过 44、跳过 1。最终复审又发现真实参数表新页用例在首次同步焦点探测前缺少等待；现补充等待 Input H1 和参数链接可见，该用例 Chromium/Edge/WebKit 定向 3/3。随后在包含此修复的工作树完整复跑 45 项：Chromium 15/15、Edge 15/15、WebKit 14 通过/1 跳过；跳过仍是 Windows WebKit 不暴露触点能力。最终独立代码复审 GO、未发现 P0-P2；保留首次波动及未确认根因，不把局部复验扩大为全库 2B-1 关闭证据。
 
 2026-10-11 Pagination/Tree 文档交互批次：新增公开页大小与跳页控件、受控空状态恢复、具名分页/组织树横向滚动区、方向键边界处理、Tree 深层标题状态播报和粗指针 44px 目标；`tests/browser/data-display-basic.spec.ts` Chromium 3/3，覆盖 930/390/320px、reduced-motion、dark/compact、根溢出和 coarse pointer。首轮复审修复了 AntD 分页项错误按钮定位及分页循环切页后复用 Tree locator 的测试问题；最新 `gpt-6-luna max` 复审未发现 P0/P1。Dumi 构建导出 161 HTML/644 本地资源/89 demo；Impeccable detector `[]` 仅表示静态规则无命中。保留真实读屏、page zoom、Safari、实体设备、大数据虚拟化、性能和部署矩阵，2B-1 不关闭。
+
+2026-10-12 Tooltip 文档 demo 窄屏与主题矩阵：基础示例在 320px 限定按钮间距和内距；Chromium 实际预览复核 320×800、1280×800，键盘焦点 Tooltip 不覆盖邻接按钮。Playwright 两个 Tooltip 专项在 Chromium 与 Windows Playwright WebKit 各 9/9，共 18/18；覆盖 320/390/930/1280px 几何、公开 placement、边缘翻转、鼠标命中、reduced-motion、light/dark 下所有单项外观/密度/色板及四组复合主题，对比度至少 4.5:1。Impeccable detector `[]` 只表示静态规则无命中。为保持 8001 Dumi dev 共享 `.dumi/tmp`，未运行 `build:docs`；复用了确认包含当前 demo 的既有 `docs-dist`。Tooltip 完整笛卡尔主题矩阵、真实读屏、page zoom、Safari 实机、实体设备、性能、部署及全库 2B-1 继续开放。

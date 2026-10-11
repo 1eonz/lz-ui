@@ -1,6 +1,6 @@
 # 组件浏览器验收矩阵
 
-更新时间：2026-10-11
+更新时间：2026-10-12
 适用范围：现有 32 个公开组件；仅记录浏览器实际观察到的范围。
 
 本矩阵是批次 2B-1 的持续验收台账。历史路由 smoke 只说明组件文档路由可以访问，不代表其完整外观、交互、键盘、主题或响应式行为已通过。空白、未测和局部通过均需按下面的具体记录理解。下方历史组件清单中的“完整矩阵待验收”保留为组件自身完整交互状态；统一主题矩阵结果以本节及末尾收口记录为准。历史条目中的 P2 表述保留当时状态；Table 方向键网格导航的当前分类以 [ADR-0005](./adr/0005-table-keyboard-model.md) 为准。
@@ -59,7 +59,7 @@
 | Feedback     | Alert        | `/components/feedback/alert`            | 2026-10-10：基于 Feedback Stitch 稿复验初始失败、成功及收起/展开、键盘关闭焦点恢复、reduced-motion、粗指针操作，以及完整主题设置。Chromium 定向 Playwright 交互 4/4、主题矩阵 1/1；桌面关闭目标 24×24px，390/320px 触屏目标至少 44×44px；320px 下主操作移到 Alert 外侧且正文宽 90px、两行，930/390/320px document/body 均无横溢出；browser-health 无错误。                                                                                                                                                                                                                                                                                                                                                                                   | 组件矩阵已覆盖 light/dark、comfortable/compact、business/soft/glass、6 个品牌色与 7 套东方配色；真实读屏、200%/400% 缩放、Safari、实体设备及部署验收仍待后续批次 |
 | Feedback     | Spin         | `/components/feedback/spin`             | 2026-10-08：最新 Dumi 构建 Chromium 专项 `tests/browser/spin-demo.spec.ts` 7/7；覆盖重复键鼠激活、提交地区快照、首次失败与重试、未知地区/`__proto__` 空态、焦点保持、加载按钮 token、目录锚点滚动安全区、320/390px 粗指针目标、无溢出及 reduced-motion；浏览器错误为 0。独立 UX 复核 40/40、技术复核 19/20 GO。完整 Impeccable 记录见 `docs/impeccable-audit.md`。                                                                                                                                                                                                                                                                                                                                                                           | Spin 文档与交互 demo 局部已验；完整风格/配色/密度组合、真实 200%/400% 缩放、读屏、Safari、实体设备、设备性能和部署验收仍待验收                                   |
 | Feedback     | Progress     | `/components/feedback/progress`         | 2026-10-08：Progress API 表窄屏专项在 Chromium 与 Edge 各通过 5/5；覆盖受控状态、边界值、深色紧凑玻璃主题、reduced-motion、320/390/930/1280px 根溢出、API 区键盘横向往返、粘滞属性列及标识符单行显示。320px 首列 144px，browser-health 错误为 0。独立 UX 35/40、技术 17/20，均无 P0–P2。完整局部证据见本文件 Progress 专项记录及 `docs/impeccable-audit.md`。                                                                                                                                                                                                                                                                                                                                                                                | API 表与指定 demo 状态局部已验；真实读屏、200%/400% 缩放、Safari、实体设备、性能剖析及完整主题矩阵仍待验收                                                       |
-| Feedback     | Tooltip      | `/components/feedback/tooltip`          | 2026-10-08：`tests/browser/tooltip-demo.spec.ts` Chromium 与 Edge 各 6/6。覆盖默认焦点打开及移焦后 ARIA 描述恢复、受控开关、12 方位相对锚点几何、1280/930/390/320px 侧向提示与相邻按钮矩形不相交及真实鼠标命中、320/390px 两侧边缘自动翻转与根无横溢，以及系统 reduced-motion 仿真下全部动画时长归零/无运行动画；browser-health 错误为 0。历史局部证据见下方 Tooltip 记录。                                                                                                                                                                                                                                                                                                                                                                  | 局部已验；真实 page zoom、读屏、完整主题/密度/配色矩阵、Safari 和真实设备待验收。                                                                                |
+| Feedback     | Tooltip      | `/components/feedback/tooltip`          | 2026-10-12：Tooltip demo 窄屏与主题矩阵在 Chromium、Windows Playwright WebKit 各通过 9/9，共 18/18；覆盖 320/390/930/1280px 焦点几何、12 个公开 placement、相邻按钮命中区域、边缘翻转和 reduced-motion。light/dark 下逐项覆盖全部外观、密度、6 个品牌色、7 套东方配色，并验证 4 组代表性复合主题、token 对比度与 Spotlight 高对比样式。320×800、1280×800 实际预览复核，browser-health 无错误；detector `[]` 仅表示静态规则未命中，详见下方专项记录。                                                                                                                                                                                                                                                                                         | demo 局部已验；完整笛卡尔主题组合、真实 page zoom、读屏、Safari 实机、实体设备、设备性能及目标部署仍待验收。                                                     |
 
 ### 2026-10-06 Table 与文档壳复验
 
@@ -182,7 +182,7 @@
 - Chromium 与 Microsoft Edge 的搜索 Playwright 用例各 4/4 通过，覆盖折叠入口截图、320/390px 搜索框边界、长结果候选数、矮视口滚动、Escape 两阶段焦点和 Enter 导航。浏览器错误监听在导航前启动，并在请求归零且静默 1 秒后断言；两组用例无页面错误、console error、请求失败或 HTTP 错误。
 - 结果数量测量现在同时断言滚动区顶部不高于视口上边缘、底部不低于视口下边缘，避免整体移出视口时仍被误计为“首屏显示 3 至 4 项”；本次 Chromium/Edge 复跑均通过。
 - 重新运行 `npm run build:docs` 与静态导出检查通过：156 个 HTML、468 个本地 JS/CSS 引用、86 个嵌套 demo 页面。生产构建使用 `.dumi/tmp-production`；并行使用中的 `8001` 开发服务仍保持运行。
-- 验收截图由 Playwright 保存到本地忽略目录 `test-results/browser/`，包括 `search-collapsed-320.png`、`search-collapsed-390.png` 及 `search-button-{320x740,390x844,390x450}.png`。人工检查折叠态“搜索”标签可见，结果摘要与长列表没有撑宽页面。
+- 验收截图由 Playwright 保存到本地忽略目录 `.codex/test-results/browser/`，包括 `search-collapsed-320.png`、`search-collapsed-390.png` 及 `search-button-{320x740,390x844,390x450}.png`。人工检查折叠态“搜索”标签可见，结果摘要与长列表没有撑宽页面。
 - 本轮测试首次发现 Dumi 搜索补丁中的键盘说明少一个闭合括号，已修复源文件并重新生成 `patches/dumi+2.4.49.patch`；`node --check`、补丁重放、移动搜索和结果单测随后通过。该问题记录用于补丁维护，不影响最终构建结果。
 - 仅关闭移动搜索候选数量和短视口滚动这一局部验收。真实屏幕阅读器、实体触控、Safari、深色主题、高倍缩放及目标部署环境仍未覆盖；全库 2B-1 保持未关闭。
 
@@ -405,3 +405,12 @@
 - **独立复审：** UX 终审 **37/40（Excellent）**，十项依次 `4,4,4,4,4,3,4,4,3,3`，无 P0/P1/P2。复审发现 visible-label 断言最初仅覆盖 319px 以下；断言已扩展至 300/320/1280px，复审确认该 P3 已关闭。最终代码复审针对新增新页等待、完整矩阵和记录给出 **GO**，未发现 P0-P2。审计快照 `.impeccable/critique/2026-10-11T07-45-44Z__public-docs-table-jump-focus-js.md` 的 **34/40** 与 300px 换行 P3 是短文案修复前基线，不代表当前实现；本次最终评审另存新快照。子代理按 `gpt-6-luna max` 配置派发，运行时身份不可核验，不将配置冒称为身份确认。
 - **Impeccable 与工程结果：** 4.1.3 detector 的原始 stdout 为 `[]`、stderr 为空、退出码 0；该结果只表示确定性规则未命中，不替代实际浏览器或独立评审。最终 `npm run check`、`npm run check:scaffold`、库构建、包 dry-run、Prettier 和 `git diff --check` 在完成后记录于审计附录。未运行 `build:docs`：Dumi 开发进程使用共享 `.dumi/tmp`，Playwright 通过现有 `docs-dist` 的 Vite preview 测试，并映射当前 JS、注入当前 CSS；因此不宣称新 Dumi 构建产物或当前开发路由已验收。
 - **未覆盖：** 跳转链接在 390px 的专属几何、真实读屏、200%/400% page zoom、Safari 实机、实体触控、强制颜色、设备性能和目标部署尚未验收。局部证据不关闭全库 2B-1。
+
+### 2026-10-12 Tooltip demo 窄屏与主题矩阵复验
+
+- **范围与设计依据：** 仅调整 Tooltip 文档基础示例的按钮间距/内距，并为 demo 和 Tooltip 弹层增加浏览器验收；不改 Tooltip 运行时 API 或组件样式。依据现有 Tooltip Dumi 设计和 `docs/impeccable-workflow.md`。
+- **真实渲染复核：** 在当前 `http://localhost:8001/components/feedback/tooltip/` 使用 Chromium 检查 320×800 与 1280×800。320px 下“客户同步状态”和“同步计划”保持同排；键盘聚焦“同步计划”后，焦点环贴合按钮，Tooltip 位于可视区内且不覆盖相邻按钮。两视口页面可正常渲染。截图仅为本机临时验收产物，不进入 Git。
+- **跨引擎结果：** 使用仓库现有 `docs-dist` 启动 Playwright preview；先确认导出的 demo chunk 已包含 `syncExamples` 和 `compactTrigger` 当前代码。`tests/browser/tooltip-demo.spec.ts` 与 `tests/browser/tooltip-theme-matrix.spec.ts` 在 Chromium、Windows Playwright WebKit 各 9/9，共 18/18；最终原始 list 输出保存在被忽略的 `.codex/test-results/tooltip-18-20261012.log`。browser-health 未发现 pageerror、console error、requestfailed 或 HTTP 错误。
+- **覆盖内容：** 窄屏键盘焦点几何覆盖 320/390/930/1280px，并断言两个触发按钮同排、Tooltip 不压住相邻按钮、不超出视口、document/body 无水平溢出。另覆盖 12 个公开 placement、侧向提示鼠标命中、窄屏边缘自动翻转和 reduced-motion。主题用例在 light/dark 下逐项测试全部 3 种外观、2 种密度、6 个品牌色与 7 套东方配色，另外检查 4 组代表性复合主题状态；弹层 token 跟随和正文对比度至少 4.5:1，Spotlight 保持深色高对比。
+- **Impeccable detector：** 4.1.3 `detect.mjs --json` 扫描本批 demo JSX/CSS 与浏览器用例，原始 stdout 为 `[]`、退出码 0。此结果只表示确定性规则没有命中；实际通过依据是 Chromium/WebKit 交互和本地预览截图，不是 `[]`。
+- **边界：** 未覆盖完整笛卡尔主题组合、真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机、实体触控、设备性能、生产部署和全库 2B-1。`build:docs` 未运行：当前 Dumi dev 共享 `.dumi/tmp`，为保持用户正在使用的 8001 预览，浏览器测试复用含当前 demo 的现有 `docs-dist`，不能据此声称本轮重新构建了 Dumi 文档站。

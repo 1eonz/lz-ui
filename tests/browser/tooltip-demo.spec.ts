@@ -219,6 +219,56 @@ test('Tooltip 焦点打开时合并描述，移焦后恢复宿主描述', async 
   await finishBrowserCheck(page, browserHealth);
 });
 
+test('Tooltip 窄屏键盘焦点提示不覆盖相邻触发按钮或越过视口', async ({ page }) => {
+  const browserHealth = collectBrowserErrors(page);
+  for (const width of [320, 390, 930, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/components/feedback/tooltip');
+
+    const trigger = page.getByRole('button', { name: '同步计划', exact: true });
+    const adjacentTrigger = page.getByRole('button', { name: '客户同步状态', exact: true });
+    await trigger.focus();
+    const tooltip = await getAssociatedTooltip(
+      page,
+      trigger,
+      '客户资料已同步 下次同步：今天 22:00',
+    );
+    await expect(trigger).toBeFocused();
+    await expect(tooltip).toBeVisible();
+    await waitForStableTooltipGeometry(tooltip);
+
+    const [tooltipBox, adjacentTriggerBox, triggerBox, widths] = await Promise.all([
+      tooltip.boundingBox(),
+      adjacentTrigger.boundingBox(),
+      trigger.boundingBox(),
+      page.evaluate(() => ({
+        viewport: document.documentElement.clientWidth,
+        document: document.documentElement.scrollWidth,
+        body: document.body.scrollWidth,
+      })),
+    ]);
+    expect(tooltipBox).not.toBeNull();
+    expect(adjacentTriggerBox).not.toBeNull();
+    expect(triggerBox).not.toBeNull();
+    expect(
+      Math.abs(triggerBox!.y - adjacentTriggerBox!.y),
+      `${width}px 视口下两个提示按钮应保持在同一行`,
+    ).toBeLessThanOrEqual(1);
+    expect(tooltipBox!.x, `${width}px 视口下 Tooltip 左边界不能越界`).toBeGreaterThanOrEqual(0);
+    expect(
+      tooltipBox!.x + tooltipBox!.width,
+      `${width}px 视口下 Tooltip 右边界不能越界`,
+    ).toBeLessThanOrEqual(widths.viewport);
+    expect(widths).toEqual({ viewport: width, document: width, body: width });
+    expect(
+      rectanglesOverlap(tooltipBox!, adjacentTriggerBox!),
+      `${width}px 视口下键盘打开的同步计划提示不应覆盖客户同步状态按钮`,
+    ).toBe(false);
+  }
+
+  await finishBrowserCheck(page, browserHealth);
+});
+
 test('Tooltip 受控示例根据外部按钮同步打开和关闭', async ({ page }) => {
   const browserHealth = collectBrowserErrors(page);
   await page.goto('/components/feedback/tooltip');

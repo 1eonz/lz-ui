@@ -129,3 +129,14 @@
     padding-inline-start: var(--lx-space-md);
   }
 }
+
+@media (max-width: 360px) {
+  .syncExamples {
+    /* 320px 演示可用宽 190px；仅缩紧这组按钮内距和间距，避免换行后 Tooltip 盖住前一行。 */
+    column-gap: var(--lx-space-sm);
+  }
+
+  .syncExamples .compactTrigger {
+    padding-inline: var(--lx-space-sm);
+  }
+}

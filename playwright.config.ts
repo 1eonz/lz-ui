@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// 避免机器级 Playwright 环境变量将 HTML 报告重定向到仓库外。
+delete process.env.PLAYWRIGHT_HTML_OUTPUT_DIR;
+delete process.env.PLAYWRIGHT_HTML_REPORT;
+
 const previewPort = Number(process.env.PLAYWRIGHT_PORT ?? 4173);
 if (!Number.isInteger(previewPort) || previewPort < 1024 || previewPort > 65535) {
   throw new Error('PLAYWRIGHT_PORT 必须是 1024 到 65535 之间的整数');
@@ -16,8 +20,11 @@ export default defineConfig({
   expect: {
     timeout: 30_000,
   },
-  reporter: [['list'], ['html', { outputFolder: 'playwright-report', open: 'never' }]],
-  outputDir: 'test-results/browser',
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: '.codex/test-results/html-report', open: 'never' }],
+  ],
+  outputDir: '.codex/test-results/browser',
   use: {
     baseURL,
     actionTimeout: 10_000,

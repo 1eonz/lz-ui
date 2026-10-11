@@ -28,7 +28,7 @@ export default function TooltipBasicDemo() {
 
   return (
     <DataDisplayDemoFrame>
-      <div className={styles.row}>
+      <div className={`${styles.row} ${styles.syncExamples}`}>
         <Tooltip
           ref={tooltipRef}
           id="sync-status-tooltip"
@@ -36,7 +36,9 @@ export default function TooltipBasicDemo() {
           title="最近一次同步于 14:32 完成"
           placement="top"
         >
-          <Button aria-describedby="sync-field-description">客户同步状态</Button>
+          <Button className={styles.compactTrigger} aria-describedby="sync-field-description">
+            客户同步状态
+          </Button>
         </Tooltip>
         <Tooltip
           title={
@@ -49,7 +51,7 @@ export default function TooltipBasicDemo() {
           placement="topRight"
           arrow={{ pointAtCenter: true }}
         >
-          <Button>同步计划</Button>
+          <Button className={styles.compactTrigger}>同步计划</Button>
         </Tooltip>
       </div>
       <div className={styles.describedExample}>
