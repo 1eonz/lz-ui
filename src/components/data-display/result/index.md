@@ -27,6 +27,18 @@ error/500 本地重试恢复成功；403/404 只显示处理说明或返回本�
 
 从 `lx-ui` 根入口命名导入组件和对应类型。除扩展项外，其他属性沿用 [Ant Design 5 公开契约](https://ant.design/components/result/cn/)；默认行为随安装的 AntD 5 版本生效，下表列出常用参数。
 
+<p id="result-docs-table-hint" className="lx-docs-table-hint">
+  表格可横向滚动；聚焦表格区域后按左右方向键浏览。
+</p>
+
+<div
+  className="lx-docs-table"
+  role="region"
+  tabindex="0"
+  aria-label="Result 常用属性参数表"
+  aria-describedby="result-docs-table-hint"
+>
+
 | 属性       | 类型                    | 默认值 | 说明                            |
 | ---------- | ----------------------- | ------ | ------------------------------- |
 | `status`   | `ResultProps['status']` | `info` | 成功/错误/信息/警告/403/404/500 |
@@ -35,6 +47,10 @@ error/500 本地重试恢复成功；403/404 只显示处理说明或返回本�
 | `extra`    | `ReactNode`             | `—`    | 操作区                          |
 | `icon`     | `ReactNode`             | `—`    | 自定义图标                      |
 | `children` | `ReactNode`             | `—`    | 补充内容                        |
+
+</div>
+
+403/404/500 默认插画由 lx-ui 通过组件自有容器等比缩放；传入 `icon` 时显示自定义内容。
 
 ## 事件、Ref 与键盘
 

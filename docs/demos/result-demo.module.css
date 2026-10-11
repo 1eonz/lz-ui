@@ -1,0 +1,9 @@
+@media (pointer: coarse) {
+  .statusOptions :global(.lx-result-demo-status-option) {
+    box-sizing: border-box;
+    min-inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    align-items: center;
+    justify-content: center;
+  }
+}

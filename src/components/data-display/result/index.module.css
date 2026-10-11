@@ -1,9 +1,37 @@
 .root {
   display: block;
   width: 100%;
+  /* Result 在文档栅格中默认受插画固有尺寸影响，需允许内容列收缩到可用宽度。 */
+  min-inline-size: 0;
   color: var(--lx-color-text);
 }
-.root :global(.ant-result-title),
-.root :global(.ant-result-subtitle) {
-  color: var(--lx-color-text);
+/* 直接内容统一受本地根节点约束，避免固有尺寸插画撑开容器。 */
+.resultRoot > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+.resultRoot svg {
+  max-inline-size: 100%;
+  block-size: auto;
+}
+.exceptionIllustration {
+  display: block;
+  inline-size: 100%;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  container-type: inline-size;
+}
+.exceptionIllustration svg {
+  display: block;
+  margin-inline: auto;
+  max-inline-size: none;
+  /* AntD 5 的公开例外插画没有 viewBox，按最大原始宽度缩放整张 SVG 内容。 */
+  zoom: min(1, calc(100cqi / 254px));
+}
+
+@media (max-width: 520px) {
+  /* AntD 默认水平内距共占 64px；窄屏改用 spacing token，为状态插画和操作留出宽度。 */
+  .root .resultRoot {
+    padding-inline: var(--lx-space-md);
+  }
 }

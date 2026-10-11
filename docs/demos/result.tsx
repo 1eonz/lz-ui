@@ -3,8 +3,18 @@ import { Button, RadioGroup, Result } from 'lx-ui';
 import type { ResultProps } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import styles from './data-display-demo.module.css';
+import resultStyles from './result-demo.module.css';
 
 type DemoStatus = 'success' | 'error' | 'info' | 'warning' | '403' | '404' | '500';
+const statusOptions = [
+  { label: '成功', value: 'success' },
+  { label: '失败', value: 'error' },
+  { label: '信息', value: 'info' },
+  { label: '警告', value: 'warning' },
+  { label: '403', value: '403' },
+  { label: '404', value: '404' },
+  { label: '500', value: '500' },
+].map((option) => ({ ...option, className: 'lx-result-demo-status-option' }));
 const messages: Record<DemoStatus, { title: string; detail: string }> = {
   success: { title: '采购付款凭证提交成功', detail: '采购单 TRX-202410-0982 已提交至审核队列。' },
   error: { title: '付款凭证提交失败', detail: '本地失败状态演示：恢复后可以重新提交凭证。' },
@@ -20,19 +30,12 @@ export default function ResultDemo() {
   const [list, setList] = useState(false);
   const restricted = status === '403' || status === '404';
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="result-demo">
       <RadioGroup
+        className={resultStyles.statusOptions}
         aria-label="结果状态"
         value={status}
-        options={[
-          { label: '成功', value: 'success' },
-          { label: '失败', value: 'error' },
-          { label: '信息', value: 'info' },
-          { label: '警告', value: 'warning' },
-          { label: '403', value: '403' },
-          { label: '404', value: '404' },
-          { label: '500', value: '500' },
-        ]}
+        options={statusOptions}
         onChange={(event) => {
           setStatus(event.target.value as DemoStatus);
           setDetail(false);
