@@ -3,11 +3,35 @@
   --lx-pagination-focus-color: var(--lx-color-primary);
 }
 
-.root :global(.ant-pagination-item:focus-visible),
-.root :global(.ant-pagination-prev:focus-visible),
-.root :global(.ant-pagination-next:focus-visible),
-.root :global(.ant-pagination-jump-prev:focus-visible),
-.root :global(.ant-pagination-jump-next:focus-visible) {
+.root [tabindex='0']:not(input):not(button):not(select):not(textarea):focus-visible {
   outline: 2px solid var(--lx-pagination-focus-color);
   outline-offset: 2px;
+}
+
+@media (any-pointer: coarse) {
+  .root [tabindex='0'],
+  .root [aria-disabled] {
+    min-block-size: var(--lx-control-target-touch-min);
+    min-inline-size: var(--lx-control-target-touch-min);
+  }
+
+  .root button,
+  .root input,
+  .root [role='combobox'],
+  .root [role='textbox'] {
+    min-block-size: var(--lx-control-target-touch-min);
+    min-inline-size: var(--lx-control-target-touch-min);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .root *,
+  .root *::before,
+  .root *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 0ms !important;
+    transition-delay: 0ms !important;
+    transition-duration: 0ms !important;
+  }
 }

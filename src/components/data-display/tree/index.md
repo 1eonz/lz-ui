@@ -15,7 +15,7 @@ treeData 的每个节点都提供唯一 key、title 与可选 children。default
 
 ## 受控展开、选中与勾选
 
-expandedKeys/selectedKeys/checkedKeys 分别受控；展开、收起、清空更新状态，禁用节点不参与操作。
+expandedKeys/selectedKeys/checkedKeys 分别受控；展开、收起、清空更新状态，禁用节点不参与操作。交互示例的状态播报使用节点标题，内部 key 只用于稳定身份。
 
 <code src="../../../../docs/demos/tree.tsx"></code>
 
@@ -51,7 +51,7 @@ expandedKeys/selectedKeys/checkedKeys 分别受控；展开、收起、清空更
 | onCheck  | `TreeProps['onCheck']`  | 勾选变化，checkStrictly 时 keys 为对象 |
 | onLoad   | `TreeProps['onLoad']`   | 异步子节点完成                         |
 
-onExpand(keys, info)、onSelect(keys, info)、onCheck(keys, info) 返回下一状态；checkStrictly 下勾选 keys 为对象。ref 是公开 TreeRef 实例。保留方向键与 Enter/Space 语义。
+onExpand(keys, info)、onSelect(keys, info)、onCheck(keys, info) 返回下一状态；checkStrictly 下勾选 keys 为对象。ref 是公开 TreeRef 实例。保留方向键与 Enter/Space 语义；状态反馈应将 key 映射为用户可识别的节点标题。
 
 ## 主题与密度
 

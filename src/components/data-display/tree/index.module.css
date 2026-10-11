@@ -2,7 +2,34 @@
   --lx-tree-focus-color: var(--lx-color-primary);
 }
 
-.root :global(.ant-tree-node-content-wrapper:focus-visible) {
+/* AntD Tree 把键盘焦点放在内部焦点代理上，焦点环应标记获得焦点的组件根节点。 */
+.root:has(:focus-visible) {
   outline: 2px solid var(--lx-tree-focus-color);
   outline-offset: 1px;
+}
+
+@media (any-pointer: coarse) {
+  .root [role='treeitem'] {
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+
+  .root [role='checkbox'] {
+    min-inline-size: var(--lx-control-target-touch-min);
+    min-block-size: var(--lx-control-target-touch-min);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .root *,
+  .root *::before,
+  .root *::after {
+    animation-delay: 0ms !important;
+    animation-duration: 0ms !important;
+    transition-delay: 0ms !important;
+    transition-duration: 0ms !important;
+  }
 }

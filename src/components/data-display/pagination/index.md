@@ -15,13 +15,13 @@ defaultCurrent/defaultPageSize 设置非受控初值，组件维护导航状态�
 
 ## 受控切片与页大小
 
-current/pageSize/onChange 配套更新实际订单切片。修改页大小和清空数据都重置第 1 页。基础示例用 defaultCurrent 维护内部导航状态。
+current/pageSize/onChange 配套更新实际订单切片。修改页大小和清空数据都重置第 1 页。基础示例用 defaultCurrent 维护内部导航状态。交互示例显式提供中文分页 locale；页大小和跳页使用公开的 `Select`、`Input`、`Button` 组合，避免窄屏依赖 AntD 内置选项的隐藏策略。完整页码可在可键盘聚焦的分页区域内横向滚动，摘要只展示总数。
 
 <code src="../../../../docs/demos/pagination.tsx"></code>
 
 ## 状态与受控协议
 
-current/pageSize 受控时每次事件都需更新值；非受控使用 defaultCurrent/defaultPageSize。空集合将 total 设置为 0，宿主重置 current；请求期间可 disabled。
+current/pageSize 受控时每次事件都需更新值；非受控使用 defaultCurrent/defaultPageSize。空集合将 total 设置为 0，宿主重置 current，并提供明确的空状态和恢复动作；请求期间可 disabled。
 
 ## API
 

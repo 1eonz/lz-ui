@@ -6,7 +6,13 @@ export default function PaginationBasicDemo() {
   return (
     <DataDisplayDemoFrame>
       <div className={styles.scroll}>
-        <Pagination defaultCurrent={1} defaultPageSize={10} total={50} showSizeChanger={false} />
+        <Pagination
+          aria-label="基础分页"
+          defaultCurrent={1}
+          defaultPageSize={10}
+          total={50}
+          showSizeChanger={false}
+        />
       </div>
     </DataDisplayDemoFrame>
   );

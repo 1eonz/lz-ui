@@ -60,6 +60,115 @@
   overscroll-behavior-inline: contain;
 }
 
+.paginationFrame {
+  min-inline-size: 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.paginationFrame:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+.paginationRoot {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--lx-space-sm);
+  inline-size: max-content;
+  min-inline-size: 100%;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.paginationLayout {
+  display: grid;
+  gap: var(--lx-space-sm);
+  min-inline-size: 100%;
+}
+
+.paginationTools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--lx-space-sm);
+  min-inline-size: 0;
+}
+
+.paginationField {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lx-space-xs);
+  white-space: nowrap;
+}
+
+.paginationFieldLabel {
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+}
+
+.paginationSummary {
+  display: inline-block;
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
+  white-space: nowrap;
+}
+
+.paginationToolControl {
+  min-inline-size: 5rem;
+}
+
+.treeViewport {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.treeViewport:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+.treeCanvas {
+  min-inline-size: 32rem;
+}
+
+@media (any-pointer: coarse) {
+  .paginationAction {
+    --lx-control-height: var(--lx-control-target-touch-min);
+    min-inline-size: var(--lx-control-target-touch-min);
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+
+  .treeActions button {
+    --lx-control-height: var(--lx-control-target-touch-min);
+    min-inline-size: var(--lx-control-target-touch-min);
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+
+  .paginationToolControl {
+    --lx-control-height: var(--lx-control-target-touch-min);
+    min-block-size: var(--lx-control-target-touch-min);
+    min-inline-size: var(--lx-control-target-touch-min);
+  }
+
+  /* Select 的公开 combobox 角色落在内部输入节点，按语义角色扩大真实键盘/触控命中区。 */
+  .paginationToolControl[role='combobox'],
+  .paginationToolControl :global([role='combobox']) {
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+}
+
+@media (max-width: 520px) {
+  .paginationTools {
+    justify-content: flex-start;
+  }
+}
+
 .tableViewport {
   min-inline-size: 0;
   container-name: table-viewport;

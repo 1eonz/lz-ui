@@ -874,3 +874,33 @@ Questions skipped: 当前只有 2 个 Priority Issues，按 Impeccable 规则少
 - **Impeccable 复核：** 按 4.1.3 `polish` 流程读取 `craft-floor.md` 并运行一次 detector；`docs/docs-shell.css`、`public/docs-table-jump-focus.js` 与 Input MDX 扫描原始 stdout 为 `[]`，stderr 为空、退出码 0。该结果只表示静态规则未命中；桌面/320px/300px 实际渲染截图和三引擎交互才是本批主要证据。
 - **浏览器证据：** Input 测试共 15 项，在 Chromium、Edge、WebKit 共运行 45 项，44 项通过、1 项跳过；Chromium/Edge 各 15/15，WebKit 14/15，粗指针测试因 `maxTouchPoints=0` 跳过。延迟注入、主内容新页面、API 表新页面、焦点/Hash/窄屏几何和 browser-health 均通过；没有 pageerror、console error、失败请求或 HTTP 错误。
 - **门禁与边界：** `npm run check`（55 个文件、609 项测试、105 个 Dumi demo 类型检查）、`npm run check:scaffold`、`npm run build:lib`、Prettier 和 `git diff --check` 通过。独立代理运行身份无法核验为用户指定的 `gpt-6-luna max`，因此不冒称指定模型复审；主代理完成最终代码复核，未发现 P0-P2。真实读屏、page zoom、Safari 实机、实体触控、强制颜色、设备性能、目标部署和全库 2B-1 仍开放。
+
+### 2026-10-11：Pagination 与 Tree 文档交互收口
+
+#### 方法与证据
+
+- 目标为 `docs/demos/pagination.tsx`、`docs/demos/tree.tsx`、共享 Data Display 横向滚动逻辑与对应 CSS Modules；模式为 Read/Operate 文档示例，不改变 `lx-ui` 组件 API。
+- Assessment A：由 `/root/pagination_tree_luna_review` 按用户指定的 `gpt-6-luna max` 配置进行只读代码与 UI 复审，重点检查公开 Ant Design 5 语义、受控状态、窄屏、粗指针目标和焦点路径。首轮发现的是验收用例定位/导航结构问题，修复后未提出新的 P0/P1；剩余建议均属于完整矩阵或后续体验范围。
+- Assessment B：主代理在最新静态构建上运行 `tests/browser/data-display-basic.spec.ts` 的 Chromium 浏览器证据，三条用例 **3/3** 通过；用例覆盖 930/390/320px CSS viewport、reduced-motion、dark/compact Tree 状态、公开分页/Tree 语义、根节点无横向溢出和 coarse pointer 44px 目标。
+- Impeccable 4.1.3 机械扫描命令：`node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json docs/demos/pagination.tsx docs/demos/pagination-basic.tsx docs/demos/tree.tsx docs/demos/table-demo-scroll-region.tsx docs/demos/data-display-horizontal-scroll.ts`；stdout 为 `[]`、退出码 0。该结果只表示确定性规则未命中，不代表视觉、读屏或真实设备通过。
+
+#### Audit Health Score
+
+| 维度       |      分数 | 依据                                                                 |
+| ---------- | --------: | -------------------------------------------------------------------- |
+| 无障碍     |       3/4 | 公开 role/label、键盘区域、焦点样式和状态播报已覆盖；真实读屏未测。  |
+| 性能       |       3/4 | 无新增运行时依赖，横移只读写一次 scrollLeft；未做设备性能剖析。      |
+| 主题       |       3/4 | 使用 lx token、dark/compact 和 reduced-motion 规则；全色板未逐项测。 |
+| 响应式     |       3/4 | 930/390/320px 无根溢出，宽内容局部滚动；真实 page zoom 未测。        |
+| 实现完整性 |       4/4 | 公开语义、受控状态、恢复路径、文档和测试一致；无确定性扫描命中。     |
+| **合计**   | **16/20** | **Good；局部示例已具备可交付质量，完整设备矩阵仍开放。**             |
+
+#### 设计与实现结论
+
+Pagination 将页大小和跳页拆成可见的 Select、Input、Button，窄屏不再依赖 AntD 内部隐藏选项；分页列表保留 AntD 公共 `title` 和 listitem 语义。Pagination、Table、Tree 复用具名滚动区方向键逻辑，只有实际发生横移时才取消默认行为，避免吞掉子控件或边界导航。Tree 通过具名 region 承担超宽标题的局部滚动，焦点轮廓来自公开焦点状态，粗指针下节点、复选框和操作按钮达到 44px。
+
+没有发现 P0/P1。后续保留 P2/P3：大数据 Tree 虚拟滚动与真实设备/读屏矩阵仍需专项证据；具名滚动区会增加一个有意的 Tab 停靠点，文档应继续解释其用途；AntD 默认 Tree 复选框名称带有英文 `Select` 前缀，属于宿主 AntD locale 语义，未由本批引入。以上不阻断当前 Pagination/Tree 批次。
+
+#### 工程状态
+
+最新 Dumi 构建和导出门禁通过：161 个 HTML 页面、644 个本地 JS/CSS 引用、89 个嵌套 `~demos/` 页面。浏览器用例修复了 AntD 分页项错误使用 `button` 定位以及分页循环切换 Tree 后复用旧 locator 的问题；修复后 Chromium 3/3 通过。完整 `npm run check`、`check:scaffold`、`build:lib` 和最终 `git diff --check` 将在本批提交前再次执行。
