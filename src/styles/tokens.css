@@ -72,6 +72,8 @@
     --lx-tag-font-size: 12px;
     --lx-tag-line-height: 16px;
     --lx-tag-height: 26px;
+    /* Badge 使用独立节律；组件只在系统未要求减少动态效果时消费该时长。 */
+    --lx-badge-processing-duration: 1500ms;
     --lx-tag-radius: 6px;
     --lx-tag-padding-inline: 10px;
     --lx-tag-checkable-radius: 9999px;

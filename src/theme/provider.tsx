@@ -149,7 +149,12 @@ export function LxConfigProvider({ children, theme, className, style }: LxConfig
       <ConfigProvider theme={antdConfig}>
         <div
           className={className}
-          style={{ ...tokens.css, ...style }}
+          style={{
+            ...tokens.css,
+            // 与 CSS 媒体查询一起关闭徽标脉冲，覆盖宿主不使用 LxConfigProvider 的主题范围。
+            ...(reducedMotion ? { '--lx-badge-processing-duration': '0ms' } : {}),
+            ...style,
+          }}
           data-lx-mode={resolvedMode}
           data-lx-appearance={selection.appearance}
           data-lx-density={selection.density}

@@ -274,6 +274,8 @@ export function resolveLxTokens(options: {
     '--lx-tag-font-size': px(sizes.tagFont),
     '--lx-tag-line-height': px(sizes.tagLineHeight),
     '--lx-tag-height': px(sizes.tagHeight),
+    // 与徽标状态设计稿一致，并由 CSS Module 的 processing 插槽消费。
+    '--lx-badge-processing-duration': '1500ms',
     '--lx-tag-radius': px(sizes.tagRadius),
     '--lx-tag-padding-inline': px(sizes.tagPaddingInline),
     '--lx-tag-checkable-radius': px(sizes.tagCheckableRadius),
@@ -516,6 +518,9 @@ export function resolveLxTokens(options: {
       fontSizeSM: sizes.tagFont,
       lineHeightSM: sizes.tagLineHeight / sizes.tagFont,
       borderRadiusSM: sizes.tagRadius,
+    },
+    Badge: {
+      statusSize: 10,
     },
     Descriptions: {
       labelBg: hoverBg,

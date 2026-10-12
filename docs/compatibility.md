@@ -8,6 +8,12 @@
 
 宿主升级时先更新 AntD，再验证日期、表单、弹层、表格和主题。不要用 `--force` 忽略 peer 冲突。`lx-ui/antd` 转出与宿主相同实例，不能被当作另一份独立 AntD 运行时。
 
+## Badge Ribbon 与状态尺寸
+
+`Badge.Ribbon` 通过 AntD 5 根入口 `Badge` 的公开静态成员转出，`RibbonProps` 从 `ComponentProps<typeof AntBadge.Ribbon>` 推导，不依赖 `antd/es/*` 路径。它沿用 AntD 的 `text`、`color`、`placement`、`children`、`className`、`rootClassName` 和 `style` 契约；升级 AntD 时需检查静态成员和声明文件仍可从根入口使用。
+
+Badge 状态点通过 AntD 公开 `statusSize` 主题 token 固定为 10px。processing 脉冲使用 lx 自有 `--lx-badge-processing-duration`，默认 1500ms；宿主可在 `LxConfigProvider` 的 `style` 属性或其子树中的 CSS scope 设置该自定义属性覆盖周期。reduced-motion 会将周期归零。升级 AntD 后复核 `statusSize` 是否仍被公开支持、状态点实际尺寸是否保持 10px，并确认 CSS 动效仍读取该变量；若消费方自行覆盖状态点大小或动画时长，应检查新默认值对现有视觉的影响。
+
 ## Tag 与 Table 尺寸 token 迁移
 
 本批只增加可选样式扩展点，不改变组件 Props、事件、ref 或 AntD peer 范围。普通 Tag 的最小高度归一为 26px，可通过主题 Provider 的 `style` 或局部 CSS scope 覆盖 `--lx-tag-height`；该 token 只设最小值，较高内容仍可撑开标签。默认/large 非虚拟 Table 的普通单行基础高度为 comfortable/compact 的 48/36px，表头基础高度为 36px；粗指针设备下会按至少 44px 的操作目标重算行高和单元格内距，因此纯文本行、含控件的紧凑短行和表头实际至少满足 44px，舒适短行约为 48px。长内容仍自然增高，使用固定容器高度或依赖旧视觉尺寸的页面应复查。

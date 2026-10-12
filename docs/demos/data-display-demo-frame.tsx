@@ -58,6 +58,7 @@ function DemoSurface({
         <summary>主题设置</summary>
         <div className={styles.toolbar}>
           <Switch
+            className={styles.themeSwitchTarget}
             aria-label="暗色模式"
             checked={resolvedMode === 'dark'}
             checkedChildren="暗色"
@@ -66,6 +67,7 @@ function DemoSurface({
           />
           {showDensitySwitch && (
             <Switch
+              className={styles.themeSwitchTarget}
               aria-label="紧凑密度"
               checked={theme.density === 'compact'}
               checkedChildren="紧凑"

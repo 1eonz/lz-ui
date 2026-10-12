@@ -287,6 +287,10 @@ describe('resolved theme tokens', () => {
       lineHeightSM: 16 / 12,
       borderRadiusSM: 6,
     });
+    expect(components.Badge).toMatchObject({
+      statusSize: 10,
+    });
+    expect(css['--lx-badge-processing-duration']).toBe('1500ms');
     expect(components.Alert).toMatchObject({
       defaultPadding: '8px 12px',
       withDescriptionPadding: 16,

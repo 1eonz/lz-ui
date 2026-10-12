@@ -422,3 +422,11 @@
 - **覆盖内容：** 窄屏键盘焦点几何覆盖 320/390/930/1280px，并断言两个触发按钮同排、Tooltip 不压住相邻按钮、不超出视口、document/body 无水平溢出。另覆盖 12 个公开 placement、侧向提示鼠标命中、窄屏边缘自动翻转和 reduced-motion。主题用例在 light/dark 下逐项测试全部 3 种外观、2 种密度、6 个品牌色与 7 套东方配色，另外检查 4 组代表性复合主题状态；弹层 token 跟随和正文对比度至少 4.5:1，Spotlight 保持深色高对比。
 - **Impeccable detector：** 4.1.3 `detect.mjs --json` 扫描本批 demo JSX/CSS 与浏览器用例，原始 stdout 为 `[]`、退出码 0。此结果只表示确定性规则没有命中；实际通过依据是 Chromium/WebKit 交互和本地预览截图，不是 `[]`。
 - **边界：** 未覆盖完整笛卡尔主题组合、真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机、实体触控、设备性能、生产部署和全库 2B-1。`build:docs` 未运行：当前 Dumi dev 共享 `.dumi/tmp`，为保持用户正在使用的 8001 预览，浏览器测试复用含当前 demo 的现有 `docs-dist`，不能据此声称本轮重新构建了 Dumi 文档站。
+
+### 2026-10-12：Badge 角标与处理状态最终复验
+
+- **浏览器结果：** `tests/browser/badge-demo.spec.ts` 在 Chromium、Microsoft Edge、Windows Playwright WebKit 各通过 **1/1**。主页面与触控仿真页分别注册 browser-health，均无 pageerror、console error、requestfailed 或 HTTP 错误。常用 `npm run test:browser:webkit` 已包含该用例；本批没有留存整套 WebKit 命令的原始报告，因此不记录整套测试数量。覆盖 1280/930/390/320px，所有视口 document/body 无水平溢出。
+- **渲染与交互：** 数字上限、通知摘要展开/收起和受控数量增减/恢复通过；状态点为 10px，processing 为 1.5s，切换 `prefers-reduced-motion: reduce` 后动画名为 none。品牌主题运行时变色、dark/compact、参数表 Tab/ArrowRight 局部滚动，以及 coarse-pointer 仿真下主题开关 44px 命中区通过。
+- **Ribbon 几何：** 默认 end 保持橙红斜带；start 展示起始侧公开 placement。两种角标各自在 LTR/RTL 镜像为 ±45°，物理边缘按 start/end 对换，斜带保持在各自卡片内；320/390px 卡片换行后仍无页面级溢出。
+- **背景覆盖：** 实例 `styles.indicator.backgroundImage` 的线性渐变和 `none` 均保持透明底色，不泄露 AntD default 灰底。Provider 层按 AntD 样式合并规则运行；需图像背景完全替代状态底色时同时设置 `backgroundColor: 'transparent'`。组件单测覆盖实例覆盖和 Provider 组合。
+- **构建与边界：** Badge demo 类型检查包含在 106 个源码文件通过结果中；Dumi 导出为 161 HTML/644 本地资源/89 demo；完整 `npm run check` 为 56 文件/639 测试通过。结果是 Windows Playwright 引擎和 CSS viewport 证据，不等于真实读屏、200%/400% 缩放、Safari 实机、实体触控或操作系统级动效偏好验收。

@@ -2,3 +2,66 @@
   min-width: 1.25rem;
   min-height: 1.25rem;
 }
+
+.ribbonRoot {
+  position: relative;
+}
+
+.ribbon {
+  --lx-badge-ribbon-width: 100px;
+  --lx-badge-ribbon-height: 20px;
+  --lx-badge-ribbon-block-offset: 33px;
+  --lx-badge-ribbon-inline-offset: 7px;
+  --lx-badge-ribbon-font-size: 10px;
+  --lx-badge-ribbon-angle: 45deg;
+}
+
+.ribbonEnd {
+  transform: rotate(var(--lx-badge-ribbon-angle));
+}
+
+.ribbonStart {
+  transform: rotate(calc(0deg - var(--lx-badge-ribbon-angle)));
+}
+
+.ribbonEnd:dir(rtl) {
+  transform: rotate(calc(0deg - var(--lx-badge-ribbon-angle)));
+}
+
+.ribbonStart:dir(rtl) {
+  transform: rotate(var(--lx-badge-ribbon-angle));
+}
+
+.processingIndicator {
+  position: relative;
+}
+
+/* 动效只绘制在 AntD 公开的 indicator 插槽上，不依赖其内部状态伪元素。 */
+.processingIndicator::before {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  pointer-events: none;
+  content: '';
+  animation: badgeProcessingPulse var(--lx-badge-processing-duration, 1500ms) ease-in-out infinite;
+}
+
+@keyframes badgeProcessingPulse {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(2.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .processingIndicator::before {
+    animation: none;
+  }
+}

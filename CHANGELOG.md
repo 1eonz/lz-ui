@@ -15,6 +15,7 @@
 
 ## Unreleased
 
+- Badge 新增公开静态成员 `Badge.Ribbon` 与根入口类型 `RibbonProps`，沿用 AntD 5 公开组件契约；状态点按设计稿调整为 10px，并新增 `--lx-badge-processing-duration`（默认 1500ms）。`processing` 使用公开 indicator 插槽承载 CSS Module 脉冲，系统减少动态效果时完全停止；实例级 `styles.indicator.backgroundImage` 会配透明底色，Provider 级图像背景需同时设置透明底色；自定义状态点尺寸和处理时长的宿主需注意新的默认视觉表现。
 - Button 的 Large 高度按 General 专用规格从 AntD 默认映射调整为 40px；全局 `token.controlHeightLG=48px` 不变。省略 `size` 时由 lx density 映射为 comfortable/compact 的 40/32px，显式 middle 固定 32px，small 固定 24px，large 固定 40px；宿主 `ConfigProvider.componentSize` 不覆盖省略解析。依赖 AntD Button 默认 middle 或 large 高度的宿主需按 [兼容说明](./docs/compatibility.md#button-尺寸映射) 复查布局。
 - 新增可选组件 token `--lx-tag-height`（默认 26px）并将其用于普通 Tag 最小高度和默认 Table 行内距计算；API 保持兼容，但 Tag/默认 Table 行的视觉高度归一。非虚拟且有效尺寸为默认/large 的 Table 普通行继续为 48/36px，表头修正为 36px；显式或继承的 middle/small 与 virtual 保留 AntD/宿主尺寸责任。主题 scope 可覆盖组件 token，迁移边界见 `docs/compatibility.md`。
 - Table 交互演示增加带可访问名称的本地确定履约进度列、键盘排序与审批状态筛选，使用单一可聚焦区域承接横向滚动；订单编号保持单行，筛选隐藏的已选 key 仍计入选择数并可统一取消，基础示例保持三列。

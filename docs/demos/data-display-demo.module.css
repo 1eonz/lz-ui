@@ -53,6 +53,59 @@
   color: var(--lx-color-on-primary);
 }
 
+.notificationIcon {
+  display: inline-flex;
+  min-inline-size: 2rem;
+  min-block-size: 2rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--lx-color-text-secondary);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.badgeRibbonWrapper {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  inline-size: min(100%, 19rem);
+  max-inline-size: 100%;
+}
+
+.badgeRibbonCard {
+  display: grid;
+  align-content: center;
+  gap: var(--lx-space-xs);
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 5.5rem;
+  padding: var(--lx-space-md);
+  border: 1px solid var(--lx-color-split);
+  border-radius: var(--lx-radius-control);
+  background: var(--lx-color-bg-base);
+  overflow-wrap: anywhere;
+}
+
+.themeSwitchTarget {
+  position: relative;
+}
+
+@media (any-pointer: coarse) {
+  .themeSwitchTarget::before {
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: var(--lx-control-target-touch-min);
+    block-size: var(--lx-control-target-touch-min);
+    border-radius: 50%;
+    background: transparent;
+    content: '';
+    transform: translate(-50%, -50%);
+  }
+}
+
 /* 表格列保留可读宽度，只在示例内部滚动，避免整页横向溢出。 */
 .scroll {
   min-inline-size: 0;

@@ -81,7 +81,7 @@ export type { ResultProps } from './components/data-display/result';
 export { Tag, CheckableTag } from './components/data-display/tag';
 export type { TagProps, CheckableTagProps } from './components/data-display/tag';
 export { Badge } from './components/data-display/badge';
-export type { BadgeProps } from './components/data-display/badge';
+export type { BadgeProps, RibbonProps } from './components/data-display/badge';
 export { Descriptions } from './components/data-display/descriptions';
 export type { DescriptionsProps } from './components/data-display/descriptions';
 export { Avatar, AvatarGroup } from './components/data-display/avatar';

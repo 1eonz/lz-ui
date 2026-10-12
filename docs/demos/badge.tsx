@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { BellOutlined } from '@ant-design/icons';
 import type { ButtonRef } from 'lx-ui';
 import { Avatar, Badge, Button } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
@@ -7,18 +8,22 @@ import styles from './data-display-demo.module.css';
 export default function BadgeDemo() {
   const restoreRef = useRef<ButtonRef>(null);
   const [count, setCount] = useState(12);
+  const [notificationSummaryOpen, setNotificationSummaryOpen] = useState(false);
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="badge-interactive">
       <div className={styles.row}>
         <Badge count={count} overflowCount={99} showZero>
-          <Avatar className={styles.avatar} aria-label="应用消息">
-            LX
-          </Avatar>
+          <Button
+            aria-label="打开通知摘要"
+            aria-controls="badge-notification-summary"
+            aria-expanded={notificationSummaryOpen}
+            icon={<BellOutlined aria-hidden="true" />}
+            onClick={() => setNotificationSummaryOpen((open) => !open)}
+            shape="circle"
+          />
         </Badge>
-        <Badge dot={count > 0}>
-          <Avatar shape="square" aria-label="待办事项">
-            待
-          </Avatar>
+        <Badge count={8}>
+          <Avatar className={styles.avatar}>LX</Avatar>
         </Badge>
         <Button
           disabled={count === 0}
@@ -35,12 +40,23 @@ export default function BadgeDemo() {
           恢复消息
         </Button>
       </div>
+      <p
+        id="badge-notification-summary"
+        role="status"
+        hidden={!notificationSummaryOpen}
+        className={styles.muted}
+      >
+        通知摘要已展开，当前有 {count} 条未读消息。
+      </p>
       <div className={styles.row}>
-        <Badge status="processing" text="同步中" />
-        <Badge status="success" text="已成功" />
-        <Badge status="warning" text="需确认" />
+        <Badge
+          status="processing"
+          text="同步中"
+          classNames={{ indicator: 'badge-interactive-processing-indicator' }}
+        />
+        <Badge status="success" text="已同步" />
+        <Badge status="warning" text="等待确认" />
         <Badge status="error" text="同步失败" />
-        <Badge status="default" text="未开始" />
       </div>
       <p role="status" className={styles.muted}>
         未读消息：{count}

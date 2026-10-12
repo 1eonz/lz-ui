@@ -2,6 +2,7 @@ import { act, render, screen } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import { theme as antdTheme } from 'antd';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Badge } from '../../components/data-display/badge';
 import { LxConfigProvider, useLxTheme } from '../provider';
 import { brandSeeds, paletteSeeds, resolveLxTokens } from '../tokens';
 import type { LxColorPreset, LxPalettePreset } from '../types';
@@ -29,6 +30,10 @@ function Consumer() {
 function AntTokenConsumer() {
   const { token } = antdTheme.useToken();
   return <output data-testid="antd-token">{JSON.stringify(token)}</output>;
+}
+
+function BadgeConsumer() {
+  return <Badge status="processing" text="徽标主题检查" />;
 }
 
 function ClearPaletteConsumer() {
@@ -185,6 +190,48 @@ describe('theme runtime', () => {
       motionDurationMid: '0ms',
       motionDurationSlow: '0ms',
     });
+  });
+
+  it.each([
+    ['light', 'comfortable'],
+    ['light', 'compact'],
+    ['dark', 'comfortable'],
+    ['dark', 'compact'],
+  ] as const)('applies Badge public tokens in %s/%s themes', (mode, density) => {
+    const { container } = render(
+      <LxConfigProvider theme={{ mode, density }}>
+        <BadgeConsumer />
+      </LxConfigProvider>,
+    );
+    const scope = container.querySelector('[data-lx-mode]');
+    expect(scope).toHaveAttribute('data-lx-mode', mode);
+    expect(scope).toHaveAttribute('data-lx-density', density);
+    expect((scope as HTMLElement).style.getPropertyValue('--lx-badge-processing-duration')).toBe(
+      '1500ms',
+    );
+    const styleText = Array.from(document.querySelectorAll('style'))
+      .map((style) => style.textContent ?? '')
+      .join('\n');
+    expect(styleText).toContain('width:10px');
+  });
+
+  it('provides a zero-duration processing token to lx Badge when motion is reduced', () => {
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('reduced-motion'),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    }));
+    render(
+      <LxConfigProvider>
+        <BadgeConsumer />
+      </LxConfigProvider>,
+    );
+    expect(
+      document
+        .querySelector('[data-lx-mode]')
+        ?.getAttribute('style')
+        ?.includes('--lx-badge-processing-duration: 0ms'),
+    ).toBe(true);
   });
 
   it('follows system mode changes and releases its listener', () => {
