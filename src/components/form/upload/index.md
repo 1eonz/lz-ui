@@ -78,7 +78,7 @@ accept仅是文件选择器提示；beforeUpload验证PDF与2MB限制。不合�
 
 ## API
 
-`UploadProps`为公开AntD >=5.24 <6上传属性别名。
+`UploadProps`为公开AntD >=5.25 <6上传属性别名。
 
 ### 组件属性
 

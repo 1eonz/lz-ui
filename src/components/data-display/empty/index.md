@@ -5,7 +5,7 @@ group: Data Display
 
 # Empty 空状态
 
-展示集合为空或筛选无匹配的中性说明，不能把失败或无权限伪装成暂无数据。
+展示集合为空或筛选无匹配的中性说明，不能把失败或无权限伪装成暂无数据。组件默认保留 Ant Design Empty 图示及外层 `ConfigProvider` 的 `empty.image` 配置；本页示例通过公开 `image` 插槽展示空单据线稿。
 
 ## 基础用法：默认与小尺寸
 
@@ -27,14 +27,29 @@ description 描述无数据原因，variant="small" 适用于嵌入集合。没�
 
 从 `lx-ui` 根入口命名导入组件和对应类型。除扩展项外，其他属性沿用 [Ant Design 5 公开契约](https://ant.design/components/empty/cn/)；默认行为随安装的 AntD 5 版本生效，下表列出常用参数。
 
-| 属性          | 类型                   | 默认值      | 说明                     |
-| ------------- | ---------------------- | ----------- | ------------------------ |
-| `description` | `ReactNode`            | `AntD 默认` | 可读说明，可 false 隐藏  |
-| `action`      | `ReactNode`            | `—`         | 优先于 children 的操作区 |
-| `children`    | `ReactNode`            | `—`         | 兼容底部内容             |
-| `variant`     | `'default' \| 'small'` | `default`   | 尺寸                     |
-| `image`       | `ReactNode`            | `AntD 默认` | 自定义图像               |
-| `imageStyle`  | `CSSProperties`        | `—`         | 图像样式                 |
+<p id="empty-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览，属性列保持可见。
+</p>
+
+<div
+className="lx-docs-table lx-empty-api-table"
+role="region"
+tabIndex="0"
+aria-label="Empty 参数表"
+aria-describedby="empty-docs-table-hint"
+>
+
+| 属性                  | 类型                   | 默认值                      | 说明                                                                    |
+| --------------------- | ---------------------- | --------------------------- | ----------------------------------------------------------------------- |
+| `description`         | `ReactNode`            | `AntD 默认`                 | 可读说明，可 false 隐藏                                                 |
+| `action`              | `ReactNode`            | `—`                         | 优先于 children 的操作区                                                |
+| `children`            | `ReactNode`            | `—`                         | 兼容底部内容                                                            |
+| `variant`             | `'default' \| 'small'` | `default`                   | 尺寸                                                                    |
+| `image`               | `ReactNode`            | `Provider 配置或 AntD 默认` | 自定义图像；未传或为 `null` 时沿用 Provider 配置或 AntD 默认图示        |
+| `imageStyle`          | `CSSProperties`        | `—`                         | 兼容旧属性；AntD 5 已标记弃用，建议使用 `styles.image` 设置图像区域样式 |
+| `classNames / styles` | AntD 公开语义槽映射    | `—`                         | 可按 `image`、`description`、`footer` 等部位添加类名或样式              |
+
+</div>
 
 ## 事件、Ref 与键盘
 
@@ -52,4 +67,4 @@ description 描述无数据原因，variant="small" 适用于嵌入集合。没�
 
 ## 设计与验证边界
 
-示例对应 `UI/P0 基础组件-Data Display/` 的当前组件场景，所有恢复、失败与加载操作均为本地 React 状态，不发送网络请求。基础示例供观察单组件，交互示例说明宿主受控状态与恢复协议。静态检查不能替代明暗对比度、焦点、窄屏及 reduced motion 的独立浏览器验收。
+示例对应 `UI/P0 基础组件-Data Display/` 的当前组件场景；文档插画仅由 demo 通过公开 `image` 属性传入，不会覆盖宿主的 `ConfigProvider empty.image`。所有恢复、失败与加载操作均为本地 React 状态，不发送网络请求。基础示例供观察单组件，交互示例说明宿主受控状态与恢复协议。静态检查不能替代明暗对比度、焦点、窄屏及 reduced motion 的独立浏览器验收。

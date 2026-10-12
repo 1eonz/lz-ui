@@ -49,7 +49,7 @@ export default function Demo() {
 
 ## API
 
-`SelectProps` 是 AntD >=5.24 <6公共类型别名，包装层未新增请求协议或静态Option。
+`SelectProps` 是 AntD >=5.25 <6公共类型别名，包装层未新增请求协议或静态Option。
 
 | 属性                 | 类型                           | 默认                | 说明                                                |
 | -------------------- | ------------------------------ | ------------------- | --------------------------------------------------- |
@@ -69,7 +69,7 @@ export default function Demo() {
 | onSearch             | (value:string) =&gt; void      | —                   | 搜索输入更新，可接宿主防抖请求                      |
 | onClear              | () =&gt; void                  | —                   | 用户清空触发                                        |
 
-ref `SelectRef`支持focus/blur，公开实例还有scrollTo/nativeElement；在挂载后读取，不依赖私有DOM。FormItem收集value，无需手动重复checked绑定。5.24示例只使用该版本存在的公共API，不使用5.25新增popupRender。
+ref `SelectRef`支持focus/blur，公开实例还有scrollTo/nativeElement；在挂载后读取，不依赖私有DOM。FormItem收集value，无需手动重复checked绑定。当前最低兼容版本 AntD 5.25 已包含公开 `popupRender` API。
 
 ## 主题、键盘和性能
 

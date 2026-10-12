@@ -92,6 +92,14 @@
 }
 
 @media (any-pointer: coarse) {
+  .emptySkeletonAction {
+    --lx-control-height: var(--lx-control-target-touch-min);
+    min-inline-size: var(--lx-control-target-touch-min);
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+}
+
+@media (any-pointer: coarse) {
   .themeSwitchTarget::before {
     position: absolute;
     z-index: 1;
@@ -628,6 +636,7 @@
 
 .themeSettings {
   margin-block-end: var(--lx-space-lg);
+  --lx-demo-theme-settings-target-size: 40px;
 }
 
 .themeSettings summary {
@@ -638,6 +647,17 @@
 .themeSettings summary:focus-visible {
   outline: 2px solid var(--lx-focus-ring);
   outline-offset: 2px;
+}
+
+@media (any-pointer: coarse) {
+  .themeSettings {
+    --lx-demo-theme-settings-target-size: var(--lx-control-target-touch-min, 44px);
+  }
+
+  .themeSettings summary {
+    box-sizing: border-box;
+    min-block-size: var(--lx-demo-theme-settings-target-size);
+  }
 }
 
 .field {

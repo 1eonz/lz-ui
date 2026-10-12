@@ -80,9 +80,30 @@ function DemoSurface({
             optionType="button"
             value={theme.appearance}
             options={[
-              { label: '商务', value: 'business' },
-              { label: '轻盈', value: 'soft' },
-              { label: '玻璃', value: 'glass' },
+              {
+                label: '商务',
+                value: 'business',
+                style: {
+                  minWidth: 'var(--lx-demo-theme-settings-target-size)',
+                  minHeight: 'var(--lx-demo-theme-settings-target-size)',
+                },
+              },
+              {
+                label: '轻盈',
+                value: 'soft',
+                style: {
+                  minWidth: 'var(--lx-demo-theme-settings-target-size)',
+                  minHeight: 'var(--lx-demo-theme-settings-target-size)',
+                },
+              },
+              {
+                label: '玻璃',
+                value: 'glass',
+                style: {
+                  minWidth: 'var(--lx-demo-theme-settings-target-size)',
+                  minHeight: 'var(--lx-demo-theme-settings-target-size)',
+                },
+              },
             ]}
             onChange={(event) => setTheme({ appearance: event.target.value as LxAppearance })}
           />
@@ -90,6 +111,8 @@ function DemoSurface({
             品牌色
             <Select
               aria-label="品牌色"
+              data-testid="theme-color-select"
+              styles={{ root: { height: 'var(--lx-demo-theme-settings-target-size)' } }}
               value={theme.colorPreset}
               options={[
                 { label: '海洋蓝', value: 'blue' },
@@ -108,6 +131,8 @@ function DemoSurface({
             东方配色
             <Select
               aria-label="东方配色"
+              data-testid="theme-palette-select"
+              styles={{ root: { height: 'var(--lx-demo-theme-settings-target-size)' } }}
               value={theme.palettePreset ?? 'brand'}
               options={[
                 { label: '使用品牌色', value: 'brand' },

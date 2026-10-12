@@ -45,7 +45,7 @@ export default function Demo() {
 
 ## API
 
-`RadioProps` 和 `RadioGroupProps` 保留 AntD >=5.24 <6公开属性。
+`RadioProps` 和 `RadioGroupProps` 保留 AntD >=5.25 <6公开属性。
 
 | 属性                            | 类型                           | 默认    | 说明                                     |
 | ------------------------------- | ------------------------------ | ------- | ---------------------------------------- |

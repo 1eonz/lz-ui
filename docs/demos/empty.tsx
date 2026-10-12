@@ -3,6 +3,7 @@ import type { InputRef } from 'lx-ui';
 import { Button, Empty, Input, List } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import styles from './data-display-demo.module.css';
+import { EmptyDemoIllustration } from './empty-illustration';
 
 export default function EmptyDemo() {
   const inputRef = useRef<InputRef>(null);
@@ -10,7 +11,7 @@ export default function EmptyDemo() {
   const [query, setQuery] = useState('');
   const filtered = orders.filter((order) => order.includes(query));
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="empty-demo">
       <div className={styles.row}>
         <Input
           ref={inputRef}
@@ -20,6 +21,7 @@ export default function EmptyDemo() {
           onChange={(event) => setQuery(event.target.value)}
         />
         <Button
+          className={styles.emptySkeletonAction}
           disabled={orders.length === 0}
           onClick={() => {
             inputRef.current?.focus();
@@ -32,16 +34,19 @@ export default function EmptyDemo() {
       </div>
       {orders.length === 0 ? (
         <Empty
+          image={<EmptyDemoIllustration />}
+          styles={{ image: { height: '96px', opacity: 1 } }}
           description="暂无关联采购单"
           action={
             <Button
+              className={styles.emptySkeletonAction}
               type="primary"
               onClick={() => {
                 inputRef.current?.focus();
                 setOrders(['PO-2024-1881']);
               }}
             >
-              新建采购单
+              立即新建采购单
             </Button>
           }
         />
@@ -53,9 +58,12 @@ export default function EmptyDemo() {
             emptyText: (
               <Empty
                 variant="small"
+                image={<EmptyDemoIllustration size="small" />}
+                styles={{ image: { height: '32px', opacity: 1 } }}
                 description="没有匹配的采购单"
                 action={
                   <Button
+                    className={styles.emptySkeletonAction}
                     onClick={() => {
                       inputRef.current?.focus();
                       setQuery('');

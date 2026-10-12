@@ -15,6 +15,7 @@
 
 ## Unreleased
 
+- Ant Design peer 与开发依赖最低版本提高至 `>=5.25`，以支持公开的 `Tooltip.destroyOnHidden` 和 `Select.popupRender`；AntD 5.24 宿主需升级。最低版本验证状态见 `docs/compatibility.md`。
 - Badge 新增公开静态成员 `Badge.Ribbon` 与根入口类型 `RibbonProps`，沿用 AntD 5 公开组件契约；状态点按设计稿调整为 10px，并新增 `--lx-badge-processing-duration`（默认 1500ms）。`processing` 使用公开 indicator 插槽承载 CSS Module 脉冲，系统减少动态效果时完全停止；实例级 `styles.indicator.backgroundImage` 会配透明底色，Provider 级图像背景需同时设置透明底色；自定义状态点尺寸和处理时长的宿主需注意新的默认视觉表现。
 - Button 的 Large 高度按 General 专用规格从 AntD 默认映射调整为 40px；全局 `token.controlHeightLG=48px` 不变。省略 `size` 时由 lx density 映射为 comfortable/compact 的 40/32px，显式 middle 固定 32px，small 固定 24px，large 固定 40px；宿主 `ConfigProvider.componentSize` 不覆盖省略解析。依赖 AntD Button 默认 middle 或 large 高度的宿主需按 [兼容说明](./docs/compatibility.md#button-尺寸映射) 复查布局。
 - 新增可选组件 token `--lx-tag-height`（默认 26px）并将其用于普通 Tag 最小高度和默认 Table 行内距计算；API 保持兼容，但 Tag/默认 Table 行的视觉高度归一。非虚拟且有效尺寸为默认/large 的 Table 普通行继续为 48/36px，表头修正为 36px；显式或继承的 middle/small 与 virtual 保留 AntD/宿主尺寸责任。主题 scope 可覆盖组件 token，迁移边界见 `docs/compatibility.md`。
@@ -27,7 +28,7 @@
 - DynamicForm 新增 `onFinishError(error, values)`，捕获 `onFinish` 同步抛错与 Promise 拒绝，错误回调自身失败记录中文日志；保持校验成功回调中的同步调用时序，失败保留输入。新增首次失败、重试成功的可运行异步提交示例。迁移时将全局未处理拒绝提示移至 `onFinishError`，字段校验失败仍由 `onFinishFailed` 处理；宿主继续负责 loading、提交锁及请求生命周期。
 
 - Tag 公布 `--lx-control-target-touch-min`（粗指针默认 44px，桌面关闭按钮基准 24px）和 `--lx-motion-tag-exit-duration`（默认 120ms，reduced-motion 为 0ms）；自定义关闭节点可复用触屏目标 token。非中文宿主需通过 `closable` 的 `aria-label` 提供本地化关闭名称。
-- 新增 `Tooltip` 反馈组件及可运行的方位、主题和受控示例。默认兼容鼠标与键盘焦点，使用 AntD 5.24+ 公共 API/ref，并保留触发元素原有 `aria-describedby`；Popover/Popconfirm 的交互式内容等待锚定对话框能力评审后再实现。
+- 新增 `Tooltip` 反馈组件及可运行的方位、主题和受控示例。默认兼容鼠标与键盘焦点，使用 AntD 5.25+ 公共 API/ref，并保留触发元素原有 `aria-describedby`；Popover/Popconfirm 的交互式内容等待锚定对话框能力评审后再实现。
 - 新增 2A Feedback：Alert、Spin、Progress，透传 Ant Design 5 公开 API，明确 aria-busy、确定进度、关闭焦点和 reduced-motion 边界；不内置请求、重试、全局消息或伪进度。
 
 - 新增 1B Tree：透传 AntD 5 公开树节点、受控展开/选择/勾选、异步加载、虚拟化和高度协议；保持稳定 key 与宿主请求边界，不生成节点 key、不包装布局、不依赖 rc-tree 私有类型。

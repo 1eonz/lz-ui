@@ -32,7 +32,7 @@ circle/dashboard 用于紧凑概览，steps 表达已完成批次。成功分段
 
 ## API
 
-`ProgressProps` 保留 AntD 公共类型，以下为常用项；其余字段遵循 AntD >=5.24 的公开 API。
+`ProgressProps` 保留 AntD 公共类型，以下为常用项；其余字段遵循 AntD >=5.25 的公开 API。
 
 成功分段表示已完成总量的子集：所有成功字段先按0–100规范，再限制不超过规范后的总 percent。例如 percent=80、success.percent=120 时，视觉/format/ARIA 分别为总80、成功80、总80；多个成功字段同时存在时保留 AntD 原有优先级。
 
@@ -94,4 +94,4 @@ reduced motion 在局部停止 line sweep、circle/dashboard SVG、steps 及 for
 
 当宿主启用 `prefers-reduced-motion: reduce` 时，组件会在自身样式作用域内关闭进度变化过渡以及 active 状态的扫光动画。该规则是视觉与可访问性契约，不要求业务代码依赖 AntD 的内部 DOM 结构。
 
-兼容基线为 AntD `>=5.24 <6`。ref 为公开 `ProgressRef`（由 AntD 组件 ref 类型推导的原生 `HTMLDivElement`）；挂载后可用，卸载后归 null。`line`、`circle`、`dashboard`、`steps` 及 `format` 内的局部动画、SVG 过渡和伪元素都遵循 reduced motion；不影响区域外组件。主题颜色由 `LxConfigProvider` 的公开 AntD token 映射负责，不使用无效的 `--ant-*` 变量。
+兼容基线为 AntD `>=5.25 <6`。ref 为公开 `ProgressRef`（由 AntD 组件 ref 类型推导的原生 `HTMLDivElement`）；挂载后可用，卸载后归 null。`line`、`circle`、`dashboard`、`steps` 及 `format` 内的局部动画、SVG 过渡和伪元素都遵循 reduced motion；不影响区域外组件。主题颜色由 `LxConfigProvider` 的公开 AntD token 映射负责，不使用无效的 `--ant-*` 变量。

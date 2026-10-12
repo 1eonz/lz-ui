@@ -65,6 +65,10 @@ src/index.ts
 
 普通 npm 产物将 React、ReactDOM、Ant Design 作为外部 peer dependency，避免业务项目重复加载。脚本直引使用单独的 standalone UMD，明确接受更大的文件体积，并记录 gzip/brotli 大小。
 
+组件源码继续使用 CSS Modules；库构建统一把局部类名生成为 `lx-ui-<组件路径>__<本地类名>`，并从同一份 PostCSS 解析结果生成 selector 与运行时映射，避免 SSR 和浏览器 bundler 使用不同的 scoped name。keyframes 与 `animation` / `animation-name` 引用也使用同一组件前缀。`:global(...)` 和 `:local(...)` 支持单个 selector 参数；逗号分隔的 selector list 与无参数 scope 写法会在构建期报错，不允许静默展平或误转换。
+
+ESM 组件导入普通 `.css` side effect，由应用 bundler 提取；CJS 在浏览器环境条件加载普通 `.css`，Node SSR 只读取构建时嵌入的静态 class map，不直接解析 CSS。发布包保留 CSS side effects 标记，消费者仍可 tree-shake JavaScript 而不会丢失组件样式。
+
 Dumi 只负责文档站。文档 demo 可以导入源码，但不得让 demo 专用依赖进入 library 构建入口。
 
 ## 5. 主题架构

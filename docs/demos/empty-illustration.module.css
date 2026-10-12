@@ -1,0 +1,59 @@
+.illustration {
+  position: relative;
+  display: inline-flex;
+  inline-size: 96px;
+  block-size: 96px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--lx-color-ambient);
+}
+
+.illustration > svg.svg {
+  display: block;
+  inline-size: 56px;
+  block-size: 56px;
+}
+
+.frame {
+  stroke: var(--lx-color-text-tertiary);
+  stroke-dasharray: 4 3;
+  stroke-width: 2;
+}
+
+.primaryLine {
+  stroke: var(--lx-color-primary);
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.secondaryLine {
+  stroke: var(--lx-color-text-tertiary);
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.marker {
+  fill: var(--lx-color-surface);
+  stroke: var(--lx-color-primary);
+  stroke-width: 2;
+}
+
+.small {
+  inline-size: 32px;
+  block-size: 32px;
+}
+
+.small > svg.svg {
+  inline-size: 19px;
+  block-size: 19px;
+}
+
+.customImage {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--lx-color-info);
+  font-size: 32px;
+  line-height: 1;
+}

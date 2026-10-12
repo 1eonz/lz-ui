@@ -115,7 +115,7 @@ function CustomerTags() {
 
 </div>
 
-显式传入 `closable={true}` 或 `closable` 配置对象，并且未提供自定义关闭图标时，lx-ui 提供带可访问名称的原生关闭按钮。配置对象支持 `closeIcon`、`disabled` 和 React 的 ARIA 属性，具体能力沿用当前安装的 AntD 5.24+ 公开类型。默认关闭按钮会应用 `closable.disabled`；例如 `closable={{ disabled: true }}` 禁用关闭，不触发 `onClose`，也不删除标签。
+显式传入 `closable={true}` 或 `closable` 配置对象，并且未提供自定义关闭图标时，lx-ui 提供带可访问名称的原生关闭按钮。配置对象支持 `closeIcon`、`disabled` 和 React 的 ARIA 属性，具体能力沿用当前安装的 AntD 5.25+ 公开类型。默认关闭按钮会应用 `closable.disabled`；例如 `closable={{ disabled: true }}` 禁用关闭，不触发 `onClose`，也不删除标签。
 
 ### 自定义关闭图标与无障碍
 

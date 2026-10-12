@@ -32,7 +32,7 @@ description 补充恢复步骤；banner 未传 type 时默认为 warning。长�
 
 ## API
 
-`AlertProps` 保留 AntD 公共类型，以下为常用项；其余字段遵循 AntD >=5.24 的公开 API。
+`AlertProps` 保留 AntD 公共类型，以下为常用项；其余字段遵循 AntD >=5.25 的公开 API。
 
 | 属性                      | 类型                                        | 默认值                  | 说明                                                     |
 | ------------------------- | ------------------------------------------- | ----------------------- | -------------------------------------------------------- |
@@ -83,4 +83,4 @@ const alertRef = createRef<AlertRef>();
 
 `onClose` 表示用户发起关闭，`afterClose` 是原生退出动画完成通知；宿主关闭 motion 或浏览器不支持动画事件时，AntD 不保证调用 afterClose，因此必要的焦点恢复不应只依赖它。演示在 onClose 聚焦稳定按钮，正常 afterClose 后卸载；重新显示会以新 key 挂载，兼容 reduced motion 下的恢复。
 
-组件不发起请求、不管理重试、不创建全局消息，也不替宿主恢复关闭后的焦点。兼容基线为 AntD `>=5.24 <6`。语义背景/边框使用 `--lx-color-{info,success,warning,error}(-bg)`，圆角使用 `--lx-radius-panel`，退出使用 `--lx-motion-alert-exit-duration`（160ms ease-out）。banner 未显式提供 type 时保持 warning 默认。宿主 style 可以覆盖根样式。
+组件不发起请求、不管理重试、不创建全局消息，也不替宿主恢复关闭后的焦点。兼容基线为 AntD `>=5.25 <6`。语义背景/边框使用 `--lx-color-{info,success,warning,error}(-bg)`，圆角使用 `--lx-radius-panel`，退出使用 `--lx-motion-alert-exit-duration`（160ms ease-out）。banner 未显式提供 type 时保持 warning 默认。宿主 style 可以覆盖根样式。

@@ -40,7 +40,7 @@ import { Tooltip } from 'lx-ui';
 
 ## API
 
-组件属性基于 AntD `>=5.24 <6` 的 Tooltip 公共类型，继承的属性会继续透传到 AntD。`trigger` 默认额外包含键盘 `focus`；`aria-describedby` 是 lx-ui 的增强项，用于保留触发元素已有说明并与 Tooltip 描述合并。
+组件属性基于 AntD `>=5.25 <6` 的 Tooltip 公共类型，继承的属性会继续透传到 AntD。`trigger` 默认额外包含键盘 `focus`；`aria-describedby` 是 lx-ui 的增强项，用于保留触发元素已有说明并与 Tooltip 描述合并。
 
 <p id="tooltip-docs-table-hint" className="lx-docs-table-hint">
   表格可横向滚动；聚焦表格区域后按左右方向键浏览。
@@ -118,20 +118,21 @@ import { Tooltip } from 'lx-ui';
   aria-describedby="tooltip-docs-table-hint"
 >
 
-| 属性                                                      | 类型                                  | 说明                                                                                   |
-| --------------------------------------------------------- | ------------------------------------- | -------------------------------------------------------------------------------------- |
-| `visible`                                                 | `boolean`                             | 已弃用的受控显隐别名；仅当 `open` 未提供时生效。                                       |
-| `defaultVisible`                                          | `boolean`                             | 已弃用的非受控初始值别名；仅当 `defaultOpen` 未提供时生效。                            |
-| `onVisibleChange`                                         | `(visible: boolean) => void`          | 已弃用的回调。与 `onOpenChange` 同时传入时，两者都会在显隐请求时收到布尔值。           |
-| `afterVisibleChange`                                      | `(visible: boolean) => void`          | 已弃用的动画完成回调；仅当 `afterOpenChange` 未提供时使用。                            |
-| `overlay`                                                 | `ReactNode \| (() => ReactNode)`      | 旧内容属性；新用法请使用 `title`。                                                     |
-| `arrowPointAtCenter`                                      | `boolean`                             | 已弃用；使用 `arrow={{ pointAtCenter: true }}`。                                       |
-| `overlayClassName` / `overlayStyle` / `overlayInnerStyle` | `string` / `CSSProperties`            | 已弃用；分别迁移到 `classNames.root`、`styles.root` 和 `styles.body`。                 |
-| `destroyTooltipOnHide`                                    | `boolean \| { keepParent?: boolean }` | 已弃用。`destroyOnHidden` 从 AntD 5.25 才加入，因此不属于 lx-ui 的 `>=5.24` 公共类型。 |
+| 属性                                                      | 类型                                  | 说明                                                                         |
+| --------------------------------------------------------- | ------------------------------------- | ---------------------------------------------------------------------------- |
+| `visible`                                                 | `boolean`                             | 已弃用的受控显隐别名；仅当 `open` 未提供时生效。                             |
+| `defaultVisible`                                          | `boolean`                             | 已弃用的非受控初始值别名；仅当 `defaultOpen` 未提供时生效。                  |
+| `onVisibleChange`                                         | `(visible: boolean) => void`          | 已弃用的回调。与 `onOpenChange` 同时传入时，两者都会在显隐请求时收到布尔值。 |
+| `afterVisibleChange`                                      | `(visible: boolean) => void`          | 已弃用的动画完成回调；仅当 `afterOpenChange` 未提供时使用。                  |
+| `overlay`                                                 | `ReactNode \| (() => ReactNode)`      | 旧内容属性；新用法请使用 `title`。                                           |
+| `arrowPointAtCenter`                                      | `boolean`                             | 已弃用；使用 `arrow={{ pointAtCenter: true }}`。                             |
+| `overlayClassName` / `overlayStyle` / `overlayInnerStyle` | `string` / `CSSProperties`            | 已弃用；分别迁移到 `classNames.root`、`styles.root` 和 `styles.body`。       |
+| `destroyTooltipOnHide`                                    | `boolean \| { keepParent?: boolean }` | 已弃用；AntD 5.25 起使用 `destroyOnHidden`。                                 |
+| `destroyOnHidden`                                         | `boolean`                             | `false`；关闭后卸载浮层内容。                                                |
 
 </div>
 
-`TooltipPlacement` 从 AntD 公开 Props 派生。因为包支持最低 AntD `5.24`，类型主动排除 5.25 才加入的 `destroyOnHidden`；升级最低 peer 版本时再评估公开该属性。
+`TooltipPlacement` 从 AntD 公开 Props 派生；`destroyOnHidden` 沿用最低支持版本 AntD 5.25 的公开类型和行为。
 
 迁移旧版 AntD 时可以先保留 `visible`、`defaultVisible` 和 `onVisibleChange`，但新代码请使用 `open`、`defaultOpen` 和 `onOpenChange`。这些兼容属性属于公开类型的一部分，组件不会把它们当作未知 DOM 属性传递给触发元素。
 

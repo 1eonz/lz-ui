@@ -7,7 +7,7 @@
 - 目标产品是 React PC 中后台组件库，优先服务 ERP、CRM、商城运营、供应链、客服和数据管理页面。
 - 首版重点是高频表单、筛选、表格、反馈、布局和业务组合；Vue、React Native、移动端原生组件、图表、富文本和完整低代码引擎不进入首版。
 - React peer 范围固定为 `>=18 <20`，重点验证 React 18/19。不得为了旧项目兼容把新 API 降级到 React 16 语义。
-- Ant Design `>=5.24 <6` 是 peer dependency 和能力底座。主包不兼容 Ant Design 4；确有需求时另建 `lx-ui-antd4-compat`。最低版本类型与运行时需单独验证，不能只检查当前安装版本。
+- Ant Design `>=5.25 <6` 是 peer dependency 和能力底座。主包不兼容 Ant Design 4；确有需求时另建 `lx-ui-antd4-compat`。最低版本类型与运行时需单独验证，不能只检查当前安装版本。
 - 旧项目 `D:\lxy\crm\lxComponent` 只读参考，不修改、不复制实现、不复制其依赖和私有 DOM 选择器。
 - 允许吸收旧项目的职责拆分、组件相邻文档、`quick-field` 的展示/编辑分层、表格子模块拆分和树形数据处理经验。
 
@@ -88,6 +88,7 @@ component-name/
 - TypeScript strict、`forceConsistentCasingInFileNames` 必须保持开启；禁止用 `any` 逃避类型设计。
 - 优先语义 HTML 和 AntD 公共 API，不依赖 `.ant-*` 私有结构；适配差异集中在 adapter。
 - 库运行时样式必须使用 CSS Modules；全局 token/CSS 只放在 `src/styles`，并通过 cascade layer 管理。Dumi 文档壳的第三方样式覆盖可单独放在 `docs/`，不得引入 npm 库样式。
+- CSS Modules 源码在发布构建中生成稳定的 `lx-ui-<组件路径>__<本地类名>`。同一 PostCSS 转换必须同时产出 selector 和嵌入 ESM/CJS 的运行时 class map；keyframes 及 `animation` / `animation-name` 引用也必须同步命名。ESM 导入普通 `.css` side effect，CJS 仅在浏览器环境条件加载普通 `.css`，Node SSR 使用静态映射且不解析 CSS。`:global(...)` / `:local(...)` 只接受单个 selector；逗号 selector list 和无参数写法必须显式报错。构建门禁需验证源码动态 `styles[...]` 键、SSR、浏览器产物和全部组件 CSS selector 一致。
 - 颜色、间距、圆角、阴影、控件高度、表格行高、z-index 和动画时长必须来自 `--lx-*` token，不得在组件里重复魔法值。
 - 使用逻辑属性，例如 `margin-inline`、`padding-block`、`inset-inline-start`，为 RTL 留出空间。
 
@@ -159,6 +160,7 @@ component-name/
 - 新交互至少覆盖默认、受控、disabled、loading、error、empty、keyboard、reduced-motion 相关行为；异步逻辑覆盖竞态和卸载取消。
 - 组件完成前必须通过 `npm run check:scaffold`、`npm run format:check`、`npm run typecheck`、`npm run lint`、`npm test`、`npm run build:lib` 和 `npm run build:docs`。
 - 格式化只写本次修改的文件；`UI/`、旧项目、构建产物和 lockfile 不允许被全仓格式化波及。`npm run format:check` 是只读门禁。
+- consumer 工程、浏览器截图、矩阵报告和临时导出统一写入仓库内被忽略的 `.codex/` 子目录，或操作系统临时目录；禁止在仓库父目录、共享工作区根目录创建验证文件夹。交付前只清理本轮明确创建且不需留档的临时产物，保留的验收证据统一归档在仓库 `.codex/`。
 - UI 变更必须在真实浏览器中检查 light/dark、compact、窄屏、长文本、键盘 focus、错误和 reduced motion；只读代码检查不能代替浏览器验证。
 - Impeccable 必须按 `docs/impeccable-workflow.md` 执行 `context -> audit -> critique -> polish` 并记录证据。`detect.mjs` 的 `[]` 只表示确定性规则未命中，绝不作为界面通过的依据；浏览器扫描工具不可用时记录限制并用可运行页面手工验证。
 - 公开 API、token、依赖、peer 范围或构建出口变更必须更新 `design.md`、相关 ADR、CHANGELOG 和迁移说明。

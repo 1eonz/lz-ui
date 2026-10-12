@@ -8,13 +8,21 @@ export default function SkeletonDemo() {
   const readyRef = useRef<ButtonRef>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   return (
-    <DataDisplayDemoFrame>
+    <DataDisplayDemoFrame demoId="skeleton-demo">
       <div className={styles.row}>
-        <Button onClick={() => setState('loading')}>显示加载</Button>
-        <Button ref={readyRef} onClick={() => setState('ready')}>
+        <Button className={styles.emptySkeletonAction} onClick={() => setState('loading')}>
+          显示加载
+        </Button>
+        <Button
+          className={styles.emptySkeletonAction}
+          ref={readyRef}
+          onClick={() => setState('ready')}
+        >
           完成加载
         </Button>
-        <Button onClick={() => setState('error')}>模拟失败</Button>
+        <Button className={styles.emptySkeletonAction} onClick={() => setState('error')}>
+          模拟失败
+        </Button>
       </div>
       <div className={styles.reserved}>
         {state === 'error' ? (
@@ -23,6 +31,7 @@ export default function SkeletonDemo() {
             title="采购单明细加载失败"
             extra={
               <Button
+                className={styles.emptySkeletonAction}
                 onClick={() => {
                   readyRef.current?.focus();
                   setState('ready');

@@ -7,7 +7,7 @@
 ## 当前已经具备
 
 - React + TypeScript 的类库工程入口。
-- React 18/19 与 Ant Design `>=5.24 <6` peer dependency 约束；首版不承诺 React 16/17 或 AntD 4。最低版本的验证状态见 `docs/compatibility.md`。
+- React 18/19 与 Ant Design `>=5.25 <6` peer dependency 约束；首版不承诺 React 16/17 或 AntD 4。最低版本的验证状态见 `docs/compatibility.md`。
 - Dumi 文档站配置和 Father 类库构建配置。
 - CSS Variables + CSS Modules 的主题与组件样式。
 - 三种风格、六个基础主题色、七套东方配色、明暗模式和两种密度。

@@ -21,26 +21,40 @@ loading 为 true 或省略时显示骨架，false 时显示 children。avatar、
 
 ## 状态与受控协议
 
-骨架只展示 loading，完成内容与失败恢复由宿主管理。切换失败不能保留永久骨架；重试动作卸载前将焦点移至稳定操作。
+骨架占位以主题品牌浅底色为静态底色，并以更深的选中浅色作为渐变高光；明暗模式下都保留色彩提示而不退化为中性表面色。完成内容与失败恢复由宿主管理。切换失败不能保留永久骨架；重试动作卸载前将焦点移至稳定操作。
 
 ## API
 
 从 `lx-ui` 根入口命名导入组件和对应类型。除扩展项外，其他属性沿用 [Ant Design 5 公开契约](https://ant.design/components/skeleton/cn/)；默认行为随安装的 AntD 5 版本生效，下表列出常用参数。
 
-| 属性                            | 类型                         | 默认值  | 说明                |
-| ------------------------------- | ---------------------------- | ------- | ------------------- |
-| `loading`                       | `boolean`                    | `true`  | false 显示 children |
-| `active`                        | `boolean`                    | `false` | 扫光动画            |
-| `avatar`                        | `SkeletonProps['avatar']`    | `false` | 头像占位            |
-| `title`                         | `SkeletonProps['title']`     | `true`  | 标题占位            |
-| `paragraph`                     | `SkeletonProps['paragraph']` | `true`  | 段落及 rows         |
-| `round`                         | `boolean`                    | `false` | 圆角占位            |
-| `children`                      | `ReactNode`                  | `—`     | 完成内容            |
-| `aria-label / aria-describedby` | `string`                     | `—`     | 区域说明            |
+<p id="skeleton-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览，属性列保持可见。
+</p>
+
+<div
+className="lx-docs-table lx-skeleton-api-table"
+role="region"
+tabIndex="0"
+aria-label="Skeleton 参数表"
+aria-describedby="skeleton-docs-table-hint"
+>
+
+| 属性                            | 类型                         | 默认值  | 说明                                       |
+| ------------------------------- | ---------------------------- | ------- | ------------------------------------------ |
+| `loading`                       | `boolean`                    | `true`  | false 显示 children                        |
+| `active`                        | `boolean`                    | `false` | 扫光动画                                   |
+| `avatar`                        | `SkeletonProps['avatar']`    | `false` | 头像占位                                   |
+| `title`                         | `SkeletonProps['title']`     | `true`  | 标题占位                                   |
+| `paragraph`                     | `SkeletonProps['paragraph']` | `true`  | 段落及 rows                                |
+| `round`                         | `boolean`                    | `false` | 圆角占位                                   |
+| `children`                      | `ReactNode`                  | `—`     | 完成内容                                   |
+| `aria-label / aria-describedby` | `string`                     | `—`     | loading 时的区域名称与补充说明；完成后移除 |
+
+</div>
 
 ## 事件、Ref 与键盘
 
-没有完成事件，loading 由宿主控制。加载区域具有 status/busy 语义，ref 是 HTMLDivElement 外层。lx-ui 不公开 Skeleton.Button 等静态成员，原生组合能力从 lx-ui/antd 引入。
+没有完成事件，loading 由宿主控制。加载期间区域具有 status/busy 语义；切换为完成内容后会移除加载专用的 role、aria-busy、aria-label 和 aria-describedby，避免完成区域继续被理解为加载中。ref 是 HTMLDivElement 外层。lx-ui 不公开 Skeleton.Button 等静态成员，原生组合能力从 lx-ui/antd 引入。
 
 ## 主题与密度
 

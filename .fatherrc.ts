@@ -1,4 +1,5 @@
 import { defineConfig } from 'father';
+import path from 'node:path';
 
 /**
  * Father 以 src/ 为构建输入，会逐文件发出 ESM/CJS 和声明文件。
@@ -10,6 +11,10 @@ export default defineConfig({
     input: 'src',
     output: 'dist/esm',
     autoExtension: true,
+    transformer: 'babel',
+    extraBabelPlugins: [
+      [path.resolve('scripts/babel-plugin-stable-css-modules.cjs'), { format: 'esm' }],
+    ],
     dts: {
       compiler: 'tsc',
     },
@@ -18,6 +23,10 @@ export default defineConfig({
     input: 'src',
     output: 'dist/cjs',
     autoExtension: true,
+    transformer: 'babel',
+    extraBabelPlugins: [
+      [path.resolve('scripts/babel-plugin-stable-css-modules.cjs'), { format: 'cjs' }],
+    ],
     dts: {
       compiler: 'tsc',
     },

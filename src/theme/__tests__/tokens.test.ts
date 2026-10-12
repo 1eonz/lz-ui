@@ -30,6 +30,9 @@ const tableThemeMatrix = (['light', 'dark'] as const).flatMap((mode) =>
     ),
   ),
 );
+const skeletonThemeMatrix = (['light', 'dark'] as const).flatMap((mode) =>
+  palettes.map((palette) => ({ ...defaults, ...palette, mode })),
+);
 const contrast = (a: string, b: string) => {
   const luminance = (color: string) =>
     [1, 3, 5]
@@ -44,6 +47,21 @@ describe('resolved theme tokens', () => {
   it('covers all 156 Table theme combinations', () => {
     expect(tableThemeMatrix).toHaveLength(156);
   });
+
+  it.each(skeletonThemeMatrix)(
+    'uses colored Skeleton gradients for $mode/$colorPreset/$palettePreset',
+    (options) => {
+      const { components, css } = resolveLxTokens(options);
+      const skeleton = components.Skeleton;
+      if (!skeleton) throw new Error('解析结果缺少 Skeleton 主题 token');
+
+      expect(skeleton.gradientFromColor).toBe(css['--lx-color-primary-bg']);
+      expect(skeleton.gradientToColor).toBe(css['--lx-color-item-selected-hover-bg']);
+      expect(skeleton.gradientFromColor).not.toBe(css['--lx-color-surface']);
+      expect(skeleton.gradientToColor).not.toBe(css['--lx-color-surface']);
+      expect(skeleton.gradientFromColor).not.toBe(skeleton.gradientToColor);
+    },
+  );
 
   it('在所有主题配色、外观和明暗模式下保持 Tooltip 对比度', () => {
     expect(feedbackTooltipTokens.spotlightBackground).toBe('#1f2937');

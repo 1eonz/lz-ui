@@ -566,8 +566,8 @@ export function resolveLxTokens(options: {
       lineBorderRadius: sizes.radiusPill,
     },
     Skeleton: {
-      gradientFromColor: hoverBg,
-      gradientToColor: primaryBg,
+      gradientFromColor: primaryBg,
+      gradientToColor: selectedHoverBg,
       blockRadius: radius,
       paragraphLiHeight: caption.size,
       paragraphMarginTop: 16,

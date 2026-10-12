@@ -87,7 +87,7 @@ Button 使用固定档位协议：省略 `size` 时由 lx 按 density 使用 com
 {
   "react": ">=18 <20",
   "react-dom": ">=18 <20",
-  "antd": ">=5.24 <6"
+  "antd": ">=5.25 <6"
 }
 ```
 

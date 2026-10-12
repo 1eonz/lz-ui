@@ -67,7 +67,7 @@ Spin 只提供加载指示和区域 `aria-busy` 语义，不发起请求、不�
 
 ## AntD 兼容与边界
 
-兼容 AntD `>=5.24 <6`，透传表中列出的公开属性，不增加外层布局 `div`。`delay` 默认 300ms，只延迟视觉指示器；区域模式的原生 nested 根立即按 `spinning` 设置 `aria-busy`，并持续挂载 `children`。无 `children` 的 standalone 仅是视觉指示器，保留 AntD 原生的延迟 `aria-busy` 语义，延迟期间为 `false`，不代表业务区域。区域模式不默认使用 `role="status"`，以免重复播报业务内容；需要播报时，宿主应提供独立短状态文本。
+兼容 AntD `>=5.25 <6`，透传表中列出的公开属性，不增加外层布局 `div`。`delay` 默认 300ms，只延迟视觉指示器；区域模式的原生 nested 根立即按 `spinning` 设置 `aria-busy`，并持续挂载 `children`。无 `children` 的 standalone 仅是视觉指示器，保留 AntD 原生的延迟 `aria-busy` 语义，延迟期间为 `false`，不代表业务区域。区域模式不默认使用 `role="status"`，以免重复播报业务内容；需要播报时，宿主应提供独立短状态文本。
 
 默认指示器是本地单弧，small/default/large 为 16/24/36px，尺寸读取 `--lx-spin-size-*`，旋转读取 `--lx-motion-spin-duration`（800ms linear）。显式 `indicator` 优先且由调用方负责尺寸，`size` 仍传给 AntD 容器；显式 `delay` 覆盖默认值，`0` 表示立即显示。局部默认指示器优先于宿主 ConfigProvider 的 `spin.indicator` 和 AntD 全局默认；要使用宿主图形，须显式传入 `indicator`。组件不调用 `setDefaultIndicator`，不会修改其它 Spin 实例。
 

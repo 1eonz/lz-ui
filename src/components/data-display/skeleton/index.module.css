@@ -1,4 +1,12 @@
 .root {
-  --ant-skeleton-color: var(--lx-color-border-secondary);
-  --ant-skeleton-to-color: var(--lx-color-surface);
+  min-inline-size: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 重复根类提高选择器优先级，只覆盖忙碌状态的加载子树，不依赖 AntD 内部类名。 */
+  .root.root.root[aria-busy='true'] :global(*) {
+    animation: none;
+    transition-delay: 0s;
+    transition-duration: 0s;
+  }
 }

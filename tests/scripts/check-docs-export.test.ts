@@ -1,14 +1,19 @@
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import {
   extractReferences,
   requiredDocsExportPages,
+  requiredDocsExportPageSets,
   validateDocsExport,
 } from '../../scripts/check-docs-export.mjs';
 
 const temporaryDirectories: string[] = [];
+const emptySkeletonRequiredPages = requiredDocsExportPageSets['empty-skeleton'];
+const checkerScriptPath = resolve(process.cwd(), 'scripts/check-docs-export.mjs');
+const packageJsonPath = resolve(process.cwd(), 'package.json');
 
 async function createTemporaryDirectory() {
   const directory = await mkdtemp(join(tmpdir(), 'lx-ui-docs-export-'));
@@ -103,6 +108,44 @@ describe('静态文档导出门禁', () => {
 
     expect(result.nestedDemoPageCount).toBeGreaterThanOrEqual(2);
     expect(result.errors).toContain(`缺少必需页面：${customerDemoPage}`);
+  });
+
+  it('允许构建任务追加组件页和 demo 页作为必需导出页面', async () => {
+    const docsDistPath = await createCompleteDocsExport();
+    const missingPagesResult = await validateDocsExport(docsDistPath, {
+      requiredPages: emptySkeletonRequiredPages,
+    });
+
+    for (const page of emptySkeletonRequiredPages) {
+      expect(missingPagesResult.errors).toContain(`缺少必需页面：${page}`);
+    }
+
+    await Promise.all(emptySkeletonRequiredPages.map((page) => writeHtml(docsDistPath, page)));
+    const completePagesResult = await validateDocsExport(docsDistPath, {
+      requiredPages: emptySkeletonRequiredPages,
+    });
+
+    expect(completePagesResult.errors).toEqual([]);
+  });
+
+  it('命令行页面集合与隔离构建 npm 脚本保持联动', async () => {
+    const docsDistPath = await createCompleteDocsExport();
+    const result = spawnSync(
+      process.execPath,
+      [checkerScriptPath, docsDistPath, '--required-set=empty-skeleton'],
+      { encoding: 'utf8' },
+    );
+    const packageJson = JSON.parse(await readFile(packageJsonPath, 'utf8')) as {
+      scripts: Record<string, string>;
+    };
+
+    expect(result.status).toBe(1);
+    for (const page of emptySkeletonRequiredPages) {
+      expect(result.stderr).toContain(`缺少必需页面：${page}`);
+    }
+    expect(packageJson.scripts['build:docs:empty-skeleton']).toContain(
+      'node scripts/check-docs-export.mjs .codex/empty-skeleton-docs-dist --required-set=empty-skeleton',
+    );
   });
 
   it('依据本地 base href 解析相对脚本和样式资源', async () => {

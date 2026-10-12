@@ -120,7 +120,7 @@ mindmap
         ↓
       theme / styles / utils
         ↓
-      React 18/19 + antd 5.24以上 peerDependencies
+      React 18/19 + antd 5.25以上 peerDependencies
       禁止反向依赖
         基础组件不得依赖 business
         theme 不依赖路由/请求/权限

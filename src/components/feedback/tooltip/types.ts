@@ -8,14 +8,11 @@ import type { AriaAttributes, ComponentRef } from 'react';
 export type TooltipPlacement = NonNullable<AntTooltipProps['placement']>;
 
 /**
- * Tooltip 的公开属性。除默认触发方式外，其余行为遵循 AntD 5.24+ 的公开 API。
+ * Tooltip 的公开属性。除默认触发方式外，其余行为遵循 AntD 5.25+ 的公开 API。
  * 未提供 `trigger` 时同时响应 hover 与 focus；传入值会完整交给 AntD 处理。
  * `title` 是提示内容，可传 React 节点或同步渲染函数；异步数据、加载和失败状态由宿主管理。
  */
-export type TooltipProps = Omit<
-  AntTooltipProps,
-  'trigger' | 'destroyOnHidden' | 'aria-describedby'
-> &
+export type TooltipProps = Omit<AntTooltipProps, 'trigger' | 'aria-describedby'> &
   Pick<AriaAttributes, 'aria-describedby'> & {
     /**
      * 触发方式。默认同时包含 `hover` 和 `focus`，便于鼠标与键盘用户按同一信息路径查看；

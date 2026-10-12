@@ -19,6 +19,18 @@ export const requiredDocsExportPages = Object.freeze([
   '~demos/components/form/dynamic-form-demo-dynamic-form/index.html',
 ]);
 
+/** 为隔离构建集中定义额外页面，避免构建脚本和测试分别维护路由清单。 */
+export const requiredDocsExportPageSets = Object.freeze({
+  'empty-skeleton': Object.freeze([
+    'components/data-display/empty/index.html',
+    'components/data-display/skeleton/index.html',
+    '~demos/components/data-display/empty-demo-empty-basic/index.html',
+    '~demos/components/data-display/empty-demo-empty/index.html',
+    '~demos/components/data-display/skeleton-demo-skeleton-basic/index.html',
+    '~demos/components/data-display/skeleton-demo-skeleton/index.html',
+  ]),
+});
+
 /**
  * 此脚本只检查静态导出文件及 HTML 中的本地资源引用，不替代浏览器渲染和交互验收。
  */
@@ -168,7 +180,7 @@ function resolveAssetReference(value, baseUrl, docsDistRoot) {
 /**
  * 校验静态导出目录并返回问题列表，允许测试使用隔离目录而不修改真实构建产物。
  */
-export async function validateDocsExport(docsDistPath = defaultDocsDistPath) {
+export async function validateDocsExport(docsDistPath = defaultDocsDistPath, options = {}) {
   const docsDistRoot = await realpath(docsDistPath);
   const files = await collectFiles(docsDistRoot);
   const htmlFiles = files.filter((filePath) => extname(filePath).toLowerCase() === '.html');
@@ -178,7 +190,8 @@ export async function validateDocsExport(docsDistPath = defaultDocsDistPath) {
   const errors = [];
   let checkedReferences = 0;
 
-  for (const requiredPage of requiredDocsExportPages) {
+  const requiredPages = new Set([...requiredDocsExportPages, ...(options.requiredPages ?? [])]);
+  for (const requiredPage of requiredPages) {
     if (!pages.has(requiredPage)) errors.push(`缺少必需页面：${requiredPage}`);
   }
 
@@ -231,8 +244,57 @@ export async function validateDocsExport(docsDistPath = defaultDocsDistPath) {
   };
 }
 
+function parseCommandLineArguments(args) {
+  let docsDistPath = defaultDocsDistPath;
+  let hasDocsDistPath = false;
+  const requiredPages = [];
+
+  for (let index = 0; index < args.length; index += 1) {
+    const argument = args[index];
+    if (argument === '--required-page') {
+      const requiredPage = args[index + 1];
+      if (!requiredPage || requiredPage.startsWith('--')) {
+        throw new Error('--required-page 后必须提供页面相对路径');
+      }
+      requiredPages.push(requiredPage);
+      index += 1;
+      continue;
+    }
+
+    if (argument.startsWith('--required-page=')) {
+      const requiredPage = argument.slice('--required-page='.length);
+      if (!requiredPage) throw new Error('--required-page= 后必须提供页面相对路径');
+      requiredPages.push(requiredPage);
+      continue;
+    }
+
+    if (argument === '--required-set' || argument.startsWith('--required-set=')) {
+      const requiredPageSetName = argument.startsWith('--required-set=')
+        ? argument.slice('--required-set='.length)
+        : args[++index];
+      if (!requiredPageSetName || requiredPageSetName.startsWith('--')) {
+        throw new Error('--required-set 后必须提供页面集合名称');
+      }
+      if (!Object.hasOwn(requiredDocsExportPageSets, requiredPageSetName)) {
+        throw new Error(`未知必需页面集合：${requiredPageSetName}`);
+      }
+      requiredPages.push(...requiredDocsExportPageSets[requiredPageSetName]);
+      continue;
+    }
+
+    if (argument.startsWith('--')) throw new Error(`未知参数：${argument}`);
+    if (hasDocsDistPath) throw new Error(`多余的位置参数：${argument}`);
+
+    docsDistPath = resolve(argument);
+    hasDocsDistPath = true;
+  }
+
+  return { docsDistPath, requiredPages };
+}
+
 async function main() {
-  const result = await validateDocsExport();
+  const { docsDistPath, requiredPages } = parseCommandLineArguments(process.argv.slice(2));
+  const result = await validateDocsExport(docsDistPath, { requiredPages });
   if (result.errors.length) {
     console.error(`Dumi 静态导出门禁失败：发现 ${result.errors.length} 个问题。`);
     for (const error of result.errors) console.error(`- ${error}`);

@@ -219,6 +219,30 @@
     });
   };
 
+  const handleApiTableKeydown = (event) => {
+    if (
+      (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') ||
+      event.defaultPrevented ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      !(event.target instanceof Element)
+    ) {
+      return;
+    }
+
+    const region = event.target.closest('.lx-empty-api-table, .lx-skeleton-api-table');
+    if (!(region instanceof HTMLElement)) return;
+
+    const maxScrollLeft = region.scrollWidth - region.clientWidth;
+    const direction = event.key === 'ArrowRight' ? 1 : -1;
+    const nextScrollLeft = Math.min(maxScrollLeft, Math.max(0, region.scrollLeft + direction * 64));
+    if (nextScrollLeft === region.scrollLeft) return;
+
+    event.preventDefault();
+    region.scrollLeft = nextScrollLeft;
+  };
+
   // Dumi 的客户端根节点最初为空；等 React 提交 main 后再注入链接，避免过早检查而漏掉目标。
   if (!addSkipLink()) {
     const observer = new MutationObserver(() => {
@@ -229,4 +253,5 @@
 
   document.addEventListener('click', handleJumpClick, true);
   document.addEventListener('keydown', handleInitialTab, true);
+  document.addEventListener('keydown', handleApiTableKeydown);
 })();
