@@ -468,6 +468,55 @@
   min-inline-size: 100%;
 }
 
+/* Statistic 参数表滚动时固定属性列，并为类型和说明保留可读宽度。 */
+.markdown .lx-docs-table--statistic table {
+  inline-size: min(960px, 100%);
+  min-inline-size: 760px;
+  table-layout: fixed;
+}
+
+.markdown .lx-docs-table--statistic th:first-child,
+.markdown .lx-docs-table--statistic td:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  inline-size: 176px;
+  min-inline-size: 176px;
+  max-inline-size: 176px;
+  white-space: nowrap;
+  background: var(--lx-docs-table-sticky-surface);
+  border-inline-end: 1px solid var(--lx-docs-table-sticky-border);
+}
+
+.markdown .lx-docs-table--statistic th:first-child {
+  z-index: 2;
+  background: var(--lx-docs-table-sticky-header);
+}
+
+.markdown .lx-docs-table--statistic th:nth-child(2),
+.markdown .lx-docs-table--statistic td:nth-child(2) {
+  inline-size: 260px;
+}
+
+.markdown .lx-docs-table--statistic th:nth-child(3),
+.markdown .lx-docs-table--statistic td:nth-child(3) {
+  inline-size: 100px;
+}
+
+.markdown .lx-docs-table--statistic td:first-child code {
+  white-space: nowrap;
+}
+
+@media (max-width: 360px) {
+  .markdown .lx-docs-table--statistic th:first-child,
+  .markdown .lx-docs-table--statistic td:first-child {
+    inline-size: 144px;
+    min-inline-size: 144px;
+    max-inline-size: 144px;
+  }
+}
+
 .markdown .lx-docs-table:focus-visible {
   outline: 2px solid var(--lx-focus-ring, #146ce8);
   outline-offset: 2px;

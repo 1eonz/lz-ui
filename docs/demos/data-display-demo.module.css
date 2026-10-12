@@ -44,8 +44,98 @@
   font-variant-numeric: tabular-nums;
 }
 
-.success {
+.statisticMetric {
+  --lx-statistic-demo-value-font-size: 2rem;
+  --lx-statistic-demo-value-line-height: 36px;
+}
+
+.statisticSecondary {
+  --lx-statistic-demo-secondary-value-font-size: 1.5rem;
+  --lx-statistic-demo-secondary-value-line-height: 28px;
+}
+
+.metricTrend {
+  display: flex;
+  min-inline-size: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lx-space-sm);
+  margin-block-start: var(--lx-space-sm);
+}
+
+.trendText {
+  display: inline-flex;
+  min-inline-size: 0;
+  align-items: center;
+  gap: var(--lx-space-xs);
+  margin: 0;
+  padding: var(--lx-space-xs) var(--lx-space-sm);
+  border-radius: var(--lx-radius-control, 4px);
   color: var(--lx-color-success);
+  background-color: var(--lx-color-success-bg);
+  font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
+  overflow-wrap: anywhere;
+}
+
+.trendMarker {
+  color: inherit;
+  font-size: var(--lx-font-size-heading-5);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.sparkline {
+  display: block;
+  flex: 0 0 6rem;
+  inline-size: 6rem;
+  block-size: 2rem;
+  color: var(--lx-color-success);
+}
+
+@media (max-width: 420px) {
+  .metricTrend {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .sparkline {
+    margin-inline-start: auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .statisticMetric {
+    --lx-statistic-demo-value-font-size: 20px;
+    --lx-statistic-demo-value-line-height: 24px;
+  }
+
+  .statisticMetric .metricTrend {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: var(--lx-space-xs);
+    margin-block-start: var(--lx-space-xs);
+  }
+
+  .statisticMetric .trendText {
+    max-inline-size: 100%;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
+
+  .statisticMetric .sparkline {
+    margin-inline-start: 0;
+    /* 窄屏趋势区改为纵向布局后，flex 基准对应高度，需与折线高度同步。 */
+    flex-basis: 1.5rem;
+    inline-size: 4rem;
+    block-size: 1.5rem;
+  }
+
+  .statisticSecondary {
+    --lx-statistic-demo-secondary-value-font-size: 18px;
+    --lx-statistic-demo-secondary-value-line-height: 24px;
+  }
 }
 
 .avatar {
