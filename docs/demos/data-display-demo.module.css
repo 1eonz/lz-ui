@@ -559,6 +559,248 @@
   min-block-size: 200px;
 }
 
+.ledgerRegion,
+.ledgerList,
+.ledgerItem,
+.ledgerIdentity,
+.ledgerText {
+  min-inline-size: 0;
+}
+
+.ledgerHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--lx-space-xs) var(--lx-space-md);
+  margin-block-end: var(--lx-space-sm);
+}
+
+.ledgerHeading {
+  margin: 0;
+  font-size: var(--lx-font-size-body);
+  font-weight: 600;
+}
+
+.ledgerHeading:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+.ledgerUnit {
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+}
+
+.ledgerItem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: var(--lx-space-sm);
+  padding: var(--lx-space-md) var(--lx-space-sm);
+  border-radius: var(--lx-radius-control);
+}
+
+.ledgerItem:hover {
+  background: var(--lx-color-item-hover-bg);
+}
+
+.ledgerIdentity {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--lx-space-sm);
+}
+
+.ledgerIcon {
+  display: grid;
+  inline-size: 2.5rem;
+  block-size: 2.5rem;
+  flex: 0 0 2.5rem;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.incomeIcon {
+  color: var(--lx-color-success);
+  background: var(--lx-color-success-bg);
+}
+
+.expenseIcon {
+  color: var(--lx-color-error);
+  background: var(--lx-color-error-bg);
+}
+
+.transferIcon {
+  color: var(--lx-color-primary);
+  background: var(--lx-color-primary-bg);
+}
+
+.ledgerTitleLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-xs) var(--lx-space-sm);
+}
+
+.ledgerTitle {
+  min-inline-size: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ledgerStatusTag {
+  margin-inline-end: 0;
+  white-space: nowrap;
+}
+
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.ledgerDescription {
+  margin: var(--lx-space-xs) 0 0;
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  overflow-wrap: anywhere;
+}
+
+.ledgerFinancial {
+  display: grid;
+  min-inline-size: 0;
+  justify-items: end;
+  align-content: center;
+  gap: var(--lx-space-xs);
+}
+
+.ledgerAmount {
+  font-size: var(--lx-font-size-body);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  white-space: nowrap;
+}
+
+.incomeAmount {
+  color: var(--lx-color-success);
+}
+
+.expenseAmount {
+  color: var(--lx-color-error);
+}
+
+.transferAmount {
+  color: var(--lx-color-primary);
+}
+
+.ledgerDate {
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* 窄屏将金额和时间放在主体之后，并对齐标题文本列，避免落到图标起始线。 */
+@media (max-width: 39.999rem) {
+  .ledgerItem {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .ledgerFinancial {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: var(--lx-space-xs) var(--lx-space-md);
+    margin-inline-start: calc(2.5rem + var(--lx-space-sm));
+  }
+
+  .ledgerAmount,
+  .ledgerDate {
+    text-align: start;
+  }
+}
+
+.loadMoreArea {
+  padding-block-start: var(--lx-space-sm);
+}
+
+.loadMoreButton.loadMoreButton {
+  inline-size: 100%;
+  min-block-size: 40px;
+  block-size: auto;
+  padding-block: var(--lx-space-sm);
+  color: var(--lx-color-primary);
+  background: var(--lx-color-ambient);
+  border-color: transparent;
+  font-weight: 600;
+  text-align: center;
+  white-space: normal;
+}
+
+.loadMoreButton.loadMoreButton:hover:not(:disabled) {
+  color: var(--lx-color-primary);
+  background: var(--lx-color-item-hover-bg);
+  border-color: transparent;
+}
+
+.loadMoreText {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.loadMoreComplete {
+  display: flex;
+  inline-size: 100%;
+  min-block-size: 40px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  padding: var(--lx-space-sm);
+  border-radius: var(--lx-radius-control);
+  color: var(--lx-color-primary);
+  background: var(--lx-color-ambient);
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.loadMoreComplete:focus-visible {
+  outline: 2px solid var(--lx-focus-ring);
+  outline-offset: 2px;
+}
+
+@media (any-pointer: coarse) {
+  .loadMoreButton.loadMoreButton {
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+
+  .loadMoreComplete {
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+}
+
+@media (min-width: 40rem) {
+  .ledgerItem {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, auto);
+  }
+
+  .ledgerFinancial {
+    grid-template-columns: minmax(8rem, 1fr) minmax(6rem, auto);
+    column-gap: var(--lx-space-lg);
+  }
+}
+
 .note {
   padding: var(--lx-space-md);
   background: var(--lx-color-ambient);

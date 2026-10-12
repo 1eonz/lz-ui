@@ -231,7 +231,9 @@
       return;
     }
 
-    const region = event.target.closest('.lx-empty-api-table, .lx-skeleton-api-table');
+    const region = event.target.closest(
+      '.lx-docs-table, .lx-empty-api-table, .lx-skeleton-api-table',
+    );
     if (!(region instanceof HTMLElement)) return;
 
     const maxScrollLeft = region.scrollWidth - region.clientWidth;

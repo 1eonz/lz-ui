@@ -71,6 +71,8 @@
     "check": "npm run format:check && npm run typecheck && npm run typecheck:docs && npm run lint && npm run test",
     "test:browser": "npm run build:docs && playwright test --project=chromium",
     "test:browser:descriptions:dev": "playwright test tests/browser/descriptions-demo.spec.ts --config=playwright.descriptions-dev.config.ts",
+    "build:docs:list-preview": "npm run patch:dumi && node scripts/build-list-docs-preview.mjs",
+    "test:browser:list:preview": "npm run build:docs:list-preview && playwright test tests/browser/list-demo.spec.ts --config=playwright.list-dev.config.ts",
     "test:browser:empty-skeleton": "playwright test tests/browser/empty-skeleton.spec.ts --config=playwright.empty-skeleton.config.ts --project=chromium",
     "test:browser:edge": "playwright test --project=edge",
     "test:browser:webkit": "playwright test tests/browser/webkit-smoke.spec.ts tests/browser/input-demo.spec.ts tests/browser/badge-demo.spec.ts tests/browser/descriptions-demo.spec.ts --project=webkit",

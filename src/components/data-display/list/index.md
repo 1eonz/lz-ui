@@ -13,19 +13,31 @@ dataSource 是记录数组，renderItem 返回 List.Item。复杂标题与描述
 
 <code src="../../../../docs/demos/list-basic.tsx"></code>
 
-## 事务完成、空状态与恢复
+## 交互示例：企业资金流水
 
-完成更新事务，清空同时重置完成记录。重试和空状态恢复前焦点移到常驻显示内容按钮。List.Item 和 List.Item.Meta 是公开组合成员。
+主示例展示收入、支出和转账流水，分别使用圆形钱包、出账和同步图标；状态标签只显示处理状态。整宽按钮显示剩余条数，全部加载后会提示“已展示全部交易流水记录”；清空后可从空状态恢复。追加记录为本地固定数据，区域加载由 `Spin` 展示，List 自身的 `loading` 属性仍适用于常规列表加载。展开“状态演示”可查看加载、错误、清空和恢复状态。状态消息会播报已显示与剩余记录数，重试和空状态恢复后焦点回到显示内容按钮。
 
 <code src="../../../../docs/demos/list.tsx"></code>
 
 ## 状态与受控协议
 
-loading、locale.emptyText 和业务错误恢复分别处理加载、空与失败；完成、清空和恢复更新同一份数据协议，状态消息不能报告已不存在的记录。
+`loading`、`locale.emptyText` 和错误结果分别展示加载、空与失败状态。清空和恢复会同步更新记录与计数；本地追加不发送网络请求。`List.Item` 和 `List.Item.Meta` 是公开组合成员。
 
 ## API
 
 从 `lx-ui` 根入口命名导入组件和对应类型。除扩展项外，其他属性沿用 [Ant Design 5 公开契约](https://ant.design/components/list/cn/)；默认行为随安装的 AntD 5 版本生效，下表列出常用参数。
+
+<p id="list-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览。
+</p>
+
+<div
+  className="lx-docs-table"
+  role="region"
+  tabIndex="0"
+  aria-label="List 参数表"
+  aria-describedby="list-docs-table-hint"
+>
 
 | 属性              | 类型                                    | 默认值      | 说明      |
 | ----------------- | --------------------------------------- | ----------- | --------- |
@@ -39,9 +51,11 @@ loading、locale.emptyText 和业务错误恢复分别处理加载、空与失�
 | `split`           | `boolean`                               | `true`      | 分隔线    |
 | `size`            | `ListProps<T>['size']`                  | `default`   | 尺寸      |
 
+</div>
+
 ## 事件、Ref 与键盘
 
-没有统一业务操作回调，在 renderItem 绑定按钮。pagination.onChange 返回页码；ref 是 HTMLDivElement 外层，用于测量。数据源与 renderItem 保留相同泛型 T。
+List 不定义统一的行内业务操作；在 `renderItem` 中按需组合宿主操作。`pagination.onChange` 返回页码；ref 是 HTMLDivElement 外层，用于测量。数据源与 `renderItem` 保留相同泛型 T。
 
 ## 主题与密度
 
@@ -51,7 +65,7 @@ loading、locale.emptyText 和业务错误恢复分别处理加载、空与失�
 
 ## 边界与性能
 
-提供稳定 key，清空时完成状态不能保留为虚假计数。请求竞态、权限与去重由宿主处理；没有内建虚拟列表，大数据先分页。
+提供稳定 key；清空时记录和剩余数量均归零。请求竞态、权限与去重由宿主处理；没有内建虚拟列表，大数据先分页。
 
 ## 设计与验证边界
 
