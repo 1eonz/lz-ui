@@ -6,12 +6,13 @@
 
 这份文档是 Tooltip 之后的执行计划。它把已经存在的代码、尚未完成的浏览器证据和待实现模块排成有依赖关系的批次。每个批次必须关闭自己的问题后才能进入下一批；“代码已经存在”不等于“组件已经交付”。
 
-## 当前执行状态（2026-10-11）
+## 当前执行状态（2026-10-12）
 
 - **批次 2B-1 仍开放。** 2026-10-06 的 NO-GO 是当时针对全库验收缺口的历史结论；其后组件级浏览器证据持续增加，但尚未逐项覆盖本计划要求的公开组件与未验收范围。Input 文档跳转入口此次局部回归通过，不构成全库关闭证据。
 - **当前局部收口：** Input 文档跳转入口显示“跳至正文”，可访问名称为“跳至正文，跳转到主要内容”。缺链首次正向 Tab 会在同一事件中同步补链、阻止默认移焦并聚焦入口；延迟挂载测试分阶段验证 `main`、`article`、`h1`。真实的参数表修饰键新页用例先等待 Input H1 与跳转链接可见，再进行焦点探测和 Tab 循环；复用现有预览在 Chromium、Edge、WebKit 定向通过 3/3。首次 Tab、焦点/Hash、三种视口文案与 300px 几何均有浏览器断言。
+- **当前新增局部证据：** Descriptions 文档示例与 Stitch 的无边框分区布局对齐，桌面按 4:8 比例呈现标签和值，标签背景按 light/dark 主题匹配 ambient token；575px 及以下纵向堆叠，并增加合同长说明的展开/恢复行为。当前 Dumi dev 源码页面的 Chromium 与 Windows Playwright WebKit 定向各 3/3，共 6/6；覆盖 1280/930/576/575/390/320 CSS viewport、断点两侧、窄屏折行、桌面组合 cell 名称与纵向布局具名 columnheader/cell、原生 `th/td` 零边框、API 表方向键横向滚动、dark+compact 和 browser-health。没有重建或覆盖既有 `docs-dist`；完整主题矩阵、真实读屏、page zoom、Safari 实机和部署环境仍待验收。
 - **当前评审与浏览器结果：** UX 终审 **37/40**，此前发现的标签回归覆盖缺口已补齐；修复真实参数表新页用例的路由就绪等待后，完整 Input 专项 Chromium、Edge、Windows Playwright WebKit 再运行共 45 项，44 项通过、1 项因 Windows WebKit 未暴露触点能力跳过。跳过项不代表触控通过。最终独立代码复审 **GO**，未发现 P0-P2；子代理按 `gpt-6-luna max` 配置，运行时身份无法核验。评审快照和边界详见 `docs/impeccable-audit.md` 与 `docs/browser-acceptance-matrix.md`。
-- **当前环境限制：** Dumi 开发进程仍使用本项目 `.dumi/tmp`，本轮未运行会覆盖该共享缓存的 `build:docs`。Playwright 使用现有 `docs-dist` 启动本地 Vite preview，并将脚本请求映射到当前源码；跳转样式用例显式注入当前 CSS。因此本轮验证不代表最新 Dumi 构建资产，也未验证开发服务器路由。
+- **当前环境限制：** Dumi 开发进程仍使用本项目 `.dumi/tmp`，本轮未运行会覆盖该共享缓存的 `build:docs`。Input 跳转入口专项复用了现有 `docs-dist` 启动的本地 Vite preview，并将脚本请求映射到当前源码；跳转样式用例显式注入当前 CSS，因此那项 Input 验证不代表最新 Dumi 构建资产，也未验证开发服务器路由。Descriptions 专项由仓库根目录的 `playwright.descriptions-dev.config.ts` 直连当前 Dumi dev `8000` 路由。
 - **下一步边界：** 继续按批次 2B-1 补齐浏览器证据并记录真实未覆盖项；只有满足本节关闭条件后，才进入 2B-2 锚定对话框原语实现。ADR-0004 已接受不代表实现门禁已解除。
 
 ## 一、当前基线

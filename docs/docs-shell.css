@@ -833,3 +833,43 @@
     max-inline-size: 144px;
   }
 }
+
+/* 中文注释：Descriptions API 表为属性、类型、默认值和说明保留可读列宽，窄屏由具名区域横向滚动。 */
+.markdown .lx-descriptions-api-table table {
+  inline-size: min(1100px, 100%);
+  min-inline-size: 1000px;
+  table-layout: fixed;
+}
+
+.markdown .lx-descriptions-api-table th:first-child,
+.markdown .lx-descriptions-api-table td:first-child {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  inline-size: 184px;
+  min-inline-size: 184px;
+  max-inline-size: 184px;
+  white-space: nowrap;
+  background: var(--lx-docs-table-sticky-surface);
+  box-shadow: 1px 0 0 var(--lx-docs-table-sticky-border);
+}
+
+.markdown .lx-descriptions-api-table th:first-child {
+  z-index: 2;
+  background: var(--lx-docs-table-sticky-header);
+}
+
+.markdown .lx-descriptions-api-table th:nth-child(2),
+.markdown .lx-descriptions-api-table td:nth-child(2) {
+  inline-size: 320px;
+}
+
+.markdown .lx-descriptions-api-table th:nth-child(3),
+.markdown .lx-descriptions-api-table td:nth-child(3) {
+  inline-size: 160px;
+}
+
+.markdown .lx-descriptions-api-table td:first-child code {
+  white-space: nowrap;
+}

@@ -9,7 +9,7 @@ group: Data Display
 
 ## 基础用法：合同键值布局
 
-items 中每个条目传 key、label 和 children，span 合并多列。column 可用数值或断点对象，窄屏设置 xs: 1；bordered 开启边框，金额和日期先由宿主格式化。
+items 中每个条目传 key、label 和 children，span 合并多列。column 可用数值或断点对象，窄屏设置 xs: 1。基础示例按设计稿使用无边框分区，标签和值分别采用 4:8 比例；bordered 是 AntD 提供的另一种可选布局，不是本组件的默认业务样式。金额和日期先由宿主格式化。
 
 <code src="../../../../docs/demos/descriptions-basic.tsx"></code>
 
@@ -27,6 +27,18 @@ Descriptions 不请求数据，也没有内建 loading/error。先由宿主渲�
 
 从 `lx-ui` 根入口命名导入组件和对应类型。除扩展项外，其他属性沿用 [Ant Design 5 公开契约](https://ant.design/components/descriptions/cn/)；默认行为随安装的 AntD 5 版本生效，下表列出常用参数。
 
+<p id="descriptions-docs-table-hint" className="lx-docs-table-hint">
+  窄屏下可左右滑动参数表；键盘用户聚焦表格区域后按左右方向键浏览。
+</p>
+
+<div
+  className="lx-docs-table lx-descriptions-api-table"
+  role="region"
+  tabindex="0"
+  aria-label="Descriptions 参数表"
+  aria-describedby="descriptions-docs-table-hint"
+>
+
 | 属性            | 类型                          | 默认值       | 说明           |
 | --------------- | ----------------------------- | ------------ | -------------- |
 | `items`         | `DescriptionsProps['items']`  | `—`          | 条目及 span    |
@@ -36,6 +48,8 @@ Descriptions 不请求数据，也没有内建 loading/error。先由宿主渲�
 | `layout`        | `DescriptionsProps['layout']` | `horizontal` | 水平或垂直     |
 | `size`          | `DescriptionsProps['size']`   | `default`    | 展示尺寸       |
 | `colon`         | `boolean`                     | `true`       | 标签冒号       |
+
+</div>
 
 ## 事件、Ref 与键盘
 
