@@ -33,7 +33,12 @@ export default function TooltipPlacementsDemo() {
               {placements.map((placement) => (
                 <div className={styles.placementTrigger} key={placement}>
                   <Tooltip title="位置说明" placement={placement}>
-                    <Button className={styles.placementButton}>{placement}</Button>
+                    <Button
+                      className={`${styles.placementButton} ${styles.tooltipTrigger}`}
+                      data-testid="tooltip-demo-trigger"
+                    >
+                      {placement}
+                    </Button>
                   </Tooltip>
                 </div>
               ))}
@@ -45,10 +50,14 @@ export default function TooltipPlacementsDemo() {
         <h3 className={styles.placementHeading}>视口边缘与窄屏</h3>
         <div className={styles.edgeStage}>
           <Tooltip title="自动翻转" placement="left" autoAdjustOverflow>
-            <Button>左侧触点</Button>
+            <Button className={styles.tooltipTrigger} data-testid="tooltip-demo-trigger">
+              左侧触点
+            </Button>
           </Tooltip>
           <Tooltip title="自动翻转" placement="right" autoAdjustOverflow>
-            <Button>右侧触点</Button>
+            <Button className={styles.tooltipTrigger} data-testid="tooltip-demo-trigger">
+              右侧触点
+            </Button>
           </Tooltip>
         </div>
         <p className={styles.note}>

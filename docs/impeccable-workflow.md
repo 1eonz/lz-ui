@@ -24,4 +24,4 @@
 
 ### 快照格式保护
 
-先运行 `critique-storage.mjs slug <目标>` 取得脚本生成的稳定标识，再将评审正文按项目格式整理，通过 `critique-storage.mjs write <slug> <正文文件>` 生成快照。生成后的 `.impeccable/critique/*.md` 不运行 Prettier：frontmatter 中的目标指纹由脚本按可解析格式序列化；格式器可能改写引号，导致 `latest` 把仍匹配的快照误判为目标已变化并关闭。查询时运行 `critique-storage.mjs latest <目标> --json`；CLI 也接受已生成的 slug。目标路径没有对应快照、快照已关闭或目标指纹变化时会以退出码 2 结束，这不等于参数格式错误。确认 `snapshot_file` 与正文存在后再继续。快照不作为普通源码格式化。
+将评审正文按项目格式整理，通过 `critique-storage.mjs write <目标路径> <正文文件>` 生成快照；脚本会从目标路径派生稳定标识，无需单独运行 `slug`。写入时必须传入具体目标路径；虽然脚本也接受 slug，但裸 slug 会被当作相对路径，生成无法匹配实际目标指纹的快照。生成后的 `.impeccable/critique/*.md` 不运行 Prettier：frontmatter 中的目标指纹由脚本按可解析格式序列化；格式器可能改写引号，导致 `latest` 把仍匹配的快照误判为目标已变化并关闭。查询时运行 `critique-storage.mjs latest <目标路径> --json`。目标路径没有对应快照、快照已关闭或目标指纹变化时会以退出码 2 结束，这不等于参数格式错误。确认 `snapshot_file` 与正文存在后再继续。快照不作为普通源码格式化。

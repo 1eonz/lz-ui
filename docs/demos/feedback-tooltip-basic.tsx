@@ -36,7 +36,11 @@ export default function TooltipBasicDemo() {
           title="最近一次同步于 14:32 完成"
           placement="top"
         >
-          <Button className={styles.compactTrigger} aria-describedby="sync-field-description">
+          <Button
+            className={`${styles.compactTrigger} ${styles.tooltipTrigger}`}
+            data-testid="tooltip-demo-trigger"
+            aria-describedby="sync-field-description"
+          >
             客户同步状态
           </Button>
         </Tooltip>
@@ -51,7 +55,12 @@ export default function TooltipBasicDemo() {
           placement="topRight"
           arrow={{ pointAtCenter: true }}
         >
-          <Button className={styles.compactTrigger}>同步计划</Button>
+          <Button
+            className={`${styles.compactTrigger} ${styles.tooltipTrigger}`}
+            data-testid="tooltip-demo-trigger"
+          >
+            同步计划
+          </Button>
         </Tooltip>
       </div>
       <div className={styles.describedExample}>
@@ -74,7 +83,9 @@ export default function TooltipBasicDemo() {
       <div className={styles.row} role="group" aria-label="禁用操作原因">
         <Button disabled>提交订单</Button>
         <Tooltip title="请先补充联系人邮箱并保存，之后才能提交订单。">
-          <Button type="link">为什么暂不可提交？</Button>
+          <Button className={styles.tooltipTrigger} data-testid="tooltip-demo-trigger" type="link">
+            为什么暂不可提交？
+          </Button>
         </Tooltip>
       </div>
       <p className={styles.note}>

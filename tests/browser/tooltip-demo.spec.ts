@@ -62,11 +62,23 @@ async function getAssociatedTooltip(page: Page, trigger: Locator, name: string):
   return page.getByRole('tooltip', { name, exact: true }).and(page.locator(`[id="${tooltipId}"]`));
 }
 
-async function centerReceivesPointer(target: Locator): Promise<boolean> {
+async function insetHitPointsReceivePointer(target: Locator): Promise<boolean> {
   return target.evaluate((element) => {
     const rect = element.getBoundingClientRect();
-    const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
-    return hit === element || (hit instanceof Node && element.contains(hit));
+    const insetX = Math.min(4, rect.width / 4);
+    const insetY = Math.min(4, rect.height / 4);
+    const points: [number, number][] = [
+      [rect.x + rect.width / 2, rect.y + rect.height / 2],
+      [rect.x + insetX, rect.y + insetY],
+      [rect.right - insetX, rect.y + insetY],
+      [rect.x + insetX, rect.bottom - insetY],
+      [rect.right - insetX, rect.bottom - insetY],
+    ];
+
+    return points.every(([x, y]) => {
+      const hit = document.elementFromPoint(x, y);
+      return hit === element || (hit instanceof Node && element.contains(hit));
+    });
   });
 }
 
@@ -216,6 +228,19 @@ test('Tooltip 焦点打开时合并描述，移焦后恢复宿主描述', async 
     'aria-describedby',
     'sync-field-description sync-form-description',
   );
+  await finishBrowserCheck(page, browserHealth);
+});
+
+test('Tooltip 参数表提示触屏滑动与键盘浏览方式', async ({ page }) => {
+  const browserHealth = collectBrowserErrors(page);
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto('/components/feedback/tooltip');
+
+  const hint = page.locator('#tooltip-docs-table-hint');
+  const table = page.getByRole('region', { name: 'Tooltip 常用属性参数表' });
+
+  await expect(hint).toHaveText('表格支持横向滚动：触屏设备可左右滑动；聚焦后可按左右方向键浏览。');
+  await expect(table).toHaveAttribute('aria-describedby', 'tooltip-docs-table-hint');
   await finishBrowserCheck(page, browserHealth);
 });
 
@@ -418,7 +443,7 @@ test('Tooltip 侧向提示不会遮挡同组相邻按钮的鼠标命中区域', 
         `${viewport.width}px 视口下 ${opened} 的提示矩形不应覆盖 ${targetName}`,
       ).toBe(false);
       expect(
-        await centerReceivesPointer(target),
+        await insetHitPointsReceivePointer(target),
         `${viewport.width}px 视口下 ${opened} 的提示不应覆盖 ${targetName} 的鼠标命中区域`,
       ).toBe(true);
 
@@ -517,4 +542,141 @@ test('Tooltip 在系统 reduced-motion 下仍可打开且弹层不运行动画',
   expect(animationNames.every((name) => name === 'none')).toBe(true);
   expect(motion.activeAnimations).toBe(0);
   await finishBrowserCheck(page, browserHealth);
+});
+
+test.describe('Tooltip 粗指针触点', () => {
+  test.use({ isMobile: true, hasTouch: true });
+
+  test('每个 Tooltip 触发器均达到 44×44px 且中心和四个内缩角点可命中', async ({ page }) => {
+    const browserHealth = collectBrowserErrors(page);
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/components/feedback/tooltip');
+
+      const hasCoarsePointer = await page.evaluate(
+        () => window.matchMedia('(any-pointer: coarse)').matches,
+      );
+      expect(hasCoarsePointer, '移动触控上下文必须暴露粗指针媒体能力').toBe(true);
+
+      const triggers = page.getByTestId('tooltip-demo-trigger');
+      await expect(triggers).toHaveCount(18);
+
+      for (let index = 0; index < 18; index += 1) {
+        const trigger = triggers.nth(index);
+        await trigger.scrollIntoViewIfNeeded();
+        const bounds = await trigger.boundingBox();
+        expect(
+          bounds,
+          `${width}px 下第 ${index + 1} 个 Tooltip 触发按钮应有可见几何`,
+        ).not.toBeNull();
+        expect(bounds!.width, `${width}px 下第 ${index + 1} 个触发按钮宽度`).toBeGreaterThanOrEqual(
+          44,
+        );
+        expect(
+          bounds!.height,
+          `${width}px 下第 ${index + 1} 个触发按钮高度`,
+        ).toBeGreaterThanOrEqual(44);
+        expect(
+          await insetHitPointsReceivePointer(trigger),
+          `${width}px 下第 ${index + 1} 个触发按钮的中心及内缩角点应由按钮本身接收输入`,
+        ).toBe(true);
+      }
+
+      const pageWidths = await page.evaluate(() => ({
+        viewport: document.documentElement.clientWidth,
+        document: document.documentElement.scrollWidth,
+        body: document.body.scrollWidth,
+      }));
+      expect(pageWidths).toEqual({ viewport: width, document: width, body: width });
+    }
+
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto('/components/feedback/tooltip');
+
+      const triggers = page.getByTestId('tooltip-demo-trigger');
+      const firstTooltip = page.getByRole('tooltip', {
+        name: '最近一次同步于 14:32 完成',
+        exact: true,
+      });
+      const firstTrigger = triggers.first();
+      const firstOriginalDescription = await firstTrigger.getAttribute('aria-describedby');
+      const firstDescriptionTokens = firstOriginalDescription?.split(/\s+/).filter(Boolean) ?? [];
+      expect(firstDescriptionTokens.length).toBeGreaterThan(0);
+
+      const secondTrigger = triggers.nth(1);
+      const secondTooltip = page.getByRole('tooltip', {
+        name: '客户资料已同步 下次同步：今天 22:00',
+        exact: true,
+      });
+      const originalDescription = await secondTrigger.getAttribute('aria-describedby');
+
+      await firstTrigger.tap();
+      await expect(firstTooltip).toBeVisible();
+      const firstTooltipId = await firstTooltip.getAttribute('id');
+      expect(firstTooltipId).toBeTruthy();
+      await expect
+        .poll(
+          async () => {
+            const describedBy = (await firstTrigger.getAttribute('aria-describedby'))
+              ?.split(/\s+/)
+              .filter(Boolean);
+            return Boolean(
+              firstTooltipId &&
+              describedBy?.includes(firstTooltipId) &&
+              firstDescriptionTokens.every((token) => describedBy.includes(token)),
+            );
+          },
+          { intervals: [50, 100, 200], timeout: 2_000 },
+        )
+        .toBe(true);
+
+      await secondTrigger.tap();
+      await expect(firstTooltip).not.toBeVisible();
+      await expect
+        .poll(() => firstTrigger.getAttribute('aria-describedby'), {
+          intervals: [50, 100, 200],
+          timeout: 2_000,
+        })
+        .toBe(firstOriginalDescription);
+      await expect(secondTooltip).toBeVisible();
+
+      const secondTooltipId = await secondTooltip.getAttribute('id');
+      expect(secondTooltipId).toBeTruthy();
+      await expect
+        .poll(
+          async () => {
+            const describedBy = (await secondTrigger.getAttribute('aria-describedby'))
+              ?.split(/\s+/)
+              .filter(Boolean);
+            return Boolean(secondTooltipId && describedBy?.includes(secondTooltipId));
+          },
+          { intervals: [50, 100, 200], timeout: 2_000 },
+        )
+        .toBe(true);
+
+      await page.locator('#tooltip-docs-table-hint').tap();
+      await expect(secondTooltip).not.toBeVisible();
+      await expect
+        .poll(() => secondTrigger.getAttribute('aria-describedby'), {
+          intervals: [50, 100, 200],
+          timeout: 2_000,
+        })
+        .toBe(originalDescription);
+    }
+
+    await page.getByText('主题设置', { exact: true }).first().click();
+    await page.getByRole('switch', { name: '紧凑密度' }).first().click();
+    const triggers = page.getByTestId('tooltip-demo-trigger');
+    for (let index = 0; index < 18; index += 1) {
+      const trigger = triggers.nth(index);
+      await trigger.scrollIntoViewIfNeeded();
+      const bounds = await trigger.boundingBox();
+      expect(bounds).not.toBeNull();
+      expect(bounds!.width, `紧凑密度下第 ${index + 1} 个触发器宽度`).toBeGreaterThanOrEqual(44);
+      expect(bounds!.height, `紧凑密度下第 ${index + 1} 个触发器高度`).toBeGreaterThanOrEqual(44);
+    }
+
+    await finishBrowserCheck(page, browserHealth);
+  });
 });

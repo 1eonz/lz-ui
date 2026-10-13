@@ -6,7 +6,7 @@
 
 这份文档是 Tooltip 之后的执行计划。它把已经存在的代码、尚未完成的浏览器证据和待实现模块排成有依赖关系的批次。每个批次必须关闭自己的问题后才能进入下一批；“代码已经存在”不等于“组件已经交付”。
 
-## 当前执行状态（2026-10-13）
+## 当前执行状态（2026-10-14）
 
 - **批次 2B-1 仍开放。** 2026-10-06 的 NO-GO 是当时针对全库验收缺口的历史结论；其后组件级浏览器证据持续增加，但尚未逐项覆盖本计划要求的公开组件与未验收范围。Input 文档跳转入口此次局部回归通过，不构成全库关闭证据。
 - **当前局部收口：** Input 文档跳转入口显示“跳至正文”，可访问名称为“跳至正文，跳转到主要内容”。缺链首次正向 Tab 会在同一事件中同步补链、阻止默认移焦并聚焦入口；延迟挂载测试分阶段验证 `main`、`article`、`h1`。真实的参数表修饰键新页用例先等待 Input H1 与跳转链接可见，再进行焦点探测和 Tab 循环；复用现有预览在 Chromium、Edge、WebKit 定向通过 3/3。首次 Tab、焦点/Hash、三种视口文案与 300px 几何均有浏览器断言。
@@ -31,7 +31,7 @@
 
 ### 当前未闭合项
 
-1. 已实现组件的完整浏览器矩阵还未全部完成。Tooltip 已验证 930/390/360/320px、ARIA 合并/恢复、受控触发、12 个方位、左右边缘翻转、窄屏 API 表键盘滚动和一个 dark/compact/glass 主题组合；200%/400% 缩放、系统级 reduced-motion、屏幕阅读器、全主题矩阵和 React 19 消费 smoke 仍需补证据。
+1. 已实现组件的全库浏览器矩阵尚未完成。Tooltip 文档 demo 与主题选项矩阵已在 Chromium/Windows Playwright WebKit 各通过 11/11；覆盖 320/390/930/1280px、12 个公开位置、ARIA 合并与触屏恢复、粗指针命中、reduced-motion，并逐一检查 light/dark、三种外观、两种密度、六个品牌色和七套东方配色的公开选项值，以及 4 种代表性组合（未覆盖完整笛卡尔积）。Tooltip 仍待真实 200%/400% 页面缩放、屏幕阅读器、Safari 实机、实体触控、设备性能、目标部署和 React 19 消费 smoke；其他组件按浏览器矩阵逐项收口。
 2. Popover 和 Popconfirm 暂不实现。它们需要先有可访问的锚定对话框原语，不能把 Tooltip 的 `role="tooltip"` 语义扩展到可操作内容。
 3. Modal、Drawer、Message、Notification 尚未实现。
 4. Breadcrumb、Steps、lx-ui 增强 Tabs、Dropdown/Menu 尚未实现；原生 Ant Design Tabs 可从 `lx-ui/antd` 导入。
@@ -44,7 +44,7 @@
 
 ```mermaid
 flowchart TD
-  A[Tooltip 视觉矩阵补测] --> B[锚定对话框原语设计]
+  A[2B-1 现有组件浏览器矩阵收口] --> B[锚定对话框原语设计]
   B --> C[Popover / Popconfirm]
   B --> D[Modal / Drawer]
   D --> E[Message / Notification]
@@ -61,7 +61,7 @@ flowchart TD
 
 执行顺序固定为：
 
-1. 2B-1 Tooltip 浏览器验收收口。
+1. 2B-1 其余现有组件浏览器验收收口；Tooltip 自动化局部矩阵已完成。
 2. 2B-2 锚定对话框原语设计与最小实现。
 3. 2B-3 Popover、Popconfirm、Modal、Drawer、Message、Notification。
 4. 3A 导航基础组件。
@@ -209,7 +209,9 @@ flowchart TD
 
 ## 六、当前下一步
 
-**批次 2B-1 仍在进行，详细状态以 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md) 为准。** 全部 32 个公开组件路由已有 Chromium/Edge 根溢出 smoke；非 DynamicForm 路由主题矩阵为两浏览器各 31/31，DynamicForm 独立矩阵为各 1/1；Table 基础滚动、固定列、虚拟化、详情和主题/密度已有分项浏览器证据。Upload 宿主示例已通过 Chromium 8/8，验证浏览器 multipart mock 请求和失败/删除恢复；真实生产服务端、认证授权和实际系统文件选择器取消仍待验收。Table 纯文本格方向键不作为当前默认组件的 P2 待修项，已按 [ADR-0005](./adr/0005-table-keyboard-model.md) 接受原生静态表格语义；该选择不等于单元格网格导航或真实读屏通过。仍待完成的重点包括真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机/版本覆盖、实体触控、目标部署和设备性能。**批次 2B-2 的 ADR-0004 架构决策已接受，但其实现仍受 2B-1 关闭条件约束**；在门槛满足前不加入浮层依赖、不实现锚定原语、不公开 Popover/Popconfirm。所有浏览器能力限制和逐组件未验收项都以实际证据记录，不从源码推断通过。
+**Tooltip 最终浏览器验收（2026-10-14）：** 新增触屏 API 表说明及触屏关闭后的 `aria-describedby` 恢复断言后，Tooltip demo 9 项与主题矩阵 2 项在 Chromium、Windows Playwright WebKit 各通过 11/11，共 22/22。下方历史批次中的 8/8、10/10 为中间运行结果；本轮验收详情见 [浏览器矩阵](./browser-acceptance-matrix.md) 与 [Impeccable 记录](./impeccable-audit.md)。此局部结果不代表真实触屏、Safari 实机、屏幕阅读器或全库 2B-1 已验收。
+
+**批次 2B-1 仍在进行，详细状态以 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md) 为准。** 全部 32 个公开组件路由已有 Chromium/Edge 根溢出 smoke；非 DynamicForm 路由主题矩阵为两浏览器各 31/31，DynamicForm 独立矩阵为各 1/1；Table 基础滚动、固定列、虚拟化、详情和主题/密度已有分项浏览器证据。Tooltip 文档 demo 的最终触屏与主题矩阵结果见上方验收条目及 [browser-acceptance-matrix.md](./browser-acceptance-matrix.md)，粗指针仿真不等于实体设备验收。Upload 宿主示例已通过 Chromium 8/8，验证浏览器 multipart mock 请求和失败/删除恢复；真实生产服务端、认证授权和实际系统文件选择器取消仍待验收。Table 纯文本格方向键不作为当前默认组件的 P2 待修项，已按 [ADR-0005](./adr/0005-table-keyboard-model.md) 接受原生静态表格语义；该选择不等于单元格网格导航或真实读屏通过。仍待完成的重点包括真实屏幕阅读器、真实 200%/400% page zoom、Safari 实机/版本覆盖、实体触控、目标部署和设备性能。**批次 2B-2 的 ADR-0004 架构决策已接受，但其实现仍受 2B-1 关闭条件约束**；在门槛满足前不加入浮层依赖、不实现锚定原语、不公开 Popover/Popconfirm。所有浏览器能力限制和逐组件未验收项都以实际证据记录，不从源码推断通过。
 
 2026-10-05 续验：DynamicForm 级联与提交恢复已在 `http://localhost:8001/components/form/dynamic-form` 实际演示。已验证选择“西湖区”后改为“华南”会清空城市/区县、禁用区县并播报清理结果；重置回到“华东”。完整客户录入首次提交失败保留值、错误和重试同屏、焦点返回重试按钮；重试成功后聚焦“查看客户”，继续新增清空并聚焦客户名称。页面主题、级联值、客户输入、失败模拟选项均已恢复。DynamicForm 的宽度与主题局部证据不关闭全库 2B-1 矩阵；其他组件的键盘、主题、缩放、读屏和跨浏览器缺口仍按 `browser-acceptance-matrix.md` 继续处理。
 
@@ -300,3 +302,5 @@ flowchart TD
 2026-10-12 Badge processing 背景与 Ribbon 双向布局收口：补齐公开 `Badge.Ribbon placement="start"`、LTR/RTL 角标边缘和透明背景覆盖规则；Provider reduced-motion token、通知摘要与主题/密度 demo、参数和样式优先级文档均有测试覆盖。Badge 定向 Playwright 在 Chromium、Edge、Windows Playwright WebKit 各 1/1；常用 WebKit 脚本已包含 Badge，但本批没有留存整套脚本原始报告，因此不记录整套数量。全仓 `npm run check` 通过 56 个测试文件、639 项测试和 106 个 demo 类型检查；`check:scaffold`、ESM/CJS 库构建（各 111 个源码文件）通过。当前构建记录的 Dumi 导出为 161 HTML、644 个本地资源引用、89 个 demo。独立 `gpt-6-luna max` 代码复审 GO，无 P0–P3；实际运行模型身份无法独立核验。AntD 5.24 最低版本的独立安装验证仍待完成；真实读屏、高倍缩放、Safari 实机、实体设备、性能和部署验收继续开放，全库 2B-1 不关闭。
 
 2026-10-13 Card 面板语义、状态、中间宽度与触屏验收：旧版 `Card.tabList` 的浏览器结果仅作历史记录；当前文档 demo 改用 `Card` 与 `lx-ui/antd` 的公开 `Tabs items[].children`，用 `Card styles.body`、`Tabs tabBarStyle` 和 CSS Module 排版。隔离 Dumi 导出门禁通过（164 个 HTML、656 个本地 JS/CSS 引用、92 个嵌套 demo）；Card 单测 4/4、111 个文档源码类型检查和 ESM/CJS 库构建通过。最终 `tests/browser/components.spec.ts --grep "Card："` 在 Chromium 与 Windows Playwright WebKit 各通过 3/3，共 6/6；覆盖 320/360/361/375/387/388/390/930/1280px 主流程及 414/480/560/594/595/596/597/600/640px 中间宽度，检查完整可访问标签、Tabs 双向 ARIA 关联、真实面板正文、周期响应式位置、指标网格 1/2/4 列及单元格边界、手动方向键、Enter/Space、加载和恢复焦点、空/错恢复、文档根无横向溢出、可键盘横移的 API 参数表，以及粗指针下三个标签至少 44×44px 且上下边缘点按可激活。测试使用可见 RadioGroup 文案激活状态，未直接点击 AntD 隐藏输入；标签状态断言读取内容可见性，不绑定 `display` 值。Card 原生 `tabList` 的 `tabpanel` 不承载独立 `Card.children`，该 P2 限制仍未通过私有 DOM 或运行时改写修补。Card 局部结果不关闭完整主题/密度/风格矩阵、200%/400% 放大、真实读屏、Safari 实机、实体设备、性能、部署或全库 2B-1。
+
+2026-10-14 Tooltip 粗指针触点目标复验：仅调整文档 demo 触发按钮与浏览器用例，不改 Button/Tooltip 生产 API。粗指针下三个 demo 共 18 个触发器至少 44×44px，细指针密度保持不变。首次完整 Tooltip demo 与 theme matrix 在 Chromium、Windows Playwright WebKit 各 10/10；将测试提升为中心及四个内缩角点命中后，Tooltip demo 单独各 8/8。320/390px 的默认密度全量尺寸与采样命中、紧凑密度全量尺寸、真实 tap 打开/切换、无页面根溢出通过；粗指针能力被设为必需断言，不再静默跳过。`npm run check` 为 59 个测试文件/688 项测试和 111 个 Dumi demo 类型检查；脚手架、ESM/CJS 库构建、Dumi 164 HTML/656 资源引用/92 demo 导出、格式与 diff 检查通过。独立复审关闭“粗指针可跳过”“compact 仅测三个”和中心点过窄三个发现。Impeccable detector `[]` 只表示规则未命中。真实触屏、Safari 实机、读屏、真实页面缩放、设备性能、部署及全库 2B-1 继续开放。

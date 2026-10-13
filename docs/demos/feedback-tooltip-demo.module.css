@@ -97,6 +97,15 @@
   white-space: nowrap;
 }
 
+@media (any-pointer: coarse) {
+  .tooltipTrigger {
+    /* 桌面密度保持设计档位，粗指针只扩大实际可点区域至无障碍下限。 */
+    --lx-control-height: max(44px, var(--lx-control-target-touch-min, 44px));
+    min-inline-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+  }
+}
+
 .note {
   margin: 0;
   color: var(--lx-color-text-secondary);

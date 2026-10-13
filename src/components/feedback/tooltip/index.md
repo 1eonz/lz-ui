@@ -23,6 +23,7 @@ import { Tooltip } from 'lx-ui';
 
 `title` 既是提示文案，也是 AntD Tooltip 的内容入口；默认由鼠标悬停或键盘焦点打开。
 演示还保留了触发元素和 Tooltip 组件各自提供的 `aria-describedby`，打开后可一起检查。禁用操作的原因放在相邻、可聚焦的帮助按钮上，不依赖禁用按钮接收焦点。
+文档演示在粗指针设备上把 Tooltip 触发按钮扩展至至少 44×44 CSS px；细指针下仍沿用当前主题密度。该调整仅服务于文档示例，不改变 Button 或 Tooltip 的公开默认尺寸。
 
 <code src="../../../../docs/demos/feedback-tooltip-basic.tsx" defaultShowCode></code>
 
@@ -43,7 +44,7 @@ import { Tooltip } from 'lx-ui';
 组件属性基于 AntD `>=5.25 <6` 的 Tooltip 公共类型，继承的属性会继续透传到 AntD。`trigger` 默认额外包含键盘 `focus`；`aria-describedby` 是 lx-ui 的增强项，用于保留触发元素已有说明并与 Tooltip 描述合并。
 
 <p id="tooltip-docs-table-hint" className="lx-docs-table-hint">
-  表格可横向滚动；聚焦表格区域后按左右方向键浏览。
+  表格支持横向滚动：触屏设备可左右滑动；聚焦后可按左右方向键浏览。
 </p>
 
 ### 常用属性

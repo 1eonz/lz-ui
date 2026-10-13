@@ -28,7 +28,9 @@ export default function TooltipControlledDemo() {
             }}
             getPopupContainer={(triggerNode) => triggerNode.parentElement ?? document.body}
           >
-            <Button>查看主题提示</Button>
+            <Button className={styles.tooltipTrigger} data-testid="tooltip-demo-trigger">
+              查看主题提示
+            </Button>
           </Tooltip>
         </div>
       </div>
