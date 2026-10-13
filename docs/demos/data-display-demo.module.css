@@ -143,6 +143,161 @@
   color: var(--lx-color-on-primary);
 }
 
+.avatarSizeSamples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-md);
+}
+
+.avatarSizeSample {
+  display: flex;
+  align-items: center;
+  gap: var(--lx-space-xs);
+}
+
+.avatarSizeLabel {
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
+  white-space: nowrap;
+}
+
+.avatarStatusText {
+  color: var(--lx-color-success);
+  font-size: var(--lx-font-size-caption);
+  font-weight: 500;
+  line-height: var(--lx-line-height-caption);
+}
+
+.avatarApproverCount {
+  white-space: nowrap;
+}
+
+/* 块级宿主提供确定的网格可用宽度；inline-flex 会按内容收缩并让自动网格只生成一列。 */
+.avatarStackContainer {
+  display: block;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+/* Button 将 minHeight 写入内联样式；用局部变量让粗指针媒体查询无需提高选择器优先级即可放大目标。 */
+.avatarActionButton {
+  --lx-avatar-demo-action-min-height: var(--lx-control-height, 40px);
+}
+
+/* 粗指针设备需要更大的点击目标，同时不改变桌面鼠标下的按钮尺寸。 */
+@media (any-pointer: coarse) {
+  .avatarActionButton {
+    --lx-avatar-demo-action-min-height: var(--lx-control-target-touch-min, 44px);
+  }
+}
+
+.avatarStack {
+  display: inline-flex;
+  max-inline-size: 100%;
+  --lx-avatar-stack-step: calc(
+    var(--lx-avatar-group-space, 4px) - var(--lx-avatar-group-overlap, -8px)
+  );
+  --lx-avatar-stack-overflow-offset: 0px;
+}
+
+.avatarStackMember {
+  box-shadow: 0 0 0 2px var(--lx-color-bg-container);
+  transition: transform var(--lx-motion-duration, 180ms) ease-out;
+}
+
+.avatarStackMember:not(:first-child) {
+  margin-inline-start: var(--lx-avatar-group-overlap, -8px);
+}
+
+.avatarStack:hover .avatarStackMember:not(:first-child) {
+  transform: translateX(calc(var(--lx-avatar-stack-index, 0) * var(--lx-avatar-stack-step, 12px)));
+}
+
+.avatarStack:hover {
+  --lx-avatar-stack-overflow-offset: var(--lx-avatar-stack-overflow-distance, 0px);
+}
+
+.avatarStack:dir(rtl):hover .avatarStackMember:not(:first-child) {
+  transform: translateX(
+    calc(0px - var(--lx-avatar-stack-index, 0) * var(--lx-avatar-stack-step, 12px))
+  );
+}
+
+.avatarStack:dir(rtl):hover {
+  --lx-avatar-stack-overflow-offset: calc(0px - var(--lx-avatar-stack-overflow-distance, 0px));
+}
+
+.avatarMemberList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: var(--lx-space-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.avatarMember {
+  display: flex;
+  min-inline-size: 0;
+  align-items: center;
+  gap: var(--lx-space-sm);
+  padding: var(--lx-space-xs) var(--lx-space-sm);
+  border: 1px solid var(--lx-color-split);
+  border-radius: var(--lx-radius-control, 4px);
+  background: var(--lx-color-bg-container);
+}
+
+.avatarMemberAvatar {
+  flex: 0 0 auto;
+}
+
+.avatarMemberName {
+  min-inline-size: 0;
+  color: var(--lx-color-text);
+  font-size: var(--lx-font-size-body);
+  line-height: var(--lx-line-height-body);
+  overflow-wrap: anywhere;
+}
+
+@keyframes avatarMemberListReveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .avatarMemberList {
+    animation: avatarMemberListReveal var(--lx-motion-duration, 180ms) ease-out both;
+  }
+}
+
+/* 窄屏悬停不会改变紧凑堆叠；完整成员仍通过按钮切换为网格。 */
+@media (max-width: 390px) {
+  .avatarStack:hover .avatarStackMember:not(:first-child),
+  .avatarStack:dir(rtl):hover .avatarStackMember:not(:first-child) {
+    transform: none;
+  }
+
+  .avatarStack:hover {
+    --lx-avatar-stack-overflow-offset: 0px;
+  }
+}
+
+/* 320px 下收起态缩紧重叠量以减少横向占位；展开态保留相同成员并切换网格布局。 */
+@media (max-width: 360px) {
+  .avatarStack {
+    --lx-avatar-group-overlap: -14px;
+  }
+}
+
 .notificationIcon {
   display: inline-flex;
   min-inline-size: 2rem;

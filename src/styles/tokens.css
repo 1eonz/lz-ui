@@ -53,6 +53,14 @@
     --lx-avatar-group-overlap: -8px;
     --lx-avatar-group-space: 4px;
     --lx-avatar-square-radius: 8px;
+    /* 身份色独立于语义状态，并保持白字对比度，避免姓名映射随主题状态变化。 */
+    --lx-color-avatar-identity-1: #005a9c;
+    --lx-color-avatar-identity-2: #6a1b9a;
+    --lx-color-avatar-identity-3: #00796b;
+    --lx-color-avatar-identity-4: #c2185b;
+    --lx-color-avatar-identity-5: #bf360c;
+    --lx-color-avatar-identity-6: #455a64;
+    --lx-color-avatar-identity-text: #ffffff;
     --lx-tree-indent: 24px;
     --lx-descriptions-padding-block: 8px;
     --lx-descriptions-padding-inline: 12px;

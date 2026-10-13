@@ -2,6 +2,11 @@
   vertical-align: middle;
 }
 
+.named {
+  background-color: var(--lx-avatar-identity-bg, var(--lx-color-primary));
+  color: var(--lx-color-avatar-identity-text, #ffffff);
+}
+
 .groupRoot {
   display: inline-flex;
   vertical-align: middle;

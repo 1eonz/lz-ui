@@ -8,13 +8,14 @@
 - 共享演示容器显式加载基础样式；Input/按钮尺寸使用公开主题映射，Button 省略 `size` 时按 lx density 映射，显式 middle/small/large 使用固定规格，宿主 `ConfigProvider.componentSize` 不覆盖省略解析。项目自有代码注释统一中文，补充设计取舍及边界说明。
 
 - 新增完全受控的 `CheckableTag`，ref 指向原生 button，支持原生键盘/禁用及 `aria-pressed`；Tag 默认关闭按钮可通过键盘操作，间距交由容器。
-- Card 移除多余包装层，ref、className 和 style 统一归属 AntD 真实根节点；AvatarGroup 的 style 改为归属 lx-ui 容器，与 className/ref 一致。依赖旧包装 DOM 或内部 style 归属的宿主需调整。
+- Card 移除多余包装层，ref、className 和 style 统一归属 AntD 真实根节点；AvatarGroup 的 style 与 ref 指向 lx-ui 容器，className 同时附加到该容器和 AntD Group 根节点，可通过同一 CSS Module 类布局成员。依赖旧包装 DOM 或内部 style 归属的宿主需调整。
 - Pagination 修复隐藏/恢复及非受控页大小变化时的 ref 同步，避免 ref 指向已脱离文档的节点。
 - Ant Design peer 下限从 `>=5` 收敛到 `>=5.24`，与当前公开 ref/API 契约及开发依赖基线一致。早期 5.x 宿主需升级，验证状态见 `docs/compatibility.md`。
 - 后续子代理实施与独立复审统一使用 `gpt-6-luna max`；组件实际演示、设计映射和浏览器验证分别记录，静态 GO 不代表完整视觉验收。
 
 ## Unreleased
 
+- Avatar 新增 `name` 扩展，默认生成姓名缩写、稳定身份色和根节点可访问名称；显式 `children`、ARIA 标签、`role` 和背景样式可覆盖对应派生行为。另将原生 `title` 纳入公开类型以提供悬停提示，重复名称时可使用 `aria-description` 提供其他可访问描述。方形头像使用 `--lx-avatar-square-radius`（默认 8px）。这是向后兼容的新增属性，依赖头像默认背景色或默认方形圆角的宿主应复查截图。
 - Ant Design peer 与开发依赖最低版本提高至 `>=5.25`，以支持公开的 `Tooltip.destroyOnHidden` 和 `Select.popupRender`；AntD 5.24 宿主需升级。最低版本验证状态见 `docs/compatibility.md`。
 - Badge 新增公开静态成员 `Badge.Ribbon` 与根入口类型 `RibbonProps`，沿用 AntD 5 公开组件契约；状态点按设计稿调整为 10px，并新增 `--lx-badge-processing-duration`（默认 1500ms）。`processing` 使用公开 indicator 插槽承载 CSS Module 脉冲，系统减少动态效果时完全停止；实例级 `styles.indicator.backgroundImage` 会配透明底色，Provider 级图像背景需同时设置透明底色；自定义状态点尺寸和处理时长的宿主需注意新的默认视觉表现。
 - Button 的 Large 高度按 General 专用规格从 AntD 默认映射调整为 40px；全局 `token.controlHeightLG=48px` 不变。省略 `size` 时由 lx density 映射为 comfortable/compact 的 40/32px，显式 middle 固定 32px，small 固定 24px，large 固定 40px；宿主 `ConfigProvider.componentSize` 不覆盖省略解析。依赖 AntD Button 默认 middle 或 large 高度的宿主需按 [兼容说明](./docs/compatibility.md#button-尺寸映射) 复查布局。

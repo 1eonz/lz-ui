@@ -1000,3 +1000,24 @@ Pagination 将页大小和跳页拆成可见的 Select、Input、Button，窄屏
 - **代码复审与修复：** 初审提出 P3：加载用例选择 AntD `.ant-skeleton` 类。已删除私有类选择器，改测公开 `aria-busy`、`role=status`、区域可见和数据值隐藏；代码复审确认问题关闭，最终 GO、无遗留 P0–P3。全页桌面及 390px 截图前显式 `scrollTo(0, 0)`，避免残留滚动造成 sticky 导航截图伪影。代理按指定配置派发，但实际模型身份不可独立核验。
 - **浏览器与工程证据：** 隔离 Dumi 构建与导出门禁通过，162 个 HTML、648 个本地 JS/CSS 引用、90 个嵌套 demo。最终 `npx playwright test tests/browser/statistic-demo.spec.ts --config=playwright.statistic-preview.config.ts` 中 Chromium 与 Windows Playwright WebKit 各 **4/4**，共 **8/8**；覆盖 1280/930/390/320px、金额和趋势几何、键盘切换与 loading 恢复、reduced-motion、API 表键盘横移及 LTR/RTL 固定列、light/dark 下 6+7 组色彩对比；无 browser-health 错误。最终 `npm run check` 通过 56 个测试文件、669 项测试和 108 个 demo 源码检查；`check:scaffold`、`build:lib`（含 CJS SSR 与 CSS Modules 消费检查）、Prettier 与 `git diff --check` 通过。
 - **未覆盖与边界：** 完整风格/密度/主题笛卡尔矩阵、真实读屏、200%/400% page zoom、Safari 实机、实体触控、设备性能和生产部署仍待验收；Statistic 局部通过不关闭全库 2B-1。因 `8001`、`8002`、`8004` 文档服务运行且共享 `.dumi/tmp`，没有运行会覆盖共享目录的 `npm run build:docs`；本批完整 Dumi 编译在 `.codex/statistic-docs-dist` 隔离执行。
+
+## 2026-10-13：Avatar 姓名语义、分组交互与最终复核
+
+- **目标与设计依据：** 目标为 `src/components/data-display/avatar/`、`/components/data-display/avatar/`、对应运行示例和浏览器用例。对照只读设计文件 `UI/P0 基础组件-Data Display/DESIGN.md`、`UI/P0 基础组件-Data Display/code.html` 和 `screen.png`；保留头像尺寸、姓名散列身份色、堆叠和溢出展开方向，不访问 Ant Design 私有 DOM。新增姓名缩写、稳定身份色、根节点无障碍名称、AvatarGroup 触屏/键盘展开等行为均由当前公开 API 和实现承担，没有增加运行时依赖。
+- **Impeccable 流程：** Impeccable 4.1.3；本轮在项目 cwd 执行 `context.mjs --target src/components/data-display/avatar`，以现有实现和 `DESIGN.md` 为依据进行局部复核；没有 `PRODUCT.md`，但属于既有界面精修，不触发新页面或重新设计阻断。编辑前已读取 `reference/audit.md`、`reference/polish.md`，并沿用本批已读的 craft floor 与 `frontend-ui-ux` 要求。唯一 detector 命令为 `node C:\Users\Administrator\.codex\skills\impeccable\scripts\detect.mjs --json src/components/data-display/avatar`；stdout 为 `[]`，退出码 0。该结果只表示确定性规则没有命中，不作为设计通过结论。
+- **五维技术评估：**
+
+  | 维度       |      分数 | 可验证依据                                                                                          |
+  | ---------- | --------: | --------------------------------------------------------------------------------------------------- |
+  | 无障碍     |       3/4 | 姓名和 ARIA 名称在图片失败后仍留在根节点；键盘、焦点、描述和触屏按钮有测试；真实读屏未验证。        |
+  | 性能       |       3/4 | 没有新增运行时依赖；缩写仅处理传入姓名，身份色使用稳定哈希；没有真实设备性能剖析。                  |
+  | 主题       |       3/4 | 使用六个身份色 token，覆盖 light/dark 与 comfortable/compact 代表路径；完整风格/色板组合未穷举。    |
+  | 响应式     |       4/4 | 1280/930/390/320px 布局、320px 网格展开、根无横向溢出和粗指针 44px 操作目标有浏览器断言。           |
+  | 实现一致性 |       4/4 | 继承 AntD 5 公开 API；公开名称、ref 和 className 契约明确；SSR 字素回退、图片失败和键盘恢复有覆盖。 |
+  | **合计**   | **17/20** | **当前组件实现达到良好；平台辅助技术与实体设备证据仍缺。**                                          |
+
+- **独立 UX 与代码复审：** 初审提出的两项 P2（窄屏顶部遮挡、基础 AvatarGroup 未展示展开状态）经复核后撤回。完整页面截图从文档顶部开始，未见标题被导航遮挡；基础示例展示堆叠头像，交互示例初始显示 `+N` 溢出项，并支持展开姓名名单和收起，符合设计稿。修订后的 Nielsen 复评为 **32/40（良好）**，十项依序为系统状态可见性 4/4、符合现实世界 3/4、用户控制与自由 4/4、一致性与标准 3/4、错误预防 2/4、识别而非回忆 4/4、灵活性与效率 3/4、美观与简洁 3/4、错误恢复 3/4、帮助与文档 3/4。最终独立代码复审按 `gpt-6-luna max` 派发并完成，结论 **GO**、无遗留 P0–P2；首轮指出的未使用测试计数器（P2）和 CHANGELOG 中 className 归属描述不一致（P3）已修复，第二轮复审确认关闭。运行时模型身份和思考强度无法独立核验，因此这里只记录派发配置。
+- **最终浏览器证据：** `npm run test:browser:avatar:preview` 报告 runId `ae274c40-c052-4758-a045-57ed5a5d6cf4`，时间 `2026-10-13T00:15:28.433Z`；Windows Playwright Chromium 与 WebKit 各 **7/7**，合计 **14/14**。测试覆盖图片加载/失败回退、组成员截断与展开、可访问名称和键盘播报、RTL 位移、320/390/930/1280px 布局、light/dark、comfortable/compact、reduced-motion 和粗指针 44px 目标。隔离 Dumi 静态导出门禁通过：**162 个 HTML、648 个本地 JS/CSS 引用、90 个嵌套 demo 页面**。PNG 和逐项报告保留在忽略目录 `.codex/test-results/avatar-preview/` 与 `.codex/avatar-acceptance-report.md`；修正截图前先移除焦点并复位滚动位置，再截取完整页面。本轮查看 Chromium 和 WebKit 的 320px 完整页面图，未见顶部遮挡、裁切、重叠或根节点横向溢出。
+- **最终工程门禁：** 修复后 `npm run check` 通过：**58 个测试文件、684 项测试、109 个 Dumi 示例源码类型检查**，并完成格式检查、TypeScript 与 ESLint；`npm run check:scaffold` 通过。`npm run build:lib` 通过，ESM/CJS 共 111 个源码文件，32 个 CSS Modules scope/map 及 CJS SSR/消费 smoke 检查通过。`npm pack --dry-run` 通过，包包含 522 个文件，压缩 **196.0 kB**、解包 **782.1 kB**。新增的报告器 `.d.mts` 只供仓库 TypeScript 检查解析，不进入发布包。
+- **问题关闭：** 区域旗帜回退测试增加 United States regional-indicator pair，并验证无原生 `Intl.Segmenter` 时和原生分段器输出一致；报告器 LF/CRLF 错误摘要测试通过；公开 Avatar 类型随 `npm run check` 和库构建完成类型验证；未使用计数器 lint 门禁问题及 CHANGELOG API 归属描述已修复，并经定向测试、完整工程门禁和第二轮独立复审确认关闭。本批无未关闭的 P0–P2。
+- **未覆盖与边界：** 真实屏幕阅读器播报、200%/400% 页面缩放、Safari 实机、实体触控、全量 business/soft/glass × 六色 × 七套东方色 × 明暗/密度笛卡尔矩阵、设备性能与生产部署仍待验收。Windows Playwright WebKit 不等于 Apple Safari 实机；粗指针仿真不等于实体触控。本条仅关闭 Avatar 当前实现批次，不代表全库或生产发布已通过。
