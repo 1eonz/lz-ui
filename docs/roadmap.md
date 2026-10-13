@@ -34,7 +34,7 @@
 1. 已实现组件的完整浏览器矩阵还未全部完成。Tooltip 已验证 930/390/360/320px、ARIA 合并/恢复、受控触发、12 个方位、左右边缘翻转、窄屏 API 表键盘滚动和一个 dark/compact/glass 主题组合；200%/400% 缩放、系统级 reduced-motion、屏幕阅读器、全主题矩阵和 React 19 消费 smoke 仍需补证据。
 2. Popover 和 Popconfirm 暂不实现。它们需要先有可访问的锚定对话框原语，不能把 Tooltip 的 `role="tooltip"` 语义扩展到可操作内容。
 3. Modal、Drawer、Message、Notification 尚未实现。
-4. Breadcrumb、Steps、Tabs、Dropdown/Menu 尚未实现。
+4. Breadcrumb、Steps、lx-ui 增强 Tabs、Dropdown/Menu 尚未实现；原生 Ant Design Tabs 可从 `lx-ui/antd` 导入。
 5. Layout、Flex、Grid 尚未实现。
 6. SearchForm、QuickField、PageContainer、ProTable 尚未实现。
 7. React 19、UMD、直引脚本、私库发布和独立包体报告尚未闭合。
@@ -298,3 +298,5 @@ flowchart TD
 2026-10-12 Result 例外插画和数据表示例收口：Result 在 320px 下等比缩放 AntD 403/404/500 插画，并于 520px 以下收窄水平内距；Playwright 几何断言现在确认 SVG 左右边界同时位于 wrapper 与 demo 内容区，`zoom` 符合 `min(1, wrapper 宽度 / 254)`，且验证画布比例、中心与缩放后宽高。错误/500 重试、403/404 权限文案和不显示受限记录、API 表键盘横向滚动均在 Chromium 与 Windows Playwright WebKit 各 3/3 通过。Impeccable 五维评估 17/20（Good），detector `[]` 仅表示确定性规则无命中；独立 `gpt-6-luna max` 配置 code review GO，运行模型身份无法独立核验。全量检查 56 文件/615 项、106 个 demo 类型、库构建、scaffold、隔离 Dumi 导出 161 HTML/644 本地资源/89 demo 通过。完整主题矩阵、真实读屏、200%/400% page zoom、Safari 实机、实体设备、设备性能、目标部署及全库 2B-1 保持开放。
 
 2026-10-12 Badge processing 背景与 Ribbon 双向布局收口：补齐公开 `Badge.Ribbon placement="start"`、LTR/RTL 角标边缘和透明背景覆盖规则；Provider reduced-motion token、通知摘要与主题/密度 demo、参数和样式优先级文档均有测试覆盖。Badge 定向 Playwright 在 Chromium、Edge、Windows Playwright WebKit 各 1/1；常用 WebKit 脚本已包含 Badge，但本批没有留存整套脚本原始报告，因此不记录整套数量。全仓 `npm run check` 通过 56 个测试文件、639 项测试和 106 个 demo 类型检查；`check:scaffold`、ESM/CJS 库构建（各 111 个源码文件）通过。当前构建记录的 Dumi 导出为 161 HTML、644 个本地资源引用、89 个 demo。独立 `gpt-6-luna max` 代码复审 GO，无 P0–P3；实际运行模型身份无法独立核验。AntD 5.24 最低版本的独立安装验证仍待完成；真实读屏、高倍缩放、Safari 实机、实体设备、性能和部署验收继续开放，全库 2B-1 不关闭。
+
+2026-10-13 Card 面板语义、状态、中间宽度与触屏验收：旧版 `Card.tabList` 的浏览器结果仅作历史记录；当前文档 demo 改用 `Card` 与 `lx-ui/antd` 的公开 `Tabs items[].children`，用 `Card styles.body`、`Tabs tabBarStyle` 和 CSS Module 排版。隔离 Dumi 导出门禁通过（164 个 HTML、656 个本地 JS/CSS 引用、92 个嵌套 demo）；Card 单测 4/4、111 个文档源码类型检查和 ESM/CJS 库构建通过。最终 `tests/browser/components.spec.ts --grep "Card："` 在 Chromium 与 Windows Playwright WebKit 各通过 3/3，共 6/6；覆盖 320/360/361/375/387/388/390/930/1280px 主流程及 414/480/560/594/595/596/597/600/640px 中间宽度，检查完整可访问标签、Tabs 双向 ARIA 关联、真实面板正文、周期响应式位置、指标网格 1/2/4 列及单元格边界、手动方向键、Enter/Space、加载和恢复焦点、空/错恢复、文档根无横向溢出、可键盘横移的 API 参数表，以及粗指针下三个标签至少 44×44px 且上下边缘点按可激活。测试使用可见 RadioGroup 文案激活状态，未直接点击 AntD 隐藏输入；标签状态断言读取内容可见性，不绑定 `display` 值。Card 原生 `tabList` 的 `tabpanel` 不承载独立 `Card.children`，该 P2 限制仍未通过私有 DOM 或运行时改写修补。Card 局部结果不关闭完整主题/密度/风格矩阵、200%/400% 放大、真实读屏、Safari 实机、实体设备、性能、部署或全库 2B-1。

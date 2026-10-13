@@ -12,6 +12,8 @@ interface DataDisplayDemoFrameProps {
   demoId?: string;
   /** 当示例自身提供密度控件时设为 false；默认保留通用主题设置中的开关。 */
   showDensitySwitch?: boolean;
+  /** 当示例并排展示多种外观时设为 false，避免重复提供单一外观选择。 */
+  showAppearanceControl?: boolean;
 }
 
 /** 让示例跟随文档站明暗模式；示例内的其他主题选择仍彼此隔离且不持久化。 */
@@ -19,6 +21,7 @@ export function DataDisplayDemoFrame({
   children,
   demoId,
   showDensitySwitch = true,
+  showAppearanceControl = true,
 }: DataDisplayDemoFrameProps) {
   const [preferredColor] = usePrefersColor();
   const { themeConfig } = useSiteData();
@@ -27,7 +30,12 @@ export function DataDisplayDemoFrame({
 
   return (
     <LxConfigProvider theme={{ mode: docsMode, persist: false }}>
-      <DemoSurface docsMode={docsMode} demoId={demoId} showDensitySwitch={showDensitySwitch}>
+      <DemoSurface
+        docsMode={docsMode}
+        demoId={demoId}
+        showDensitySwitch={showDensitySwitch}
+        showAppearanceControl={showAppearanceControl}
+      >
         {children}
       </DemoSurface>
     </LxConfigProvider>
@@ -39,11 +47,13 @@ function DemoSurface({
   docsMode,
   demoId,
   showDensitySwitch,
+  showAppearanceControl,
 }: {
   children: ReactNode;
   docsMode: 'light' | 'dark';
   demoId?: string;
   showDensitySwitch: boolean;
+  showAppearanceControl: boolean;
 }) {
   const { theme, resolvedMode, setTheme } = useLxTheme();
 
@@ -75,38 +85,40 @@ function DemoSurface({
               onChange={(compact) => setTheme({ density: compact ? 'compact' : 'comfortable' })}
             />
           )}
-          <RadioGroup
-            aria-label="外观"
-            optionType="button"
-            value={theme.appearance}
-            options={[
-              {
-                label: '商务',
-                value: 'business',
-                style: {
-                  minWidth: 'var(--lx-demo-theme-settings-target-size)',
-                  minHeight: 'var(--lx-demo-theme-settings-target-size)',
+          {showAppearanceControl && (
+            <RadioGroup
+              aria-label="外观"
+              optionType="button"
+              value={theme.appearance}
+              options={[
+                {
+                  label: '商务',
+                  value: 'business',
+                  style: {
+                    minWidth: 'var(--lx-demo-theme-settings-target-size)',
+                    minHeight: 'var(--lx-demo-theme-settings-target-size)',
+                  },
                 },
-              },
-              {
-                label: '轻盈',
-                value: 'soft',
-                style: {
-                  minWidth: 'var(--lx-demo-theme-settings-target-size)',
-                  minHeight: 'var(--lx-demo-theme-settings-target-size)',
+                {
+                  label: '轻盈',
+                  value: 'soft',
+                  style: {
+                    minWidth: 'var(--lx-demo-theme-settings-target-size)',
+                    minHeight: 'var(--lx-demo-theme-settings-target-size)',
+                  },
                 },
-              },
-              {
-                label: '玻璃',
-                value: 'glass',
-                style: {
-                  minWidth: 'var(--lx-demo-theme-settings-target-size)',
-                  minHeight: 'var(--lx-demo-theme-settings-target-size)',
+                {
+                  label: '玻璃',
+                  value: 'glass',
+                  style: {
+                    minWidth: 'var(--lx-demo-theme-settings-target-size)',
+                    minHeight: 'var(--lx-demo-theme-settings-target-size)',
+                  },
                 },
-              },
-            ]}
-            onChange={(event) => setTheme({ appearance: event.target.value as LxAppearance })}
-          />
+              ]}
+              onChange={(event) => setTheme({ appearance: event.target.value as LxAppearance })}
+            />
+          )}
           <label className={styles.field}>
             品牌色
             <Select

@@ -1021,3 +1021,12 @@ Pagination 将页大小和跳页拆成可见的 Select、Input、Button，窄屏
 - **最终工程门禁：** 修复后 `npm run check` 通过：**58 个测试文件、684 项测试、109 个 Dumi 示例源码类型检查**，并完成格式检查、TypeScript 与 ESLint；`npm run check:scaffold` 通过。`npm run build:lib` 通过，ESM/CJS 共 111 个源码文件，32 个 CSS Modules scope/map 及 CJS SSR/消费 smoke 检查通过。`npm pack --dry-run` 通过，包包含 522 个文件，压缩 **196.0 kB**、解包 **782.1 kB**。新增的报告器 `.d.mts` 只供仓库 TypeScript 检查解析，不进入发布包。
 - **问题关闭：** 区域旗帜回退测试增加 United States regional-indicator pair，并验证无原生 `Intl.Segmenter` 时和原生分段器输出一致；报告器 LF/CRLF 错误摘要测试通过；公开 Avatar 类型随 `npm run check` 和库构建完成类型验证；未使用计数器 lint 门禁问题及 CHANGELOG API 归属描述已修复，并经定向测试、完整工程门禁和第二轮独立复审确认关闭。本批无未关闭的 P0–P2。
 - **未覆盖与边界：** 真实屏幕阅读器播报、200%/400% 页面缩放、Safari 实机、实体触控、全量 business/soft/glass × 六色 × 七套东方色 × 明暗/密度笛卡尔矩阵、设备性能与生产部署仍待验收。Windows Playwright WebKit 不等于 Apple Safari 实机；粗指针仿真不等于实体触控。本条仅关闭 Avatar 当前实现批次，不代表全库或生产发布已通过。
+
+## 2026-10-13：Card 标签触控目标、面板语义与最终复核
+
+- **范围与实现：** Card 运行时 API 未修改。文档示例改用 `lx-ui/antd` 的公开 `Tabs items[].children` 将实际内容放入关联面板；Card 正文布局使用公开 `styles.body`，参数表提供具名、可聚焦的横向滚动区域。三种外观分别真实渲染 Business、Soft、Glass 并同步主题设置。原生 `Card.tabList` 生成的 `tabpanel` 不关联独立 `Card.children`，已在 Card API 文档和 ADR 中列为 P2，未以私有 DOM 或运行时改写规避。
+- **Impeccable 与视觉核对：** Impeccable 4.1.3，`context.mjs --target docs/demos/card.tsx` 按既有 Read 文档界面工作；最终 `detect.mjs --json` 针对 Card 页面、demo、CSS Module 与文档 shell 运行一次，原始 stdout 为 `[]`。这表示确定性规则没有命中，不是视觉或无障碍通过结论。主代理查看 Chromium 桌面和 320px 截图；Glass 浏览器断言读取真实 Card 的背景 alpha 与 `backdrop-filter`，并验证 reduced-motion 下使用实色背景且滤镜关闭。
+- **触屏缺陷修复：** 独立代码复审发现原测试把触点放在 tab 命中框外，且没检查高度。修正测试后，Chromium 与 Windows Playwright WebKit 均实测发现粗指针下标签命中框高度约 22px；此前 44px 样式仅作用于更窄断点中的超短标签。现通过 Card demo 自有 CSS Module 内容盒在 `pointer: coarse` 下保证高度至少 44px，并在实际公开 `role=tab` 框的上下边缘执行触点。最终再次确认所有三个 tab 命中框宽、高均至少 44px，两个边缘点按都成功切换。实现没有改动生产组件。
+- **独立复审：** 首轮发现的错误测试语义和未覆盖高度已修复。最终独立复审确认触点在命中框内、三个 tab 均检查宽高、标签状态通过内容可见性而非 `display` 实现细节断言；Glass 实际样式和 API 文案一致。子代理按 `gpt-6-luna max` 配置派发，运行时模型身份和思考强度不可独立核验。
+- **浏览器与工程证据：** 最新隔离 Dumi 导出门禁通过，164 个 HTML、656 个本地 JS/CSS 引用、92 个嵌套 demo。`tests/browser/components.spec.ts --grep "Card："` 最终 Chromium 与 Windows Playwright WebKit 各通过 3/3，共 6/6；涵盖页面根溢出/错误、中间宽度标签和面板几何、周期位置、指标 1/2/4 列、完整可访问名称、Tabs 双向 ARIA 关系、空/错/加载恢复、键盘切换、主题同步、API 表键盘横移和粗指针目标。`npm run check` 通过 59 个测试文件、688 项测试及 111 个 Dumi 文档源码类型检查；Prettier、TypeScript、ESLint、`npm run check:scaffold` 与 `npm run build:lib` 均通过。测试输出仍包含既有 AntD/jsdom scrollbar 测量与弃用 API 警告，不影响退出状态。
+- **未覆盖与边界：** 完整 appearance/palette/mode/density 矩阵、真实读屏、200%/400% 页面缩放、Apple Safari 实机、实体触控、设备性能和生产部署仍待验收。Windows Playwright WebKit 与粗指针仿真不等于 Safari 或实体触控；此 Card 局部结论不关闭全库 2B-1。

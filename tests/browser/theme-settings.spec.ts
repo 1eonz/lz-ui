@@ -164,8 +164,18 @@ async function assertThemeControls(frame: Locator, componentName: string): Promi
   } else {
     await expect(densitySwitch).toHaveCount(1);
   }
-  for (const appearance of appearances) {
-    await expect(frame.getByRole('radio', { name: appearance.label, exact: true })).toHaveCount(1);
+  const appearanceRadios = frame.getByRole('radio', { name: /^(商务|轻盈|玻璃)$/ });
+  if (
+    componentName === 'Card' &&
+    (await frame.locator('[data-testid="card-appearance-demo"]').count()) > 0
+  ) {
+    await expect(appearanceRadios).toHaveCount(0);
+  } else {
+    for (const appearance of appearances) {
+      await expect(frame.getByRole('radio', { name: appearance.label, exact: true })).toHaveCount(
+        1,
+      );
+    }
   }
   await expect(frame.getByRole('combobox', { name: '品牌色', exact: true })).toHaveCount(1);
   await expect(frame.getByRole('combobox', { name: '东方配色', exact: true })).toHaveCount(1);
@@ -290,7 +300,7 @@ test.describe('DataDisplayDemoFrame 公开路由主题矩阵', () => {
       await expect(heading).toHaveText(componentTitlePattern(component.expectedHeading));
       await expect(page).toHaveTitle(componentTitlePattern(component.expectedTitle));
 
-      const frames = page.locator('[data-lx-mode]');
+      const frames = page.locator('[data-lx-mode]').filter({ has: page.locator('details') });
       await expect
         .poll(() => frames.count(), {
           message: `${component.name} 没有渲染 DataDisplayDemoFrame 主题作用域`,
@@ -302,7 +312,7 @@ test.describe('DataDisplayDemoFrame 公开路由主题矩阵', () => {
         })
         .toBeGreaterThan(0);
 
-      // 每个公开页面的全部独立 frame 都必须提供同一套可访问主题设置入口。
+      // 嵌套的主题对比 Provider 继承父级控件，不作为独立设置 frame 重复检查。
       const frameCount = await frames.count();
       for (let index = 0; index < frameCount; index += 1) {
         const frame = frames.nth(index);

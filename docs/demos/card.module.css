@@ -4,23 +4,271 @@
   container-type: inline-size;
 }
 
-.heading {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--lx-space-sm);
-  min-inline-size: 0;
-}
-
 .title {
   flex: 1 1 8rem;
   min-inline-size: 0;
+  margin-block: 0;
+  font: inherit;
   white-space: normal;
   overflow-wrap: anywhere;
 }
 
+.basicFields {
+  display: grid;
+  gap: var(--lx-space-md);
+  margin: 0;
+}
+
+.basicField {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: start;
+  gap: var(--lx-space-sm);
+  min-inline-size: 0;
+}
+
+.basicField dt,
+.basicField dd {
+  min-inline-size: 0;
+  margin: 0;
+}
+
+.contractNumber {
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.stateContent {
+  margin-block: 0;
+  font: inherit;
+}
+
+.stateGroup {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.stateGroupLegend,
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
 .loadingButton {
   flex: 0 0 auto;
+}
+
+.demoControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-sm);
+  margin-block-end: var(--lx-space-md);
+}
+
+.demoStatus {
+  flex: 1 1 100%;
+  margin: 0;
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
+}
+
+.tabs {
+  min-inline-size: 0;
+}
+
+.period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lx-space-xs);
+  padding-inline-start: var(--lx-space-sm);
+  font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
+}
+
+.compactPeriod {
+  display: none;
+}
+
+.periodLabel,
+.panelNote {
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
+}
+
+.periodValue {
+  padding: var(--lx-space-xs) var(--lx-space-sm);
+  border-radius: var(--lx-radius-control);
+  background: var(--lx-color-bg-container);
+  color: var(--lx-color-text);
+  font-weight: 600;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--lx-space-md);
+  padding: var(--lx-space-lg);
+}
+
+.metric {
+  min-inline-size: 0;
+  padding: var(--lx-space-md);
+  border-radius: var(--lx-radius-control);
+  background: var(--lx-color-bg-base);
+}
+
+.metricContext {
+  margin-block: var(--lx-space-sm) 0;
+  font-size: var(--lx-font-size-caption);
+  font-weight: 600;
+  line-height: var(--lx-line-height-caption);
+  overflow-wrap: anywhere;
+}
+
+.metricPositive {
+  color: var(--lx-color-success);
+}
+
+.metricDetail {
+  color: var(--lx-color-text-secondary);
+  font-weight: 400;
+}
+
+.metricWarning {
+  color: var(--lx-color-warning);
+}
+
+.panelNote {
+  align-self: center;
+  margin: 0;
+}
+
+.auditPanel {
+  display: grid;
+  gap: var(--lx-space-sm);
+  padding: var(--lx-space-lg);
+}
+
+.auditPanel p {
+  margin: 0;
+}
+
+.errorState {
+  display: grid;
+  justify-items: start;
+  gap: var(--lx-space-sm);
+  min-inline-size: 0;
+}
+
+.errorAlert {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.appearanceContainer {
+  min-inline-size: 0;
+  container: card-appearance / inline-size;
+}
+
+.appearanceGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--lx-space-md);
+  min-inline-size: 0;
+}
+
+.appearanceCard {
+  position: relative;
+  z-index: 1;
+  block-size: 100%;
+  min-inline-size: 0;
+}
+
+.appearanceStage {
+  position: relative;
+  min-inline-size: 0;
+}
+
+.glassBackdrop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: var(--lx-space-sm);
+  padding: var(--lx-space-md);
+  overflow: hidden;
+  border-radius: var(--lx-panel-radius, var(--lx-radius-panel));
+  pointer-events: none;
+}
+
+.glassBackdrop > span {
+  min-block-size: 0;
+  border: 1px solid var(--lx-color-primary-border);
+  border-radius: var(--lx-radius-control);
+  background: var(--lx-color-primary-bg);
+}
+
+.glassBackdrop > span:nth-child(1) {
+  grid-column: 1 / 3;
+}
+
+.glassBackdrop > span:nth-child(2) {
+  grid-column: 2 / 4;
+  grid-row: 2;
+  border-color: var(--lx-color-success);
+  background: var(--lx-color-success-bg);
+}
+
+.glassBackdrop > span:nth-child(3) {
+  grid-column: 4;
+  grid-row: 1 / 3;
+  border-color: var(--lx-color-warning);
+  background: var(--lx-color-warning-bg);
+}
+
+.appearanceSummary,
+.appearanceUseCase,
+.appearanceDetail {
+  margin: 0;
+}
+
+.appearanceUseCase {
+  margin-block-end: var(--lx-space-sm);
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
+}
+
+.appearanceSummary {
+  color: var(--lx-color-text);
+  font-size: var(--lx-font-size-heading-5);
+  font-weight: 600;
+  line-height: var(--lx-line-height-heading-5);
+}
+
+.appearanceDetail {
+  margin-block-start: var(--lx-space-sm);
+  color: var(--lx-color-text-secondary);
+  font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
 }
 
 .fullTab {
@@ -31,12 +279,90 @@
   display: none;
 }
 
-@container card-demo (max-width: 255px) {
+.compactLabel {
+  display: inline;
+}
+
+.ultraCompactLabel {
+  display: none;
+}
+
+.tabLabel {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* 触屏目标要扩展实际 tab 内容盒，才能让公开 role=tab 命中框随内容达到 44px。 */
+@media (pointer: coarse) {
+  .tabLabel {
+    min-block-size: 44px;
+  }
+}
+
+/* 列数跟随 demo 的实际可用宽度；桌面保留 Stitch 三列，移动端不挤压卡片正文。 */
+@container card-appearance (min-width: 520px) {
+  .appearanceGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container card-appearance (min-width: 760px) {
+  .appearanceGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* 完整周期与标签同时显示会挤压导航；窄容器把周期移入面板，保持阅读顺序。 */
+@container card-demo (max-width: 464px) {
+  .period {
+    display: none;
+  }
+
+  .compactPeriod {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--lx-space-md) var(--lx-space-lg) 0;
+  }
+}
+
+@container card-demo (max-width: 360px) {
+  .basicField {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .metricGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 320px 及以下显示四字业务短标签，完整名称仍提供给辅助技术。 */
+@container card-demo (max-width: 320px) {
   .fullTab {
     display: none;
   }
 
   .compactTab {
     display: inline;
+  }
+}
+
+/* 内容宽度 215px 及以下改用两字标签缩短导航，完整名称仍保留给辅助技术。 */
+@container card-demo (max-width: 215px) {
+  .compactLabel {
+    display: none;
+  }
+
+  .ultraCompactLabel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 44px;
+    min-block-size: 44px;
+  }
+}
+
+@container card-demo (min-width: 361px) and (max-width: 560px) {
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -11,6 +11,7 @@ target_fingerprint: "sha256:b2c25ac24f18bd35f0bd5ab598dffbe386ee21320c11a4392b9f
 target_path: "F:\\work\\lz-ui\\docs\\demos\\card.tsx"
 timestamp: 2026-10-06T13-26-02Z
 slug: docs-demos-card-tsx
+closed: true
 ---
 Method: dual-agent (A: isolated Card design review · B: isolated detector and browser evidence)
 

@@ -18,6 +18,7 @@ export {
   Select,
   Skeleton,
   Switch,
+  Tabs,
   Upload,
 } from 'antd';
 
@@ -36,5 +37,6 @@ export type {
   SelectProps,
   SkeletonProps,
   SwitchProps,
+  TabsProps,
   UploadProps,
 } from 'antd';

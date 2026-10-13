@@ -78,6 +78,8 @@
     "build:docs:statistic-preview": "npm run patch:dumi && node scripts/build-statistic-docs-preview.mjs && node scripts/check-docs-export.mjs .codex/statistic-docs-dist --required-page=components/data-display/statistic/index.html",
     "test:browser:statistic:preview": "npm run build:docs:statistic-preview && playwright test tests/browser/statistic-demo.spec.ts --config=playwright.statistic-preview.config.ts",
     "build:docs:avatar-preview": "npm run patch:dumi && node scripts/build-avatar-docs-preview.mjs && node scripts/check-docs-export.mjs .codex/avatar-docs-dist --required-page=components/data-display/avatar/index.html",
+    "build:docs:card-preview": "npm run patch:dumi && node scripts/build-card-docs-preview.mjs && node scripts/check-docs-export.mjs .codex/card-docs-dist --required-page=components/data-display/card/index.html",
+    "test:browser:card:preview": "npm run build:docs:card-preview && playwright test --config=playwright.card-preview.config.ts --grep \"Card：\"",
     "test:browser:avatar:preview": "node scripts/run-avatar-acceptance.mjs",
     "test:browser:webkit": "playwright test tests/browser/webkit-smoke.spec.ts tests/browser/input-demo.spec.ts tests/browser/badge-demo.spec.ts tests/browser/descriptions-demo.spec.ts tests/browser/statistic-demo.spec.ts --project=webkit",
     "test:browser:all": "npm run test:browser && npm run test:browser:edge && npm run test:browser:webkit",

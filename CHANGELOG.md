@@ -15,6 +15,7 @@
 
 ## Unreleased
 
+- Card 交互示例改用 `lx-ui/antd` 显式导出的 `Tabs` 与 `TabsProps`，以 `items[].children` 提供和 tab 双向关联的真实面板，并用 Card `styles.body`、Tabs 公开属性及 CSS Module 维持布局；Card 原生 `tabList` 与独立 `children` 尚无 ARIA 面板关联，仍作为 P2 跟踪。未修改 Card 运行时契约。
 - Avatar 新增 `name` 扩展，默认生成姓名缩写、稳定身份色和根节点可访问名称；显式 `children`、ARIA 标签、`role` 和背景样式可覆盖对应派生行为。另将原生 `title` 纳入公开类型以提供悬停提示，重复名称时可使用 `aria-description` 提供其他可访问描述。方形头像使用 `--lx-avatar-square-radius`（默认 8px）。这是向后兼容的新增属性，依赖头像默认背景色或默认方形圆角的宿主应复查截图。
 - Ant Design peer 与开发依赖最低版本提高至 `>=5.25`，以支持公开的 `Tooltip.destroyOnHidden` 和 `Select.popupRender`；AntD 5.24 宿主需升级。最低版本验证状态见 `docs/compatibility.md`。
 - Badge 新增公开静态成员 `Badge.Ribbon` 与根入口类型 `RibbonProps`，沿用 AntD 5 公开组件契约；状态点按设计稿调整为 10px，并新增 `--lx-badge-processing-duration`（默认 1500ms）。`processing` 使用公开 indicator 插槽承载 CSS Module 脉冲，系统减少动态效果时完全停止；实例级 `styles.indicator.backgroundImage` 会配透明底色，Provider 级图像背景需同时设置透明底色；自定义状态点尺寸和处理时长的宿主需注意新的默认视觉表现。

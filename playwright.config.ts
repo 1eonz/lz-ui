@@ -5,6 +5,7 @@ delete process.env.PLAYWRIGHT_HTML_OUTPUT_DIR;
 delete process.env.PLAYWRIGHT_HTML_REPORT;
 
 const previewPort = Number(process.env.PLAYWRIGHT_PORT ?? 4173);
+const reuseExistingServer = process.env.PLAYWRIGHT_REUSE_SERVER === 'true';
 if (!Number.isInteger(previewPort) || previewPort < 1024 || previewPort > 65535) {
   throw new Error('PLAYWRIGHT_PORT 必须是 1024 到 65535 之间的整数');
 }
@@ -53,7 +54,7 @@ export default defineConfig({
   webServer: {
     command: `node node_modules/vite/bin/vite.js preview --host 127.0.0.1 --port ${previewPort} --strictPort --outDir docs-dist`,
     url: baseURL,
-    reuseExistingServer: false,
+    reuseExistingServer,
     timeout: 30_000,
   },
 });
