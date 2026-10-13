@@ -9,6 +9,7 @@ target_fingerprint: "sha256:75b0043276d85fbc895693e3308ab34d3e0c998b3e096413983d
 target_path: "F:\\work\\lz-ui\\docs\\demos\\list.tsx"
 timestamp: 2026-10-12T13-44-53Z
 slug: docs-demos-list-tsx
+closed: true
 ---
 # List 资金流水示例 UX 复核
 

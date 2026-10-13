@@ -24,199 +24,219 @@ interface Transaction {
   status: TransactionStatus;
   description: string;
   amount: string;
-  time: string;
+  occurredAt: string;
 }
 
 const pageSize = 3;
+const transactionTimeFormatter = new Intl.DateTimeFormat('en-US', {
+  calendar: 'gregory',
+  day: '2-digit',
+  hour: '2-digit',
+  hourCycle: 'h23',
+  minute: '2-digit',
+  month: '2-digit',
+  numberingSystem: 'latn',
+  timeZone: 'Asia/Shanghai',
+  year: 'numeric',
+});
+
+// 示例值保留 +08:00 偏移量，再固定按业务时区显示；真实项目应由宿主决定并提供业务时区。
+function formatTransactionTime(occurredAt: string): string {
+  const parts = transactionTimeFormatter.formatToParts(new Date(occurredAt));
+  const getPart = (type: string) => parts.find((part) => part.type === type)?.value ?? '';
+
+  return `${getPart('year')}-${getPart('month')}-${getPart('day')} ${getPart('hour')}:${getPart('minute')}`;
+}
+
 const allTransactions: Transaction[] = [
   {
-    id: 'TRX-202610-0982',
+    id: 'TRX-202601-0982',
     kind: 'income',
     title: '大宗物资战略储备资金清算入账',
     status: '已入账',
     description: '招商银行总行托管专户',
     amount: '+¥1,280,000.00',
-    time: '10/12 09:42',
+    occurredAt: '2026-01-01T00:35:00+08:00',
   },
   {
-    id: 'TRX-202610-0983',
+    id: 'TRX-202601-0983',
     kind: 'expense',
     title: '晶圆光刻胶采购尾款跨境支付',
     status: '外汇审核',
     description: '华东设备采购专户',
     amount: '-¥420,500.00',
-    time: '10/12 11:24',
+    occurredAt: '2026-01-01T00:12:00+08:00',
   },
   {
-    id: 'TRX-202610-0984',
+    id: 'TRX-202512-0984',
     kind: 'transfer',
     title: '季度研发准备金内部划转',
     status: '内部结转',
     description: '总行运营账户转入 AI 实验室核算账户',
     amount: '¥850,000.00',
-    time: '10/11 17:40',
+    occurredAt: '2025-12-31T23:48:00+08:00',
   },
   {
-    id: 'TRX-202610-0985',
+    id: 'TRX-202512-0985',
     kind: 'income',
     title: '华南区域客户回款清算',
     status: '已入账',
     description: '华南区域销售结算账户',
     amount: '+¥328,600.00',
-    time: '10/11 15:16',
+    occurredAt: '2025-12-31T20:16:00+08:00',
   },
   {
-    id: 'TRX-202610-0986',
+    id: 'TRX-202512-0986',
     kind: 'expense',
     title: '冷链履约保证金支付',
     status: '待复核',
     description: '远洋冷链物流服务商',
     amount: '-¥218,000.00',
-    time: '10/11 13:08',
+    occurredAt: '2025-12-31T18:08:00+08:00',
   },
   {
-    id: 'TRX-202610-0987',
+    id: 'TRX-202512-0987',
     kind: 'transfer',
     title: '苏州分部项目资金调拨',
     status: '内部结转',
     description: '运营中心账户转入苏州分部',
     amount: '¥560,000.00',
-    time: '10/11 10:32',
+    occurredAt: '2025-12-31T10:32:00+08:00',
   },
   {
-    id: 'TRX-202610-0988',
+    id: 'TRX-202512-0988',
     kind: 'income',
     title: '供应链服务费季度返还',
     status: '已入账',
     description: '供应链平台结算专户',
     amount: '+¥96,240.00',
-    time: '10/10 17:52',
+    occurredAt: '2025-12-30T17:52:00+08:00',
   },
   {
-    id: 'TRX-202610-0989',
+    id: 'TRX-202512-0989',
     kind: 'expense',
     title: '云平台年度资源服务费',
     status: '已支付',
     description: '企业云服务采购账户',
     amount: '-¥186,000.00',
-    time: '10/10 15:30',
+    occurredAt: '2025-12-30T15:30:00+08:00',
   },
   {
-    id: 'TRX-202610-0990',
+    id: 'TRX-202512-0990',
     kind: 'transfer',
     title: '华北事业部营运资金划转',
     status: '内部结转',
     description: '总部结算账户转入华北事业部',
     amount: '¥420,000.00',
-    time: '10/10 12:14',
+    occurredAt: '2025-12-30T12:14:00+08:00',
   },
   {
-    id: 'TRX-202610-0991',
+    id: 'TRX-202512-0991',
     kind: 'income',
     title: '制造业务线项目回款',
     status: '已入账',
     description: '制造业务线专用结算账户',
     amount: '+¥730,000.00',
-    time: '10/10 09:46',
+    occurredAt: '2025-12-30T09:46:00+08:00',
   },
   {
-    id: 'TRX-202610-0992',
+    id: 'TRX-202512-0992',
     kind: 'expense',
     title: '精密仪器运输保险结算',
     status: '已支付',
     description: '华东物流保障账户',
     amount: '-¥72,800.00',
-    time: '10/09 18:20',
+    occurredAt: '2025-12-29T18:20:00+08:00',
   },
   {
-    id: 'TRX-202610-0993',
+    id: 'TRX-202512-0993',
     kind: 'transfer',
     title: '南京研发中心预算拨付',
     status: '内部结转',
     description: '研发专项账户转入南京中心',
     amount: '¥315,000.00',
-    time: '10/09 16:02',
+    occurredAt: '2025-12-29T16:02:00+08:00',
   },
   {
-    id: 'TRX-202610-0994',
+    id: 'TRX-202512-0994',
     kind: 'income',
     title: '电商渠道月度销售结算',
     status: '已入账',
     description: '线上零售平台结算账户',
     amount: '+¥542,180.00',
-    time: '10/09 13:48',
+    occurredAt: '2025-12-29T13:48:00+08:00',
   },
   {
-    id: 'TRX-202610-0995',
+    id: 'TRX-202512-0995',
     kind: 'expense',
     title: '海外设备进口关税缴纳',
     status: '海关待核',
     description: '进口设备专项资金账户',
     amount: '-¥164,300.00',
-    time: '10/09 11:36',
+    occurredAt: '2025-12-29T11:36:00+08:00',
   },
   {
-    id: 'TRX-202610-0996',
+    id: 'TRX-202512-0996',
     kind: 'transfer',
     title: '杭州办事处备用金补充',
     status: '内部结转',
     description: '华东总部账户转入杭州办事处',
     amount: '¥120,000.00',
-    time: '10/09 09:18',
+    occurredAt: '2025-12-29T09:18:00+08:00',
   },
   {
-    id: 'TRX-202610-0997',
+    id: 'TRX-202512-0997',
     kind: 'income',
     title: '核心客户年度服务回款',
     status: '已入账',
     description: '大客户项目资金监管账户',
     amount: '+¥1,060,000.00',
-    time: '10/08 17:26',
+    occurredAt: '2025-12-28T17:26:00+08:00',
   },
   {
-    id: 'TRX-202610-0998',
+    id: 'TRX-202512-0998',
     kind: 'expense',
     title: '仓储中心改造工程进度款',
     status: '待复核',
     description: '华南仓储建设专项账户',
     amount: '-¥286,400.00',
-    time: '10/08 15:04',
+    occurredAt: '2025-12-28T15:04:00+08:00',
   },
   {
-    id: 'TRX-202610-0999',
+    id: 'TRX-202512-0999',
     kind: 'transfer',
     title: '西南区域季度运营预算划转',
     status: '内部结转',
     description: '集团资金中心转入西南区域账户',
     amount: '¥685,000.00',
-    time: '10/08 12:42',
+    occurredAt: '2025-12-28T12:42:00+08:00',
   },
   {
-    id: 'TRX-202610-1000',
+    id: 'TRX-202512-1000',
     kind: 'income',
     title: '供应商履约保证金退回',
     status: '已入账',
     description: '采购结算监管专户',
     amount: '+¥208,000.00',
-    time: '10/08 10:10',
+    occurredAt: '2025-12-28T10:10:00+08:00',
   },
   {
-    id: 'TRX-202610-1001',
+    id: 'TRX-202512-1001',
     kind: 'expense',
     title: '智能制造产线维护服务结算',
     status: '已支付',
     description: '深蓝自动化设备维护账户',
     amount: '-¥93,600.00',
-    time: '10/07 17:34',
+    occurredAt: '2025-12-27T17:34:00+08:00',
   },
   {
-    id: 'TRX-202610-1002',
+    id: 'TRX-202512-1002',
     kind: 'transfer',
     title: '财务共享中心资金归集',
     status: '内部结转',
     description: '华东与华南区域结算账户归集',
     amount: '¥1,420,000.00',
-    time: '10/07 14:12',
+    occurredAt: '2025-12-27T14:12:00+08:00',
   },
 ];
 
@@ -451,6 +471,7 @@ export default function ListDemo() {
                 企业资金流水
               </h3>
               <span className={styles.ledgerUnit}>金额单位：人民币</span>
+              <span className={styles.ledgerUnit}>时区：Asia/Shanghai（UTC+08:00）</span>
             </div>
             <Spin spinning={isLoading} delay={0}>
               <List<Transaction>
@@ -510,8 +531,12 @@ export default function ListDemo() {
                         >
                           {transaction.amount}
                         </span>
-                        <time className={styles.ledgerDate} data-testid="list-demo-date">
-                          {transaction.time}
+                        <time
+                          className={styles.ledgerDate}
+                          dateTime={transaction.occurredAt}
+                          data-testid="list-demo-date"
+                        >
+                          {formatTransactionTime(transaction.occurredAt)}
                         </time>
                       </div>
                     </List.Item>

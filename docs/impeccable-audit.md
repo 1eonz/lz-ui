@@ -1030,3 +1030,12 @@ Pagination 将页大小和跳页拆成可见的 Select、Input、Button，窄屏
 - **独立复审：** 首轮发现的错误测试语义和未覆盖高度已修复。最终独立复审确认触点在命中框内、三个 tab 均检查宽高、标签状态通过内容可见性而非 `display` 实现细节断言；Glass 实际样式和 API 文案一致。子代理按 `gpt-6-luna max` 配置派发，运行时模型身份和思考强度不可独立核验。
 - **浏览器与工程证据：** 最新隔离 Dumi 导出门禁通过，164 个 HTML、656 个本地 JS/CSS 引用、92 个嵌套 demo。`tests/browser/components.spec.ts --grep "Card："` 最终 Chromium 与 Windows Playwright WebKit 各通过 3/3，共 6/6；涵盖页面根溢出/错误、中间宽度标签和面板几何、周期位置、指标 1/2/4 列、完整可访问名称、Tabs 双向 ARIA 关系、空/错/加载恢复、键盘切换、主题同步、API 表键盘横移和粗指针目标。`npm run check` 通过 59 个测试文件、688 项测试及 111 个 Dumi 文档源码类型检查；Prettier、TypeScript、ESLint、`npm run check:scaffold` 与 `npm run build:lib` 均通过。测试输出仍包含既有 AntD/jsdom scrollbar 测量与弃用 API 警告，不影响退出状态。
 - **未覆盖与边界：** 完整 appearance/palette/mode/density 矩阵、真实读屏、200%/400% 页面缩放、Apple Safari 实机、实体触控、设备性能和生产部署仍待验收。Windows Playwright WebKit 与粗指针仿真不等于 Safari 或实体触控；此 Card 局部结论不关闭全库 2B-1。
+
+## 2026-10-13：List 跨年日期与窄屏元信息收口
+
+- **范围与实现：** 修改 `docs/demos/list.tsx`、`docs/demos/data-display-demo.module.css`、List 文档与浏览器用例；不改 List 运行时组件或公开 API。交易数据使用明确 `+08:00` 偏移的 ISO 8601 时间，`<time dateTime>` 保留原始机器值；界面用明确的 `Asia/Shanghai` 时区输出完整年月日时分。日期采用正文尺寸、次级颜色与等宽数字，金额仍以字重和语义色突出；时区说明采用 caption 颜色/字号/行高并禁止拆分，避免在 320px 下把 UTC 偏移拆到第二行。
+- **Impeccable 流程：** Impeccable 4.1.3；在项目目录运行 `context.mjs --target docs/demos/list.tsx`，按现有 Read 文档面和已提交 token 体系精修；编辑前读取 `reference/polish.md` 与 `reference/craft-floor.md`。主代理查看最终 1280×900、390×844、320×740 浏览器截图。`detect.mjs --json docs/demos/list.tsx docs/demos/data-display-demo.module.css` 本轮只运行一次，stdout 为 `[]`；这仅表示确定性规则未命中，不作为设计或无障碍通过结论。
+- **独立 UX 复核：** 按 `gpt-6-luna max` 配置复核最终三张截图，相关信息可见性 5/5、现实匹配 5/5、一致性 4/5、简洁与层级 4/5，共 18/20，结论 GO、无剩余 P0–P3。320px 时区完整占一行，三视口均无金额/日期重叠、内容裁切或页面根溢出。运行时模型身份和思考强度不可独立核验。
+- **代码复审与修复：** 首轮独立复审指出时区行高继承了正文 22px，但新断言要求不超过 20px；已令 `.ledgerUnit` 显式采用 `--lx-line-height-caption` token。修复后代码复审确认日期格式在任意浏览器本地时区下确定、UTC 测试可捕获本地时区回归，新增布局断言与 320px 无溢出边界一致，结论 GO。
+- **浏览器与工程证据：** 隔离 Dumi 导出门禁通过，包含 164 个 HTML、656 个本地 JS/CSS 引用、92 个 demo。UTC 环境下 Chromium 和 Windows Playwright WebKit 各通过 3/3，共 6/6；核验 21 个日期显示与 ISO `dateTime`、加载/错误/恢复、主题状态、API 表键盘横移、320/390/930/1280px 根溢出及流水金额/日期几何。`npm run check` 通过 59 个测试文件、688 项测试和 111 个 demo 类型检查。8006 临时预览已关闭；用户保留的 8004 与旧 `.codex/list-docs-dist` 未触碰。
+- **未覆盖与边界：** 示例只演示上海业务时区，真实主机业务的时区策略和夏令时规则由宿主定义；完整风格/色板矩阵、真实读屏、200%/400% 缩放、Safari 实机、实体触控、设备性能与生产部署仍待验收。本条只关闭 List 日期示例局部问题，不关闭全库 2B-1。

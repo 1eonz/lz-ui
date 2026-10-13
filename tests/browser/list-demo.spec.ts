@@ -1,6 +1,8 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { collectBrowserErrors, waitForBrowserQuiescence } from './browser-health';
 
+test.use({ timezoneId: 'UTC' });
+
 const initialStatus = '已显示 3 条流水记录，剩余 18 条';
 const loadedStatus = '已显示 6 条流水记录，剩余 15 条';
 const viewports = [
@@ -10,9 +12,34 @@ const viewports = [
   { width: 320, height: 740 },
 ] as const;
 const transactionIds = Array.from(
-  { length: 21 },
-  (_, index) => `TRX-202610-${String(982 + index).padStart(4, '0')}`,
+  { length: 2 },
+  (_, index) => `TRX-202601-${String(982 + index).padStart(4, '0')}`,
+).concat(
+  Array.from({ length: 19 }, (_, index) => `TRX-202512-${String(984 + index).padStart(4, '0')}`),
 );
+const expectedTransactionTimes = [
+  { dateTime: '2026-01-01T00:35:00+08:00', text: '2026-01-01 00:35' },
+  { dateTime: '2026-01-01T00:12:00+08:00', text: '2026-01-01 00:12' },
+  { dateTime: '2025-12-31T23:48:00+08:00', text: '2025-12-31 23:48' },
+  { dateTime: '2025-12-31T20:16:00+08:00', text: '2025-12-31 20:16' },
+  { dateTime: '2025-12-31T18:08:00+08:00', text: '2025-12-31 18:08' },
+  { dateTime: '2025-12-31T10:32:00+08:00', text: '2025-12-31 10:32' },
+  { dateTime: '2025-12-30T17:52:00+08:00', text: '2025-12-30 17:52' },
+  { dateTime: '2025-12-30T15:30:00+08:00', text: '2025-12-30 15:30' },
+  { dateTime: '2025-12-30T12:14:00+08:00', text: '2025-12-30 12:14' },
+  { dateTime: '2025-12-30T09:46:00+08:00', text: '2025-12-30 09:46' },
+  { dateTime: '2025-12-29T18:20:00+08:00', text: '2025-12-29 18:20' },
+  { dateTime: '2025-12-29T16:02:00+08:00', text: '2025-12-29 16:02' },
+  { dateTime: '2025-12-29T13:48:00+08:00', text: '2025-12-29 13:48' },
+  { dateTime: '2025-12-29T11:36:00+08:00', text: '2025-12-29 11:36' },
+  { dateTime: '2025-12-29T09:18:00+08:00', text: '2025-12-29 09:18' },
+  { dateTime: '2025-12-28T17:26:00+08:00', text: '2025-12-28 17:26' },
+  { dateTime: '2025-12-28T15:04:00+08:00', text: '2025-12-28 15:04' },
+  { dateTime: '2025-12-28T12:42:00+08:00', text: '2025-12-28 12:42' },
+  { dateTime: '2025-12-28T10:10:00+08:00', text: '2025-12-28 10:10' },
+  { dateTime: '2025-12-27T17:34:00+08:00', text: '2025-12-27 17:34' },
+  { dateTime: '2025-12-27T14:12:00+08:00', text: '2025-12-27 14:12' },
+] as const;
 const statusColorTokens = {
   已入账: 'success',
   外汇审核: 'error',
@@ -179,6 +206,18 @@ test('List 加载更多追加流水并更新已显示和剩余数量', async ({ 
   });
 
   await expect(records).toHaveCount(3);
+  expect(await page.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone)).toBe('UTC');
+  await expect(demo.getByText('时区：Asia/Shanghai（UTC+08:00）', { exact: true })).toBeVisible();
+  const initialTimes = await records.evaluateAll((items) =>
+    items.map((item) => {
+      const time = item.querySelector<HTMLTimeElement>('[data-testid="list-demo-date"]');
+      return {
+        dateTime: time?.dateTime ?? null,
+        text: time?.textContent?.trim() ?? '',
+      };
+    }),
+  );
+  expect(initialTimes).toEqual(expectedTransactionTimes.slice(0, 3));
   expect(await records.nth(0).ariaSnapshot()).toContain('收入');
   expect(await records.nth(1).ariaSnapshot()).toContain('支出');
   expect(await records.nth(2).ariaSnapshot()).toContain('转账');
@@ -239,6 +278,16 @@ test('List 加载更多追加流水并更新已显示和剩余数量', async ({ 
     }
   }
   await expect(records).toHaveCount(21);
+  const allTimes = await records.evaluateAll((items) =>
+    items.map((item) => {
+      const time = item.querySelector<HTMLTimeElement>('[data-testid="list-demo-date"]');
+      return {
+        dateTime: time?.dateTime ?? null,
+        text: time?.textContent?.trim() ?? '',
+      };
+    }),
+  );
+  expect(allTimes).toEqual(expectedTransactionTimes);
   await expect(statusTags).toHaveCount(21);
   const actualStatuses = Array.from(
     new Set((await statusTags.allTextContents()).map((status) => status.trim())),
@@ -258,6 +307,20 @@ test('List 加载更多追加流水并更新已显示和剩余数量', async ({ 
     await expectNoRootHorizontalOverflow(page, viewport.width);
     await expectMobileLedgerFinancialLayout(records);
   }
+
+  const timezoneLabel = demo.getByText('时区：Asia/Shanghai（UTC+08:00）', { exact: true });
+  const timezoneHeight = await timezoneLabel.evaluate(
+    (element) => element.getBoundingClientRect().height,
+  );
+  const dateFontSize = await records
+    .first()
+    .locator('[data-testid="list-demo-date"]')
+    .evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize));
+  const metadataFontSize = await demo
+    .getByText('金额单位：人民币', { exact: true })
+    .evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize));
+  expect(timezoneHeight).toBeLessThanOrEqual(20);
+  expect(dateFontSize).toBeGreaterThan(metadataFontSize);
 
   await waitForBrowserQuiescence(page, browserHealth);
   expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);

@@ -835,6 +835,8 @@
 .ledgerUnit {
   color: var(--lx-color-text-secondary);
   font-size: var(--lx-font-size-caption);
+  line-height: var(--lx-line-height-caption);
+  white-space: nowrap;
 }
 
 .ledgerItem {
@@ -948,7 +950,7 @@
 
 .ledgerDate {
   color: var(--lx-color-text-secondary);
-  font-size: var(--lx-font-size-caption);
+  font-size: var(--lx-font-size-body);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
