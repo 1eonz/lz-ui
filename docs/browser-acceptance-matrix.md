@@ -473,3 +473,32 @@
 - **语义与断点：** 桌面布局的五组合同字段分别以 `getByRole('cell', { name })` 验证标签和值位于同一个可访问 cell；575px 及以下分别验证标签为具名 `columnheader`/原生 `th`、值为具名 `cell`/原生 `td`，且单元格边框均为零；该断言不声称 `th` 与后续 `td` 存在显式表格标题关联，真实读屏仍未测试。4:8 标签底色匹配 `--lx-color-ambient`，并在暗色模式下复验；内容槽保持透明底色。575px 下字段堆叠，576px 下字段横排。320/390px 页面根无横向溢出；具名 region 可聚焦，表格标识符单行，ArrowRight/ArrowLeft 可分别向右和向左滚动。
 - **视口截图：** 主代理检查了 Descriptions demo 的 1280px、390px 截图；另检查 API 文档区域的 320px（region 272px）、390px（region 342px）和 1280px（region 952px）截图。API 表均为 1000px，三个视口页面根溢出均为 0，首列宽 184px。两组截图分别用于确认 demo 布局和 API 表滚动边界；截图已清理。自动化持续断言页面无溢出、API 表宽于 region 以及方向键滚动往返；region、表格和首列的具体宽度是截图中的人工测量，不在自动化断言内，截图清理后无法独立复测这些数值。
 - **SSR 与构建前置：** 当前 `docs-dist/components/data-display/descriptions/index.html` 的 `#root` 为空且不含 Descriptions demo 文本；本轮未观察到服务端渲染的 demo 或 hydration 布局跳变，也未增加重复 DOM。`npm run test:browser:descriptions:dev` 使用目标 Descriptions 路由作为 Dumi 就绪探测，不执行文档生产构建；独立 `npm run test:browser:webkit` 使用现有 `docs-dist`，运行前需先 `npm run build:docs`。完整 `npm run test:browser:all` 从 `npm run test:browser` 开始，会先构建文档。
+
+### 2026-10-14 Tooltip 文档锚点跳转最终复验
+
+- **实现范围：** `public/docs-table-jump-focus.js` 仅接管同源、同路径、同查询参数且目标存在的普通同页 API 跳转。处理时保留 hash 历史导航、聚焦目标，并按 `scroll-margin-block-start` 计算位置，最终夹限到文档最大滚动距离；不同查询参数、修饰键和其他路由继续使用原生/Dumi 导航。点击处理器调用 `preventDefault()` 接管浏览器默认跳转，再通过 `window.__LX_DOCS_NAVIGATE__` history bridge 更新路由；若 hash 已相同则直接派发 `lx-docs-anchor-jump`。Dumi 2.4.49 补丁在布局 effect 等待页面加载后派发同名定位事件；Dumi 根点击处理仍可收起移动侧栏，脚本不调用 `stopPropagation()` 或 `stopImmediatePropagation()`。
+- **锚点行为：** 在 767、768、1280px CSS viewport，通过跳至正文、Tab 到 API 链接和 Enter 激活，验证 hash、目标焦点、首行可见、固定导航避让和最终滚动位置；单独将文档末端锚点构造成请求位置大于 `maxScrollY`，确认最终滚至最大值且目标保持可见并聚焦。不同查询参数用例从可见 API 跳转附近插入链接，使用键盘焦点和 Enter 验证 query 路由未被同页脚本误接管。
+- **最新构建与浏览器结果：** `npm run build:docs:tooltip-preview` 隔离导出门禁通过：165 个 HTML、660 个本地 JS/CSS 引用、93 个嵌套 demo。完整 `tests/browser/tooltip-demo.spec.ts` 使用该导出在 Chromium 与 Windows Playwright WebKit 各通过 14/14，共 28/28。用最新导出的隔离 WebKit 聚合配置运行 Badge、Descriptions、Input、Statistic、Tooltip 和 WebKit smoke 共 39 项：38 通过、1 跳过、0 失败；跳过项是 Input 粗指针测试，Windows WebKit 运行时不报告触点能力。Tooltip 本批新增的桌面定位、末端夹限和 query 回归在两引擎均通过。
+- **陈旧导出诊断：** 隔离 Dumi 产物完成后，直接运行的 `npm run test:browser:webkit` 服务仍指向既有 `docs-dist`，而非当前 Tooltip 导出；当次 32 通过、6 个 Tooltip 文档断言失败、1 跳过。失败现场表明旧页面没有当前参数提示、卡片布局及跳转链接。改用显式指向最新 `.codex/tooltip-docs-dist` 的聚合配置后，39 项中 38 通过、1 跳过，Tooltip 14 项全过。因此标准聚合命令须先 `npm run build:docs`，或使用同版本隔离导出，不得混用浏览器测试源文件与旧静态文档。
+- **复审与 Impeccable：** 独立 `gpt-6-luna max` 配置代码复审最初提出 `stopImmediatePropagation()` 对同节点监听器范围过宽的 P3；改为 `stopPropagation()` 后复审确认该项关闭，最终 GO，无遗留 P0–P3。代理运行身份/思考强度无法由工具独立核验。Impeccable 4.1.3 的 `detect.mjs --json` 本批运行一次，原始 stdout `[]`、退出码 0，仅表示确定性规则未命中；验收结论来自渲染、可访问交互、浏览器实测和独立代码复审，而非空数组。
+- **工程检查与边界：** 修改文件通过 Prettier；本批使用的隔离预览与 Playwright 配置、截图和报告均保存在忽略的 `.codex` 内。这里记录的是 Windows Chromium/Playwright WebKit，不代表 Safari 实机、实体触控、真实读屏、page zoom、设备性能或生产部署。本批仅收口文档锚点，不关闭全库 2B-1。
+
+### 2026-10-14 Tooltip API 表焦点框和滚动留白复验
+
+- **布局与焦点：** 主表锚点留白为 `11rem`。在 767、768、1280px 通过 Tab/Enter 路径跳转后，自动断言“常用属性”标题和首行完整可见并避开当前固定/粘滞导航，同时断言 region、Dumi wrapper、table 的上/下/左/右边界在 1 CSS px 内对齐。320、390px 卡片状态断言焦点色等于 `--lx-focus-ring`、`outline-offset: 0`、表格间距各轴为零，region、table、row 左右边界对齐。
+- **断点与末端夹限：** 1280px viewport 下将 region 明确设为 760px 和 761px，分别断言 card 与 table 布局。文档末端回归通过 spy 捕获 handler 传给 `window.scrollTo` 的 `top`，断言捕获值包含 `maxScrollY` 且未超过最大值；另验证最终 scrollY、目标焦点和目标可见。
+- **最终定向结果：** `tests/browser/tooltip-demo.spec.ts` 上述四组用例使用 `.codex/tooltip-docs-dist`，Chromium 4/4、Windows Playwright WebKit 4/4，共 8/8，无失败或跳过。隔离导出门禁通过：165 个 HTML、660 个本地 JS/CSS 引用、93 个嵌套 demo。两浏览器截图分别位于 `.codex/tooltip-api-table-{320,390}-{chromium,webkit}.png`、`.codex/tooltip-api-focus-{767,768,1280}-{chromium,webkit}-desktop.png` 和 `.codex/tooltip-api-breakpoint-1280-container-{760,761}-{chromium,webkit}.png`。
+- **边界：** 本轮只运行上述 Tooltip 专项用例，不代表完整 Tooltip 文件或全库通过。Windows Playwright WebKit 不等同 Safari 实机；真实读屏、真实页面缩放、实体触控、完整主题组合、设备性能和生产部署未覆盖，全库 2B-1 仍开放。
+
+### 2026-10-15 Tooltip Quick Start 窄屏换行复验
+
+- **问题与修复：** 320px 下 Tooltip“使用方法”代码块原本保留横向滚动。首轮浏览器检查发现样式未命中；Dumi 会把文档中的片段链接规范化为当前路由加 hash，`href="#tooltip-main-api-table"` 精确选择器因此失配。现改为匹配 `#tooltip-main-api-table` hash 后缀，并同时限定 Tooltip 文档正文、同一“使用方法”标题及 400px 以下视口；其它代码示例不受影响。
+- **浏览器结果：** 重新执行 `npm run build:docs:tooltip-preview` 后，从隔离导出运行 API 卡片、桌面键盘跳转和触屏快捷入口三组用例；Chromium 与 Windows Playwright WebKit 各通过 3/3，共 6/6。320/390px 下 Quick Start 为 `pre-wrap` 且无代码块水平溢出；后续示例及 Input Quick Start 保持原有 `pre`；触屏链接满足 44px 操作目标，点按后 hash、表格 region 焦点均正确。
+- **截图和评审：** `.codex/tooltip-quickstart-{320,390}-{chromium,webkit}.png` 留存四张截图。主代理检查布局，独立 `gpt-6-luna max` 配置视觉/代码复审均为 GO，未发现可复现 P0–P3；代理运行身份和思考强度无法独立核验。检测器 `detect.mjs --json docs/docs-shell.css` 原始输出 `[]`，仅表示确定性规则未命中。
+- **工程检查与边界：** 隔离导出门禁通过：165 个 HTML 页面、660 个本地 JS/CSS 引用、93 个嵌套 demo；CSS Prettier 与 `git diff --check` 通过。Quick Start 定位使用链接与 `.markdown`、标题与代码块的相邻兄弟关系，不依赖 `:has()`。Playwright WebKit 不等同 Safari 实机，真实读屏、实体触控、页面缩放和生产部署仍未覆盖，本批不关闭全库 2B-1。
+
+### 2026-10-15 Tooltip API 焦点环兼容性复验
+
+- **焦点行为：** 去除文档 CSS 的 `:has()` 标题焦点选择器，直接在具名 API region 上展示 2px 主题焦点环；Tooltip 局部将 `outline-offset` 设为 `0px`，使焦点框贴合表格区域边缘。测试通过链接 Enter 跳转后断言 region 获焦、轮廓样式和宽度，以及桌面与卡片布局的几何对齐。
+- **构建和浏览器：** 隔离 Dumi 导出门禁通过（165 个 HTML、660 个本地 JS/CSS 引用、93 个嵌套 demo）；移动搜索单测 11/11；Tooltip API 卡片、桌面键盘锚点和触屏快捷入口在 Chromium 与 Windows Playwright WebKit 共 6/6。`npm run check` 为 59 个测试文件、688 项通过，`check:scaffold` 与 `git diff --check` 通过。
+- **审查与边界：** 独立 `gpt-6-luna max` 配置复审无问题，代理运行身份无法独立核验。Impeccable 检测输出 `[]` 只表示确定性规则未命中；实际判断依据包括 320px 和 1280px 截图及真实键盘跳转。Safari 实机、真实读屏、页面缩放、实体触控、完整主题组合、设备性能和生产部署仍待验收；不关闭全库 2B-1。

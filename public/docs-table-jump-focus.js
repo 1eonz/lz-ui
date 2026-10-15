@@ -178,6 +178,24 @@
     timeoutId = window.setTimeout(stopObserving, 5_000);
   };
 
+  const scrollDocumentTarget = (target) => {
+    const scrollRoot = document.scrollingElement ?? document.documentElement;
+    const scrollMarginTop = Number.parseFloat(getComputedStyle(target).scrollMarginBlockStart) || 0;
+    const targetDocumentTop = target.getBoundingClientRect().top + window.scrollY;
+    const maxScrollY = Math.max(0, scrollRoot.scrollHeight - window.innerHeight);
+    const targetScrollY = Math.min(maxScrollY, Math.max(0, targetDocumentTop - scrollMarginTop));
+
+    window.scrollTo({ top: targetScrollY, behavior: 'instant' });
+  };
+
+  const dispatchAnchorJump = (targetId) => {
+    window.dispatchEvent(
+      new CustomEvent('lx-docs-anchor-jump', {
+        detail: { targetId },
+      }),
+    );
+  };
+
   const handleJumpClick = (event) => {
     if (
       event.button !== 0 ||
@@ -192,30 +210,61 @@
     }
 
     const skipLink = event.target.closest('a.lx-docs-skip-link');
-    if (skipLink instanceof HTMLAnchorElement) {
-      window.requestAnimationFrame(focusMainWhenReady);
-      return;
-    }
-
-    const link = event.target.closest('a.lx-docs-table-jump');
+    const link = skipLink ?? event.target.closest('a.lx-docs-table-jump');
     if (!(link instanceof HTMLAnchorElement)) return;
+
+    const targetAttribute = link.getAttribute('target');
+    const baseTarget = document.querySelector('base[target]')?.getAttribute('target');
+    const browsingContext = targetAttribute === null ? baseTarget || '_self' : targetAttribute;
+    if (link.hasAttribute('download') || browsingContext.toLowerCase() !== '_self') return;
 
     const targetUrl = new URL(link.href, window.location.href);
     if (
       targetUrl.origin !== window.location.origin ||
       targetUrl.pathname !== window.location.pathname ||
+      targetUrl.search !== window.location.search ||
       !targetUrl.hash
     ) {
       return;
     }
 
     const targetId = decodeURIComponent(targetUrl.hash.slice(1));
+    const target = document.getElementById(targetId);
+    if (!target) {
+      if (skipLink) focusMainWhenReady();
+      return;
+    }
+
+    const navigate = window.__LX_DOCS_NAVIGATE__;
+    if (typeof navigate !== 'function') {
+      if (skipLink) window.requestAnimationFrame(focusMainWhenReady);
+      return;
+    }
+
+    event.preventDefault();
+    if (
+      window.location.pathname === targetUrl.pathname &&
+      window.location.search === targetUrl.search &&
+      window.location.hash === targetUrl.hash
+    ) {
+      dispatchAnchorJump(targetId);
+      return;
+    }
+
+    navigate(`${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`, targetId);
+  };
+
+  const handleAnchorJump = (event) => {
+    const targetId = event instanceof CustomEvent ? event.detail?.targetId : null;
+    if (typeof targetId !== 'string') return;
+
     window.requestAnimationFrame(() => {
       const target = document.getElementById(targetId);
-      if (!target) return;
+      if (!(target instanceof HTMLElement)) return;
 
-      target.scrollIntoView({ block: 'start', behavior: 'instant' });
       target.focus({ preventScroll: true });
+      // 显式读取 CSS 滚动留白，避免浏览器未按 scroll-margin 定位时遮住目标。
+      scrollDocumentTarget(target);
     });
   };
 
@@ -256,4 +305,5 @@
   document.addEventListener('click', handleJumpClick, true);
   document.addEventListener('keydown', handleInitialTab, true);
   document.addEventListener('keydown', handleApiTableKeydown);
+  window.addEventListener('lx-docs-anchor-jump', handleAnchorJump);
 })();

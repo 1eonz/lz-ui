@@ -9,6 +9,7 @@ target_fingerprint: "sha256:f30806177ac48b605fd3e745f5d07be37cfbf6c8bca99cef0d1b
 target_path: "F:\\work\\lz-ui\\public\\docs-table-jump-focus.js"
 timestamp: 2026-10-11T08-44-42Z
 slug: public-docs-table-jump-focus-js
+closed: true
 ---
 # Input 文档跳转入口最终设计评审
 

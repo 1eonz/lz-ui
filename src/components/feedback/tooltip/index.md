@@ -7,13 +7,18 @@ demo:
 
 为按钮、状态文字和图标补充简短上下文。若弹层内需要链接、按钮或多段信息，应先明确交互语义，再选择能承载交互的组件。
 
+<!-- 将 API 表入口放在文档开头，避免键盘用户逐项经过所有示例才能到达参数说明。 -->
+<a className="lx-docs-table-jump" href="#tooltip-main-api-table" tabIndex="0">
+  跳转到 Tooltip 常用属性参数表起始位置
+</a>
+
 ## 使用方法
 
 ```tsx
 import { Tooltip } from 'lx-ui';
 
-<Tooltip title="最近一次同步于 14:32 完成">
-  <button type="button">客户同步状态</button>
+<Tooltip title="保存成功">
+  <button type="button">查看状态</button>
 </Tooltip>;
 ```
 
@@ -22,10 +27,15 @@ import { Tooltip } from 'lx-ui';
 ### 基础提示
 
 `title` 既是提示文案，也是 AntD Tooltip 的内容入口；默认由鼠标悬停或键盘焦点打开。
-演示还保留了触发元素和 Tooltip 组件各自提供的 `aria-describedby`，打开后可一起检查。禁用操作的原因放在相邻、可聚焦的帮助按钮上，不依赖禁用按钮接收焦点。
-文档演示在粗指针设备上把 Tooltip 触发按钮扩展至至少 44×44 CSS px；细指针下仍沿用当前主题密度。该调整仅服务于文档示例，不改变 Button 或 Tooltip 的公开默认尺寸。
+禁用操作的原因放在相邻、可聚焦的帮助按钮上，不依赖禁用按钮接收焦点。文档演示在粗指针设备上把 Tooltip 触发按钮扩展至至少 44×44 CSS px；细指针下仍沿用当前主题密度。该调整仅服务于文档示例，不改变 Button 或 Tooltip 的公开默认尺寸。
 
 <code src="../../../../docs/demos/feedback-tooltip-basic.tsx" defaultShowCode></code>
+
+### 无障碍描述关联
+
+两个 Tooltip 分别合并触发元素说明、Tooltip 属性说明和自身提示 ID。演示只在页面中显示当前属性值，不使用实时播报打断提示内容。
+
+<code src="../../../../docs/demos/feedback-tooltip-accessibility.tsx" defaultShowCode></code>
 
 ### 12 个位置
 
@@ -43,35 +53,111 @@ import { Tooltip } from 'lx-ui';
 
 组件属性基于 AntD `>=5.25 <6` 的 Tooltip 公共类型，继承的属性会继续透传到 AntD。`trigger` 默认额外包含键盘 `focus`；`aria-describedby` 是 lx-ui 的增强项，用于保留触发元素已有说明并与 Tooltip 描述合并。
 
-<p id="tooltip-docs-table-hint" className="lx-docs-table-hint">
-  表格支持横向滚动：触屏设备可左右滑动；聚焦后可按左右方向键浏览。
+<p id="tooltip-main-api-hint" className="lx-docs-table-hint">
+  内容区域较窄时，常用属性表会切换为卡片布局，每项仍保留类型、默认值和说明标签及原生表格语义；可通过页首跳转链接聚焦表格区域。
 </p>
 
 ### 常用属性
 
 <div
+  id="tooltip-main-api-table"
   className="lx-docs-table lx-tooltip-api-table"
   role="region"
-  tabindex="0"
+  tabIndex="0"
   aria-label="Tooltip 常用属性参数表"
-  aria-describedby="tooltip-docs-table-hint"
+  aria-describedby="tooltip-main-api-hint"
 >
 
-| 参数                      | 类型                             | 默认值               | 说明                                                                                                                                                  |
-| ------------------------- | -------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `children`                | `ReactNode`                      | 必填                 | 单个可接收 ref 和事件属性的触发元素。原生按钮、链接最稳妥；静态元素不会被自动加 `tabIndex`。                                                          |
-| `title`                   | `ReactNode \| (() => ReactNode)` | —                    | 短说明；支持同步渲染函数，不接收 Promise。异步数据和加载/失败状态由宿主管理。                                                                         |
-| `trigger`                 | `TooltipProps['trigger']`        | `['hover', 'focus']` | `hover`、`focus`、`click`、`contextMenu` 或数组。显式传值整体替换默认项，不做合并。                                                                   |
-| `placement`               | `TooltipPlacement`               | `'top'`              | 12 个方位：`top`、`topLeft`、`topRight`、`bottom`、`bottomLeft`、`bottomRight`、`left`、`leftTop`、`leftBottom`、`right`、`rightTop`、`rightBottom`。 |
-| `open` / `defaultOpen`    | `boolean`                        | — / `false`          | `open` 为受控显隐；`defaultOpen` 只指定非受控初值。                                                                                                   |
-| `onOpenChange`            | `(open: boolean) => void`        | —                    | AntD 请求显隐变化时调用；受控时宿主必须更新 `open`。                                                                                                  |
-| `afterOpenChange`         | `(open: boolean) => void`        | —                    | 弹层显隐动画结束后通知；描述关联同步不依赖此动画回调。                                                                                                |
-| `id` / `aria-describedby` | `string`                         | React `useId()` / —  | `id` 标识提示；额外描述 ID 会和子元素描述及打开时的 Tooltip ID 合并。                                                                                 |
-| `color`                   | `TooltipProps['color']`          | `#1f2937`            | 设置提示表面颜色。自定义浅色时同时通过 `styles.body.color` 设置足够对比度的文字色。                                                                   |
-| `classNames`              | `TooltipProps['classNames']`     | —                    | 按 AntD 公开语义部位设置弹层根部或内容的 class；常用部位为 `root`、`body`。                                                                           |
-| `styles`                  | `TooltipProps['styles']`         | —                    | 按 AntD 公开语义部位设置弹层根部或内容的内联样式；`styles.body.color` 可覆盖默认白字。                                                                |
-| `className` / `style`     | `string` / `CSSProperties`       | —                    | 设置 AntD Tooltip 语义根部样式。                                                                                                                      |
-| `ref`                     | `TooltipRef`                     | —                    | 转发 AntD ref：`nativeElement`、`popupElement` 和 `forceAlign()`。                                                                                    |
+<table role="table" aria-label="Tooltip 常用属性">
+  <thead>
+    <tr role="row">
+      <th role="columnheader" scope="col">参数</th>
+      <th role="columnheader" scope="col">类型</th>
+      <th role="columnheader" scope="col">默认值</th>
+      <th role="columnheader" scope="col">说明</th>
+    </tr>
+  </thead>
+  <tbody role="rowgroup">
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>children</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>ReactNode</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">必填</span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value">单个可接收 ref 和事件属性的触发元素。原生按钮、链接最稳妥；静态元素不会被自动加 <code>tabIndex</code>。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>title</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>ReactNode | (() =&gt; ReactNode)</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">—</span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value">短说明；支持同步渲染函数，不接收 Promise。异步数据和加载/失败状态由宿主管理。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>trigger</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>TooltipProps<wbr />['trigger']</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value"><code>['hover', 'focus']</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value"><code>hover</code>、<code>focus</code>、<code>click</code>、<code>contextMenu</code> 或数组。显式传值整体替换默认项，不做合并。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>placement</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>TooltipPlacement</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value"><code>'top'</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value"><span className="lx-tooltip-placement-group"><strong>上方：</strong><code>top</code>、<code>topLeft</code>、<code>topRight</code></span><br /><span className="lx-tooltip-placement-group"><strong>下方：</strong><code>bottom</code>、<code>bottomLeft</code>、<code>bottomRight</code></span><br /><span className="lx-tooltip-placement-group"><strong>左方：</strong><code>left</code>、<code>leftTop</code>、<code>leftBottom</code></span><br /><span className="lx-tooltip-placement-group"><strong>右方：</strong><code>right</code>、<code>rightTop</code>、<code>rightBottom</code></span></span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>open</code> / <code>defaultOpen</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>boolean</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">— / <code>false</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value"><code>open</code> 为受控显隐；<code>defaultOpen</code> 只指定非受控初值。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>onOpenChange</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>(open: boolean) =&gt; void</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">—</span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value">AntD 请求显隐变化时调用；受控时宿主必须更新 <code>open</code>。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>afterOpenChange</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>(open: boolean) =&gt; void</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">—</span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value">弹层显隐动画结束后通知；描述关联同步不依赖此动画回调。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>id</code> / <code>aria-describedby</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>string</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">React <code>useId()</code> / —</span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value"><code>id</code> 标识提示；额外描述 ID 会和子元素描述及打开时的 Tooltip ID 合并。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>color</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>TooltipProps<wbr />['color']</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value"><code>#1f2937</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value">设置提示表面颜色。自定义浅色时同时通过 <code>styles.body.color</code> 设置足够对比度的文字色。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>classNames</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>TooltipProps<wbr />['classNames']</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">—</span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value">按 AntD 公开语义部位设置弹层根部或内容的 class；常用部位为 <code>root</code>、<code>body</code>。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>styles</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>TooltipProps<wbr />['styles']</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">—</span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value">按 AntD 公开语义部位设置弹层根部或内容的内联样式；<code>styles.body.color</code> 可覆盖默认白字。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>className</code> / <code>style</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>string</code> / <code>CSSProperties</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">—</span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value">设置 AntD Tooltip 语义根部样式。</span></td>
+    </tr>
+    <tr role="row">
+      <th role="rowheader" scope="row"><code>ref</code></th>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">类型</span><span className="lx-tooltip-api-value"><code>TooltipRef</code></span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">默认值</span><span className="lx-tooltip-api-value">—</span></td>
+      <td role="cell"><span className="lx-tooltip-api-label" aria-hidden="true">说明</span><span className="lx-tooltip-api-value">转发 AntD ref：<code>nativeElement</code>、<code>popupElement</code> 和 <code>forceAlign()</code>。</span></td>
+    </tr>
+  </tbody>
+</table>
 
 </div>
 
@@ -80,12 +166,16 @@ import { Tooltip } from 'lx-ui';
 <details>
 <summary>查看高级定位与渲染参数</summary>
 
+<p id="tooltip-advanced-api-hint" className="lx-docs-table-hint">
+  小屏或侧栏压缩可用宽度时，此表保持列式布局并在当前区域内横向滚动；聚焦表格区域后可用左右方向键浏览。
+</p>
+
 <div
   className="lx-docs-table"
   role="region"
   tabindex="0"
   aria-label="Tooltip 高级定位与渲染参数表"
-  aria-describedby="tooltip-docs-table-hint"
+  aria-describedby="tooltip-advanced-api-hint"
 >
 
 | 参数                                            | 类型                                            | 默认值          | 说明                                                                              |
@@ -111,12 +201,16 @@ import { Tooltip } from 'lx-ui';
 <details>
 <summary>查看弃用属性和版本迁移说明</summary>
 
+<p id="tooltip-compat-api-hint" className="lx-docs-table-hint">
+  小屏或侧栏压缩可用宽度时，此表保持列式布局并在当前区域内横向滚动；聚焦表格区域后可用左右方向键浏览。
+</p>
+
 <div
   className="lx-docs-table"
   role="region"
   tabindex="0"
   aria-label="Tooltip 兼容与弃用属性表"
-  aria-describedby="tooltip-docs-table-hint"
+  aria-describedby="tooltip-compat-api-hint"
 >
 
 | 属性                                                      | 类型                                  | 说明                                                                         |

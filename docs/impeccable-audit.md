@@ -1052,3 +1052,32 @@ Pagination 将页大小和跳页拆成可见的 Select、Input、Button，窄屏
 - **浏览器和工程结果：** Tooltip demo 9 项与主题选项矩阵 2 项在 Chromium、Windows Playwright WebKit 各通过 11/11，共 22/22，browser-health 无 pageerror、console error、失败请求或 HTTP 错误。覆盖 320/390px 触屏下 18 个目标尺寸与命中点、触屏打开/切换/关闭、`aria-describedby` 在 2 秒内复原、12 个 placement、边缘翻转、reduced-motion、所有公开主题选项值及 4 种代表性组合；未覆盖完整主题笛卡尔积。浏览器验收复用 8006 隔离预览；截图、原始输出、报告和测试产物保存在 `.codex/test-results/tooltip-assessment-20261014`。隔离 Dumi 导出先前门禁为 164 HTML、656 个本地 JS/CSS 引用和 92 个 demo；本轮未覆盖共享 `docs-dist`。
 - **检测器和限制：** `detect.mjs --json` 对 Tooltip 组件 TSX、文档页和三个 demo 执行一次，原始输出 `[]`、退出码 0；它只表示静态扫描没有命中。Impeccable live detector 在全新 Playwright 页面成功注入并报告 1 条反模式；本地浏览器可视化另有 41 个节点标注，包含重复的 `line-length`、`cramped-padding` 及 Dumi 文档壳规则，不能把标注数当作独立缺陷数。标注主要落在 Dumi 目录/主题控件和长段中文文本；未将这些全局文档壳或字符计宽启发式归为 Tooltip 组件问题。DOM 修改预检通过；live-server 在 8401 启动后停止，并确认无监听进程。对应截图与 JSON 留在 `.codex/test-results/tooltip-assessment-20261014`。
 - **未覆盖与边界：** 这些结果是 Windows Playwright WebKit 与 Chromium 的移动视口/触控仿真，不代表 Safari 或 Android/iOS 实体设备，也不等于整块 44×44 区域逐像素无障碍命中。完整风格/色板/密度组合、真实屏幕阅读器、200%/400% page zoom、操作系统 reduced-motion、设备性能和生产部署仍待验收；此 Tooltip 局部收口不关闭全库 2B-1。
+
+## 2026-10-14：Tooltip 文档锚点定位与最终检查
+
+- **本轮目标：** 修复 Dumi 同页 API 跳转动画覆盖焦点导航避让的问题，保障键盘跳转在 sticky 导航下方可见，并处理页面末端无法按完整 scroll margin 对齐的滚动夹限。
+- **Impeccable 4.1.3 流程：** 本轮从既有会话上下文开始，`context.mjs --target public/docs-table-jump-focus.js` 确认目标属于现有 Read 文档界面；读取 `reference/audit.md`、`reference/polish.md` 和 `reference/craft-floor.md`。改动后执行一次 `detect.mjs --json` 扫描文档脚本、文档 shell、Tooltip demo、页面文档及浏览器用例，原始 stdout 为 `[]`、退出码 0。扫描仅说明其确定性规则没有命中；体验结论由 Chromium/WebKit 实际交互和构建产物验证给出。
+- **技术复核：** 锚点只匹配同源、同 path、同 search、有 hash 且目标存在的普通左键点击。聚焦后按 CSS `scroll-margin-block-start` 定位并 clamp 到 `maxScrollY`；键盘 Enter 的 URL、焦点、固定导航避让和末端可视性均由 Playwright 断言。不同 query 路由的回归夹具通过 Tab 焦点和 Enter 产生真实链接激活。独立代码复审发现 `stopImmediatePropagation()` 会额外压制同一 document 的后续捕获监听；现已改为 `stopPropagation()` 并由 `gpt-6-luna max` 配置代理复核关闭，最终 GO。代理运行时模型身份及思考强度不可独立核验。
+- **验证结果：** 隔离文档构建与导出为 165 HTML、660 个本地 JS/CSS 引用和 93 个 demo。Tooltip Chromium/WebKit 各 14/14，共 28/28；含 Tooltip 的 WebKit 聚合套件用当前隔离导出为 38 通过、1 跳过、0 失败。直接聚合命令使用旧 `docs-dist` 时，因页面产物滞后出现 6 个 Tooltip 文档断言失败；诊断已写入 browser acceptance matrix，使用最新导出的同一测试组合通过。改动文件 Prettier 检查通过。
+- **范围限制：** 本轮没有新增组件运行时依赖或公开 API。检测器 `[]` 不作为审美/可访问性结论；Windows Playwright WebKit 不等同 Safari 实机。真实读屏、真实 page zoom、实体触控、设备性能和部署仍待验收，且不关闭全库 2B-1。
+
+## 2026-10-14：Tooltip API 表焦点框和边界复验
+
+- **样式收口：** Tooltip 主 API 锚点的 `scroll-margin-block-start` 调整为 `11rem`，让“常用属性”标题和首行在 767、768、1280px 视口下避开实际吸顶导航。卡片表焦点轮廓明确使用 `--lx-focus-ring`，`outline-offset: 0`；卡片表 `border-spacing` 为零，使表格、卡片行与区域边界贴齐。
+- **浏览器结果：** 从最新隔离 Dumi 导出运行四组 Tooltip 定向用例，Chromium 4/4、Windows Playwright WebKit 4/4。覆盖 320/390px 卡片状态与焦点轮廓颜色、offset、region/table/row 几何边界；767/768/1280px 键盘锚点的标题和首行可见性及 region/wrapper/table 上下左右对齐；1280px viewport 下显式将 region 宽度设为 760/761px 并断言卡片/表格模式切换；末端锚点通过 spy 捕获 `window.scrollTo` 参数并确认 handler 传入 `maxScrollY`。
+- **构建和截图：** `npm run build:docs:tooltip-preview` 通过，包含 165 个 HTML、660 个本地 JS/CSS 引用和 93 个嵌套 demo。Chromium 与 WebKit 截图保存在 `.codex/tooltip-api-table-{320,390}-*.png`、`.codex/tooltip-api-focus-{767,768,1280}-*-desktop.png` 和 `.codex/tooltip-api-breakpoint-1280-container-{760,761}-*.png`。
+- **未覆盖：** 结果来自 Windows Chromium 与 Playwright WebKit 的 CSS viewport，不代表 Safari 实机、真实读屏、真实 page zoom、实体触控、设备性能或生产部署；本轮不关闭 Tooltip 完整主题组合或全库 2B-1。
+
+## 2026-10-15：Tooltip Quick Start 窄屏可读性复核
+
+- **Impeccable 流程：** 使用 Impeccable 4.1.3，针对既有文档界面读取一次 `context.mjs --target docs/docs-shell.css`，按 `adapt` 与 `polish` 指引复核桌面到触屏窄屏的内容适配，并参考 craft floor 完成最终检查。`detect.mjs --json docs/docs-shell.css` 原始输出为 `[]`、退出码 0，只能说明该静态规则集未命中；不作为视觉、可访问性或交互通过结论。
+- **局部缺陷：** Dumi 将 Quick Start 的片段链接规范化为带当前路由的完整 href，导致精确 hash 属性选择器没有命中。改为 hash 后缀匹配，并保留 Tooltip 文档、标题相邻关系及 400px 视口限定；未改变组件运行时 API、文本或其它代码块样式。
+- **真实渲染复核：** Chromium 和 Windows Playwright WebKit 的 320/390px 截图均已人工检查；代码、标题、正文与 44px 跳转入口没有溢出或重叠。API 卡片、桌面焦点定位、触屏入口三组测试在两引擎共 6/6 通过，且断言 Input 样式隔离。独立 `gpt-6-luna max` 配置复审为 GO、无可复现 P0–P3；运行模型身份无法独立核验。
+- **范围限制：** 这次只完成窄屏 Quick Start 适配，不代表完整 Tooltip 文档或全库通过。规则依赖当前 Dumi 的链接、正文、标题和代码块相邻结构；Dumi 升级后应复核实际 DOM。真实读屏、Safari 实机、实体触控、真实页面缩放、设备性能和部署仍待单独验证。
+
+## 2026-10-15：Tooltip API 表焦点轮廓兼容性与贴边复核
+
+- **兼容性修复：** 删除标题焦点转移所用的 `:has()`，保留现有 `.lx-docs-table:focus-visible` 区域焦点环；将 Tooltip 浏览器断言改为检查真正获得焦点的命名 region，确保文档样式不依赖不支持 `:has()` 的实现。
+- **视觉修正：** 人工复核 Chromium 1280px 与 320px 截图时发现区域轮廓相对可见表格边界外扩。Tooltip API region 的焦点轮廓设为 `outline-offset: 0`，其他文档表不受影响；浏览器测试同步验证 0px 偏移、2px 实线及主题焦点色。
+- **复审与验证：** 独立 `gpt-6-luna max` 配置只读复审未发现问题；运行模型身份和思考强度不可独立核验。`npm run check` 通过 59 个测试文件、688 项测试、112 个 demo 类型检查、格式、类型与 lint；`check:scaffold`、Dumi 导出门禁及 Chromium/Windows Playwright WebKit 定向验收均通过，三组用例共 6/6。`git diff --check` 通过。截图与隔离构建产物保存在仓库内 `.codex`。
+- **Impeccable 与边界：** Impeccable 4.1.3 的 `context.mjs`、`adapt`、`polish` 和 craft floor 已按流程读取使用；`detect.mjs --json` 返回 `[]` 仅表示确定性静态规则没有命中，不能替代截图、键盘路径和浏览器验收。WebKit 仿真不代表 Safari 实机，真实读屏、页面缩放、实体触控、设备性能、完整主题矩阵和生产部署仍未覆盖；全库 2B-1 继续开放。

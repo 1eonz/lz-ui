@@ -1,0 +1,81 @@
+diff --git a/node_modules/dumi/theme-default/layouts/DocLayout/index.js b/node_modules/dumi/theme-default/layouts/DocLayout/index.js
+index 3fd9026..1eecd36 100644
+--- a/node_modules/dumi/theme-default/layouts/DocLayout/index.js
++++ b/node_modules/dumi/theme-default/layouts/DocLayout/index.js
+@@ -6,7 +6,7 @@ function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" !=
+ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+ import { ReactComponent as IconSidebar } from '@ant-design/icons-svg/inline-svg/outlined/align-left.svg';
+ import animateScrollTo from 'animated-scroll-to';
+-import { Helmet, useIntl, useLocation, useOutlet, useRouteMeta, useSidebarData, useSiteData } from 'dumi';
++import { Helmet, history, useIntl, useLocation, useOutlet, useRouteMeta, useSidebarData, useSiteData } from 'dumi';
+ import Content from 'dumi/theme/slots/Content';
+ import ContentFooter from 'dumi/theme/slots/ContentFooter';
+ import Features from 'dumi/theme/slots/Features';
+@@ -18,3 +18,22 @@ import React, { useEffect, useState } from 'react';
+ import React, { useEffect, useState } from 'react';
+ import "./index.less";
++var anchorJumpTargets = new Map();
++var pendingAnchorJumpTarget = null;
++if (typeof window !== 'undefined' && !window.__LX_DOCS_NAVIGATE__) {
++  history.listen(function (_ref) {
++    var action = _ref.action;
++    var location = _ref.location;
++    if (action === 'PUSH' && pendingAnchorJumpTarget && location.key) {
++      anchorJumpTargets.set(location.key, pendingAnchorJumpTarget);
++    }
++  });
++  window.__LX_DOCS_NAVIGATE__ = function (to, targetId) {
++    pendingAnchorJumpTarget = targetId;
++    try {
++      history.push(to);
++    } finally {
++      pendingAnchorJumpTarget = null;
++    }
++  };
++}
+ var DocLayout = function DocLayout() {
+@@ -23,10 +42,12 @@ var DocLayout = function DocLayout() {
+   var sidebar = useSidebarData();
+   var _useLocation = useLocation(),
+     hash = _useLocation.hash,
+-    pathname = _useLocation.pathname;
++    pathname = _useLocation.pathname,
++    key = _useLocation.key;
+   var _useSiteData = useSiteData(),
+     loading = _useSiteData.loading,
+     hostname = _useSiteData.hostname;
+-  var _useState = useState(false),
++  var anchorJumpTarget = anchorJumpTargets.get(key);
++  var _useState = useState(false),
+     _useState2 = _slicedToArray(_useState, 2),
+     activateSidebar = _useState2[0],
+@@ -35,11 +56,20 @@ var DocLayout = function DocLayout() {
+     fm = _useRouteMeta.frontmatter;
+   var showSidebar = fm.sidebar !== false && (sidebar === null || sidebar === void 0 ? void 0 : sidebar.length) > 0;
+ 
+   // handle hash change or visit page hash after async chunk loaded
+   useEffect(function () {
+     var id = hash.replace('#', '');
++    var decodedId = decodeURIComponent(id);
++    if (anchorJumpTarget && anchorJumpTarget === decodedId) {
++      if (!loading && typeof window !== 'undefined') {
++        window.dispatchEvent(new CustomEvent('lx-docs-anchor-jump', {
++          detail: { targetId: anchorJumpTarget }
++        }));
++      }
++      return;
++    }
+     if (id) {
+       setTimeout(function () {
+         var elm = document.getElementById(decodeURIComponent(id));
+         if (elm) {
+           // animated-scroll-to instead of native scroll
+@@ -50,7 +80,7 @@ var DocLayout = function DocLayout() {
+         }
+       }, 1);
+     }
+-  }, [loading, hash]);
++  }, [loading, hash, anchorJumpTarget]);
+   return /*#__PURE__*/React.createElement("div", {
+     className: "dumi-default-doc-layout",
+     "data-mobile-sidebar-active": activateSidebar || undefined,

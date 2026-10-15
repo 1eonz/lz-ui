@@ -1,0 +1,2 @@
+# unified diff 补丁中的空白上下文标记属于补丁语法，不按源码尾随空白处理。
+patches/*.patch whitespace=-blank-at-eol

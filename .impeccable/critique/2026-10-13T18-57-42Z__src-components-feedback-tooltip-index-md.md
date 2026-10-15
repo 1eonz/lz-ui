@@ -10,6 +10,7 @@ target_fingerprint: "sha256:a0fc6cb71d9dd8b57929c63ae9f19d08126cd298bb24523cd700
 target_path: "F:\\work\\lz-ui\\src\\components\\feedback\\tooltip\\index.md"
 timestamp: 2026-10-13T18-57-42Z
 slug: src-components-feedback-tooltip-index-md
+closed: true
 ---
 Method: dual-agent (A: /root/tooltip_impeccable_design · B: /root/tooltip_browser_evidence_final)
 

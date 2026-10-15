@@ -53,8 +53,11 @@
     min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
   }
 
-  .dumi-default-doc-layout-mobile-bar {
+  :root .dumi-default-doc-layout-mobile-bar {
     min-block-size: max(44px, var(--lx-control-target-touch-min, 44px));
+    background-color: var(--lx-docs-table-sticky-surface);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 
   /* 菜单关闭时隐藏导航内容，但保留 Dumi 原生搜索输入和移动菜单定位。 */
@@ -418,6 +421,13 @@
   --lx-docs-search-surface: #fff;
 }
 
+/* 固定页眉使用主题实色表面，避免页面文字透过粘滞导航影响阅读。 */
+:root .dumi-default-header:not([data-static]):not([data-mobile-active]) {
+  background-color: var(--lx-docs-table-sticky-surface);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 /* 搜索提示、更新时间和页尾文字是辅助信息；明暗表面分别映射，确保正文尺寸仍满足 AA。 */
 :root[data-prefers-color='light'] .dumi-default-header .dumi-default-search-shortcut,
 :root[data-prefers-color='light'] .dumi-default-content .dumi-default-content-footer time,
@@ -605,12 +615,42 @@
   z-index: 1;
 }
 
+@media (max-width: 767px) and (any-pointer: coarse) {
+  .lx-docs-table-jump {
+    position: relative;
+    display: inline-flex;
+    box-sizing: border-box;
+    align-items: center;
+    inline-size: auto;
+    block-size: auto;
+    min-inline-size: 44px;
+    min-block-size: 44px;
+    max-inline-size: 100%;
+    padding: 8px 10px;
+    margin-block: 8px;
+    overflow: visible;
+    clip: auto;
+    clip-path: none;
+    white-space: normal;
+    border: 1px solid var(--lx-docs-table-sticky-border);
+    border-radius: 4px;
+    color: var(--lx-docs-link-text);
+    background: transparent;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
 #lx-docs-main-content {
   scroll-margin-block-start: 5rem;
 }
 
 .markdown #input-main-api-table {
   scroll-margin-block-start: 7.5rem;
+}
+
+.markdown #tooltip-main-api-table {
+  scroll-margin-block-start: 11rem;
 }
 
 @media (max-width: 767px) {
@@ -760,10 +800,26 @@
   overflow-wrap: anywhere;
 }
 
-/* 固定 Tooltip 常用属性列，并让长类型和说明在窄屏表格中换行。 */
+/* 根据文章实际可用宽度切换布局，避免侧栏占位时四列表格只显示到默认值列。 */
+.markdown .lx-tooltip-api-table {
+  margin-block: 36px 56px;
+  container-name: lx-tooltip-api;
+  container-type: inline-size;
+}
+
+/* 参数表区域与表格同宽，焦点环贴合区域边缘，避免出现悬空的蓝色间距。 */
+.markdown .lx-tooltip-api-table:focus-visible {
+  outline-offset: 0;
+}
+
+.markdown .lx-tooltip-api-table > .dumi-default-table {
+  margin-block: 0;
+}
+
 .markdown .lx-tooltip-api-table table {
-  inline-size: max-content;
-  min-inline-size: 100%;
+  margin-block: 0;
+  inline-size: min(1100px, 100%);
+  min-inline-size: 760px;
   table-layout: fixed;
 }
 
@@ -798,25 +854,116 @@
 
 .markdown .lx-tooltip-api-table td:nth-child(2) code {
   white-space: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
-@media (max-width: 600px) {
+/* 小屏只折行 Tooltip 快速上手代码，演示源码继续保留原有横向阅读方式。 */
+@media (max-width: 400px) {
+  .lx-docs-table-jump[href$='#tooltip-main-api-table']
+    + .markdown
+    > h2[id='使用方法']
+    + .dumi-default-source-code
+    > pre.prism-code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
+
+.markdown .lx-tooltip-api-table .lx-tooltip-placement-group {
+  display: inline-block;
+  max-inline-size: 100%;
+}
+
+.markdown .lx-tooltip-api-table .lx-tooltip-api-label {
+  display: none;
+}
+
+@container lx-tooltip-api (max-width: 760px) {
   .markdown .lx-tooltip-api-table table {
-    min-inline-size: 760px;
+    display: block;
+    inline-size: 100%;
+    min-inline-size: 0;
+    border-spacing: 0;
   }
 
-  .markdown .lx-tooltip-api-table th:first-child,
-  .markdown .lx-tooltip-api-table td:first-child {
-    inline-size: 176px;
-    min-inline-size: 176px;
-    max-inline-size: 176px;
+  /* 保留表头语义并裁剪视觉呈现，使读屏用户仍可通过表格导航读取列标题。 */
+  .markdown .lx-tooltip-api-table thead {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
     white-space: nowrap;
   }
 
-  .markdown .lx-tooltip-api-table td:first-child code {
-    white-space: nowrap;
-    overflow-wrap: normal;
+  .markdown .lx-tooltip-api-table tbody {
+    display: grid;
+    gap: 8px;
+  }
+
+  .markdown .lx-tooltip-api-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--lx-docs-table-sticky-border);
+    border-radius: 4px;
+    background: var(--lx-docs-table-sticky-surface);
+  }
+
+  .markdown .lx-tooltip-api-table tbody th:first-child {
+    position: static;
+    inline-size: auto;
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    padding: 0 0 8px;
+    border: 0;
+    border-block-end: 1px solid var(--lx-docs-table-sticky-border);
+    background: transparent;
+    box-shadow: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .markdown .lx-tooltip-api-table tbody td {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: 8px;
+    inline-size: auto;
+    min-inline-size: 0;
+    padding: 6px 0;
+    border: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .markdown .lx-tooltip-api-table tbody td:nth-child(2),
+  .markdown .lx-tooltip-api-table tbody td:nth-child(3) {
+    inline-size: auto;
+  }
+
+  .markdown .lx-tooltip-api-table tbody td + td {
+    border-block-start: 1px solid var(--lx-docs-table-sticky-border);
+  }
+
+  .markdown .lx-tooltip-api-table .lx-tooltip-api-label {
+    display: block;
+    color: var(--lx-docs-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .markdown .lx-tooltip-api-table .lx-tooltip-api-value {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .markdown .lx-tooltip-api-table td code {
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }
 

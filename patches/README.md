@@ -4,6 +4,8 @@
 
 `dumi+2.4.49+002+spin-anchor-offset.patch` 只影响锁定的 Dumi 2.4.49 文档主题：hash 锚点滚动读取标题的 `scroll-margin-block-start`，以适配桌面和移动吸顶栏高度。对应值由 `docs/docs-shell.css` 设置为桌面 6rem、767px 以下 8rem；不依赖业务组件，也不进入 lx-ui 组件产物。
 
+`dumi+2.4.49+003+managed-anchor-history.patch` 仅扩展 Dumi 文档布局。正文跳转和 API 表入口调用 Dumi/Umi history 实例，由其维护历史索引、监听器和拦截器；导航桥在客户端模块初始化时同步注册，目标 ID 按 history entry 的 `location.key` 记录在内存旁路映射中，不复制或改写 `history.state`。布局据此跳过重复 hash 动画，并在后退/前进时恢复焦点和精确滚动位置。桥接只在文档站运行，不进入组件包。
+
 `dumi` 在 `package.json` 中精确锁定为 `2.4.49`。`dev`、`dev:docs` 和 `build:docs` 会先运行 `patch:dumi` 自动应用补丁。
 
 `patch-package` 仅用于仓库开发期重放补丁，不进入 `dist` 或发布文件白名单，因此不会增加组件库的运行时依赖和产物体积。它能保留可复现的 Dumi 修复，避免维护整套文档主题分支；代价是 Dumi 升级时需要人工重放和浏览器复验，内部主题文件的路径或生成代码也可能变化。若以后上游修复，删除补丁；若升级后多个改动点持续冲突，可评估维护少量本地主题槽位的替代成本，不直接复制整套主题。
