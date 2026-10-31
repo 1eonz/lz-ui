@@ -409,6 +409,13 @@
 :root[data-prefers-color='dark'] {
   --lx-docs-text-muted: #a9b3bf;
   --lx-docs-link-text: #8ab9ff;
+  --lx-docs-syntax-text: #b8c1ce;
+  --lx-docs-syntax-comment: #a9b3bf;
+  --lx-docs-syntax-keyword: #d68ad5;
+  --lx-docs-syntax-string: #8fc78d;
+  --lx-docs-syntax-function: #8ab9ff;
+  --lx-docs-syntax-literal: #e5b46b;
+  --lx-docs-syntax-tag: #f29188;
   --lx-docs-table-sticky-surface: #050709;
   --lx-docs-table-sticky-header: #020305;
   --lx-docs-table-sticky-border: #2a353c;
@@ -418,7 +425,79 @@
 :root[data-prefers-color='light'] {
   --lx-docs-text-muted: #626e79;
   --lx-docs-link-text: #0059c8;
+  --lx-docs-syntax-text: #383a42;
+  --lx-docs-syntax-comment: #626e79;
+  --lx-docs-syntax-keyword: #8f278d;
+  --lx-docs-syntax-string: #327431;
+  --lx-docs-syntax-function: #245cc3;
+  --lx-docs-syntax-literal: #915300;
+  --lx-docs-syntax-tag: #b6372c;
   --lx-docs-search-surface: #fff;
+}
+
+/* 桌面搜索也使用文档辅助文字色；不能依赖浏览器默认 placeholder 的灰色或透明度。 */
+:root[data-prefers-color] .dumi-default-search-bar-input::placeholder {
+  color: var(--lx-docs-text-muted);
+  opacity: 1;
+}
+
+/* 仅调整文档导航、正文及页尾链接，保持 demo 内的品牌色和交互样式独立。
+   状态选择器同时覆盖 Dumi 的 hover/active 规则，普通尺寸文字在明暗背景均满足 AA。 */
+:root[data-prefers-color] .dumi-default-sidebar .dumi-default-sidebar-group > dd > a.active,
+:root[data-prefers-color] .dumi-default-sidebar .dumi-default-sidebar-group > dd > a:hover,
+:root[data-prefers-color] .dumi-default-sidebar .dumi-default-sidebar-group > dd > a:focus-visible,
+:root[data-prefers-color] .markdown > :is(p, ul, ol) a,
+:root[data-prefers-color] .markdown > :is(p, ul, ol) a:is(:hover, :focus-visible),
+:root[data-prefers-color] .dumi-default-footer > a,
+:root[data-prefers-color] .dumi-default-footer > a:is(:hover, :focus-visible) {
+  color: var(--lx-docs-link-text);
+}
+
+/* 仅处理 Dumi 的源码展示，保留原有多色语义；不匹配行内 code 或组件 demo。
+   当前 Dumi 未给 token 写入行内颜色，提高文档作用域特异性即可覆盖明暗 Prism 规则。 */
+:root[data-prefers-color] .dumi-default-source-code pre.prism-code,
+:root[data-prefers-color] .dumi-default-source-code pre.prism-code .token {
+  color: var(--lx-docs-syntax-text);
+}
+
+:root[data-prefers-color]
+  .dumi-default-source-code
+  pre.prism-code
+  .token:is(.comment, .prolog, .cdata) {
+  color: var(--lx-docs-syntax-comment);
+}
+
+:root[data-prefers-color] .dumi-default-source-code pre.prism-code .token:is(.keyword, .atrule) {
+  color: var(--lx-docs-syntax-keyword);
+}
+
+:root[data-prefers-color]
+  .dumi-default-source-code
+  pre.prism-code
+  .token:is(.tag, .attr-name, .selector) {
+  color: var(--lx-docs-syntax-tag);
+}
+
+:root[data-prefers-color]
+  .dumi-default-source-code
+  pre.prism-code
+  .token:is(.string, .attr-value, .char) {
+  color: var(--lx-docs-syntax-string);
+}
+
+:root[data-prefers-color] .dumi-default-source-code pre.prism-code .token:is(.function, .operator) {
+  color: var(--lx-docs-syntax-function);
+}
+
+:root[data-prefers-color]
+  .dumi-default-source-code
+  pre.prism-code
+  .token:is(.boolean, .number, .constant) {
+  color: var(--lx-docs-syntax-literal);
+}
+
+:root[data-prefers-color] .dumi-default-source-code .dumi-default-source-code-language {
+  color: var(--lx-docs-text-muted);
 }
 
 /* 固定页眉使用主题实色表面，避免页面文字透过粘滞导航影响阅读。 */
@@ -428,13 +507,15 @@
   -webkit-backdrop-filter: none;
 }
 
-/* 搜索提示、更新时间和页尾文字是辅助信息；明暗表面分别映射，确保正文尺寸仍满足 AA。 */
+/* 搜索提示、更新时间和页尾文字使用文档辅助色；明暗表面分别映射，确保正文尺寸满足 AA。
+   更新时间的标签和 time 是兄弟节点，必须在 footer 设置继承色，否则仅日期达标、标签仍偏淡。
+   下方页间导航保留自己的链接色；后续新增页尾文字也可安全继承，而不必逐个补选择器。 */
 :root[data-prefers-color='light'] .dumi-default-header .dumi-default-search-shortcut,
-:root[data-prefers-color='light'] .dumi-default-content .dumi-default-content-footer time,
+:root[data-prefers-color='light'] .dumi-default-content .dumi-default-content-footer,
 :root[data-prefers-color='light'] .dumi-default-content .dumi-default-content-footer nav small,
 :root[data-prefers-color='light'] .dumi-default-content .dumi-default-footer,
 :root[data-prefers-color='dark'] .dumi-default-header .dumi-default-search-shortcut,
-:root[data-prefers-color='dark'] .dumi-default-content .dumi-default-content-footer time,
+:root[data-prefers-color='dark'] .dumi-default-content .dumi-default-content-footer,
 :root[data-prefers-color='dark'] .dumi-default-content .dumi-default-content-footer nav small,
 :root[data-prefers-color='dark'] .dumi-default-content .dumi-default-footer {
   color: var(--lx-docs-text-muted);

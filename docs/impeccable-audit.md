@@ -2,6 +2,23 @@
 
 本文件按批次记录当时的审查结论；历史条目中的未关闭项可能已由后续记录重新分类或处理。Table 纯文本单元格方向键导航的当前状态见 [ADR-0005](./adr/0005-table-keyboard-model.md)。
 
+## 2026-11-01：文档壳与源码高亮对比度收口
+
+方法为双独立代理：A `/root/dynamic_form_design_a_1031` 独立查看实际页面，B `/root/dynamic_form_audit_b_1031` 独立运行检测器、浏览器 overlay 和颜色测量；两者未读取对方结果。请求配置均为 `gpt-6.1-sol medium`，实施返工为 medium，独立代码复审 `/root/docs_contrast_review_1101` 为 high；工具没有暴露可独立核验运行时模型身份的能力。Impeccable 4.6 的 context 沿用本会话首次执行结果，没有重复运行。
+
+- **目标及设计边界：** `docs/docs-shell.css`、DynamicForm/Input 两个文档页及 `tests/browser/docs-contrast.spec.ts`，保持现有 Read 文档风格。文档辅助色和链接色用于搜索 placeholder、活动侧栏、正文与页尾；新增明暗专用语法 token，保留多色源码高亮，不覆盖行内 code、真实 demo 或组件主题。不改变组件 API，不增加依赖。
+- **A 设计评审：** 两页 × 1440/390 CSS px × light/dark 共 8 个场景，查看源码、正文、页尾、移动导航和键盘焦点截图，无新增可复现 P0–P3。10 项 Nielsen 分数按顺序为 `3/4/3/3/3/3/3/3/3/3`，合计 **31/40**。源码实测分别保留 6/5 种颜色，demo 输入文字仍消费组件主题 token；未因本批增加认知负荷。此评分只针对文档壳，不重评完整 DynamicForm 工作流。
+- **B 确定性检测：** 唯一一次 markup 扫描为 `impeccable.cmd detect --json docs/demos/dynamic-form.tsx docs/demos/input-basic.tsx`，stdout 为 `[]`、stderr 为空、退出码 0；只说明规则未命中，不构成视觉、交互或 AA 通过。原始流与退出码在 `.codex/docs-contrast-b-20261101/`。
+- **真实 overlay：** 在新页面完成标题与 script 注入预检后，启动专用 8400 服务并实际注入 `detect.js`，console/覆盖节点均确认。一次 overlay 共 12 项：low-contrast 1、line-length 1、nested-cards 8、heading-rhythm 2；低对比度由前轮 9 项降为 1 项。Dumi 示例框及既有阅读节奏的提示未直接当作新缺陷。仅有 headless Playwright fallback，没有声称存在用户可见的 Human tab；服务已停止且确认不可达。
+- **遗漏 P1 与返工：** overlay 揭示桌面可见的“最后更新时间：”标签未随同级 `time` 更新，浅色 **3.215956:1**、深色 **3.688235:1**。将辅助色设在有界的 content-footer 上，让标签与日期共同继承；页间链接保留显式链接色。新增回归检查桌面标签、窄屏标签隐藏及实际可见日期，避免只测空容器或外链。新构建两页明暗 8 个样本均通过，浅色 **5.216353:1**、深色 **9.111728:1**，P1 关闭；B 原五维分数保持各 3/4、合计 **15/20**，不根据修复推测上调。
+- **其他实测：** 原目标浅色最低 **4.942646:1**、深色最低 **8.307584:1**。链接检查普通、hover 和焦点状态，颜色合成计入祖先背景与 placeholder opacity，拒绝隐藏、加载、图片背景或整体透明度样本。新资产 `meta__components.43c0462b.async.js` 的 Last-Modified 为 2026-11-01 00:26:20（上海时间）；关闭证据见 `.codex/docs-contrast-b-20261101/p1-closure.json`。
+- **浏览器边界：** Windows Playwright WebKit 2311 在裸 HTML 上也用 Tab 跳过链接，公开配置无法切换该偏好；保留 `.codex/docs-contrast-20261101/webkit-tab-probe.json.log`。专项对 Windows WebKit 显式标注只验证脚本聚焦后的键盘输入模态及 `:focus-visible` 对比度，不称其链接 Tab 可达性通过；Chromium/Edge 保留真实相邻 Tab/Shift+Tab。未使用私有协议或修改产品以配合测试。
+- **专项最终运行：** 同一新产物上 Chromium/Edge 各 2/2，Windows Playwright WebKit 2/2，合计 **6/6**。原 WebKit 60s 预算在 Input 窄屏采样中超时，保留失败日志和 trace；仅本专项设 120s 有界预算后两主题完整通过，每项约 1.4 分钟，没有将历史失败说成仅清理超时。日志见 `.codex/docs-contrast-20261101/chromium-edge-focus-fix.log` 和 `webkit-focus-final.log`。快照 `.impeccable/critique/2026-10-31T16-30-58Z__docs-docs-shell-css.md` 已核对 CSS 指纹，未运行格式器改写快照。
+- **工程与包体：** 全量 check 通过：59 个 Vitest 文件/689 项、8 项 Node 锁测试、112 个 demo 类型检查，格式、类型、lint、脚手架、库构建均通过。最新 Dumi 导出 165 个 HTML、660 个资源引用、93 个 demo。npm 预检 522 项、196,365 B 压缩/783,897 B 解包，禁入目录 0 项；本批不修改库组件，包元数据增加 147 B。独立代码复审最终 GO，无可复现 P0–P3。
+- **范围限制：** 未验证全站每个文字节点、真实读屏、真实 200%/400% page zoom、Safari 实机、实体触控或部署性能。响应式截图不是浏览器缩放，Windows WebKit 不是 Safari 实机；全库 2B-1 仍开放。
+
+Questions skipped: 用户已授权按计划连续处理，本批没有需要产品决策的新分歧；下一批进入 Alert 跨引擎验收。
+
 ## 2026-10-01：General 与其余 Form 详细文档
 
 - 本批覆盖 General 五页、基础 Form 八页与 DynamicForm，共新增 39 个独立运行示例；已有 31 个组件页具备样式展示、使用方法、参数、事件及实例边界。
