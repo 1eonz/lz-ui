@@ -1,6 +1,7 @@
 .demo {
   inline-size: 100%;
-  max-inline-size: 35rem;
+  max-inline-size: 45rem;
+  margin-inline: auto;
 }
 
 .cascadeValues,
@@ -47,10 +48,12 @@
 }
 
 .demoOptions summary {
-  display: flex;
+  /* 显式列位避免伪元素、匿名文本和状态被 space-between 拆散。 */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: var(--lx-space-xs);
   list-style: none;
   align-items: center;
-  justify-content: space-between;
   min-block-size: var(--lx-control-height);
   color: var(--lx-color-text);
   font-weight: 600;
@@ -69,7 +72,8 @@
 
 .demoOptions summary::before {
   content: '▸';
-  margin-inline-end: var(--lx-space-xs);
+  grid-column: 1;
+  grid-row: 1;
   color: var(--lx-color-primary);
   transition: transform var(--lx-motion-duration) ease;
 }
@@ -84,10 +88,21 @@
   border-radius: var(--lx-radius-control);
 }
 
+.demoSummaryTitle {
+  grid-column: 2;
+  grid-row: 1;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
 .demoSummaryMeta {
+  grid-column: 3;
+  grid-row: 1;
+  min-inline-size: 0;
   color: var(--lx-color-text-secondary);
   font-size: 0.875rem;
   font-weight: 400;
+  overflow-wrap: anywhere;
 }
 
 .demoToolbar,
@@ -216,11 +231,14 @@
 
 @media (max-width: 480px) {
   .demoOptions summary {
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    gap: var(--lx-space-xs);
+    row-gap: var(--lx-space-xs);
     padding-block: var(--lx-space-sm);
+  }
+
+  /* 状态换到标题下方，箭头仍与第一行标题相邻；无状态的折叠头保持单行。 */
+  .demoSummaryMeta {
+    grid-column: 2 / -1;
+    grid-row: 2;
   }
 
   .demoControl,
@@ -231,25 +249,30 @@
   .colorPreview {
     flex-basis: 100%;
     align-self: stretch;
-    min-block-size: 44px;
-  }
-
-  .demoSelect,
-  .demoActions button,
-  .successActions button,
-  .demo :global(.ant-input),
-  .demo :global(.ant-select-selector),
-  .demo :global(.ant-input-number),
-  .demo :global(.ant-picker) {
-    min-block-size: 44px;
+    min-block-size: var(--lx-control-target-touch-min);
   }
 
   .failureToggle {
     align-self: stretch;
-    min-block-size: 44px;
   }
 
   .submissionRecovery {
     align-items: flex-start;
+  }
+}
+
+/* 平板等宽屏触控设备也需要触控尺寸，不能只依赖窄屏断点。 */
+@media (max-width: 480px), (any-pointer: coarse) {
+  .demoOptions summary,
+  .demoSelect,
+  .failureToggle {
+    min-block-size: var(--lx-control-target-touch-min);
+  }
+
+  /* 最小尺寸作用于公开 className 对应的根节点；Button 同时消费局部高度 token。 */
+  .touchTarget {
+    min-inline-size: var(--lx-control-target-touch-min);
+    min-block-size: var(--lx-control-target-touch-min);
+    --lx-control-height: var(--lx-control-target-touch-min);
   }
 }

@@ -9,8 +9,8 @@
 ## 每批执行顺序
 
 1. **确定目标和设计依据。** 指定具体组件源文件、Dumi 路由及相应 `UI/` 稿件；读取 `AGENTS.md`、`design.md`、主题 token 和相邻组件。先明确这是新增、技术审计、UX 评审还是已有界面打磨。Stitch 设计稿是产品方向，不能因通用检测器偏好而擅自替换。
-2. **初始化 skill 上下文。** 每次工作会话仅在项目 cwd 执行一次 `node "<impeccable-skill-dir>/scripts/context.mjs" --target <组件路径或路由>`，保留并执行输出指令。该脚本不是质量评分。新增界面若要求 `PRODUCT.md`，先依据真实产品信息建立；狭义缺陷修复按已有实现继续。编辑 UI 前读取 `reference/craft-floor.md` 和 `frontend-ui-ux/SKILL.md`。
-3. **技术审计 (`audit`)。** 按 `reference/audit.md` 独立检查无障碍、性能、主题、响应式、实现完整性五维，各给 0-4 分。记录可复现的 P0-P3 问题、位置、影响、标准与修复办法。运行 `node "<impeccable-skill-dir>/scripts/detect.mjs" --json <含 markup 的目标>` 并逐条验证；扫描失败要写原因。审计阶段只记录问题，修复进入下一阶段。
+2. **初始化 skill 上下文。** 先读取本会话实际可用的 `SKILL.md`，依据该版本的入口执行，不把历史脚本名当成固定 API。Impeccable 4.6 在 Windows PowerShell 使用 `& "<impeccable-skill-dir>/scripts/impeccable.cmd" context --target <组件路径或路由>`；其他受支持 shell 使用对应 `scripts/impeccable` launcher。每次工作会话仅在项目 cwd 执行一次，保留并执行输出指令；上下文不是质量评分。launcher 失败时明确记录，再读取现有设计与产品上下文继续。新增界面若要求 `PRODUCT.md`，先依据真实产品信息建立；狭义缺陷修复按已有实现继续。编辑 UI 前读取 `reference/craft-floor.md` 和 `frontend-ui-ux/SKILL.md`。历史 4.1.3 审计中出现的 `context.mjs` 仅说明当时入口。
+3. **技术审计 (`audit`)。** 按 `reference/audit.md` 独立检查无障碍、性能、主题、响应式、实现完整性五维，各给 0-4 分。记录可复现的 P0-P3 问题、位置、影响、标准与修复办法。Impeccable 4.6 在 Windows 运行 `& "<impeccable-skill-dir>/scripts/impeccable.cmd" detect --json <含 markup 的目标>`，其他 shell 使用同版本 launcher；不要只扫描 CSS 后就推断交互质量。保留原始 stdout、stderr 和退出码，逐条验证命中；扫描失败要写原因。审计阶段只记录问题，修复进入下一阶段。历史 `detect.mjs` 调用保留在对应旧版记录中。
 4. **独立设计评审 (`critique`)。** 按 `reference/critique.md`，有子代理能力时必须让 A 组先独立看设计和页面，B 组独立跑检测器及浏览器证据，两组互不看对方结果，再由负责人综合。A 组给出设计特异性、10 项 Nielsen 启发式评分、认知负荷、优点及 3-5 个重点问题；B 组报告检测器数量、规则、位置和浏览器结果。按 skill 保存快照；不可把 A/B 混成一次扫描。若子代理不可用，按 skill 明示降级原因。
 5. **真实浏览器审查。** 桌面、约 930px 中间宽度和 320-390px 窄屏一起检查；覆盖浅/深色、两种密度、代表性的风格及配色、长文本、空/错/加载/禁用、键盘 Tab/Enter/Escape、200% 放大和 reduced motion。记录视口、主题、操作、实际结果和截图或可重现路径。组件页必须有可运行 demo；`tsx pure` 只能说明 API 写法。Dumi 自身导航与代码块也纳入浏览器审查。
 6. **修复 (`polish`)。** 按 `reference/polish.md` 先修阻断/数据错误，再修缺失状态、布局和视觉；保持现有设计方向。编辑前读取 craft floor。完成实现后集中做一轮桌面+窄屏检查，批量修复，再最多确认一轮；检测器空结果不替代人工判断。仅在快照列出的重点问题全部解决时关闭该快照。
@@ -24,4 +24,4 @@
 
 ### 快照格式保护
 
-将评审正文按项目格式整理，通过 `critique-storage.mjs write <目标路径> <正文文件>` 生成快照；脚本会从目标路径派生稳定标识，无需单独运行 `slug`。写入时必须传入具体目标路径；虽然脚本也接受 slug，但裸 slug 会被当作相对路径，生成无法匹配实际目标指纹的快照。生成后的 `.impeccable/critique/*.md` 不运行 Prettier：frontmatter 中的目标指纹由脚本按可解析格式序列化；格式器可能改写引号，导致 `latest` 把仍匹配的快照误判为目标已变化并关闭。查询时运行 `critique-storage.mjs latest <目标路径> --json`。目标路径没有对应快照、快照已关闭或目标指纹变化时会以退出码 2 结束，这不等于参数格式错误。确认 `snapshot_file` 与正文存在后再继续。快照不作为普通源码格式化。
+将评审正文按项目格式整理，Impeccable 4.6 在 Windows PowerShell 通过 `& "<impeccable-skill-dir>/scripts/impeccable.cmd" critique-storage write <目标路径> <正文文件>` 生成快照；其他受支持 shell 使用同版本 `scripts/impeccable` launcher 的 `critique-storage` 子命令。工具会从目标路径派生稳定标识，无需单独运行 `slug`。写入时必须传入具体目标路径；虽然工具也接受 slug，但裸 slug 会被当作相对路径，生成无法匹配实际目标指纹的快照。生成后的 `.impeccable/critique/*.md` 不运行 Prettier：frontmatter 中的目标指纹由工具按可解析格式序列化；格式器可能改写引号，导致 `latest` 把仍匹配的快照误判为目标已变化并关闭。Windows 查询时运行 `& "<impeccable-skill-dir>/scripts/impeccable.cmd" critique-storage latest <目标路径> --json`，其他 shell 使用对应 launcher。目标路径没有对应快照、快照已关闭或目标指纹变化时会以退出码 2 结束，这不等于参数格式错误。确认 `snapshot_file` 与正文存在后再继续。快照不作为普通源码格式化。历史 4.1.3 记录中的 `critique-storage.mjs` 保留为当时的工具入口，不作为 4.6 的调用方式。

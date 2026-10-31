@@ -3,11 +3,23 @@ import { Button, DynamicForm } from '../../src/index';
 import type { DynamicFormRef, DynamicFormValues, FieldSchema } from '../../src/index';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
 import recoveryStyles from './dynamic-form.module.css';
-import { scrollDynamicFormFieldIntoView } from './dynamic-form-utils';
+import {
+  dynamicFormTouchTargetClassName,
+  scrollDynamicFormFieldIntoView,
+} from './dynamic-form-utils';
 import styles from './input.module.css';
 
+const touchTargetClassName = `${recoveryStyles.touchTarget} ${dynamicFormTouchTargetClassName}`;
+
 const schema: readonly FieldSchema[] = [
-  { key: 'name', name: 'name', type: 'text', label: '客户名称', required: true },
+  {
+    key: 'name',
+    name: 'name',
+    type: 'text',
+    label: '客户名称',
+    required: true,
+    inputProps: { className: touchTargetClassName },
+  },
 ];
 
 /** 错误携带产生它的请求身份，避免 finally 解锁后旧错误误写新请求。 */
@@ -163,6 +175,7 @@ export default function DynamicSubmitDemo() {
                 </p>
               )}
               <Button
+                className={touchTargetClassName}
                 key="submission-action"
                 htmlType={error ? 'button' : 'submit'}
                 type="primary"

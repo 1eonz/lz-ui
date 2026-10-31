@@ -1081,3 +1081,23 @@ Pagination 将页大小和跳页拆成可见的 Select、Input、Button，窄屏
 - **视觉修正：** 人工复核 Chromium 1280px 与 320px 截图时发现区域轮廓相对可见表格边界外扩。Tooltip API region 的焦点轮廓设为 `outline-offset: 0`，其他文档表不受影响；浏览器测试同步验证 0px 偏移、2px 实线及主题焦点色。
 - **复审与验证：** 独立 `gpt-6-luna max` 配置只读复审未发现问题；运行模型身份和思考强度不可独立核验。`npm run check` 通过 59 个测试文件、688 项测试、112 个 demo 类型检查、格式、类型与 lint；`check:scaffold`、Dumi 导出门禁及 Chromium/Windows Playwright WebKit 定向验收均通过，三组用例共 6/6。`git diff --check` 通过。截图与隔离构建产物保存在仓库内 `.codex`。
 - **Impeccable 与边界：** Impeccable 4.1.3 的 `context.mjs`、`adapt`、`polish` 和 craft floor 已按流程读取使用；`detect.mjs --json` 返回 `[]` 仅表示确定性静态规则没有命中，不能替代截图、键盘路径和浏览器验收。WebKit 仿真不代表 Safari 实机，真实读屏、页面缩放、实体触控、设备性能、完整主题矩阵和生产部署仍未覆盖；全库 2B-1 继续开放。
+
+## 2026-10-31：DynamicForm 提交前独立复核与折叠标题打磨
+
+- **方法与目标：** 双代理独立评估，A 为 `dynamic_form_design_a_1031`、B 为 `dynamic_form_audit_b_1031`，配置均为 `gpt-6.1-sol medium`；代码复审为独立 `gpt-6.1-sol high`。工具不提供实际运行模型身份核验，配置不冒称身份确认。目标为 `docs/demos/dynamic-form.tsx` 及相邻独立示例；视觉依据只读 Form 设计与既有组件，保持 ERP/CRM 客户录入语境。
+- **Skill 调用：** 本会话使用 Impeccable 4.6.0，执行一次 Windows launcher `impeccable.cmd context --target docs/demos/dynamic-form.tsx`，读取 audit/critique/polish 与 UI 编辑前 craft floor。B 对七个 TSX 文件执行一次 `detect --json`，原始 stdout `[]`、stderr 空、退出码 0；修改折叠头后实施代理另对变更 markup 定向扫描，结果同为空。两次范围/时点不同，均只表示对应确定性规则未命中。
+- **A 组评估：** Nielsen 十项依次为 `3,4,3,3,3,3,3,3,4,3`，合计 **32/40**；分组、原位重试、保留内容及继续新增符合后台任务。发现折叠头箭头/标题被 `space-between` 拉开、窄屏箭头另占一行的 P3；改为箭头/标题/状态三列，窄屏仅状态换行。最终 1280/390/320px 新产物截图与原生键盘展开收起确认该 P3 关闭，主代理已查看最终截图。评分保留原评估，未因修复擅自加分。
+- **B 组技术审计：** 无障碍、性能、主题、响应式、实现完整性各 3/4，合计 **15/20**，只概括抽样证据。无原生浏览器工具，使用 Playwright fallback；可变标题及脚本执行预检通过，实际加载 overlay 并生成标记。既有产物全页有 20 个命中：low-contrast 9、nested-cards 8、heading-rhythm 2、line-length 1。示例框架嵌套属于文档展示工具上下文，中文行长和标题节奏未机械升级缺陷；文档壳/代码对比度作为单独待核候选交下一批，不把 CLI `[]` 或示例流程通过当成全页无问题。overlay 服务已停止，未声称有用户可见 Human tab。
+- **新鲜度与最终证据：** A/B 基线读取 10 月 15 日既有导出，未假定时间戳或压缩字符串能证明源码等价。完成打磨后重建当前隔离导出，最终真实三引擎 **18/18**（每引擎 6 项）通过；A 组另做一次有界布局确认。覆盖原生折叠、触控目标/边缘点按、首错与吸顶栏、客户失败恢复和级联值清理；基线还抽查 dark/glass/compact、930px 粗指针及 reduced-motion。CSS 200% 文本模拟不等于真实 page zoom。
+- **代码与工程：** 高强度独立复审提出 4.6 快照段仍使用旧 `.mjs` 的 P2，已切换 launcher 并复审 GO；构建锁、恢复锁及中文注释最终复审无未关闭 P0–P3。全量检查为 59 文件/689 项 Vitest、8 项 Node 锁测试、112 个 demo 类型；脚手架、库与文档构建、导出通过。包预览 522 项、196,335 bytes 压缩、783,750 bytes 解包，禁入路径 0 项。所有原始日志/截图留在仓库 `.codex`，不进入 npm 包。
+- **最新外围确认：** B 组用新 context 在 `meta__components.2dccc610.async.js`（2026-10-31 15:54:38 UTC）所在产物复测，确认文档壳文字与代码展示配色两组 P1。placeholder 在 light/dark 分别 4.366/4.379:1，活动侧栏 3.889/2.951:1，正文链接 4.104/2.830:1；light 语法 token 为 3.120–3.995:1，dark keyword 3.375:1，light 语言标签 3.131:1，默认页尾 dumi 外链也不足。已核对可见性、字号字重、祖先背景合成及 opacity，16px/700 不按大字豁免；hover/focus 的单独通过不替代 default 失败。记录在 `.codex/assessment-b-20261031/contrast-confirmation.json`，下一批优先修复，不改变本批表单流程的限定证据。
+- **未覆盖与后续：** 局部 GO 不关闭全库 2B-1。真实读屏、真实 200%/400% 页面缩放、Safari 实机、实体触控、完整主题组合、性能与部署未完成。用户已授权持续修复和独立复审；折叠头已关闭，外围两组 P1 继续由文档壳批次处理。最终格式检查排除新版 Impeccable 自有 hook 缓存后通过；最终 112 demo 类型复核与提交演示定向 13/13 通过。
+
+## 2026-10-15：DynamicForm 粗指针与提交恢复验收
+
+- **范围：** 仅覆盖 DynamicForm 组件文档、交互示例和浏览器验收；不修改组件运行时代码、公开 API 或生产依赖。提交演示设置默认收起；自定义字段补齐错误说明与 `aria-describedby` 关联；提交失败恢复、首错聚焦、吸顶栏避让、级联字段清理及继续新增流程由单测和浏览器用例覆盖。
+- **Impeccable：** 使用 Impeccable 4.1.3；本批技术审计汇总 **15/20**，UX 评审 **32/40**。detector 当次原始结果为 `[]`，只说明确定性规则未命中，不构成设计、无障碍或交互通过。`critique-storage.mjs latest src/components/form/dynamic-form/index.md --json` 返回退出码 2，表示没有指纹仍匹配当前文件的开放快照；10 月 5 日快照保留为历史记录，未将其误报为本批评审，也未尝试关闭。
+- **代码复审：** 两轮独立复审关闭了触控验证缺口：每次边缘触点测试先把焦点移到其它控件，再对授信额度 InputNumber 外框上下边缘执行真实 Playwright touch tap，并断言公开 spinbutton 获焦。最终复审为 GO，未发现未关闭 P0–P3。子代理按 `gpt-6-luna max` 配置请求；工具未暴露运行时身份，故无法独立核实实际模型变体和思考强度。
+- **视觉与浏览器：** 人工检查 1280px 桌面及 390px 窄屏截图。隔离 Dumi 构建导出 165 个 HTML、660 个本地 JS/CSS 引用和 93 个嵌套 demo。DynamicForm 工作流在 Chromium、Edge、Windows Playwright WebKit 各通过 5/5，共 15/15；覆盖粗指针目标尺寸、窄屏入口、错误字段聚焦及吸顶栏、提交失败恢复/查看客户/继续新增、地区变化后的级联值清理。WebKit 粗指针路径实际运行，没有跳过。
+- **工程验证：** `npm run check` 完整通过，含格式、类型、112 个 demo 类型检查、lint，以及 59 个测试文件的 689/689 项 Vitest。此前一次全量运行曾出现 Dumi 移动搜索活动结果的间歇性 `data-active` 断言失败，但同文件单独复跑 11/11，随后本次全量复跑 689/689。`check:scaffold`、`build:lib`、隔离 Dumi 导出门禁、修改文件 Prettier 与 `git diff --check` 通过。
+- **未覆盖：** CSS viewport 和触屏仿真不等于真实设备。真实屏幕阅读器、Safari 实机、真实 200%/400% page zoom、实体触控、设备性能与生产部署仍未验收；全库 2B-1 继续开放。

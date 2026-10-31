@@ -2,6 +2,10 @@ import { useId, useMemo, useRef, useState } from 'react';
 import { Button, DynamicForm } from 'lx-ui';
 import type { DynamicFormValues, FieldSchema } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
+import touchStyles from './dynamic-form.module.css';
+import { dynamicFormTouchTargetClassName } from './dynamic-form-utils';
+
+const touchTargetClassName = `${touchStyles.touchTarget} ${dynamicFormTouchTargetClassName}`;
 
 const suppliers = [
   { label: '杭州云栖科技', value: 'supplier-1' },
@@ -39,7 +43,10 @@ export default function DynamicOptionsDemo() {
         type: 'select',
         label: '供应商',
         required: true,
-        inputProps: { placeholder: '输入杭州或上海检索供应商' },
+        inputProps: {
+          placeholder: '输入杭州或上海检索供应商',
+          className: touchTargetClassName,
+        },
         loadOptionsError: (_error, query) =>
           query ? `暂时无法搜索“${query}”的供应商，请重试。` : '暂时无法加载供应商，请重试。',
         loadOptions: async (query, _values, signal) => {
@@ -58,7 +65,7 @@ export default function DynamicOptionsDemo() {
   return (
     <DataDisplayDemoFrame>
       <DynamicForm name={id} schema={schema} onFinish={setSaved}>
-        <Button htmlType="submit" type="primary">
+        <Button className={touchTargetClassName} htmlType="submit" type="primary">
           确认供应商
         </Button>
       </DynamicForm>

@@ -502,3 +502,19 @@
 - **焦点行为：** 去除文档 CSS 的 `:has()` 标题焦点选择器，直接在具名 API region 上展示 2px 主题焦点环；Tooltip 局部将 `outline-offset` 设为 `0px`，使焦点框贴合表格区域边缘。测试通过链接 Enter 跳转后断言 region 获焦、轮廓样式和宽度，以及桌面与卡片布局的几何对齐。
 - **构建和浏览器：** 隔离 Dumi 导出门禁通过（165 个 HTML、660 个本地 JS/CSS 引用、93 个嵌套 demo）；移动搜索单测 11/11；Tooltip API 卡片、桌面键盘锚点和触屏快捷入口在 Chromium 与 Windows Playwright WebKit 共 6/6。`npm run check` 为 59 个测试文件、688 项通过，`check:scaffold` 与 `git diff --check` 通过。
 - **审查与边界：** 独立 `gpt-6-luna max` 配置复审无问题，代理运行身份无法独立核验。Impeccable 检测输出 `[]` 只表示确定性规则未命中；实际判断依据包括 320px 和 1280px 截图及真实键盘跳转。Safari 实机、真实读屏、页面缩放、实体触控、完整主题组合、设备性能和生产部署仍待验收；不关闭全库 2B-1。
+
+### 2026-10-31 DynamicForm 最终隔离构建与折叠标题复验
+
+- **产物与版本：** 使用 `npm run test:browser:dynamic-form:preview`，runner 顺序执行补丁、隔离构建、导出门禁和浏览器测试。最新产物为 165 个 HTML、660 个本地 JS/CSS 引用、93 个 demo；测试没有读取旧 `docs-dist`。此前 A/B 检查的 10 月 15 日既有产物仅作基线，最终布局确认和下述矩阵读取本轮新隔离导出。
+- **浏览器结果：** Chromium、Microsoft Edge、Windows Playwright WebKit 各 6/6，共 18/18，无失败或跳过；原始输出位于本地忽略目录 `.codex/dynamic-form-browser-20261031.log`。新增用例在 1280/390/320px 验证箭头与标题首行相邻、折叠头高度、原生点击展开/Enter 收起及窄屏触控高度；原有五组工作流继续通过。600px 粗指针能力是硬断言，并实际点按控件边缘，未把媒体不支持记成通过。
+- **视觉确认：** 独立 A 组和主代理检查最终 1280/390/320px 截图。箭头不再独占窄屏一行，两个折叠头合计由约 172px 减至 124px；meta 在窄屏标题下方换行。独立代码复审关闭旧版快照命令 P2，布局 P3 复查关闭。
+- **工程与包体：** `npm run check` 通过 59 个 Vitest 文件/689 项、8 项 Node 锁测试、112 个 demo 类型、类型/lint/格式检查；脚手架、库构建、常规文档构建和静态导出通过。`npm pack --dry-run --json` 为 522 项、196,335 bytes 压缩、783,750 bytes 解包，docs/tests/UI/.dumi/.codex 禁入路径 0 项。没有新增生产依赖或组件运行时代码。
+- **边界：** Impeccable 浏览器 overlay 的外围对比度候选已在最新产物用独立 context 确认，归并为文档壳文字和代码展示配色两组 P1；dark 正文链接约 2.83:1、活动侧栏约 2.95:1，light 代码文本部分为 3.12–4.00:1，均需下一批修复。已排除隐藏节点、祖先透明背景和 placeholder opacity 误判；不宣称全站 WCAG 通过。真实读屏、真实页面缩放、Safari 实机、实体触控、全主题组合、性能及目标部署仍未覆盖，全库 2B-1 继续开放。
+
+### 2026-10-15 DynamicForm 粗指针表单流程复验
+
+- **构建来源：** `npm run build:docs:dynamic-form-preview` 在隔离目录生成当前 DynamicForm 页面；静态导出门禁检查 165 个 HTML、660 个本地 JS/CSS 引用和 93 个嵌套 demo。测试指向当前隔离导出，不读取可能过期的共享 `docs-dist`。
+- **浏览器结果：** `tests/browser/dynamic-form-workflow.spec.ts` 在 Chromium、Microsoft Edge、Windows Playwright WebKit 各通过 5/5，共 15/15。粗指针测试强制检查媒体能力，不允许静默跳过；粗指针示例的表单触控目标至少 44px，且通过实际 touch tap 验证自定义输入、选择器、按钮和授信额度 InputNumber 的可操作性。InputNumber 上下边缘测试在 tap 前先让其它按钮获焦，tap 后确认公开 spinbutton 获焦。
+- **覆盖路径：** 平板粗指针下的示例触控尺寸；窄屏从交互示例开头到客户录入的可达性；校验后首错字段标签避开吸顶栏；客户录入失败后保留值、恢复提交、查看客户或继续新增；切换地区后清空城市/区县并禁用不适用选项。人工检查 1280px 与 390px 截图。
+- **工程结果：** `npm run check` 完整通过，含 59 个测试文件、689 项 Vitest 和 112 个 demo 源码类型检查；此前移动搜索活动结果的间歇性断言失败未在全量复跑中复现，单文件复跑为 11/11。`check:scaffold`、库构建、隔离导出门禁、格式和 diff 检查通过。单独验证 DynamicForm WebKit 使用 `npm run test:browser:dynamic-form:webkit-preview`，先生成隔离导出再运行，不依赖可能过期的共享 `docs-dist`；该专用命令也纳入 `test:browser:all`。
+- **边界：** Chromium、Edge、WebKit 和 CSS viewport 是浏览器仿真，不等于 Safari 实机或真实触屏。真实读屏、200%/400% page zoom、实体触控、设备性能、生产部署与全库 2B-1 仍未完成。

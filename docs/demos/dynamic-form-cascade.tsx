@@ -8,7 +8,10 @@ import type {
   FieldSchema,
 } from '../../src/index';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
+import { dynamicFormTouchTargetClassName } from './dynamic-form-utils';
 import styles from './dynamic-form.module.css';
+
+const touchTargetClassName = `${styles.touchTarget} ${dynamicFormTouchTargetClassName}`;
 
 type CascadeLocation = {
   region?: string;
@@ -82,7 +85,7 @@ const schema: FieldSchema[] = [
     label: '区域',
     required: true,
     options: regions,
-    inputProps: { allowClear: true },
+    inputProps: { allowClear: true, className: touchTargetClassName },
   },
   {
     key: 'city',
@@ -91,7 +94,7 @@ const schema: FieldSchema[] = [
     label: '城市',
     dependencies: [['location', 'region']],
     clearOnDependencyChange: true,
-    inputProps: { placeholder: '输入“市”加载城市' },
+    inputProps: { placeholder: '输入“市”加载城市', className: touchTargetClassName },
     loadOptions: async (query, values, signal) => {
       if (!(await waitForOptions(signal))) return [];
       const region = (values as CascadeValues).location?.region;
@@ -107,7 +110,7 @@ const schema: FieldSchema[] = [
     clearOnDependencyChange: true,
     disabled: (values) => !(values as CascadeValues).location?.city,
     help: '先选择城市，再搜索对应区县。',
-    inputProps: { placeholder: '输入“区”加载区县' },
+    inputProps: { placeholder: '输入“区”加载区县', className: touchTargetClassName },
     loadOptions: async (query, values, signal) => {
       if (!(await waitForOptions(signal))) return [];
       const city = (values as CascadeValues).location?.city;
@@ -181,10 +184,11 @@ export default function DynamicFormCascadeDemo() {
           }}
         >
           <div className={styles.demoActions}>
-            <Button type="primary" htmlType="submit">
+            <Button className={touchTargetClassName} type="primary" htmlType="submit">
               提交
             </Button>
             <Button
+              className={touchTargetClassName}
               htmlType="button"
               onClick={() => {
                 formRef.current?.reset();

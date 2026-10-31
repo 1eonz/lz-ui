@@ -11,6 +11,8 @@ demo:
 
 当前版本组合 lx-ui 的 Input、TextArea、InputNumber、Select、DatePicker、DateRangePicker、Checkbox、Switch、Radio、Upload 和 FormItem。Radio、Upload 保留 Ant Design 5 的公开 Props、事件和 ref 合约；焦点轮廓由实际控件通过公开主题 token 绘制，Upload 包装层不额外画框。Upload 默认仅本地选择文件；视觉和可访问性验收状态以 [UI 设计门禁](/ui-design-gate) 为准。
 
+快速跳转到[局部注册表与自定义字段](#局部注册表与自定义字段)或[完整客户录入](#完整客户录入)示例。
+
 ## 使用方法
 
 ```tsx pure

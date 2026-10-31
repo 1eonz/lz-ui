@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { DynamicFormRef } from '../types';
 import DynamicSubmitDemo from '../../../../../docs/demos/dynamic-doc-submit';
+import DynamicCustomDemo from '../../../../../docs/demos/dynamic-doc-custom';
 import DynamicFormDemo from '../../../../../docs/demos/dynamic-form';
 import { scrollDynamicFormFieldIntoView } from '../../../../../docs/demos/dynamic-form-utils';
 
@@ -74,7 +75,7 @@ describe('提交 demo 宿主焦点与请求生命周期', () => {
       );
       expect(scrollToField).toHaveBeenCalledWith(
         'name',
-        expect.objectContaining({ focus: true, block: 'start', scrollMode: 'always' }),
+        expect.objectContaining({ focus: true, block: 'center', scrollMode: 'always' }),
       );
       expect(pageScroll).toHaveBeenCalledWith({ top: 240, left: 4, behavior: 'auto' });
       expect(fieldScroll).toHaveBeenCalledWith({ top: 50, left: 2, behavior: 'auto' });
@@ -122,6 +123,33 @@ describe('提交 demo 宿主焦点与请求生命周期', () => {
       else Reflect.deleteProperty(HTMLElement.prototype, 'scrollTo');
     }
   });
+
+  it('局部注册表与自定义字段空提交聚焦首错并关联错误说明', async () => {
+    const previous = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'scrollTo');
+    const scroll = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, 'scrollTo', { configurable: true, value: scroll });
+    try {
+      render(<DynamicCustomDemo />);
+      const button = screen.getByRole('button', { name: '保存编号' });
+      await act(async () => {
+        button.focus();
+        fireEvent.submit(button.closest('form')!);
+      });
+
+      const input = screen.getByRole('textbox', { name: /客户编号/ });
+      const error = await screen.findByText('客户编号为必填项');
+      const describedBy = input.getAttribute('aria-describedby')?.split(/\s+/) ?? [];
+      expect(input).toHaveFocus();
+      expect(input).toHaveAttribute('aria-invalid', 'true');
+      expect(error).toBeVisible();
+      expect(describedBy.some((id) => document.getElementById(id)?.contains(error))).toBe(true);
+      expect(scroll).toHaveBeenCalled();
+    } finally {
+      if (previous) Object.defineProperty(HTMLElement.prototype, 'scrollTo', previous);
+      else Reflect.deleteProperty(HTMLElement.prototype, 'scrollTo');
+    }
+  });
+
   it('首次失败保留值并恢复被禁用后落到 BODY 的输入焦点，重试成功', async () => {
     vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
     try {

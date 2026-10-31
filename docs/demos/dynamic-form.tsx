@@ -10,8 +10,13 @@ import type {
   LxPalettePreset,
   LxThemeMode,
 } from '../../src/theme';
-import { scrollDynamicFormFieldIntoView } from './dynamic-form-utils';
+import {
+  dynamicFormTouchTargetClassName,
+  scrollDynamicFormFieldIntoView,
+} from './dynamic-form-utils';
 import styles from './dynamic-form.module.css';
+
+const touchTargetClassName = `${styles.touchTarget} ${dynamicFormTouchTargetClassName}`;
 
 const schema: FieldSchema[] = [
   {
@@ -21,6 +26,7 @@ const schema: FieldSchema[] = [
     label: '客户名称',
     placeholder: '例如：杭州云栖科技',
     required: true,
+    inputProps: { className: touchTargetClassName },
   },
   {
     key: 'email',
@@ -30,6 +36,7 @@ const schema: FieldSchema[] = [
     placeholder: 'name@company.com',
     required: true,
     rules: [{ antd: { type: 'email', message: '请输入有效的邮箱地址' } }],
+    inputProps: { className: touchTargetClassName },
   },
   {
     key: 'level',
@@ -38,6 +45,7 @@ const schema: FieldSchema[] = [
     label: '客户等级',
     extra: '选择重点客户后，需要指定一位专属负责人。',
     required: true,
+    inputProps: { className: touchTargetClassName },
     options: [
       { label: '普通客户', value: 'standard' },
       { label: '重点客户', value: 'priority' },
@@ -51,6 +59,7 @@ const schema: FieldSchema[] = [
     placeholder: '例如：李明',
     required: true,
     visible: (values) => values.level === 'priority',
+    inputProps: { className: touchTargetClassName },
   },
 ];
 
@@ -260,7 +269,7 @@ function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
     <div className={styles.demo} ref={formScopeRef}>
       <details className={styles.demoOptions}>
         <summary>
-          显示选项
+          <span className={styles.demoSummaryTitle}>显示选项</span>
           <span className={styles.demoSummaryMeta}>
             {theme.appearance === 'business'
               ? '商务'
@@ -361,6 +370,13 @@ function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
               当前配色：{colorSelection.label}（{colorSelection.type}）
             </span>
           </div>
+        </div>
+      </details>
+      <details className={styles.demoOptions}>
+        <summary>
+          <span className={styles.demoSummaryTitle}>提交演示</span>
+        </summary>
+        <div className={styles.demoToolbar}>
           <label className={styles.failureToggle}>
             <input
               type="checkbox"
@@ -405,6 +421,7 @@ function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
                 {submitError}
               </p>
               <Button
+                className={touchTargetClassName}
                 key="retry"
                 ref={retryActionRef}
                 type="primary"
@@ -416,6 +433,7 @@ function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
             </div>
           ) : (
             <Button
+              className={touchTargetClassName}
               key="save"
               type="primary"
               htmlType="submit"
@@ -425,7 +443,12 @@ function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
               {submitting ? '保存中' : '保存客户'}
             </Button>
           )}
-          <Button htmlType="button" disabled={submitting} onClick={() => resetForm()}>
+          <Button
+            className={touchTargetClassName}
+            htmlType="button"
+            disabled={submitting}
+            onClick={() => resetForm()}
+          >
             重置
           </Button>
         </div>
@@ -436,13 +459,14 @@ function CustomerEntry({ docsMode }: { docsMode: 'light' | 'dark' }) {
           <p>已保存客户：{String(saved.name || '当前客户')}</p>
           <div className={styles.successActions}>
             <Button
+              className={touchTargetClassName}
               ref={successActionRef}
               size="small"
               onClick={() => setSavedAction('已打开客户详情（演示）')}
             >
               查看客户
             </Button>
-            <Button size="small" onClick={() => resetForm(true)}>
+            <Button className={touchTargetClassName} size="small" onClick={() => resetForm(true)}>
               继续新增
             </Button>
           </div>

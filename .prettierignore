@@ -15,3 +15,6 @@ yarn.lock
 UI
 # Impeccable 快照的 YAML 指纹由脚本管理，不能由格式器改写引号。
 .impeccable/critique/**
+# 新版检测器维护本地缓存，格式化会反复与工具生成格式冲突。
+.impeccable/hook.cache.json
+.impeccable/hook.pending.json

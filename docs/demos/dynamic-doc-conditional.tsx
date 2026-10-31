@@ -2,7 +2,11 @@ import { useId, useState } from 'react';
 import { Button, DynamicForm } from 'lx-ui';
 import type { DynamicFormValues, FieldSchema } from 'lx-ui';
 import { DataDisplayDemoFrame } from './data-display-demo-frame';
+import touchStyles from './dynamic-form.module.css';
+import { dynamicFormTouchTargetClassName } from './dynamic-form-utils';
 import styles from './dynamic-doc.module.css';
+
+const touchTargetClassName = `${touchStyles.touchTarget} ${dynamicFormTouchTargetClassName}`;
 
 const schema: readonly FieldSchema[] = [
   {
@@ -10,6 +14,7 @@ const schema: readonly FieldSchema[] = [
     name: 'tier',
     type: 'select',
     label: '客户等级',
+    inputProps: { className: touchTargetClassName },
     options: [
       { label: '普通客户', value: 'regular' },
       { label: '重点客户', value: 'priority' },
@@ -23,6 +28,7 @@ const schema: readonly FieldSchema[] = [
     label: '专属负责人',
     required: true,
     visible: (values) => values.tier === 'priority',
+    inputProps: { className: touchTargetClassName },
   },
 ];
 
@@ -38,7 +44,7 @@ export default function DynamicConditionalDemo() {
         omitHidden
         onFinish={setSubmitted}
       >
-        <Button type="primary" htmlType="submit">
+        <Button className={touchTargetClassName} type="primary" htmlType="submit">
           确认客户等级
         </Button>
       </DynamicForm>
