@@ -2,10 +2,106 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { collectBrowserErrors, waitForBrowserQuiescence } from './browser-health';
 
 const viewports = [
+  { width: 1280, height: 800 },
   { width: 930, height: 720 },
   { width: 390, height: 844 },
   { width: 320, height: 740 },
 ] as const;
+
+const semanticAlerts = [
+  { tone: 'info', message: '客户同步将在今晚 22:00 开始' },
+  { tone: 'success', message: '28 位客户已同步' },
+  { tone: 'warning', message: '3 位客户缺少联系电话' },
+  { tone: 'error', message: '连接失败，请检查网络后重试' },
+] as const;
+
+// 四组代表组合覆盖两种模式、三种外观、两种密度及标准/东方配色，不代表完整笛卡尔积。
+const renderedThemes = [
+  {
+    mode: 'light',
+    appearance: '商务',
+    density: 'comfortable',
+    palette: '使用品牌色',
+    color: 'blue',
+  },
+  { mode: 'dark', appearance: '轻盈', density: 'compact', palette: '使用品牌色', color: 'blue' },
+  {
+    mode: 'light',
+    appearance: '玻璃',
+    density: 'compact',
+    palette: '青瓷桂影',
+    color: 'celadon-laurel',
+  },
+  {
+    mode: 'dark',
+    appearance: '玻璃',
+    density: 'comfortable',
+    palette: '豆沙墨色',
+    color: 'bean-sand-ink',
+  },
+] as const;
+
+async function readRenderedAlertColors(message: Locator, tone: string) {
+  return message.evaluate((element, semanticTone) => {
+    const alert = element.closest('[role="note"]');
+    if (!alert) throw new Error('四态示例缺少公开 note 语义。');
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('无法创建颜色解析画布。');
+    const rgba = (value: string): number[] => {
+      // canvas 遇到非法颜色会沿用上次 fillStyle，必须先拒绝空值和无效 token，防止假阳性。
+      if (!value.trim() || !CSS.supports('color', value))
+        throw new Error(`无法解析实际颜色：${value}`);
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = value;
+      context.fillRect(0, 0, 1, 1);
+      return [...context.getImageData(0, 0, 1, 1).data].map((value, index) =>
+        index === 3 ? value / 255 : value,
+      );
+    };
+    const composite = (foreground: number[], background: number[]): number[] =>
+      foreground
+        .slice(0, 3)
+        .map((channel, index) => channel * foreground[3] + background[index] * (1 - foreground[3]));
+    const luminance = (channels: number[]): number =>
+      channels
+        .map((channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+        })
+        .reduce((sum, channel, index) => sum + channel * [0.2126, 0.7152, 0.0722][index], 0);
+    const layers: number[][] = [];
+    const images: string[] = [];
+    const opacities: string[] = [];
+    for (let node: Element | null = element; node; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      layers.push(rgba(style.backgroundColor));
+      images.push(style.backgroundImage);
+      opacities.push(style.opacity);
+    }
+    // 从页面画布向正文逐层合成透明表面，再合成文字自身 alpha，避免把 rgba 当实色高估对比度。
+    let background = [255, 255, 255];
+    for (const layer of [...layers].reverse()) background = composite(layer, background);
+    const text = getComputedStyle(element).color;
+    const foreground = composite(rgba(text), background);
+    const [high, low] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+    const style = getComputedStyle(alert);
+    return {
+      background: rgba(style.backgroundColor),
+      expectedBackground: rgba(style.getPropertyValue(`--lx-color-${semanticTone}-bg`).trim()),
+      border: rgba(style.borderTopColor),
+      expectedBorder: rgba(style.getPropertyValue(`--lx-color-${semanticTone}`).trim()),
+      borderWidth: Number.parseFloat(style.borderTopWidth),
+      text: rgba(text),
+      expectedText: rgba(style.getPropertyValue('--lx-color-text').trim()),
+      contrast: (high + 0.05) / (low + 0.05),
+      hasOpaqueBackground: layers.some((layer) => layer[3] === 1),
+      images,
+      opacities,
+    };
+  }, tone);
+}
 
 const appearances = [
   { label: '商务', value: 'business', radius: '4px' },
@@ -74,6 +170,70 @@ async function expectNoRootOverflow(page: Page, viewport: (typeof viewports)[num
 }
 
 test.describe('Alert 主题、外观、密度与窄屏矩阵', () => {
+  for (const theme of renderedThemes) {
+    test(`四态实际颜色：${theme.mode}/${theme.appearance}/${theme.density}/${theme.color}`, async ({
+      page,
+    }, testInfo) => {
+      const browserHealth = collectBrowserErrors(page);
+      await page.goto('/components/feedback/alert/');
+      const frame = page
+        .locator('[data-lx-mode]')
+        .filter({
+          has: page.getByText(semanticAlerts[0].message, { exact: true }),
+        })
+        .first();
+      await expect(frame.getByRole('note')).toHaveCount(4);
+      await frame.getByText('主题设置', { exact: true }).click();
+      const dark = frame.getByRole('switch', { name: '暗色模式', exact: true });
+      if ((await dark.getAttribute('aria-checked')) !== String(theme.mode === 'dark'))
+        await dark.click();
+      await expect(frame).toHaveAttribute('data-lx-mode', theme.mode);
+      await frame.getByText(theme.appearance, { exact: true }).click();
+      await expect(frame.getByRole('radio', { name: theme.appearance, exact: true })).toBeChecked();
+      const density = frame.getByRole('switch', { name: '紧凑密度', exact: true });
+      if ((await density.getAttribute('aria-checked')) !== String(theme.density === 'compact'))
+        await density.click();
+      await expect(frame).toHaveAttribute('data-lx-density', theme.density);
+      await chooseSelectOption(
+        page,
+        frame,
+        '东方配色',
+        theme.palette,
+        ['使用品牌色', ...paletteColors.map(({ label }) => label)],
+        { index: 0 },
+      );
+      await expect(frame).toHaveAttribute('data-lx-color', theme.color);
+      await frame.getByText('主题设置', { exact: true }).click();
+      const evidence = [];
+      for (const { tone, message } of semanticAlerts) {
+        const text = frame.getByText(message, { exact: true });
+        await expect(text).toBeVisible();
+        const colors = await readRenderedAlertColors(text, tone);
+        expect(colors.background, `${tone} 实际背景`).toEqual(colors.expectedBackground);
+        expect(colors.border, `${tone} 实际语义边框`).toEqual(colors.expectedBorder);
+        expect(colors.borderWidth).toBeGreaterThan(0);
+        expect(colors.text, `${tone} 实际正文颜色`).toEqual(colors.expectedText);
+        // 本算法限定真实纯色叠层；遇到图片或组透明度时必须另行取样，不能静默宣称通过。
+        expect(colors.hasOpaqueBackground).toBe(true);
+        expect(colors.images.every((image) => image === 'none')).toBe(true);
+        expect(colors.opacities.every((opacity) => opacity === '1')).toBe(true);
+        expect(colors.contrast, `${tone} 正文/实际合成背景`).toBeGreaterThanOrEqual(4.5);
+        evidence.push({ tone, message, ...colors });
+      }
+      await testInfo.attach('rendered-semantic-colors', {
+        body: JSON.stringify({ theme, evidence }, null, 2),
+        contentType: 'application/json',
+      });
+      await frame.scrollIntoViewIfNeeded();
+      await page.screenshot({
+        path: testInfo.outputPath('alert-semantic-colors.png'),
+        fullPage: true,
+      });
+      await waitForBrowserQuiescence(page, browserHealth);
+      expect(browserHealth.errors, browserHealth.errors.join('\n')).toEqual([]);
+    });
+  }
+
   test('在公开 demo 中覆盖全部主题选项并保持可见与无根溢出', async ({ page }) => {
     const browserHealth = collectBrowserErrors(page);
     await page.goto('/components/feedback/alert/');

@@ -2,6 +2,25 @@
 
 本文件按批次记录当时的审查结论；历史条目中的未关闭项可能已由后续记录重新分类或处理。Table 纯文本单元格方向键导航的当前状态见 [ADR-0005](./adr/0005-table-keyboard-model.md)。
 
+## 2026-11-01：Alert 跨引擎、触控与实际语义颜色
+
+方法为双独立代理：A `/root/alert_impeccable_a_1101`，B `/root/alert_impeccable_b_1101`，请求配置为 `gpt-6.1-sol medium`；独立代码复审 `/root/alert_code_review_1101` 为 `gpt-6.1-sol high`。A/B 各自在 fresh 浏览器 context 取证，互不读取本批报告；A 完成后才将 B 的检测器结果交给主代理。实际运行身份没有可核验工具，不将请求配置等同于身份确认。Impeccable 4.6 context 沿用本会话首次结果，未重复运行。
+
+- **范围与设计：** `UI/P0 基础组件-Feedback/code.html` 的 Alert 四态和 160ms 退出设计为只读依据，检查三个真实 demo 及公开组件。本批不修改组件或演示运行时，新增两份浏览器专项覆盖和 npm 入口；补充文档断点、键盘顺序与验收边界。Read 文档与 Operate 本地同步反馈保持现有视觉方向。
+- **A 设计评审：** 实际看 1280/930/390/320/360/361px 截图，浅深色、compact/glass、普通/系统 reduced-motion、Tab/Enter/Space、重试、结果收起/查看、关闭及重置均取得证据。10 项 Nielsen 为 `4/4/4/3/3/3/3/3/4/3`，**34/40**，认知负荷低。361px 行内操作让正文换行比 360px 更碎，但文字完整、无重叠，作为断点取舍观察，不虚构成设计缺陷。
+- **B 技术审计：** 无障碍 3、性能 3、主题 4、响应式 4、完整性 4，**18/20**。一次成功 CLI markup 扫描的 stdout 为 `[]`、stderr 空、exit 0，仅表示确定性规则未命中；最初 cmd quoting 启动失败单独保留，没有把空 stdout 当成功。读取目标为 Alert 组件和 basic/description/interaction 三份 TSX，未使用 CSS-only 扫描。
+- **真实 overlay：** mutation 预检后使用专用 8400/PID 5452 服务注入 `detect.js`，console 与覆盖节点确认。原始摘要显示 4，实际明细为 nested-cards 3、skipped-heading 3，共 6 个节点实例；前者对应可运行示例工具框，按上下文判为误报，后者确认为下条 P2。服务已停止，8026 主预览 PID 2904 保持运行。只有 headless Playwright fallback，没有声称用户可见 Human tab。
+- **P2 及明确后续任务：** Dumi 2.4.49 Previewer 将三个 `<code title>` 输出为固定 h5，紧随页面 h3，影响按标题层级导航的结构预期。真实 selector 为 `[id="components/feedback/alert-demo-feedback-alert-basic"] h5`，其他两例同理，h5 没有 class。此为一类文档框架问题、三例，不是 Alert 本体回归，也不强称单项 WCAG AA 违反。接受为紧接着的独立文档基础设施任务：以普通说明文字承载示例标题，保留锚点和工具栏，避免固定改 h4 后在别的外层层级再次跳级。本批 P2 保持开放，不能写成全部问题关闭。
+- **浏览器最终结果：** Chromium/Edge/Windows Playwright WebKit 各 **11 通过、0 失败、0 跳过**，共 **33/33**。6 项交互/布局、5 项主题测试包括：真实 Tab 与 Space/Enter、普通/减少动效关闭、焦点立即回稳定重置入口、成功 status、展开收起、重置恢复、320/390px 实际角点触摸及中心/四角命中、360/361px 重排、1280/930/390/320px 根无水平溢出。预览使用与本批组件源码一致的已构建 `docs-dist`，日志 `.codex/alert-acceptance-20261101/final-run.log`，JSON `final-results.json`。
+- **颜色和主题范围：** 四组代表组合覆盖明暗、三种外观、两种密度及品牌/东方配色，每组验证四态实际背景、非零边框及文字颜色与对应语义 token 一致；逐层合成透明背景和文字 alpha，拒绝图片及整体透明度，并验证颜色值合法。三个引擎共 48 个样本，最低正文对比度 **13.216067:1**。另逐个检查全部公开配色选项值，不能把选项遍历或四组组合称作完整笛卡尔积。
+- **触控工具干扰与返工：** 首轮 Chromium/Edge 各 9/11、WebKit 11/11；四个失败来自 `fullPage` 截图将粗指针仿真切为细指针，后续按钮恢复为 24px。最小复现归档后改视口截图，截图后及每次 tap 前断言 coarse，保留 >=44px 和真实命中检查；手工 context 以 finally 清理。最终同版 33/33，不删除失败历史，不降低产品断言。独立 A/B 的触摸确认同样得到重置 116×44、操作 64×44、关闭 44×44px。
+- **代码复审：** high 独立复审最终 GO，无可复现 P0–P3 代码问题。核对公开语义定位、真实按键、触点命中、颜色解析/alpha 合成、清理和新项目规则。主代理另实际查看 320px 触控和 930px 暗色四态截图；本批截图与报告均只在 `.codex/alert-acceptance*-20261101/`，不进入发布包。
+- **工程与快照：** 全量 check 通过：59 文件/689 项 Vitest、8 项 Node 锁测试、112 个 demo 类型检查及格式/类型/lint；脚手架、库构建、CJS SSR 和 32 个 CSS Module 映射验证通过。包预检 522 项、196,384 B 压缩/784,112 B 解包，docs/tests/UI/临时目录/补丁禁入项为 0；相对上一批解包增加的 215 B 来自 npm 命令元数据。快照 `.impeccable/critique/2026-10-31T16-52-43Z__src-components-feedback-alert-index-md.md` 已核对目标指纹，该目标首次评分为 34/40，无同目标历史趋势；快照未运行 Prettier。
+- **最终导出：** 补充组件文档说明后重新构建，静态导出门禁通过 165 个 HTML、660 个本地资源引用、93 个嵌套 demo；新产物上 Chromium 的 360/361px 专项再次通过 1/1，实际文档新增说明与验收矩阵链接均在导出中。该定向 smoke 不重复计入前述 33 项。
+- **未覆盖：** 全主题笛卡尔积、仅 Provider 关闭动效但 OS 为 no-preference、真实读屏播报、原生缩放、Safari 实机、实体触控、量化性能和业务请求 loading/连续失败。后者由宿主负责，示例明确只模拟本地状态。2B-1 不因此关闭。
+
+Questions skipped: 用户已授权连续实施；确认的文档框架 P2 按上述独立任务处理，不需要新增产品选择。
+
 ## 2026-11-01：文档壳与源码高亮对比度收口
 
 方法为双独立代理：A `/root/dynamic_form_design_a_1031` 独立查看实际页面，B `/root/dynamic_form_audit_b_1031` 独立运行检测器、浏览器 overlay 和颜色测量；两者未读取对方结果。请求配置均为 `gpt-6.1-sol medium`，实施返工为 medium，独立代码复审 `/root/docs_contrast_review_1101` 为 high；工具没有暴露可独立核验运行时模型身份的能力。Impeccable 4.6 的 context 沿用本会话首次执行结果，没有重复运行。
